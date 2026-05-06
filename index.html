@@ -1,7 +1,724 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
+<meta charset="UTF-8"><!DOCTYPE html>
+<html lang="en">
+<head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Conch & Cmdr — Downloads</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --conch: #0ff4c6;
+    --conch-dim: #0bb88e;
+    --conch-dark: #003d2a;
+    --cmdr: #ff4f5e;
+    --cmdr-dim: #c8333f;
+    --cmdr-dark: #3d0007;
+    --bg: #0b0c0f;
+    --surface: #13151a;
+    --border: rgba(255,255,255,0.07);
+    --text: #e8eaf0;
+    --muted: #6b7280;
+    --mono: 'JetBrains Mono', monospace;
+    --sans: 'Syne', sans-serif;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ─── NAV ─── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 1rem 2.5rem;
+    background: rgba(11,12,15,0.85);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-logo {
+    font-size: 1.1rem; font-weight: 800; letter-spacing: -0.02em;
+    display: flex; gap: 0.4em; align-items: center;
+  }
+  .nav-logo span:first-child { color: var(--conch); }
+  .nav-logo span:last-child  { color: var(--cmdr); }
+  .nav-logo .sep { color: var(--muted); }
+  nav a {
+    color: var(--muted); text-decoration: none; font-size: 0.85rem;
+    font-family: var(--mono); letter-spacing: 0.04em; transition: color 0.2s;
+  }
+  nav a:hover { color: var(--text); }
+
+  /* ─── PAGES ─── */
+  .page { display: none; }
+  .page.active { display: block; }
+
+  /* ─── HERO ─── */
+  .hero {
+    padding: 9rem 2.5rem 5rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute; top: -120px; left: 50%; transform: translateX(-50%);
+    width: 700px; height: 700px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(0,255,198,0.04) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .hero h1 {
+    font-size: clamp(2.8rem, 7vw, 5.5rem);
+    font-weight: 800;
+    line-height: 1.05;
+    letter-spacing: -0.03em;
+    margin-bottom: 1.2rem;
+  }
+  .hero h1 em     { font-style: normal; color: var(--conch); }
+  .hero h1 strong { font-style: normal; color: var(--cmdr); }
+  .hero p {
+    font-family: var(--mono); font-size: 0.9rem;
+    color: var(--muted); max-width: 480px; margin: 0 auto 2.5rem;
+    line-height: 1.8;
+  }
+  .scroll-hint { display: inline-flex; gap: 1.5rem; }
+  .scroll-hint a {
+    padding: 0.6rem 1.4rem; border-radius: 6px;
+    font-family: var(--mono); font-size: 0.8rem; letter-spacing: 0.05em;
+    text-decoration: none; transition: all 0.2s;
+  }
+  .scroll-hint a.c { border: 1px solid var(--conch); color: var(--conch); }
+  .scroll-hint a.c:hover { background: rgba(0,255,198,0.08); }
+  .scroll-hint a.r { border: 1px solid var(--cmdr); color: var(--cmdr); }
+  .scroll-hint a.r:hover { background: rgba(255,79,94,0.08); }
+
+  /* ─── SECTIONS ─── */
+  .section {
+    padding: 5rem 2.5rem;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+  .section-header {
+    display: flex; align-items: flex-end; gap: 1.2rem;
+    margin-bottom: 2.5rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .section-badge {
+    font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.12em;
+    text-transform: uppercase; padding: 0.3rem 0.7rem;
+    border-radius: 4px; line-height: 1;
+  }
+  .badge-conch { background: rgba(0,255,198,0.1); color: var(--conch); border: 1px solid rgba(0,255,198,0.2); }
+  .badge-cmdr  { background: rgba(255,79,94,0.1);  color: var(--cmdr);  border: 1px solid rgba(255,79,94,0.2);  }
+  .section-header h2 { font-size: 2.6rem; font-weight: 800; letter-spacing: -0.03em; line-height: 1; }
+  .section-header h2.conch { color: var(--conch); }
+  .section-header h2.cmdr  { color: var(--cmdr); }
+  .section-desc {
+    font-family: var(--mono); font-size: 0.85rem; color: var(--muted);
+    line-height: 1.8; max-width: 600px; margin-bottom: 2rem;
+  }
+
+  /* ─── FILE LIST ─── */
+  .file-list { display: flex; flex-direction: column; gap: 0.6rem; }
+  .file-item {
+    display: flex; align-items: center; gap: 1rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.9rem 1.2rem;
+    transition: border-color 0.2s;
+    animation: slideIn 0.3s ease;
+  }
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .file-item:hover { border-color: rgba(255,255,255,0.15); }
+  .file-icon {
+    width: 36px; height: 36px; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1rem; flex-shrink: 0;
+  }
+  .fi-conch { background: rgba(0,255,198,0.1); color: var(--conch); }
+  .fi-cmdr  { background: rgba(255,79,94,0.1);  color: var(--cmdr);  }
+  .file-info { flex: 1; min-width: 0; }
+  .file-name {
+    font-family: var(--mono); font-size: 0.85rem; font-weight: 600;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    color: var(--text);
+  }
+  .file-version {
+    display: inline-block;
+    font-family: var(--mono); font-size: 0.68rem;
+    padding: 0.1rem 0.45rem; border-radius: 3px;
+    margin-left: 0.5rem; vertical-align: middle;
+  }
+  .fv-conch { background: rgba(0,255,198,0.12); color: var(--conch); }
+  .fv-cmdr  { background: rgba(255,79,94,0.12);  color: var(--cmdr);  }
+  .file-meta { font-family: var(--mono); font-size: 0.72rem; color: var(--muted); margin-top: 0.15rem; }
+  .file-actions { display: flex; gap: 0.5rem; flex-shrink: 0; }
+  .btn-dl {
+    font-family: var(--mono); font-size: 0.75rem; letter-spacing: 0.04em;
+    padding: 0.45rem 1rem; border-radius: 6px; border: none;
+    cursor: pointer; text-decoration: none; display: inline-flex;
+    align-items: center; gap: 0.4em; transition: all 0.2s;
+  }
+  .btn-dl-conch { background: rgba(0,255,198,0.12); color: var(--conch); }
+  .btn-dl-conch:hover { background: rgba(0,255,198,0.22); }
+  .btn-dl-cmdr  { background: rgba(255,79,94,0.12);  color: var(--cmdr);  }
+  .btn-dl-cmdr:hover  { background: rgba(255,79,94,0.22); }
+  .empty-state {
+    font-family: var(--mono); font-size: 0.8rem; color: var(--muted);
+    text-align: center; padding: 1.5rem; opacity: 0.6;
+  }
+
+  /* ─── DIVIDER ─── */
+  .divider { height: 1px; background: var(--border); margin: 0 2.5rem; }
+
+  /* ─── FOOTER ─── */
+  footer {
+    text-align: center; padding: 3rem 2.5rem;
+    font-family: var(--mono); font-size: 0.75rem; color: var(--muted);
+    border-top: 1px solid var(--border); margin-top: 4rem; opacity: 0.5;
+  }
+
+  /* ─── TOAST ─── */
+  #toast {
+    position: fixed; bottom: 2rem; right: 2rem; z-index: 999;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 8px; padding: 0.8rem 1.2rem;
+    font-family: var(--mono); font-size: 0.8rem; color: var(--text);
+    opacity: 0; transform: translateY(10px);
+    transition: all 0.3s; pointer-events: none;
+  }
+  #toast.show { opacity: 1; transform: translateY(0); }
+
+  /* ─── MAINTENANCE PAGE ─── */
+  .maint-page {
+    min-height: 100vh;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    text-align: center; padding: 2rem;
+    position: relative; overflow: hidden;
+  }
+  .maint-page::before {
+    content: '';
+    position: fixed; inset: 0;
+    background:
+      radial-gradient(ellipse 60% 50% at 20% 40%, rgba(0,255,198,0.05) 0%, transparent 60%),
+      radial-gradient(ellipse 50% 60% at 80% 60%, rgba(255,79,94,0.05) 0%, transparent 60%);
+    pointer-events: none;
+  }
+  .maint-grid {
+    position: fixed; inset: 0; opacity: 0.03; pointer-events: none;
+    background-image: linear-gradient(var(--border) 1px, transparent 1px),
+                      linear-gradient(90deg, var(--border) 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
+  .maint-icon {
+    font-size: 4rem; margin-bottom: 1.5rem;
+    animation: pulse 2.5s ease-in-out infinite;
+  }
+  @keyframes pulse { 0%,100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.6; transform: scale(0.95); } }
+  .maint-title {
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    font-weight: 800; letter-spacing: -0.03em;
+    margin-bottom: 1rem;
+  }
+  .maint-title .c { color: var(--conch); }
+  .maint-title .r { color: var(--cmdr); }
+  .maint-sub {
+    font-family: var(--mono); font-size: 0.9rem; color: var(--muted);
+    max-width: 420px; line-height: 1.8; margin-bottom: 2rem;
+  }
+  .maint-bar {
+    width: 280px; height: 3px;
+    background: var(--border); border-radius: 2px; overflow: hidden;
+    margin: 0 auto;
+  }
+  .maint-bar-fill {
+    height: 100%; width: 40%;
+    background: linear-gradient(90deg, var(--conch), var(--cmdr));
+    border-radius: 2px;
+    animation: barSlide 2s ease-in-out infinite alternate;
+  }
+  @keyframes barSlide { from { margin-left: 0; } to { margin-left: 60%; } }
+
+  /* ─── 404 PAGE ─── */
+  .page-404 {
+    min-height: 100vh;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    text-align: center; padding: 2rem;
+    position: relative; overflow: hidden;
+  }
+  .page-404::before {
+    content: '';
+    position: fixed; inset: 0;
+    background: radial-gradient(ellipse 80% 60% at 50% 50%, rgba(255,79,94,0.04) 0%, transparent 60%);
+    pointer-events: none;
+  }
+  .err-code {
+    font-size: clamp(7rem, 20vw, 14rem);
+    font-weight: 800; letter-spacing: -0.06em;
+    line-height: 1;
+    background: linear-gradient(135deg, var(--cmdr) 0%, #ff9a3c 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 0.5rem;
+    animation: glitch 4s ease-in-out infinite;
+  }
+  @keyframes glitch {
+    0%,92%,100% { transform: translate(0); filter: none; }
+    93% { transform: translate(-3px, 1px); filter: hue-rotate(15deg); }
+    95% { transform: translate(3px, -1px); filter: hue-rotate(-15deg); }
+    97% { transform: translate(-1px, 2px); }
+  }
+  .err-title {
+    font-size: clamp(1.2rem, 3vw, 1.8rem);
+    font-weight: 800; letter-spacing: -0.02em;
+    color: var(--text); margin-bottom: 0.8rem;
+  }
+  .err-sub {
+    font-family: var(--mono); font-size: 0.85rem; color: var(--muted);
+    max-width: 360px; line-height: 1.8; margin-bottom: 2rem;
+  }
+  .btn-home {
+    font-family: var(--mono); font-size: 0.8rem; letter-spacing: 0.05em;
+    padding: 0.7rem 1.6rem; border-radius: 6px;
+    border: 1px solid var(--conch); color: var(--conch);
+    background: transparent; cursor: pointer; text-decoration: none;
+    transition: all 0.2s; display: inline-block;
+  }
+  .btn-home:hover { background: rgba(0,255,198,0.08); }
+
+  /* ─── ANNOUNCEMENT BANNER ─── */
+  .announcement-bar {
+    position: fixed; top: 65px; left: 0; right: 0; z-index: 90;
+    padding: 0.6rem 2.5rem;
+    background: rgba(15,244,198,0.07);
+    border-bottom: 1px solid rgba(15,244,198,0.2);
+    display: flex; align-items: center; justify-content: center; gap: 1rem;
+    font-family: var(--mono); font-size: 0.8rem; color: var(--text);
+    animation: slideDown 0.4s ease;
+  }
+  @keyframes slideDown { from { opacity: 0; transform: translateY(-100%); } to { opacity: 1; transform: translateY(0); } }
+  .announcement-bar .ann-badge {
+    background: rgba(15,244,198,0.15); color: var(--conch);
+    border: 1px solid rgba(15,244,198,0.3);
+    padding: 0.2rem 0.5rem; border-radius: 4px;
+    font-size: 0.65rem; letter-spacing: 0.1em; text-transform: uppercase;
+    flex-shrink: 0;
+  }
+  .announcement-bar .ann-text { color: var(--muted); }
+  .announcement-bar .ann-text strong { color: var(--text); }
+  .ann-close {
+    background: transparent; border: none; color: var(--muted);
+    cursor: pointer; font-size: 0.9rem; padding: 0.1rem 0.3rem;
+    transition: color 0.2s; margin-left: auto;
+  }
+  .ann-close:hover { color: var(--text); }
+  /* push hero down when banner is visible */
+  body.has-announcement .hero { padding-top: 11rem; }
+
+  /* ─── RELEASE / COUNTDOWN PAGE ─── */
+  .release-page {
+    min-height: 100vh;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    text-align: center; padding: 2rem;
+    position: relative; overflow: hidden;
+  }
+  .release-page::before {
+    content: '';
+    position: fixed; inset: 0;
+    background:
+      radial-gradient(ellipse 55% 50% at 30% 40%, rgba(0,255,198,0.06) 0%, transparent 55%),
+      radial-gradient(ellipse 50% 55% at 75% 65%, rgba(255,79,94,0.06) 0%, transparent 55%);
+    pointer-events: none;
+  }
+  .release-eyebrow {
+    font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.18em;
+    text-transform: uppercase; color: var(--muted); margin-bottom: 1.2rem;
+  }
+  .release-title {
+    font-size: clamp(2.5rem, 6vw, 4.5rem);
+    font-weight: 800; letter-spacing: -0.03em; line-height: 1.05;
+    margin-bottom: 0.8rem;
+  }
+  .release-title em     { font-style: normal; color: var(--conch); }
+  .release-title strong { font-style: normal; color: var(--cmdr); }
+  .release-sub {
+    font-family: var(--mono); font-size: 0.85rem; color: var(--muted);
+    max-width: 400px; line-height: 1.8; margin: 0 auto 3rem;
+  }
+  .countdown {
+    display: flex; gap: 1.5rem; justify-content: center;
+    margin-bottom: 3rem;
+    flex-wrap: wrap;
+  }
+  .cd-unit {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.4rem 2rem;
+    min-width: 100px;
+    transition: border-color 0.3s;
+  }
+  .cd-unit:hover { border-color: rgba(255,255,255,0.15); }
+  .cd-num {
+    font-size: clamp(2.5rem, 6vw, 3.5rem);
+    font-weight: 800; letter-spacing: -0.04em;
+    line-height: 1; display: block;
+    background: linear-gradient(135deg, var(--conch), var(--cmdr));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .cd-label {
+    font-family: var(--mono); font-size: 0.65rem;
+    letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--muted); margin-top: 0.4rem; display: block;
+  }
+  .release-date-line {
+    font-family: var(--mono); font-size: 0.85rem; color: var(--muted);
+  }
+  .release-date-line span { color: var(--text); }
+
+  /* ─── RESPONSIVE ─── */
+  @media (max-width: 600px) {
+    nav { padding: 1rem 1.2rem; }
+    .section { padding: 3rem 1.2rem; }
+    .hero { padding: 8rem 1.2rem 3rem; }
+    .countdown { gap: 0.8rem; }
+    .cd-unit { padding: 1rem 1.3rem; min-width: 72px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     ██████  CONFIG BLOCK — EDIT HERE
+     ═══════════════════════════════════════════════════════════════
+
+  MAINTENANCE MODE
+  ─────────────────
+  Set to true to show the maintenance page instead of the main site.
+  The release countdown page will also be hidden when maintenance is active.
+
+  RELEASE PAGE
+  ─────────────
+  Set SHOW_RELEASE_PAGE to true to redirect visitors to the countdown page.
+  (Only works when MAINTENANCE_MODE is false.)
+
+  ANNOUNCEMENT BANNER
+  ────────────────────
+  Set SHOW_ANNOUNCEMENT to true to display a dismissable banner at the top.
+  Edit ANNOUNCEMENT_TEXT to change the message. Use HTML for bold/links.
+
+  GITHUB DOWNLOAD LINKS
+  ──────────────────────
+  Point each entry's `url` to the raw GitHub release asset or raw file URL.
+  The `size` field is displayed as metadata.
+  Example URL: https://github.com/youruser/yourrepo/releases/download/v1.0/Conch-v1.0.zip
+
+════════════════════════════════════════════════════════════════ -->
+<script>
+const CONFIG = {
+
+  /* ── Maintenance ── */
+  MAINTENANCE_MODE: false,
+
+  /* ── Release countdown page (ignored when MAINTENANCE_MODE is true) ── */
+  SHOW_RELEASE_PAGE: false,
+  RELEASE_DATE: new Date('2025-06-15T00:00:00'),   // June 15 countdown target
+
+  /* ── Announcement banner ── */
+  SHOW_ANNOUNCEMENT: true,
+  ANNOUNCEMENT_TEXT: 'New <strong>Conch v2.1</strong> and <strong>Cmdr v1.4</strong> are now available — check the downloads below.',
+
+  /* ── Conch files (downloaded from GitHub) ── */
+  CONCH_FILES: [
+    {
+      name: 'Conch-v2.1.zip',
+      version: 'v2.1',
+      size: '14.2 MB',
+      date: '2025-05-01',
+      url:  'https://github.com/YOURUSER/YOURREPO/releases/download/conch-v2.1/Conch-v2.1.zip',
+    },
+    {
+      name: 'Conch-v2.0.zip',
+      version: 'v2.0',
+      size: '13.8 MB',
+      date: '2025-03-18',
+      url:  'https://github.com/YOURUSER/YOURREPO/releases/download/conch-v2.0/Conch-v2.0.zip',
+    },
+  ],
+
+  /* ── Cmdr files (downloaded from GitHub) ── */
+  CMDR_FILES: [
+    {
+      name: 'Cmdr-v1.4.zip',
+      version: 'v1.4',
+      size: '9.5 MB',
+      date: '2025-05-01',
+      url:  'https://github.com/YOURUSER/YOURREPO/releases/download/cmdr-v1.4/Cmdr-v1.4.zip',
+    },
+    {
+      name: 'Cmdr-v1.3.zip',
+      version: 'v1.3',
+      size: '9.1 MB',
+      date: '2025-03-10',
+      url:  'https://github.com/YOURUSER/YOURREPO/releases/download/cmdr-v1.3/Cmdr-v1.3.zip',
+    },
+  ],
+};
+</script>
+<!-- ═══════════════════════════════════════════════════════════════ END CONFIG -->
+
+
+<!-- NAV (shown on main page only) -->
+<nav id="main-nav" style="display:none">
+  <div class="nav-logo">
+    <span>Conch</span>
+    <span class="sep">/</span>
+    <span>Cmdr</span>
+  </div>
+  <div style="display:flex;gap:1.5rem">
+    <a href="#conch">→ Conch</a>
+    <a href="#cmdr">→ Cmdr</a>
+  </div>
+</nav>
+
+<!-- ANNOUNCEMENT BANNER -->
+<div class="announcement-bar" id="ann-bar" style="display:none">
+  <span class="ann-badge">Announcement</span>
+  <span class="ann-text" id="ann-text"></span>
+  <button class="ann-close" onclick="dismissAnnouncement()" title="Dismiss">✕</button>
+</div>
+
+<!-- ─────────────────────────────────────── MAINTENANCE PAGE -->
+<div id="page-maintenance" class="page">
+  <div class="maint-grid"></div>
+  <div class="maint-page">
+    <div class="maint-icon">🔧</div>
+    <h1 class="maint-title"><span class="c">Conch</span> &amp; <span class="r">Cmdr</span><br>Under Maintenance</h1>
+    <p class="maint-sub">We're currently working on something. The download hub will be back shortly — check back later.</p>
+    <div class="maint-bar"><div class="maint-bar-fill"></div></div>
+  </div>
+</div>
+
+<!-- ─────────────────────────────────────── 404 PAGE -->
+<div id="page-404" class="page">
+  <div class="page-404">
+    <div class="err-code">404</div>
+    <h1 class="err-title">Page Not Found</h1>
+    <p class="err-sub">The file or page you're looking for doesn't exist or may have been removed.</p>
+    <a class="btn-home" href="#" onclick="showPage('main'); return false;">← Back to Downloads</a>
+  </div>
+</div>
+
+<!-- ─────────────────────────────────────── RELEASE PAGE -->
+<div id="page-release" class="page">
+  <div class="release-page">
+    <p class="release-eyebrow">Coming Soon</p>
+    <h1 class="release-title"><em>Conch</em> &amp; <strong>Cmdr</strong><br>New Release</h1>
+    <p class="release-sub">Something big is almost here. Both tools are getting a major update — stay tuned.</p>
+
+    <div class="countdown" id="countdown">
+      <div class="cd-unit"><span class="cd-num" id="cd-days">00</span><span class="cd-label">Days</span></div>
+      <div class="cd-unit"><span class="cd-num" id="cd-hours">00</span><span class="cd-label">Hours</span></div>
+      <div class="cd-unit"><span class="cd-num" id="cd-mins">00</span><span class="cd-label">Minutes</span></div>
+      <div class="cd-unit"><span class="cd-num" id="cd-secs">00</span><span class="cd-label">Seconds</span></div>
+    </div>
+
+    <p class="release-date-line">Releasing on <span>June 15, 2025</span></p>
+  </div>
+</div>
+
+<!-- ─────────────────────────────────────── MAIN PAGE -->
+<div id="page-main" class="page">
+
+  <div class="hero">
+    <h1><em>Conch</em> &amp; <strong>Cmdr</strong><br>Download Hub</h1>
+    <p>All files are hosted on GitHub. Click a download button to grab the latest release directly.</p>
+    <div class="scroll-hint">
+      <a href="#conch" class="c">↓ Conch Files</a>
+      <a href="#cmdr"  class="r">↓ Cmdr Files</a>
+    </div>
+  </div>
+
+  <!-- CONCH SECTION -->
+  <div class="section" id="conch">
+    <div class="section-header">
+      <h2 class="conch">Conch</h2>
+      <span class="section-badge badge-conch">Downloads</span>
+    </div>
+    <p class="section-desc">Official Conch releases. All files are served directly from GitHub.</p>
+    <div class="file-list" id="conch-list"></div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- CMDR SECTION -->
+  <div class="section" id="cmdr">
+    <div class="section-header">
+      <h2 class="cmdr">Cmdr</h2>
+      <span class="section-badge badge-cmdr">Downloads</span>
+    </div>
+    <p class="section-desc">Official Cmdr releases. All files are served directly from GitHub.</p>
+    <div class="file-list" id="cmdr-list"></div>
+  </div>
+
+  <footer>Conch &amp; Cmdr Download Hub — Files hosted on GitHub</footer>
+</div>
+<!-- end #page-main -->
+
+<div id="toast"></div>
+
+<script>
+/* ─── ROUTING ─── */
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('active');
+  document.getElementById('main-nav').style.display = (id === 'main') ? '' : 'none';
+}
+
+/* ─── ANNOUNCEMENT ─── */
+function dismissAnnouncement() {
+  const bar = document.getElementById('ann-bar');
+  bar.style.display = 'none';
+  document.body.classList.remove('has-announcement');
+}
+
+/* ─── TOAST ─── */
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+/* ─── FILE RENDERING ─── */
+function getFileEmoji(name) {
+  const ext = (name.split('.').pop() || '').toLowerCase();
+  const map = {
+    pdf:'📄', zip:'🗜', rar:'🗜', gz:'🗜', tar:'🗜', '7z':'🗜',
+    png:'🖼', jpg:'🖼', jpeg:'🖼', gif:'🖼', webp:'🖼', svg:'🖼',
+    mp4:'🎬', mov:'🎬', avi:'🎬', mkv:'🎬',
+    mp3:'🎵', wav:'🎵', flac:'🎵',
+    js:'⚙', ts:'⚙', py:'⚙', sh:'⚙', bat:'⚙',
+    html:'🌐', css:'🎨', json:'📋', xml:'📋',
+    doc:'📝', docx:'📝', txt:'📝', md:'📝',
+    xls:'📊', xlsx:'📊', csv:'📊',
+    exe:'💿', dmg:'💿', apk:'💿',
+    msi:'💿', pkg:'💿',
+  };
+  return map[ext] || '📁';
+}
+
+function renderFileList(section, files) {
+  const list = document.getElementById(section + '-list');
+  const isConch = section === 'conch';
+  const cls = isConch ? 'conch' : 'cmdr';
+  list.innerHTML = '';
+
+  if (!files || files.length === 0) {
+    list.innerHTML = `<div class="empty-state">No files available yet. Check back soon.</div>`;
+    return;
+  }
+
+  files.forEach(f => {
+    const item = document.createElement('div');
+    item.className = 'file-item';
+    item.innerHTML = `
+      <div class="file-icon fi-${cls}">${getFileEmoji(f.name)}</div>
+      <div class="file-info">
+        <div class="file-name" title="${f.name}">
+          ${f.name}
+          ${f.version ? `<span class="file-version fv-${cls}">${f.version}</span>` : ''}
+        </div>
+        <div class="file-meta">${f.size || ''}${f.size && f.date ? ' · ' : ''}${f.date || ''} · GitHub Release</div>
+      </div>
+      <div class="file-actions">
+        <a class="btn-dl btn-dl-${cls}" href="${f.url}" download="${f.name}" target="_blank" rel="noopener">
+          ↓ Download
+        </a>
+      </div>
+    `;
+    list.appendChild(item);
+  });
+}
+
+/* ─── COUNTDOWN ─── */
+function updateCountdown() {
+  const target = CONFIG.RELEASE_DATE;
+  const now = new Date();
+  const diff = target - now;
+
+  if (diff <= 0) {
+    document.getElementById('cd-days').textContent  = '00';
+    document.getElementById('cd-hours').textContent = '00';
+    document.getElementById('cd-mins').textContent  = '00';
+    document.getElementById('cd-secs').textContent  = '00';
+    return;
+  }
+
+  const days  = Math.floor(diff / 86400000);
+  const hours = Math.floor((diff % 86400000) / 3600000);
+  const mins  = Math.floor((diff % 3600000)  / 60000);
+  const secs  = Math.floor((diff % 60000)    / 1000);
+
+  document.getElementById('cd-days').textContent  = String(days).padStart(2, '0');
+  document.getElementById('cd-hours').textContent = String(hours).padStart(2, '0');
+  document.getElementById('cd-mins').textContent  = String(mins).padStart(2, '0');
+  document.getElementById('cd-secs').textContent  = String(secs).padStart(2, '0');
+}
+
+/* ─── INIT ─── */
+(function init() {
+  // Determine which page to show
+  if (CONFIG.MAINTENANCE_MODE) {
+    showPage('maintenance');
+    return;
+  }
+
+  if (CONFIG.SHOW_RELEASE_PAGE) {
+    showPage('release');
+    updateCountdown();
+    setInterval(updateCountdown, 1000);
+    return;
+  }
+
+  // Show main page
+  showPage('main');
+
+  // Render file lists
+  renderFileList('conch', CONFIG.CONCH_FILES);
+  renderFileList('cmdr',  CONFIG.CMDR_FILES);
+
+  // Announcement banner
+  if (CONFIG.SHOW_ANNOUNCEMENT && CONFIG.ANNOUNCEMENT_TEXT) {
+    const bar  = document.getElementById('ann-bar');
+    const text = document.getElementById('ann-text');
+    text.innerHTML = CONFIG.ANNOUNCEMENT_TEXT;
+    bar.style.display = '';
+    document.body.classList.add('has-announcement');
+  }
+})();
+</script>
+</body>
+</html>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Conch & Cmdr — Downloads</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
