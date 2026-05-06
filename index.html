@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Conch & Cmdr — Downloads</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --conch: #0ff4c6;
+    --conch-dim: #0bb88e;
+    --conch-dark: #003d2a;
+    --cmdr: #ff4f5e;
+    --cmdr-dim: #c8333f;
+    --cmdr-dark: #3d0007;
+    --bg: #0b0c0f;
+    --surface: #13151a;
+    --border: rgba(255,255,255,0.07);
+    --text: #e8eaf0;
+    --muted: #6b7280;
+    --mono: 'JetBrains Mono', monospace;
+    --sans: 'Syne', sans-serif;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 1rem 2.5rem;
+    background: rgba(11,12,15,0.85);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-logo {
+    font-size: 1.1rem; font-weight: 800; letter-spacing: -0.02em;
+    display: flex; gap: 0.4em; align-items: center;
+  }
+  .nav-logo span:first-child { color: var(--conch); }
+  .nav-logo span:last-child { color: var(--cmdr); }
+  .nav-logo .sep { color: var(--muted); }
+  nav a {
+    color: var(--muted); text-decoration: none; font-size: 0.85rem;
+    font-family: var(--mono); letter-spacing: 0.04em;
+    transition: color 0.2s;
+  }
+  nav a:hover { color: var(--text); }
+
+  /* HERO */
+  .hero {
+    padding: 9rem 2.5rem 5rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute; top: -120px; left: 50%; transform: translateX(-50%);
+    width: 700px; height: 700px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(0,255,198,0.04) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .hero h1 {
+    font-size: clamp(2.8rem, 7vw, 5.5rem);
+    font-weight: 800;
+    line-height: 1.05;
+    letter-spacing: -0.03em;
+    margin-bottom: 1.2rem;
+  }
+  .hero h1 em { font-style: normal; color: var(--conch); }
+  .hero h1 strong { font-style: normal; color: var(--cmdr); }
+  .hero p {
+    font-family: var(--mono); font-size: 0.9rem;
+    color: var(--muted); max-width: 480px; margin: 0 auto 2.5rem;
+    line-height: 1.8;
+  }
+  .scroll-hint {
+    display: inline-flex; gap: 1.5rem;
+  }
+  .scroll-hint a {
+    padding: 0.6rem 1.4rem;
+    border-radius: 6px;
+    font-family: var(--mono); font-size: 0.8rem; letter-spacing: 0.05em;
+    text-decoration: none; transition: all 0.2s;
+  }
+  .scroll-hint a.c { border: 1px solid var(--conch); color: var(--conch); }
+  .scroll-hint a.c:hover { background: rgba(0,255,198,0.08); }
+  .scroll-hint a.r { border: 1px solid var(--cmdr); color: var(--cmdr); }
+  .scroll-hint a.r:hover { background: rgba(255,79,94,0.08); }
+
+  /* SECTIONS */
+  .section {
+    padding: 5rem 2.5rem;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .section-header {
+    display: flex; align-items: flex-end; gap: 1.2rem;
+    margin-bottom: 2.5rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .section-badge {
+    font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.12em;
+    text-transform: uppercase; padding: 0.3rem 0.7rem;
+    border-radius: 4px; line-height: 1;
+  }
+  .badge-conch { background: rgba(0,255,198,0.1); color: var(--conch); border: 1px solid rgba(0,255,198,0.2); }
+  .badge-cmdr  { background: rgba(255,79,94,0.1);  color: var(--cmdr);  border: 1px solid rgba(255,79,94,0.2);  }
+
+  .section-header h2 {
+    font-size: 2.6rem; font-weight: 800; letter-spacing: -0.03em;
+    line-height: 1;
+  }
+  .section-header h2.conch { color: var(--conch); }
+  .section-header h2.cmdr  { color: var(--cmdr); }
+
+  .section-desc {
+    font-family: var(--mono); font-size: 0.85rem; color: var(--muted);
+    line-height: 1.8; max-width: 600px; margin-bottom: 2rem;
+  }
+
+  /* UPLOAD ZONE */
+  .upload-zone {
+    border: 2px dashed var(--border);
+    border-radius: 12px;
+    padding: 2.5rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.25s;
+    margin-bottom: 2rem;
+    position: relative;
+  }
+  .upload-zone.conch-zone:hover, .upload-zone.conch-zone.dragover {
+    border-color: var(--conch); background: rgba(0,255,198,0.03);
+  }
+  .upload-zone.cmdr-zone:hover, .upload-zone.cmdr-zone.dragover {
+    border-color: var(--cmdr); background: rgba(255,79,94,0.03);
+  }
+  .upload-zone input[type=file] {
+    position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%;
+  }
+  .upload-icon {
+    font-size: 2rem; margin-bottom: 0.8rem;
+    display: block;
+  }
+  .upload-zone p {
+    font-family: var(--mono); font-size: 0.8rem; color: var(--muted);
+    line-height: 1.6;
+  }
+  .upload-zone p span { display: block; font-size: 0.72rem; margin-top: 0.3rem; opacity: 0.6; }
+
+  /* FILE LIST */
+  .file-list {
+    display: flex; flex-direction: column; gap: 0.6rem;
+  }
+
+  .file-item {
+    display: flex; align-items: center; gap: 1rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.9rem 1.2rem;
+    transition: border-color 0.2s;
+    animation: slideIn 0.3s ease;
+  }
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .file-item:hover { border-color: rgba(255,255,255,0.15); }
+
+  .file-icon {
+    width: 36px; height: 36px; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1rem; flex-shrink: 0;
+  }
+  .fi-conch { background: rgba(0,255,198,0.1); color: var(--conch); }
+  .fi-cmdr  { background: rgba(255,79,94,0.1);  color: var(--cmdr);  }
+
+  .file-info { flex: 1; min-width: 0; }
+  .file-name {
+    font-family: var(--mono); font-size: 0.85rem; font-weight: 600;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    color: var(--text);
+  }
+  .file-meta {
+    font-family: var(--mono); font-size: 0.72rem; color: var(--muted);
+    margin-top: 0.15rem;
+  }
+
+  .file-actions { display: flex; gap: 0.5rem; flex-shrink: 0; }
+
+  .btn-dl {
+    font-family: var(--mono); font-size: 0.75rem; letter-spacing: 0.04em;
+    padding: 0.45rem 1rem; border-radius: 6px; border: none;
+    cursor: pointer; text-decoration: none; display: inline-flex;
+    align-items: center; gap: 0.4em; transition: all 0.2s;
+  }
+  .btn-dl-conch { background: rgba(0,255,198,0.12); color: var(--conch); }
+  .btn-dl-conch:hover { background: rgba(0,255,198,0.22); }
+  .btn-dl-cmdr  { background: rgba(255,79,94,0.12);  color: var(--cmdr);  }
+  .btn-dl-cmdr:hover  { background: rgba(255,79,94,0.22); }
+
+  .btn-del {
+    background: transparent; border: 1px solid var(--border);
+    color: var(--muted); font-size: 0.8rem;
+    width: 32px; height: 32px; border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; transition: all 0.2s; flex-shrink: 0;
+  }
+  .btn-del:hover { border-color: #e24b4a; color: #e24b4a; background: rgba(226,75,74,0.07); }
+
+  .empty-state {
+    font-family: var(--mono); font-size: 0.8rem; color: var(--muted);
+    text-align: center; padding: 1.5rem;
+    opacity: 0.6;
+  }
+
+  /* DIVIDER */
+  .divider {
+    height: 1px; background: var(--border);
+    margin: 0 2.5rem;
+  }
+
+  /* FOOTER */
+  footer {
+    text-align: center; padding: 3rem 2.5rem;
+    font-family: var(--mono); font-size: 0.75rem; color: var(--muted);
+    border-top: 1px solid var(--border); margin-top: 4rem;
+    opacity: 0.5;
+  }
+
+  /* TOAST */
+  #toast {
+    position: fixed; bottom: 2rem; right: 2rem; z-index: 999;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 8px; padding: 0.8rem 1.2rem;
+    font-family: var(--mono); font-size: 0.8rem; color: var(--text);
+    opacity: 0; transform: translateY(10px);
+    transition: all 0.3s; pointer-events: none;
+  }
+  #toast.show { opacity: 1; transform: translateY(0); }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">
+    <span>Conch</span>
+    <span class="sep">/</span>
+    <span>Cmdr</span>
+  </div>
+  <div style="display:flex;gap:1.5rem">
+    <a href="#conch">→ Conch</a>
+    <a href="#cmdr">→ Cmdr</a>
+  </div>
+</nav>
+
+<div class="hero">
+  <h1><em>Conch</em> &amp; <strong>Cmdr</strong><br>Download Hub</h1>
+  <p>Upload your files below. Each section is separate — share links directly from the download buttons.</p>
+  <div class="scroll-hint">
+    <a href="#conch" class="c">↓ Conch Files</a>
+    <a href="#cmdr" class="r">↓ Cmdr Files</a>
+  </div>
+</div>
+
+<!-- CONCH SECTION -->
+<div class="section" id="conch">
+  <div class="section-header">
+    <h2 class="conch">Conch</h2>
+    <span class="section-badge badge-conch">Downloads</span>
+  </div>
+  <p class="section-desc">Dateien für Conch. Drag &amp; Drop oder klicken zum Hochladen. Alle Dateien stehen sofort zum Download bereit.</p>
+
+  <div class="upload-zone conch-zone" id="conch-drop">
+    <input type="file" multiple id="conch-input">
+    <span class="upload-icon">⬆</span>
+    <p>Dateien hierher ziehen oder klicken zum Auswählen<span>Alle Dateiformate werden unterstützt</span></p>
+  </div>
+
+  <div class="file-list" id="conch-list">
+    <div class="empty-state" id="conch-empty">Noch keine Dateien hochgeladen.</div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- CMDR SECTION -->
+<div class="section" id="cmdr">
+  <div class="section-header">
+    <h2 class="cmdr">Cmdr</h2>
+    <span class="section-badge badge-cmdr">Downloads</span>
+  </div>
+  <p class="section-desc">Dateien für Cmdr. Drag &amp; Drop oder klicken zum Hochladen. Alle Dateien stehen sofort zum Download bereit.</p>
+
+  <div class="upload-zone cmdr-zone" id="cmdr-drop">
+    <input type="file" multiple id="cmdr-input">
+    <span class="upload-icon">⬆</span>
+    <p>Dateien hierher ziehen oder klicken zum Auswählen<span>Alle Dateiformate werden unterstützt</span></p>
+  </div>
+
+  <div class="file-list" id="cmdr-list">
+    <div class="empty-state" id="cmdr-empty">Noch keine Dateien hochgeladen.</div>
+  </div>
+</div>
+
+<footer>Conch &amp; Cmdr Download Hub — Dateien werden lokal im Browser gespeichert</footer>
+
+<div id="toast"></div>
+
+<script>
+const store = { conch: [], cmdr: [] };
+
+function formatSize(bytes) {
+  if (bytes < 1024) return bytes + ' B';
+  if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
+  return (bytes / 1048576).toFixed(1) + ' MB';
+}
+
+function formatTime(ts) {
+  const d = new Date(ts);
+  return d.toLocaleDateString('de-DE') + ' ' + d.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+function getFileEmoji(name) {
+  const ext = name.split('.').pop().toLowerCase();
+  const map = {
+    pdf:'📄', zip:'🗜', rar:'🗜', gz:'🗜', tar:'🗜',
+    png:'🖼', jpg:'🖼', jpeg:'🖼', gif:'🖼', webp:'🖼', svg:'🖼',
+    mp4:'🎬', mov:'🎬', avi:'🎬', mkv:'🎬',
+    mp3:'🎵', wav:'🎵', flac:'🎵',
+    js:'⚙', ts:'⚙', py:'⚙', sh:'⚙', bat:'⚙',
+    html:'🌐', css:'🎨', json:'📋', xml:'📋',
+    doc:'📝', docx:'📝', txt:'📝', md:'📝',
+    xls:'📊', xlsx:'📊', csv:'📊',
+    exe:'💿', dmg:'💿', apk:'💿',
+  };
+  return map[ext] || '📁';
+}
+
+function renderList(section) {
+  const list = document.getElementById(section + '-list');
+  const empty = document.getElementById(section + '-empty');
+  const files = store[section];
+  const isConch = section === 'conch';
+  const cls = isConch ? 'conch' : 'cmdr';
+
+  const existing = list.querySelectorAll('.file-item');
+  existing.forEach(el => el.remove());
+
+  if (files.length === 0) {
+    empty.style.display = '';
+    return;
+  }
+  empty.style.display = 'none';
+
+  files.forEach((f, i) => {
+    const item = document.createElement('div');
+    item.className = 'file-item';
+    item.innerHTML = `
+      <div class="file-icon fi-${cls}">${getFileEmoji(f.name)}</div>
+      <div class="file-info">
+        <div class="file-name" title="${f.name}">${f.name}</div>
+        <div class="file-meta">${formatSize(f.size)} · ${formatTime(f.ts)}</div>
+      </div>
+      <div class="file-actions">
+        <a class="btn-dl btn-dl-${cls}" href="${f.url}" download="${f.name}">↓ Download</a>
+        <button class="btn-del" title="Entfernen" data-section="${section}" data-index="${i}">✕</button>
+      </div>
+    `;
+    list.appendChild(item);
+  });
+
+  list.querySelectorAll('.btn-del').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const s = btn.dataset.section;
+      const idx = parseInt(btn.dataset.index);
+      URL.revokeObjectURL(store[s][idx].url);
+      store[s].splice(idx, 1);
+      renderList(s);
+      showToast('Datei entfernt');
+    });
+  });
+}
+
+function handleFiles(files, section) {
+  Array.from(files).forEach(file => {
+    const url = URL.createObjectURL(file);
+    store[section].push({ name: file.name, size: file.size, url, ts: Date.now() });
+  });
+  renderList(section);
+  showToast(`${files.length} Datei${files.length > 1 ? 'en' : ''} hochgeladen ✓`);
+}
+
+['conch', 'cmdr'].forEach(section => {
+  const input = document.getElementById(section + '-input');
+  const drop = document.getElementById(section + '-drop');
+
+  input.addEventListener('change', e => {
+    if (e.target.files.length) handleFiles(e.target.files, section);
+    input.value = '';
+  });
+
+  drop.addEventListener('dragover', e => { e.preventDefault(); drop.classList.add('dragover'); });
+  drop.addEventListener('dragleave', () => drop.classList.remove('dragover'));
+  drop.addEventListener('drop', e => {
+    e.preventDefault();
+    drop.classList.remove('dragover');
+    if (e.dataTransfer.files.length) handleFiles(e.dataTransfer.files, section);
+  });
+});
+</script>
+</body>
+</html>
