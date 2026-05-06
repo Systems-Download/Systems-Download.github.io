@@ -547,7 +547,7 @@
 const CONFIG = {
 
   /* ── Maintenance ── */
-  MAINTENANCE_MODE: false
+  MAINTENANCE_MODE: false,
 
   /* ── Release countdown page ── */
   SHOW_RELEASE_PAGE: false,
@@ -556,11 +556,11 @@ const CONFIG = {
   /* ── Conch files (.rbxm from GitHub Releases) ── */
   CONCH_FILES: [
     {
-      name: 'Conch [BETA]',
+      name: 'Conch BETA',
       version: 'v0.9.0',
       size: '107.70 KB',
       date: '2026-05-06',
-      url: 'https://github.com/Systems-Download/Systems-Download.github.io/blob/main/Conch%20V0.9.0%20%5BBETA%5D.rbxm',
+      url: 'https://github.com/YOURUSER/YOURREPO/releases/download/conch-v2.1/Conch.rbxm',
     },
   ],
 
@@ -573,13 +573,6 @@ const CONFIG = {
       date: '2025-05-01',
       url: 'https://github.com/YOURUSER/YOURREPO/releases/download/cmdr-v1.4/Cmdr.rbxm',
     },
-    {
-      name: 'Cmdr.rbxm',
-      version: 'v1.3',
-      size: '9.1 MB',
-      date: '2025-03-10',
-      url: 'https://github.com/YOURUSER/YOURREPO/releases/download/cmdr-v1.3/Cmdr.rbxm',
-    },
   ],
 
   /* ── Announcements ── */
@@ -588,34 +581,12 @@ const CONFIG = {
       id: 1,
       pinned: true,
       icon: '📦',
-      tag: 'update',
-      title: 'Conch v2.1 & Cmdr v1.4 Released',
-      date: '2025-05-01',
-      body: '<strong>Both tools received a major update.</strong> Conch v2.1 brings improved stability and a reworked module loader. Cmdr v1.4 adds new built-in commands and fixes a regression introduced in v1.3.',
+      tag: 'notice',
+      title: 'Conch v0.9.0',
+      date: '2026-05-06',
+      body: '<strong>The Beta Released.</strong> Conch v0.9.0 is our 1 BETA for Conch! New Versions will drop soon! And the Full Release is on the 15 June!',
       footer: 'conch',
       footerText: 'Download both .rbxm files in the Downloads section',
-    },
-    {
-      id: 2,
-      pinned: false,
-      icon: '🔧',
-      tag: 'patch',
-      title: 'Cmdr v1.3.1 Hotfix',
-      date: '2025-03-14',
-      body: 'A small hotfix was pushed for <strong>Cmdr v1.3</strong> addressing an issue where custom command handlers would not unregister correctly on game shutdown.',
-      footer: 'cmdr',
-      footerText: 'Superseded by Cmdr v1.4 — update recommended',
-    },
-    {
-      id: 3,
-      pinned: false,
-      icon: '📣',
-      tag: 'notice',
-      title: 'GitHub Repository made Public',
-      date: '2025-02-20',
-      body: 'The source repository for <strong>Conch & Cmdr</strong> is now publicly accessible on GitHub. Feel free to open issues, submit pull requests, or browse the source code.',
-      footer: 'yellow',
-      footerText: 'github.com/YOURUSER/YOURREPO',
     },
   ],
 };
