@@ -478,7 +478,7 @@
 <script>
 const CONFIG = {
   // GitHub repository (format: "owner/repo")
-  GITHUB_REPO: 'Systems-Download/Systems-Download.github.io',
+  GITHUB_REPO: 'Systems-Downloads/Systems-Downloads',
   
   // How many releases to check (latest N releases)
   MAX_RELEASES: 10,
@@ -755,15 +755,14 @@ function toggleHistory(id) {
 /* ─── FETCH RELEASES ─── */
 async function fetchReleases() {
   try {
-    if (CONFIG.GITHUB_REPO === 'Systems-Download/Systems-Download.github.io') {
-      throw new Error('Please configure GITHUB_REPO in the CONFIG section');
-    }
-
     const url = `https://api.github.com/repos/${CONFIG.GITHUB_REPO}/releases?per_page=${CONFIG.MAX_RELEASES}`;
     debugLog('Fetching:', url);
 
     const response = await fetch(url);
     if (!response.ok) {
+      if (response.status === 404) {
+        throw new Error(`Repo "${CONFIG.GITHUB_REPO}" not found or has no Releases tab. Make sure the repo is public and you have created at least one Release with .rbxm assets.`);
+      }
       throw new Error(`GitHub API error: ${response.status} ${response.statusText}`);
     }
 
