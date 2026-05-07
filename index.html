@@ -312,6 +312,9 @@ const CONFIG = {
   
   // How many releases to check (latest N releases)
   MAX_RELEASES: 10,
+  
+  // Debug mode - set to true to see console logs
+  DEBUG: true,
 };
 </script>
 <!-- ═══════════════════════════════════════════════════════════ -->
@@ -373,7 +376,7 @@ const CONFIG = {
 <!-- HERO -->
 <div class="hero">
   <h1><em>Conch</em> &amp; <strong>Cmdr</strong><br>Download Hub</h1>
-  <p>Files sind automatisch von GitHub Releases geladen. Alle <code style="background:var(--surface);padding:0.1em 0.4em;border-radius:4px;font-size:0.9em">.rbxm</code> Dateien werden erkannt und sortiert.</p>
+  <p>Files are automatically loaded from GitHub Releases. All <code style="background:var(--surface);padding:0.1em 0.4em;border-radius:4px;font-size:0.9em">.rbxm</code> files are detected and sorted.</p>
   <div class="scroll-hint">
     <a href="#conch" class="c">↓ Conch</a>
     <a href="#cmdr"  class="r">↓ Cmdr</a>
@@ -386,9 +389,9 @@ const CONFIG = {
     <h2 class="conch">Conch</h2>
     <span class="section-badge badge-conch">Downloads</span>
   </div>
-  <p class="section-desc">Alle <strong style="color:var(--conch)">.rbxm</strong> Dateien mit "Conch" im Namen.</p>
+  <p class="section-desc">All <strong style="color:var(--conch)">.rbxm</strong> files with "Conch" in the name.</p>
   <div class="file-list" id="conch-list">
-    <div class="loading-state">🔄 Lade Conch Dateien von GitHub...</div>
+    <div class="loading-state">🔄 Loading Conch files from GitHub...</div>
   </div>
 </div>
 
@@ -400,13 +403,13 @@ const CONFIG = {
     <h2 class="cmdr">Cmdr</h2>
     <span class="section-badge badge-cmdr">Downloads</span>
   </div>
-  <p class="section-desc">Alle <strong style="color:var(--cmdr)">.rbxm</strong> Dateien mit "Cmdr" im Namen.</p>
+  <p class="section-desc">All <strong style="color:var(--cmdr)">.rbxm</strong> files with "Cmdr" in the name.</p>
   <div class="file-list" id="cmdr-list">
-    <div class="loading-state">🔄 Lade Cmdr Dateien von GitHub...</div>
+    <div class="loading-state">🔄 Loading Cmdr files from GitHub...</div>
   </div>
 </div>
 
-<footer>Conch &amp; Cmdr — Automatisch von GitHub Releases geladen</footer>
+<footer>Conch &amp; Cmdr — Automatically loaded from GitHub Releases</footer>
 
 <script>
 /* ─── DRAWER ─── */
@@ -427,31 +430,70 @@ function closeDrawer() {
   document.body.style.overflow = '';
 }
 
+/* ─── DEBUG LOGGER ─── */
+function debugLog(message, data) {
+  if (CONFIG.DEBUG) {
+    console.log(`[DEBUG] ${message}`, data || '');
+  }
+}
+
 /* ─── FETCH FILES FROM GITHUB ─── */
 async function fetchReleases() {
   try {
-    const url = `https://api.github.com/repos/${CONFIG.GITHUB_REPO}/releases?per_page=${CONFIG.MAX_RELEASES}`;
-    const response = await fetch(url);
+    // Validate configuration
+    if (CONFIG.GITHUB_REPO === 'YOURUSER/YOURREPO') {
+      throw new Error('Please configure GITHUB_REPO in the CONFIG section');
+    }
     
-    if (!response.ok) throw new Error('Failed to fetch releases');
+    const url = `https://api.github.com/repos/${CONFIG.GITHUB_REPO}/releases?per_page=${CONFIG.MAX_RELEASES}`;
+    debugLog('Fetching from URL:', url);
+    
+    const response = await fetch(url);
+    debugLog('Response status:', response.status);
+    
+    if (!response.ok) {
+      const errorText = await response.text();
+      debugLog('Error response:', errorText);
+      throw new Error(`GitHub API error: ${response.status} ${response.statusText}`);
+    }
     
     const releases = await response.json();
+    debugLog('Releases fetched:', releases.length);
+    
     const conchFiles = [];
     const cmdrFiles = [];
+    const unclassifiedFiles = [];
     
-    // Durchlaufe alle Releases und suche .rbxm Dateien
-    releases.forEach(release => {
-      const releaseDate = new Date(release.published_at).toLocaleDateString('de-DE');
+    // Process all releases and find .rbxm files
+    releases.forEach((release, releaseIdx) => {
+      debugLog(`Processing release ${releaseIdx + 1}/${releases.length}:`, release.tag_name);
       
-      release.assets.forEach(asset => {
-        // Nur .rbxm Dateien
-        if (!asset.name.toLowerCase().endsWith('.rbxm')) return;
+      const releaseDate = new Date(release.published_at).toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric'
+      });
+      
+      if (!release.assets || release.assets.length === 0) {
+        debugLog('No assets in this release');
+        return;
+      }
+      
+      release.assets.forEach((asset, assetIdx) => {
+        debugLog(`  Asset ${assetIdx + 1}: ${asset.name}`);
         
+        // Only process .rbxm files
         const fileName = asset.name;
         const fileNameLower = fileName.toLowerCase();
+        
+        if (!fileNameLower.endsWith('.rbxm')) {
+          debugLog(`    Skipped (not .rbxm)`);
+          return;
+        }
+        
         const fileSize = formatBytes(asset.size);
         
-        // Suche nach "conch" oder "cmdr" im Namen
+        // Search for "conch" or "cmdr" in the filename
         const isConch = fileNameLower.includes('conch');
         const isCmdr = fileNameLower.includes('cmdr');
         
@@ -459,32 +501,63 @@ async function fetchReleases() {
           name: fileName,
           size: fileSize,
           date: releaseDate,
-          version: release.tag_name || release.name,
-          downloadUrl: asset.browser_download_url, // Direkter Download-Link
+          version: release.tag_name || release.name || 'v1.0',
+          downloadUrl: asset.browser_download_url,
           releaseDate: release.published_at
         };
         
         if (isConch) {
+          debugLog(`    ✓ Classified as CONCH`);
           conchFiles.push(fileData);
         } else if (isCmdr) {
+          debugLog(`    ✓ Classified as CMDR`);
           cmdrFiles.push(fileData);
+        } else {
+          debugLog(`    ⚠ Unclassified (no 'conch' or 'cmdr' in name)`);
+          unclassifiedFiles.push(fileData);
         }
       });
     });
     
-    // Sortiere nach Datum (neueste zuerst)
+    debugLog('Classification complete:', {
+      conch: conchFiles.length,
+      cmdr: cmdrFiles.length,
+      unclassified: unclassifiedFiles.length
+    });
+    
+    // Sort by date (newest first)
     conchFiles.sort((a, b) => new Date(b.releaseDate) - new Date(a.releaseDate));
     cmdrFiles.sort((a, b) => new Date(b.releaseDate) - new Date(a.releaseDate));
     
+    // Render files
     renderFiles('conch', conchFiles);
     renderFiles('cmdr', cmdrFiles);
     
+    // Show warning for unclassified files
+    if (unclassifiedFiles.length > 0 && CONFIG.DEBUG) {
+      console.warn('Unclassified .rbxm files found:', unclassifiedFiles.map(f => f.name));
+      console.warn('These files don\'t contain "conch" or "cmdr" in their filename and won\'t be displayed.');
+    }
+    
   } catch (error) {
     console.error('Error fetching releases:', error);
+    
+    let errorMessage = '❌ Error loading files. ';
+    
+    if (error.message.includes('configure GITHUB_REPO')) {
+      errorMessage += 'Please configure your repository in the CONFIG section at the top of index.html';
+    } else if (error.message.includes('404')) {
+      errorMessage += 'Repository not found. Check the GITHUB_REPO setting.';
+    } else if (error.message.includes('403')) {
+      errorMessage += 'API rate limit exceeded. Please try again later.';
+    } else {
+      errorMessage += error.message;
+    }
+    
     document.getElementById('conch-list').innerHTML = 
-      '<div class="error-state">❌ Fehler beim Laden der Dateien. Bitte Repository konfigurieren.</div>';
+      `<div class="error-state">${errorMessage}</div>`;
     document.getElementById('cmdr-list').innerHTML = 
-      '<div class="error-state">❌ Fehler beim Laden der Dateien. Bitte Repository konfigurieren.</div>';
+      `<div class="error-state">${errorMessage}</div>`;
   }
 }
 
@@ -495,12 +568,17 @@ function renderFiles(section, files) {
   const cls = isConch ? 'conch' : 'cmdr';
   
   if (files.length === 0) {
-    list.innerHTML = `<div class="empty-state">Keine ${isConch ? 'Conch' : 'Cmdr'} Dateien gefunden.</div>`;
+    list.innerHTML = `<div class="empty-state">No ${isConch ? 'Conch' : 'Cmdr'} files found in releases.<br><small style="margin-top:0.5rem;display:block;opacity:0.7">Make sure your .rbxm files contain "${isConch ? 'Conch' : 'Cmdr'}" in the filename.</small></div>`;
+    debugLog(`No files rendered for ${section}`);
     return;
   }
   
+  debugLog(`Rendering ${files.length} files for ${section}`);
+  
   list.innerHTML = '';
-  files.forEach(file => {
+  files.forEach((file, idx) => {
+    debugLog(`  Rendering file ${idx + 1}:`, file.name);
+    
     const item = document.createElement('div');
     item.className = 'file-item';
     item.innerHTML = `
@@ -532,6 +610,7 @@ function formatBytes(bytes) {
 }
 
 /* ─── INIT ─── */
+debugLog('Initializing download hub with config:', CONFIG);
 fetchReleases();
 </script>
 </body>
