@@ -197,6 +197,40 @@
   .scroll-hint a.r { border: 1px solid var(--cmdr); color: var(--cmdr); }
   .scroll-hint a.r:hover { background: rgba(255,79,94,0.08); }
 
+  /* ─── LIVE SEARCH ─── */
+  .search-wrap {
+    margin-bottom: 1.5rem;
+    position: relative;
+  }
+  .search-icon {
+    position: absolute; left: 1rem; top: 50%; transform: translateY(-50%);
+    color: var(--muted); font-size: 0.85rem; pointer-events: none;
+  }
+  .search-input {
+    width: 100%;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: 0.82rem;
+    padding: 0.75rem 1rem 0.75rem 2.4rem;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .search-input::placeholder { color: var(--muted); }
+  .search-input:focus { border-color: rgba(255,255,255,0.2); }
+  .search-input.conch-focus:focus { border-color: rgba(15,244,198,0.4); }
+  .search-input.cmdr-focus:focus  { border-color: rgba(255,79,94,0.4); }
+  .search-clear {
+    position: absolute; right: 0.8rem; top: 50%; transform: translateY(-50%);
+    background: none; border: none; cursor: pointer;
+    color: var(--muted); font-size: 0.9rem; padding: 0.2rem;
+    display: none; transition: color 0.2s; line-height: 1;
+  }
+  .search-clear:hover { color: var(--text); }
+  .search-clear.visible { display: block; }
+
   /* ─── SECTIONS ─── */
   .section {
     padding: 5rem 2.5rem;
@@ -221,17 +255,17 @@
   .section-header h2.cmdr  { color: var(--cmdr); }
   .section-desc {
     font-family: var(--mono); font-size: 0.85rem; color: var(--muted);
-    line-height: 1.8; max-width: 600px; margin-bottom: 2rem;
+    line-height: 1.8; max-width: 600px; margin-bottom: 1.5rem;
   }
 
   /* ─── FILE LIST ─── */
   .file-list { display: flex; flex-direction: column; gap: 0.6rem; }
+
   .file-item {
-    display: flex; align-items: center; gap: 1rem;
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: 8px;
-    padding: 0.9rem 1.2rem;
+    overflow: hidden;
     transition: border-color 0.2s, transform 0.2s;
     animation: slideIn 0.3s ease;
   }
@@ -240,6 +274,12 @@
     to   { opacity: 1; transform: translateY(0); }
   }
   .file-item:hover { border-color: rgba(255,255,255,0.15); transform: translateX(2px); }
+  .file-item.hidden { display: none; }
+
+  .file-main {
+    display: flex; align-items: center; gap: 1rem;
+    padding: 0.9rem 1.2rem;
+  }
   .file-icon {
     width: 36px; height: 36px; border-radius: 8px;
     display: flex; align-items: center; justify-content: center;
@@ -262,18 +302,146 @@
   .fv-conch { background: rgba(0,255,198,0.12); color: var(--conch); }
   .fv-cmdr  { background: rgba(255,79,94,0.12);  color: var(--cmdr); }
   .file-meta { font-family: var(--mono); font-size: 0.72rem; color: var(--muted); margin-top: 0.15rem; }
-  .file-actions { display: flex; gap: 0.5rem; flex-shrink: 0; }
+  .file-actions { display: flex; gap: 0.5rem; flex-shrink: 0; align-items: center; }
+
   .btn-dl {
     font-family: var(--mono); font-size: 0.75rem; letter-spacing: 0.04em;
     padding: 0.45rem 1rem; border-radius: 6px; border: none;
     cursor: pointer; text-decoration: none; display: inline-flex;
     align-items: center; gap: 0.4em; transition: all 0.2s;
+    position: relative; overflow: hidden;
   }
   .btn-dl-conch { background: rgba(0,255,198,0.12); color: var(--conch); }
   .btn-dl-conch:hover { background: rgba(0,255,198,0.22); }
   .btn-dl-cmdr  { background: rgba(255,79,94,0.12);  color: var(--cmdr); }
   .btn-dl-cmdr:hover  { background: rgba(255,79,94,0.22); }
-  
+
+  /* download ripple */
+  .btn-dl::after {
+    content: ''; position: absolute; inset: 0;
+    background: rgba(255,255,255,0.1);
+    transform: scaleX(0); transform-origin: left;
+    transition: transform 0.3s ease;
+  }
+  .btn-dl.downloading::after { transform: scaleX(1); }
+
+  /* history toggle */
+  .btn-history {
+    font-family: var(--mono); font-size: 0.72rem;
+    padding: 0.4rem 0.7rem; border-radius: 6px;
+    border: 1px solid var(--border); background: none;
+    color: var(--muted); cursor: pointer;
+    display: inline-flex; align-items: center; gap: 0.35em;
+    transition: all 0.2s;
+  }
+  .btn-history:hover { border-color: rgba(255,255,255,0.18); color: var(--text); }
+  .btn-history.open { color: var(--text); border-color: rgba(255,255,255,0.18); }
+  .btn-history .arrow { transition: transform 0.2s; display: inline-block; }
+  .btn-history.open .arrow { transform: rotate(180deg); }
+
+  /* ─── VERSION HISTORY ─── */
+  .version-history {
+    border-top: 1px solid var(--border);
+    background: var(--bg);
+    overflow: hidden;
+    max-height: 0;
+    transition: max-height 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .version-history.open { max-height: 600px; }
+
+  .version-history-inner { padding: 0.75rem 1.2rem; }
+  .version-label {
+    font-family: var(--mono); font-size: 0.62rem; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--muted); opacity: 0.6;
+    margin-bottom: 0.5rem;
+  }
+  .version-row {
+    display: flex; align-items: center; gap: 0.75rem;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .version-row:last-child { border-bottom: none; }
+  .version-tag {
+    font-family: var(--mono); font-size: 0.7rem;
+    padding: 0.1rem 0.45rem; border-radius: 3px;
+    flex-shrink: 0;
+  }
+  .vt-conch { background: rgba(0,255,198,0.08); color: var(--conch-dim); border: 1px solid rgba(0,255,198,0.15); }
+  .vt-cmdr  { background: rgba(255,79,94,0.08);  color: var(--cmdr-dim);  border: 1px solid rgba(255,79,94,0.15); }
+  .version-name { font-family: var(--mono); font-size: 0.78rem; color: var(--muted); flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .version-date { font-family: var(--mono); font-size: 0.7rem; color: var(--muted); opacity: 0.5; flex-shrink: 0; }
+  .btn-dl-small {
+    font-family: var(--mono); font-size: 0.68rem;
+    padding: 0.25rem 0.6rem; border-radius: 4px; border: none;
+    cursor: pointer; text-decoration: none; display: inline-flex;
+    align-items: center; gap: 0.3em; transition: all 0.2s; flex-shrink: 0;
+  }
+  .btn-sm-conch { background: rgba(0,255,198,0.08); color: var(--conch); }
+  .btn-sm-conch:hover { background: rgba(0,255,198,0.18); }
+  .btn-sm-cmdr  { background: rgba(255,79,94,0.08);  color: var(--cmdr); }
+  .btn-sm-cmdr:hover  { background: rgba(255,79,94,0.18); }
+
+  /* ─── TOAST ─── */
+  #toast-container {
+    position: fixed; bottom: 1.5rem; right: 1.5rem;
+    z-index: 9999;
+    display: flex; flex-direction: column; gap: 0.5rem;
+    pointer-events: none;
+  }
+  .toast {
+    display: flex; align-items: flex-start; gap: 0.75rem;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 0.85rem 1.1rem;
+    min-width: 260px; max-width: 340px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+    pointer-events: all;
+    animation: toastIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    transition: opacity 0.3s, transform 0.3s;
+  }
+  .toast.hiding {
+    opacity: 0; transform: translateX(20px);
+  }
+  @keyframes toastIn {
+    from { opacity: 0; transform: translateX(20px) scale(0.95); }
+    to   { opacity: 1; transform: translateX(0) scale(1); }
+  }
+  .toast-icon {
+    width: 28px; height: 28px; border-radius: 6px; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.9rem;
+  }
+  .toast-icon-conch { background: rgba(0,255,198,0.12); color: var(--conch); }
+  .toast-icon-cmdr  { background: rgba(255,79,94,0.12);  color: var(--cmdr); }
+  .toast-icon-ok    { background: rgba(60,200,120,0.15); color: #3cc878; }
+  .toast-body { flex: 1; }
+  .toast-title {
+    font-family: var(--mono); font-size: 0.78rem; font-weight: 600;
+    color: var(--text); margin-bottom: 0.15rem;
+  }
+  .toast-sub {
+    font-family: var(--mono); font-size: 0.7rem; color: var(--muted);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    max-width: 220px;
+  }
+  .toast-bar {
+    position: absolute; bottom: 0; left: 0; height: 2px; border-radius: 0 0 10px 10px;
+    background: var(--conch); width: 100%;
+    animation: toastBar linear forwards;
+  }
+  @keyframes toastBar { from { width: 100%; } to { width: 0%; } }
+  .toast { position: relative; }
+
+  /* ─── SEARCH EMPTY ─── */
+  .search-empty {
+    font-family: var(--mono); font-size: 0.8rem; color: var(--muted);
+    text-align: center; padding: 1.5rem; opacity: 0.6;
+    display: none;
+  }
+  .search-empty.visible { display: block; }
+
+  /* ─── UTILS ─── */
   .loading-state, .empty-state, .error-state {
     font-family: var(--mono); font-size: 0.8rem; color: var(--muted);
     text-align: center; padding: 1.5rem; opacity: 0.6;
@@ -297,6 +465,8 @@
     .section { padding: 3rem 1.2rem; }
     .hero { padding: 8rem 1.2rem 3rem; }
     .drawer { width: 260px; }
+    #toast-container { bottom: 1rem; right: 1rem; left: 1rem; }
+    .toast { min-width: unset; max-width: 100%; }
   }
 </style>
 </head>
@@ -313,11 +483,14 @@ const CONFIG = {
   // How many releases to check (latest N releases)
   MAX_RELEASES: 10,
   
-  // Debug mode - set to true to see console logs
+  // Debug mode
   DEBUG: true,
 };
 </script>
 <!-- ═══════════════════════════════════════════════════════════ -->
+
+<!-- TOAST CONTAINER -->
+<div id="toast-container"></div>
 
 <!-- NAV -->
 <nav>
@@ -390,9 +563,24 @@ const CONFIG = {
     <span class="section-badge badge-conch">Downloads</span>
   </div>
   <p class="section-desc">All <strong style="color:var(--conch)">.rbxm</strong> files with "Conch" in the name.</p>
+
+  <!-- SEARCH -->
+  <div class="search-wrap">
+    <span class="search-icon">🔍</span>
+    <input
+      class="search-input conch-focus"
+      id="search-conch"
+      type="text"
+      placeholder="Search Conch files..."
+      oninput="handleSearch('conch')"
+    >
+    <button class="search-clear" id="clear-conch" onclick="clearSearch('conch')">✕</button>
+  </div>
+
   <div class="file-list" id="conch-list">
     <div class="loading-state">🔄 Loading Conch files from GitHub...</div>
   </div>
+  <div class="search-empty" id="empty-conch">No files match your search.</div>
 </div>
 
 <div class="divider"></div>
@@ -404,9 +592,24 @@ const CONFIG = {
     <span class="section-badge badge-cmdr">Downloads</span>
   </div>
   <p class="section-desc">All <strong style="color:var(--cmdr)">.rbxm</strong> files with "Cmdr" in the name.</p>
+
+  <!-- SEARCH -->
+  <div class="search-wrap">
+    <span class="search-icon">🔍</span>
+    <input
+      class="search-input cmdr-focus"
+      id="search-cmdr"
+      type="text"
+      placeholder="Search Cmdr files..."
+      oninput="handleSearch('cmdr')"
+    >
+    <button class="search-clear" id="clear-cmdr" onclick="clearSearch('cmdr')">✕</button>
+  </div>
+
   <div class="file-list" id="cmdr-list">
     <div class="loading-state">🔄 Loading Cmdr files from GitHub...</div>
   </div>
+  <div class="search-empty" id="empty-cmdr">No files match your search.</div>
 </div>
 
 <footer>Conch &amp; Cmdr — Automatically loaded from GitHub Releases</footer>
@@ -430,177 +633,295 @@ function closeDrawer() {
   document.body.style.overflow = '';
 }
 
-/* ─── DEBUG LOGGER ─── */
-function debugLog(message, data) {
-  if (CONFIG.DEBUG) {
-    console.log(`[DEBUG] ${message}`, data || '');
-  }
+/* ─── DEBUG ─── */
+function debugLog(msg, data) {
+  if (CONFIG.DEBUG) console.log(`[DEBUG] ${msg}`, data || '');
 }
 
-/* ─── FETCH FILES FROM GITHUB ─── */
+/* ─── TOAST ─── */
+function showToast({ title, sub, type = 'conch', duration = 3500 }) {
+  const container = document.getElementById('toast-container');
+  const toast = document.createElement('div');
+  toast.className = 'toast';
+
+  const iconMap = { conch: '↓', cmdr: '↓', ok: '✓' };
+  const iconClass = type === 'ok' ? 'toast-icon-ok' : (type === 'cmdr' ? 'toast-icon-cmdr' : 'toast-icon-conch');
+  const barColor = type === 'cmdr' ? 'var(--cmdr)' : (type === 'ok' ? '#3cc878' : 'var(--conch)');
+
+  toast.innerHTML = `
+    <div class="toast-icon ${iconClass}">${iconMap[type] || '↓'}</div>
+    <div class="toast-body">
+      <div class="toast-title">${title}</div>
+      ${sub ? `<div class="toast-sub">${sub}</div>` : ''}
+    </div>
+    <div class="toast-bar" style="animation-duration:${duration}ms; background:${barColor}"></div>
+  `;
+
+  container.appendChild(toast);
+
+  setTimeout(() => {
+    toast.classList.add('hiding');
+    setTimeout(() => toast.remove(), 320);
+  }, duration);
+}
+
+/* ─── DIRECT DOWNLOAD ─── */
+function triggerDownload(url, filename, type, btn) {
+  // Show button feedback
+  if (btn) {
+    btn.classList.add('downloading');
+    setTimeout(() => btn.classList.remove('downloading'), 400);
+  }
+
+  // Show toast immediately
+  showToast({
+    title: 'Download started',
+    sub: filename,
+    type: type,
+    duration: 4000
+  });
+
+  // Fetch the file as a blob and force-download it
+  fetch(url)
+    .then(res => {
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      return res.blob();
+    })
+    .then(blob => {
+      const blobUrl = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = blobUrl;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(blobUrl);
+
+      showToast({ title: 'Download complete', sub: filename, type: 'ok', duration: 3000 });
+    })
+    .catch(err => {
+      // Fallback: open in new tab if fetch blocked (CORS etc.)
+      debugLog('Blob download failed, falling back:', err);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      a.target = '_blank';
+      a.rel = 'noopener';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    });
+}
+
+/* ─── LIVE SEARCH ─── */
+function handleSearch(section) {
+  const input = document.getElementById(`search-${section}`);
+  const clearBtn = document.getElementById(`clear-${section}`);
+  const query = input.value.trim().toLowerCase();
+  const list = document.getElementById(`${section}-list`);
+  const emptyMsg = document.getElementById(`empty-${section}`);
+
+  clearBtn.classList.toggle('visible', query.length > 0);
+
+  const items = list.querySelectorAll('.file-item');
+  let visibleCount = 0;
+
+  items.forEach(item => {
+    const name = item.dataset.name || '';
+    const version = item.dataset.version || '';
+    const matches = name.includes(query) || version.includes(query);
+    item.classList.toggle('hidden', !matches);
+    if (matches) visibleCount++;
+  });
+
+  emptyMsg.classList.toggle('visible', visibleCount === 0 && items.length > 0 && query.length > 0);
+}
+
+function clearSearch(section) {
+  const input = document.getElementById(`search-${section}`);
+  input.value = '';
+  handleSearch(section);
+}
+
+/* ─── VERSION HISTORY TOGGLE ─── */
+function toggleHistory(id) {
+  const panel = document.getElementById(`hist-${id}`);
+  const btn = document.getElementById(`histbtn-${id}`);
+  const isOpen = panel.classList.contains('open');
+  panel.classList.toggle('open', !isOpen);
+  btn.classList.toggle('open', !isOpen);
+}
+
+/* ─── FETCH RELEASES ─── */
 async function fetchReleases() {
   try {
-    // Validate configuration
-    if (CONFIG.GITHUB_REPO === 'YOURUSER/YOURREPO') {
+    if (CONFIG.GITHUB_REPO === 'Systems-Download/Systems-Download.github.io') {
       throw new Error('Please configure GITHUB_REPO in the CONFIG section');
     }
-    
+
     const url = `https://api.github.com/repos/${CONFIG.GITHUB_REPO}/releases?per_page=${CONFIG.MAX_RELEASES}`;
-    debugLog('Fetching from URL:', url);
-    
+    debugLog('Fetching:', url);
+
     const response = await fetch(url);
-    debugLog('Response status:', response.status);
-    
     if (!response.ok) {
-      const errorText = await response.text();
-      debugLog('Error response:', errorText);
       throw new Error(`GitHub API error: ${response.status} ${response.statusText}`);
     }
-    
+
     const releases = await response.json();
-    debugLog('Releases fetched:', releases.length);
-    
-    const conchFiles = [];
-    const cmdrFiles = [];
-    const unclassifiedFiles = [];
-    
-    // Process all releases and find .rbxm files
-    releases.forEach((release, releaseIdx) => {
-      debugLog(`Processing release ${releaseIdx + 1}/${releases.length}:`, release.tag_name);
-      
+    debugLog('Releases:', releases.length);
+
+    // Group files by base name (for version history)
+    const conchMap = {};
+    const cmdrMap  = {};
+
+    releases.forEach(release => {
       const releaseDate = new Date(release.published_at).toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric'
+        year: 'numeric', month: 'short', day: 'numeric'
       });
-      
-      if (!release.assets || release.assets.length === 0) {
-        debugLog('No assets in this release');
-        return;
-      }
-      
-      release.assets.forEach((asset, assetIdx) => {
-        debugLog(`  Asset ${assetIdx + 1}: ${asset.name}`);
-        
-        // Only process .rbxm files
+
+      (release.assets || []).forEach(asset => {
         const fileName = asset.name;
         const fileNameLower = fileName.toLowerCase();
-        
-        if (!fileNameLower.endsWith('.rbxm')) {
-          debugLog(`    Skipped (not .rbxm)`);
-          return;
-        }
-        
-        const fileSize = formatBytes(asset.size);
-        
-        // Search for "conch" or "cmdr" in the filename
+        if (!fileNameLower.endsWith('.rbxm')) return;
+
         const isConch = fileNameLower.includes('conch');
-        const isCmdr = fileNameLower.includes('cmdr');
-        
-        const fileData = {
+        const isCmdr  = fileNameLower.includes('cmdr');
+        if (!isConch && !isCmdr) return;
+
+        const entry = {
           name: fileName,
-          size: fileSize,
+          size: formatBytes(asset.size),
           date: releaseDate,
-          version: release.tag_name || release.name || 'v1.0',
+          version: release.tag_name || release.name || 'v?',
           downloadUrl: asset.browser_download_url,
           releaseDate: release.published_at
         };
-        
+
+        // Use file name as grouping key (strip version-like suffixes)
+        const baseKey = fileName.replace(/[_\-]v[\d.]+/i, '').replace(/\.rbxm$/i, '').toLowerCase();
+
         if (isConch) {
-          debugLog(`    ✓ Classified as CONCH`);
-          conchFiles.push(fileData);
-        } else if (isCmdr) {
-          debugLog(`    ✓ Classified as CMDR`);
-          cmdrFiles.push(fileData);
+          if (!conchMap[baseKey]) conchMap[baseKey] = [];
+          conchMap[baseKey].push(entry);
         } else {
-          debugLog(`    ⚠ Unclassified (no 'conch' or 'cmdr' in name)`);
-          unclassifiedFiles.push(fileData);
+          if (!cmdrMap[baseKey]) cmdrMap[baseKey] = [];
+          cmdrMap[baseKey].push(entry);
         }
       });
     });
-    
-    debugLog('Classification complete:', {
-      conch: conchFiles.length,
-      cmdr: cmdrFiles.length,
-      unclassified: unclassifiedFiles.length
-    });
-    
-    // Sort by date (newest first)
-    conchFiles.sort((a, b) => new Date(b.releaseDate) - new Date(a.releaseDate));
-    cmdrFiles.sort((a, b) => new Date(b.releaseDate) - new Date(a.releaseDate));
-    
-    // Render files
-    renderFiles('conch', conchFiles);
-    renderFiles('cmdr', cmdrFiles);
-    
-    // Show warning for unclassified files
-    if (unclassifiedFiles.length > 0 && CONFIG.DEBUG) {
-      console.warn('Unclassified .rbxm files found:', unclassifiedFiles.map(f => f.name));
-      console.warn('These files don\'t contain "conch" or "cmdr" in their filename and won\'t be displayed.');
-    }
-    
+
+    // Sort each group: newest first
+    const sortGroup = map => {
+      Object.values(map).forEach(arr =>
+        arr.sort((a, b) => new Date(b.releaseDate) - new Date(a.releaseDate))
+      );
+    };
+    sortGroup(conchMap);
+    sortGroup(cmdrMap);
+
+    // Convert to array of groups, sorted by newest entry in group
+    const toGroups = map => Object.values(map)
+      .sort((a, b) => new Date(b[0].releaseDate) - new Date(a[0].releaseDate));
+
+    renderGroups('conch', toGroups(conchMap));
+    renderGroups('cmdr',  toGroups(cmdrMap));
+
   } catch (error) {
     console.error('Error fetching releases:', error);
-    
-    let errorMessage = '❌ Error loading files. ';
-    
+    let msg = '❌ Error loading files. ';
     if (error.message.includes('configure GITHUB_REPO')) {
-      errorMessage += 'Please configure your repository in the CONFIG section at the top of index.html';
+      msg += 'Please set GITHUB_REPO in the CONFIG block.';
     } else if (error.message.includes('404')) {
-      errorMessage += 'Repository not found. Check the GITHUB_REPO setting.';
+      msg += 'Repository not found. Check GITHUB_REPO setting.';
     } else if (error.message.includes('403')) {
-      errorMessage += 'API rate limit exceeded. Please try again later.';
+      msg += 'GitHub API rate limit exceeded. Try again later.';
     } else {
-      errorMessage += error.message;
+      msg += error.message;
     }
-    
-    document.getElementById('conch-list').innerHTML = 
-      `<div class="error-state">${errorMessage}</div>`;
-    document.getElementById('cmdr-list').innerHTML = 
-      `<div class="error-state">${errorMessage}</div>`;
+    document.getElementById('conch-list').innerHTML = `<div class="error-state">${msg}</div>`;
+    document.getElementById('cmdr-list').innerHTML  = `<div class="error-state">${msg}</div>`;
   }
 }
 
-/* ─── RENDER FILES ─── */
-function renderFiles(section, files) {
+/* ─── RENDER ─── */
+let _uid = 0;
+function renderGroups(section, groups) {
   const list = document.getElementById(section + '-list');
   const isConch = section === 'conch';
   const cls = isConch ? 'conch' : 'cmdr';
-  
-  if (files.length === 0) {
+
+  if (groups.length === 0) {
     list.innerHTML = `<div class="empty-state">No ${isConch ? 'Conch' : 'Cmdr'} files found in releases.<br><small style="margin-top:0.5rem;display:block;opacity:0.7">Make sure your .rbxm files contain "${isConch ? 'Conch' : 'Cmdr'}" in the filename.</small></div>`;
-    debugLog(`No files rendered for ${section}`);
     return;
   }
-  
-  debugLog(`Rendering ${files.length} files for ${section}`);
-  
+
   list.innerHTML = '';
-  files.forEach((file, idx) => {
-    debugLog(`  Rendering file ${idx + 1}:`, file.name);
-    
+
+  groups.forEach(versions => {
+    const latest = versions[0];
+    const hasHistory = versions.length > 1;
+    const id = ++_uid;
+
     const item = document.createElement('div');
     item.className = 'file-item';
-    item.innerHTML = `
-      <div class="file-icon fi-${cls}">🧩</div>
-      <div class="file-info">
-        <div class="file-name" title="${file.name}">
-          ${file.name}
-          <span class="file-version fv-${cls}">${file.version}</span>
+    item.dataset.name = latest.name.toLowerCase();
+    item.dataset.version = latest.version.toLowerCase();
+
+    // Build history rows HTML
+    let historyHTML = '';
+    if (hasHistory) {
+      const rows = versions.slice(1).map(v => `
+        <div class="version-row">
+          <span class="version-tag vt-${cls}">${v.version}</span>
+          <span class="version-name" title="${v.name}">${v.name}</span>
+          <span class="version-date">${v.date}</span>
+          <button
+            class="btn-dl-small btn-sm-${cls}"
+            onclick="triggerDownload('${v.downloadUrl}', '${v.name}', '${cls}', this)"
+          >↓</button>
         </div>
-        <div class="file-meta">${file.size} · ${file.date} · .rbxm</div>
+      `).join('');
+      historyHTML = `
+        <div class="version-history" id="hist-${id}">
+          <div class="version-history-inner">
+            <div class="version-label">Previous versions</div>
+            ${rows}
+          </div>
+        </div>
+      `;
+    }
+
+    item.innerHTML = `
+      <div class="file-main">
+        <div class="file-icon fi-${cls}">🧩</div>
+        <div class="file-info">
+          <div class="file-name" title="${latest.name}">
+            ${latest.name}
+            <span class="file-version fv-${cls}">${latest.version}</span>
+          </div>
+          <div class="file-meta">${latest.size} · ${latest.date} · .rbxm${hasHistory ? ` · ${versions.length} versions` : ''}</div>
+        </div>
+        <div class="file-actions">
+          ${hasHistory ? `
+            <button class="btn-history" id="histbtn-${id}" onclick="toggleHistory(${id})" title="Show version history">
+              <span>History</span>
+              <span class="arrow">▾</span>
+            </button>
+          ` : ''}
+          <button
+            class="btn-dl btn-dl-${cls}"
+            onclick="triggerDownload('${latest.downloadUrl}', '${latest.name}', '${cls}', this)"
+          >↓ Download</button>
+        </div>
       </div>
-      <div class="file-actions">
-        <a class="btn-dl btn-dl-${cls}" href="${file.downloadUrl}" download="${file.name}" target="_blank" rel="noopener">
-          ↓ Download
-        </a>
-      </div>
+      ${historyHTML}
     `;
+
     list.appendChild(item);
   });
 }
 
-/* ─── UTILITIES ─── */
+/* ─── UTILS ─── */
 function formatBytes(bytes) {
   if (bytes === 0) return '0 B';
   const k = 1024;
@@ -610,7 +931,7 @@ function formatBytes(bytes) {
 }
 
 /* ─── INIT ─── */
-debugLog('Initializing download hub with config:', CONFIG);
+debugLog('Init config:', CONFIG);
 fetchReleases();
 </script>
 </body>
