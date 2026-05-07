@@ -26,7 +26,6 @@
   }
 
   html { scroll-behavior: smooth; }
-
   body {
     background: var(--bg);
     color: var(--text);
@@ -144,7 +143,6 @@
   }
   .drawer-item:hover { background: var(--surface); border-color: var(--border); color: var(--text); }
   .drawer-item.active { background: rgba(15,244,198,0.07); border-color: rgba(15,244,198,0.15); color: var(--conch); }
-  .drawer-item.active-red { background: rgba(255,79,94,0.07); border-color: rgba(255,79,94,0.15); color: var(--cmdr); }
 
   .drawer-icon {
     width: 28px; height: 28px; border-radius: 6px;
@@ -161,10 +159,6 @@
     font-family: var(--mono); font-size: 0.7rem; color: var(--muted);
     opacity: 0.5;
   }
-
-  /* ─── PAGES ─── */
-  .page { display: none; }
-  .page.active { display: block; }
 
   /* ─── HERO ─── */
   .hero {
@@ -189,7 +183,7 @@
   .hero h1 strong { font-style: normal; color: var(--cmdr); }
   .hero p {
     font-family: var(--mono); font-size: 0.9rem;
-    color: var(--muted); max-width: 480px; margin: 0 auto 2.5rem;
+    color: var(--muted); max-width: 520px; margin: 0 auto 2.5rem;
     line-height: 1.8;
   }
   .scroll-hint { display: inline-flex; gap: 1.5rem; flex-wrap: wrap; justify-content: center; }
@@ -279,10 +273,13 @@
   .btn-dl-conch:hover { background: rgba(0,255,198,0.22); }
   .btn-dl-cmdr  { background: rgba(255,79,94,0.12);  color: var(--cmdr); }
   .btn-dl-cmdr:hover  { background: rgba(255,79,94,0.22); }
-  .empty-state {
+  
+  .loading-state, .empty-state, .error-state {
     font-family: var(--mono); font-size: 0.8rem; color: var(--muted);
     text-align: center; padding: 1.5rem; opacity: 0.6;
   }
+  .loading-state { animation: pulse 1.5s ease-in-out infinite; }
+  @keyframes pulse { 0%,100% { opacity: 0.6; } 50% { opacity: 0.3; } }
 
   /* ─── DIVIDER ─── */
   .divider { height: 1px; background: var(--border); margin: 0 2.5rem; }
@@ -294,246 +291,11 @@
     border-top: 1px solid var(--border); margin-top: 4rem; opacity: 0.5;
   }
 
-  /* ─── TOAST ─── */
-  #toast {
-    position: fixed; bottom: 2rem; right: 2rem; z-index: 999;
-    background: var(--surface); border: 1px solid var(--border);
-    border-radius: 8px; padding: 0.8rem 1.2rem;
-    font-family: var(--mono); font-size: 0.8rem; color: var(--text);
-    opacity: 0; transform: translateY(10px);
-    transition: all 0.3s; pointer-events: none;
-  }
-  #toast.show { opacity: 1; transform: translateY(0); }
-
-  /* ─── MAINTENANCE PAGE ─── */
-  .maint-page {
-    min-height: 100vh;
-    display: flex; flex-direction: column;
-    align-items: center; justify-content: center;
-    text-align: center; padding: 2rem;
-    position: relative; overflow: hidden;
-  }
-  .maint-page::before {
-    content: ''; position: fixed; inset: 0;
-    background:
-      radial-gradient(ellipse 60% 50% at 20% 40%, rgba(0,255,198,0.05) 0%, transparent 60%),
-      radial-gradient(ellipse 50% 60% at 80% 60%, rgba(255,79,94,0.05) 0%, transparent 60%);
-    pointer-events: none;
-  }
-  .maint-grid {
-    position: fixed; inset: 0; opacity: 0.03; pointer-events: none;
-    background-image: linear-gradient(var(--border) 1px, transparent 1px),
-                      linear-gradient(90deg, var(--border) 1px, transparent 1px);
-    background-size: 40px 40px;
-  }
-  .maint-icon { font-size: 4rem; margin-bottom: 1.5rem; animation: pulse 2.5s ease-in-out infinite; }
-  @keyframes pulse { 0%,100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.6; transform: scale(0.95); } }
-  .maint-title { font-size: clamp(2rem, 5vw, 3.5rem); font-weight: 800; letter-spacing: -0.03em; margin-bottom: 1rem; }
-  .maint-title .c { color: var(--conch); }
-  .maint-title .r { color: var(--cmdr); }
-  .maint-sub { font-family: var(--mono); font-size: 0.9rem; color: var(--muted); max-width: 420px; line-height: 1.8; margin-bottom: 2rem; }
-  .maint-bar { width: 280px; height: 3px; background: var(--border); border-radius: 2px; overflow: hidden; margin: 0 auto; }
-  .maint-bar-fill {
-    height: 100%; width: 40%; background: linear-gradient(90deg, var(--conch), var(--cmdr));
-    border-radius: 2px; animation: barSlide 2s ease-in-out infinite alternate;
-  }
-  @keyframes barSlide { from { margin-left: 0; } to { margin-left: 60%; } }
-
-  /* ─── 404 PAGE ─── */
-  .page-404 {
-    min-height: 100vh;
-    display: flex; flex-direction: column;
-    align-items: center; justify-content: center;
-    text-align: center; padding: 2rem;
-  }
-  .page-404::before {
-    content: ''; position: fixed; inset: 0;
-    background: radial-gradient(ellipse 80% 60% at 50% 50%, rgba(255,79,94,0.04) 0%, transparent 60%);
-    pointer-events: none;
-  }
-  .err-code {
-    font-size: clamp(7rem, 20vw, 14rem); font-weight: 800; letter-spacing: -0.06em; line-height: 1;
-    background: linear-gradient(135deg, var(--cmdr) 0%, #ff9a3c 100%);
-    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
-    margin-bottom: 0.5rem; animation: glitch 4s ease-in-out infinite;
-  }
-  @keyframes glitch {
-    0%,92%,100% { transform: translate(0); filter: none; }
-    93% { transform: translate(-3px, 1px); filter: hue-rotate(15deg); }
-    95% { transform: translate(3px, -1px); filter: hue-rotate(-15deg); }
-    97% { transform: translate(-1px, 2px); }
-  }
-  .err-title { font-size: clamp(1.2rem, 3vw, 1.8rem); font-weight: 800; letter-spacing: -0.02em; margin-bottom: 0.8rem; }
-  .err-sub { font-family: var(--mono); font-size: 0.85rem; color: var(--muted); max-width: 360px; line-height: 1.8; margin-bottom: 2rem; }
-  .btn-home {
-    font-family: var(--mono); font-size: 0.8rem; letter-spacing: 0.05em;
-    padding: 0.7rem 1.6rem; border-radius: 6px;
-    border: 1px solid var(--conch); color: var(--conch);
-    background: transparent; cursor: pointer; text-decoration: none;
-    transition: all 0.2s; display: inline-block;
-  }
-  .btn-home:hover { background: rgba(0,255,198,0.08); }
-
-  /* ─── RELEASE PAGE ─── */
-  .release-page {
-    min-height: 100vh;
-    display: flex; flex-direction: column;
-    align-items: center; justify-content: center;
-    text-align: center; padding: 2rem; position: relative; overflow: hidden;
-  }
-  .release-page::before {
-    content: ''; position: fixed; inset: 0;
-    background:
-      radial-gradient(ellipse 55% 50% at 30% 40%, rgba(0,255,198,0.06) 0%, transparent 55%),
-      radial-gradient(ellipse 50% 55% at 75% 65%, rgba(255,79,94,0.06) 0%, transparent 55%);
-    pointer-events: none;
-  }
-  .release-eyebrow { font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); margin-bottom: 1.2rem; }
-  .release-title { font-size: clamp(2.5rem, 6vw, 4.5rem); font-weight: 800; letter-spacing: -0.03em; line-height: 1.05; margin-bottom: 0.8rem; }
-  .release-title em     { font-style: normal; color: var(--conch); }
-  .release-title strong { font-style: normal; color: var(--cmdr); }
-  .release-sub { font-family: var(--mono); font-size: 0.85rem; color: var(--muted); max-width: 400px; line-height: 1.8; margin: 0 auto 3rem; }
-  .countdown { display: flex; gap: 1.5rem; justify-content: center; margin-bottom: 3rem; flex-wrap: wrap; }
-  .cd-unit { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.4rem 2rem; min-width: 100px; transition: border-color 0.3s; }
-  .cd-unit:hover { border-color: rgba(255,255,255,0.15); }
-  .cd-num {
-    font-size: clamp(2.5rem, 6vw, 3.5rem); font-weight: 800; letter-spacing: -0.04em; line-height: 1; display: block;
-    background: linear-gradient(135deg, var(--conch), var(--cmdr));
-    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
-  }
-  .cd-label { font-family: var(--mono); font-size: 0.65rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); margin-top: 0.4rem; display: block; }
-  .release-date-line { font-family: var(--mono); font-size: 0.85rem; color: var(--muted); }
-  .release-date-line span { color: var(--text); }
-
-  /* ─── ANNOUNCEMENT PAGE ─── */
-  .ann-page-wrap {
-    padding-top: 80px;
-    min-height: 100vh;
-  }
-  .ann-hero {
-    padding: 5rem 2.5rem 4rem;
-    text-align: center;
-    position: relative;
-    overflow: hidden;
-  }
-  .ann-hero::before {
-    content: '';
-    position: absolute; top: -80px; left: 50%; transform: translateX(-50%);
-    width: 600px; height: 500px; border-radius: 50%;
-    background: radial-gradient(circle, rgba(15,244,198,0.05) 0%, transparent 70%);
-    pointer-events: none;
-  }
-  .ann-hero-label {
-    font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.18em;
-    text-transform: uppercase; color: var(--conch);
-    display: inline-flex; align-items: center; gap: 0.5rem;
-    background: rgba(15,244,198,0.08); border: 1px solid rgba(15,244,198,0.2);
-    padding: 0.35rem 0.85rem; border-radius: 20px;
-    margin-bottom: 1.2rem;
-  }
-  .ann-hero-label::before { content: '●'; font-size: 0.5rem; animation: blink 1.5s ease-in-out infinite; }
-  @keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
-  .ann-hero h1 {
-    font-size: clamp(2.4rem, 6vw, 4.5rem);
-    font-weight: 800; line-height: 1.05; letter-spacing: -0.03em;
-    margin-bottom: 1rem;
-  }
-  .ann-hero h1 em { font-style: normal; color: var(--conch); }
-  .ann-hero p {
-    font-family: var(--mono); font-size: 0.88rem; color: var(--muted);
-    max-width: 440px; margin: 0 auto; line-height: 1.8;
-  }
-
-  /* ─── ANN CARDS ─── */
-  .ann-grid {
-    max-width: 900px; margin: 0 auto;
-    padding: 0 2.5rem 6rem;
-    display: flex; flex-direction: column; gap: 1.2rem;
-  }
-
-  .ann-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    overflow: hidden;
-    transition: border-color 0.25s, transform 0.25s;
-    animation: slideIn 0.35s ease;
-  }
-  .ann-card:hover { border-color: rgba(255,255,255,0.13); transform: translateY(-2px); }
-  .ann-card.pinned { border-color: rgba(15,244,198,0.25); }
-
-  .ann-card-head {
-    display: flex; align-items: flex-start; gap: 1rem;
-    padding: 1.4rem 1.4rem 0;
-  }
-  .ann-card-icon {
-    width: 40px; height: 40px; border-radius: 10px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 1.1rem; flex-shrink: 0;
-    background: var(--surface2); border: 1px solid var(--border);
-    margin-top: 1px;
-  }
-  .ann-card-meta { flex: 1; }
-  .ann-card-top {
-    display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap;
-    margin-bottom: 0.3rem;
-  }
-  .ann-tag {
-    font-family: var(--mono); font-size: 0.65rem; letter-spacing: 0.1em;
-    text-transform: uppercase; padding: 0.2rem 0.55rem; border-radius: 4px;
-  }
-  .tag-update  { background: rgba(15,244,198,0.1); color: var(--conch); border: 1px solid rgba(15,244,198,0.2); }
-  .tag-patch   { background: rgba(255,79,94,0.1); color: var(--cmdr); border: 1px solid rgba(255,79,94,0.2); }
-  .tag-notice  { background: rgba(255,200,50,0.1); color: #ffc832; border: 1px solid rgba(255,200,50,0.2); }
-  .tag-feature { background: rgba(120,80,255,0.1); color: #a880ff; border: 1px solid rgba(120,80,255,0.2); }
-  .tag-pinned  { background: rgba(15,244,198,0.06); color: var(--conch); border: 1px solid rgba(15,244,198,0.15); opacity: 0.8; }
-
-  .ann-card-title {
-    font-size: 1.05rem; font-weight: 700; letter-spacing: -0.01em; color: var(--text);
-  }
-  .ann-card-date {
-    font-family: var(--mono); font-size: 0.7rem; color: var(--muted);
-    margin-left: auto; flex-shrink: 0; padding-top: 1px;
-  }
-
-  .ann-card-body {
-    padding: 0.85rem 1.4rem 1.4rem 1.4rem;
-  }
-  .ann-card-body p {
-    font-family: var(--mono); font-size: 0.82rem; color: var(--muted);
-    line-height: 1.85; margin-left: 3.5rem;
-  }
-  .ann-card-body p strong { color: var(--text); font-weight: 600; }
-
-  .ann-card-footer {
-    display: flex; align-items: center; gap: 0.8rem;
-    padding: 0.9rem 1.4rem;
-    border-top: 1px solid var(--border);
-    background: rgba(255,255,255,0.01);
-  }
-  .ann-footer-dot {
-    width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0;
-  }
-  .dot-conch { background: var(--conch); box-shadow: 0 0 6px rgba(15,244,198,0.4); }
-  .dot-cmdr  { background: var(--cmdr); box-shadow: 0 0 6px rgba(255,79,94,0.4); }
-  .dot-yellow{ background: #ffc832; box-shadow: 0 0 6px rgba(255,200,50,0.4); }
-  .ann-footer-text { font-family: var(--mono); font-size: 0.72rem; color: var(--muted); flex: 1; }
-  .ann-footer-text strong { color: var(--text); }
-
-  .ann-empty {
-    text-align: center; padding: 4rem 2rem;
-    font-family: var(--mono); font-size: 0.85rem; color: var(--muted); opacity: 0.5;
-  }
-
   /* ─── RESPONSIVE ─── */
   @media (max-width: 640px) {
     nav { padding: 1rem 1.2rem; }
     .section { padding: 3rem 1.2rem; }
     .hero { padding: 8rem 1.2rem 3rem; }
-    .countdown { gap: 0.8rem; }
-    .cd-unit { padding: 1rem 1.3rem; min-width: 72px; }
-    .ann-grid { padding: 0 1.2rem 4rem; }
-    .ann-card-body p { margin-left: 0; }
     .drawer { width: 260px; }
   }
 </style>
@@ -541,79 +303,37 @@
 <body>
 
 <!-- ═══════════════════════════════════════════════════════════════
-     CONFIG BLOCK — EDIT HERE
+     CONFIG — EDIT HERE
 ═══════════════════════════════════════════════════════════════ -->
 <script>
 const CONFIG = {
-
-  /* ── Maintenance ── */
-  MAINTENANCE_MODE: false,
-
-  /* ── Release countdown page ── */
-  SHOW_RELEASE_PAGE: false,
-  RELEASE_DATE: new Date('2025-06-15T00:00:00'),
-
-  /* ── Conch files (.rbxm from GitHub Releases) ── */
-  CONCH_FILES: [
-    {
-      name: 'Conch BETA',
-      version: 'v0.9.0',
-      size: '107.70 KB',
-      date: '2026-05-06',
-      url: 'https://github.com/Systems-Download/Systems-Download.github.io/blob/main/Conch%20V0.9.0%20%5BBETA%5D.rbxm',
-    },
-  ],
-
-  /* ── Cmdr files (.rbxm from GitHub Releases) ── */
-  CMDR_FILES: [
-    {
-      name: 'Cmdr.rbxm',
-      version: 'v1.4',
-      size: '9.5 MB',
-      date: '2025-05-01',
-      url: 'https://github.com/YOURUSER/YOURREPO/releases/download/cmdr-v1.4/Cmdr.rbxm',
-    },
-  ],
-
-  /* ── Announcements ── */
-  ANNOUNCEMENTS: [
-    {
-      id: 1,
-      pinned: true,
-      icon: '📦',
-      tag: 'notice',
-      title: 'Conch v0.9.0',
-      date: '2026-05-06',
-      body: '<strong>The Beta Released.</strong> Conch v0.9.0 is our 1 BETA for Conch! New Versions will drop soon! And the Full Release is on the 15 June!',
-      footer: 'conch',
-      footerText: 'Download both .rbxm files in the Downloads section',
-    },
-  ],
+  // GitHub repository (format: "owner/repo")
+  GITHUB_REPO: 'YOURUSER/YOURREPO',
+  
+  // How many releases to check (latest N releases)
+  MAX_RELEASES: 10,
 };
 </script>
-<!-- ═══════════════════════════════════════════════════════════ END CONFIG -->
-
+<!-- ═══════════════════════════════════════════════════════════ -->
 
 <!-- NAV -->
-<nav id="main-nav">
-  <div class="nav-logo" onclick="navigate('main')">
+<nav>
+  <div class="nav-logo">
     <span>Conch</span>
     <span class="sep">/</span>
     <span>Cmdr</span>
   </div>
   <div class="nav-right">
-    <a class="nav-link" id="nav-link-main" href="#" onclick="navigate('main'); return false;">Downloads</a>
-    <a class="nav-link" id="nav-link-announcements" href="#" onclick="navigate('announcements'); return false;">Announcements</a>
+    <a class="nav-link active" href="index.html">Downloads</a>
+    <a class="nav-link" href="announcements.html">Announcements</a>
     <button class="burger" id="burger-btn" onclick="toggleDrawer()" aria-label="Menu">
       <span></span><span></span><span></span>
     </button>
   </div>
 </nav>
 
-<!-- DRAWER OVERLAY -->
-<div class="drawer-overlay" id="drawer-overlay" onclick="closeDrawer()"></div>
-
 <!-- DRAWER -->
+<div class="drawer-overlay" id="drawer-overlay" onclick="closeDrawer()"></div>
 <div class="drawer" id="drawer">
   <div class="drawer-head">
     <div class="drawer-logo">
@@ -626,129 +346,72 @@ const CONFIG = {
 
   <div class="drawer-nav">
     <p class="drawer-section-label">Navigation</p>
-
-    <a class="drawer-item" id="di-main" href="#" onclick="navigate('main'); closeDrawer(); return false;">
+    <a class="drawer-item active" href="index.html" onclick="closeDrawer()">
       <span class="drawer-icon">📥</span>
       Downloads
     </a>
-    <a class="drawer-item" id="di-announcements" href="#" onclick="navigate('announcements'); closeDrawer(); return false;">
+    <a class="drawer-item" href="announcements.html" onclick="closeDrawer()">
       <span class="drawer-icon">📣</span>
       Announcements
     </a>
 
     <div class="drawer-divider"></div>
     <p class="drawer-section-label">Quick Jump</p>
-
-    <a class="drawer-item" href="#conch" onclick="navigate('main'); closeDrawer();">
+    <a class="drawer-item" href="#conch" onclick="closeDrawer()">
       <span class="drawer-icon" style="color:var(--conch)">◈</span>
       Conch Files
     </a>
-    <a class="drawer-item" href="#cmdr" onclick="navigate('main'); closeDrawer();">
+    <a class="drawer-item" href="#cmdr" onclick="closeDrawer()">
       <span class="drawer-icon" style="color:var(--cmdr)">◈</span>
       Cmdr Files
     </a>
   </div>
 
-  <div class="drawer-footer">Conch & Cmdr — Files hosted on GitHub</div>
+  <div class="drawer-footer">Auto-updated from GitHub Releases</div>
 </div>
 
-
-<!-- ── MAINTENANCE ── -->
-<div id="page-maintenance" class="page">
-  <div class="maint-grid"></div>
-  <div class="maint-page">
-    <div class="maint-icon">🔧</div>
-    <h1 class="maint-title"><span class="c">Conch</span> &amp; <span class="r">Cmdr</span><br>Under Maintenance</h1>
-    <p class="maint-sub">We're currently working on something. The download hub will be back shortly — check back later.</p>
-    <div class="maint-bar"><div class="maint-bar-fill"></div></div>
-  </div>
-</div>
-
-<!-- ── 404 ── -->
-<div id="page-404" class="page">
-  <div class="page-404">
-    <div class="err-code">404</div>
-    <h1 class="err-title">Page Not Found</h1>
-    <p class="err-sub">The file or page you're looking for doesn't exist or may have been removed.</p>
-    <a class="btn-home" href="#" onclick="navigate('main'); return false;">← Back to Downloads</a>
+<!-- HERO -->
+<div class="hero">
+  <h1><em>Conch</em> &amp; <strong>Cmdr</strong><br>Download Hub</h1>
+  <p>Files sind automatisch von GitHub Releases geladen. Alle <code style="background:var(--surface);padding:0.1em 0.4em;border-radius:4px;font-size:0.9em">.rbxm</code> Dateien werden erkannt und sortiert.</p>
+  <div class="scroll-hint">
+    <a href="#conch" class="c">↓ Conch</a>
+    <a href="#cmdr"  class="r">↓ Cmdr</a>
   </div>
 </div>
 
-<!-- ── RELEASE ── -->
-<div id="page-release" class="page">
-  <div class="release-page">
-    <p class="release-eyebrow">Coming Soon</p>
-    <h1 class="release-title"><em>Conch</em> &amp; <strong>Cmdr</strong><br>New Release</h1>
-    <p class="release-sub">Something big is almost here. Both tools are getting a major update — stay tuned.</p>
-    <div class="countdown" id="countdown">
-      <div class="cd-unit"><span class="cd-num" id="cd-days">00</span><span class="cd-label">Days</span></div>
-      <div class="cd-unit"><span class="cd-num" id="cd-hours">00</span><span class="cd-label">Hours</span></div>
-      <div class="cd-unit"><span class="cd-num" id="cd-mins">00</span><span class="cd-label">Minutes</span></div>
-      <div class="cd-unit"><span class="cd-num" id="cd-secs">00</span><span class="cd-label">Seconds</span></div>
-    </div>
-    <p class="release-date-line">Releasing on <span>June 15, 2025</span></p>
+<!-- CONCH SECTION -->
+<div class="section" id="conch">
+  <div class="section-header">
+    <h2 class="conch">Conch</h2>
+    <span class="section-badge badge-conch">Downloads</span>
+  </div>
+  <p class="section-desc">Alle <strong style="color:var(--conch)">.rbxm</strong> Dateien mit "Conch" im Namen.</p>
+  <div class="file-list" id="conch-list">
+    <div class="loading-state">🔄 Lade Conch Dateien von GitHub...</div>
   </div>
 </div>
 
-<!-- ── MAIN (Downloads) ── -->
-<div id="page-main" class="page">
-  <div class="hero">
-    <h1><em>Conch</em> &amp; <strong>Cmdr</strong><br>Download Hub</h1>
-    <p>All files are hosted on GitHub Releases as <code style="background:var(--surface);padding:0.1em 0.4em;border-radius:4px;font-size:0.9em">.rbxm</code> files. Click a button to download directly.</p>
-    <div class="scroll-hint">
-      <a href="#conch" class="c">↓ Conch</a>
-      <a href="#cmdr"  class="r">↓ Cmdr</a>
-    </div>
+<div class="divider"></div>
+
+<!-- CMDR SECTION -->
+<div class="section" id="cmdr">
+  <div class="section-header">
+    <h2 class="cmdr">Cmdr</h2>
+    <span class="section-badge badge-cmdr">Downloads</span>
   </div>
-
-  <div class="section" id="conch">
-    <div class="section-header">
-      <h2 class="conch">Conch</h2>
-      <span class="section-badge badge-conch">Downloads</span>
-    </div>
-    <p class="section-desc">Official Conch releases as <strong style="color:var(--conch)">.rbxm</strong> files, served directly from GitHub.</p>
-    <div class="file-list" id="conch-list"></div>
+  <p class="section-desc">Alle <strong style="color:var(--cmdr)">.rbxm</strong> Dateien mit "Cmdr" im Namen.</p>
+  <div class="file-list" id="cmdr-list">
+    <div class="loading-state">🔄 Lade Cmdr Dateien von GitHub...</div>
   </div>
-
-  <div class="divider"></div>
-
-  <div class="section" id="cmdr">
-    <div class="section-header">
-      <h2 class="cmdr">Cmdr</h2>
-      <span class="section-badge badge-cmdr">Downloads</span>
-    </div>
-    <p class="section-desc">Official Cmdr releases as <strong style="color:var(--cmdr)">.rbxm</strong> files, served directly from GitHub.</p>
-    <div class="file-list" id="cmdr-list"></div>
-  </div>
-
-  <footer>Conch &amp; Cmdr Download Hub — Files hosted on GitHub Releases</footer>
 </div>
 
-<!-- ── ANNOUNCEMENTS ── -->
-<div id="page-announcements" class="page">
-  <div class="ann-page-wrap">
-    <div class="ann-hero">
-      <div class="ann-hero-label">Live Updates</div>
-      <h1>Announcements<br><em>&amp; Changelog</em></h1>
-      <p>Release notes, patches, and news for Conch &amp; Cmdr.</p>
-    </div>
-    <div class="ann-grid" id="ann-grid"></div>
-  </div>
-  <footer>Conch &amp; Cmdr — Announcements</footer>
-</div>
-
-
-<div id="toast"></div>
+<footer>Conch &amp; Cmdr — Automatisch von GitHub Releases geladen</footer>
 
 <script>
-/* ─── STATE ─── */
-let currentPage = 'main';
-let drawerOpen = false;
-
 /* ─── DRAWER ─── */
-function toggleDrawer() {
-  drawerOpen ? closeDrawer() : openDrawer();
-}
+let drawerOpen = false;
+function toggleDrawer() { drawerOpen ? closeDrawer() : openDrawer(); }
 function openDrawer() {
   drawerOpen = true;
   document.getElementById('drawer').classList.add('open');
@@ -764,61 +427,93 @@ function closeDrawer() {
   document.body.style.overflow = '';
 }
 
-/* ─── NAVIGATION ─── */
-function navigate(id) {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.getElementById('page-' + id).classList.add('active');
-  currentPage = id;
-  updateNavActive();
-  window.scrollTo({ top: 0 });
+/* ─── FETCH FILES FROM GITHUB ─── */
+async function fetchReleases() {
+  try {
+    const url = `https://api.github.com/repos/${CONFIG.GITHUB_REPO}/releases?per_page=${CONFIG.MAX_RELEASES}`;
+    const response = await fetch(url);
+    
+    if (!response.ok) throw new Error('Failed to fetch releases');
+    
+    const releases = await response.json();
+    const conchFiles = [];
+    const cmdrFiles = [];
+    
+    // Durchlaufe alle Releases und suche .rbxm Dateien
+    releases.forEach(release => {
+      const releaseDate = new Date(release.published_at).toLocaleDateString('de-DE');
+      
+      release.assets.forEach(asset => {
+        // Nur .rbxm Dateien
+        if (!asset.name.toLowerCase().endsWith('.rbxm')) return;
+        
+        const fileName = asset.name;
+        const fileNameLower = fileName.toLowerCase();
+        const fileSize = formatBytes(asset.size);
+        
+        // Suche nach "conch" oder "cmdr" im Namen
+        const isConch = fileNameLower.includes('conch');
+        const isCmdr = fileNameLower.includes('cmdr');
+        
+        const fileData = {
+          name: fileName,
+          size: fileSize,
+          date: releaseDate,
+          version: release.tag_name || release.name,
+          downloadUrl: asset.browser_download_url, // Direkter Download-Link
+          releaseDate: release.published_at
+        };
+        
+        if (isConch) {
+          conchFiles.push(fileData);
+        } else if (isCmdr) {
+          cmdrFiles.push(fileData);
+        }
+      });
+    });
+    
+    // Sortiere nach Datum (neueste zuerst)
+    conchFiles.sort((a, b) => new Date(b.releaseDate) - new Date(a.releaseDate));
+    cmdrFiles.sort((a, b) => new Date(b.releaseDate) - new Date(a.releaseDate));
+    
+    renderFiles('conch', conchFiles);
+    renderFiles('cmdr', cmdrFiles);
+    
+  } catch (error) {
+    console.error('Error fetching releases:', error);
+    document.getElementById('conch-list').innerHTML = 
+      '<div class="error-state">❌ Fehler beim Laden der Dateien. Bitte Repository konfigurieren.</div>';
+    document.getElementById('cmdr-list').innerHTML = 
+      '<div class="error-state">❌ Fehler beim Laden der Dateien. Bitte Repository konfigurieren.</div>';
+  }
 }
 
-function updateNavActive() {
-  document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-  const el = document.getElementById('nav-link-' + currentPage);
-  if (el) el.classList.add('active');
-
-  document.querySelectorAll('.drawer-item[id^="di-"]').forEach(l => {
-    l.classList.remove('active', 'active-red');
-  });
-  const di = document.getElementById('di-' + currentPage);
-  if (di) di.classList.add('active');
-}
-
-/* ─── TOAST ─── */
-function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 2200);
-}
-
-/* ─── FILE RENDERING ─── */
-function renderFileList(section, files) {
+/* ─── RENDER FILES ─── */
+function renderFiles(section, files) {
   const list = document.getElementById(section + '-list');
   const isConch = section === 'conch';
   const cls = isConch ? 'conch' : 'cmdr';
-  list.innerHTML = '';
-
-  if (!files || files.length === 0) {
-    list.innerHTML = `<div class="empty-state">No files available yet. Check back soon.</div>`;
+  
+  if (files.length === 0) {
+    list.innerHTML = `<div class="empty-state">Keine ${isConch ? 'Conch' : 'Cmdr'} Dateien gefunden.</div>`;
     return;
   }
-
-  files.forEach(f => {
+  
+  list.innerHTML = '';
+  files.forEach(file => {
     const item = document.createElement('div');
     item.className = 'file-item';
     item.innerHTML = `
       <div class="file-icon fi-${cls}">🧩</div>
       <div class="file-info">
-        <div class="file-name" title="${f.name}">
-          ${f.name}
-          ${f.version ? `<span class="file-version fv-${cls}">${f.version}</span>` : ''}
+        <div class="file-name" title="${file.name}">
+          ${file.name}
+          <span class="file-version fv-${cls}">${file.version}</span>
         </div>
-        <div class="file-meta">${f.size || ''}${f.size && f.date ? ' · ' : ''}${f.date || ''} · GitHub Release · .rbxm</div>
+        <div class="file-meta">${file.size} · ${file.date} · .rbxm</div>
       </div>
       <div class="file-actions">
-        <a class="btn-dl btn-dl-${cls}" href="${f.url}" download="${f.name}" target="_blank" rel="noopener">
+        <a class="btn-dl btn-dl-${cls}" href="${file.downloadUrl}" download="${file.name}" target="_blank" rel="noopener">
           ↓ Download
         </a>
       </div>
@@ -827,72 +522,17 @@ function renderFileList(section, files) {
   });
 }
 
-/* ─── ANNOUNCEMENT RENDERING ─── */
-const TAG_CLASS = { update: 'tag-update', patch: 'tag-patch', notice: 'tag-notice', feature: 'tag-feature' };
-const TAG_LABEL = { update: 'Update', patch: 'Patch', notice: 'Notice', feature: 'Feature' };
-
-function renderAnnouncements() {
-  const grid = document.getElementById('ann-grid');
-  const items = CONFIG.ANNOUNCEMENTS || [];
-
-  if (items.length === 0) {
-    grid.innerHTML = `<div class="ann-empty">No announcements yet. Check back soon.</div>`;
-    return;
-  }
-
-  // Pinned first
-  const sorted = [...items].sort((a, b) => (b.pinned ? 1 : 0) - (a.pinned ? 1 : 0));
-
-  grid.innerHTML = '';
-  sorted.forEach(ann => {
-    const dotCls = ann.footer === 'conch' ? 'dot-conch' : ann.footer === 'cmdr' ? 'dot-cmdr' : 'dot-yellow';
-    const tagCls = TAG_CLASS[ann.tag] || 'tag-notice';
-    const tagLabel = TAG_LABEL[ann.tag] || ann.tag;
-    const card = document.createElement('div');
-    card.className = 'ann-card' + (ann.pinned ? ' pinned' : '');
-    card.innerHTML = `
-      <div class="ann-card-head">
-        <div class="ann-card-icon">${ann.icon || '📣'}</div>
-        <div class="ann-card-meta">
-          <div class="ann-card-top">
-            <span class="ann-tag ${tagCls}">${tagLabel}</span>
-            ${ann.pinned ? '<span class="ann-tag tag-pinned">📌 Pinned</span>' : ''}
-            <span class="ann-card-date">${ann.date || ''}</span>
-          </div>
-          <div class="ann-card-title">${ann.title}</div>
-        </div>
-      </div>
-      <div class="ann-card-body"><p>${ann.body}</p></div>
-      ${ann.footerText ? `
-      <div class="ann-card-footer">
-        <span class="ann-footer-dot ${dotCls}"></span>
-        <span class="ann-footer-text">${ann.footerText}</span>
-      </div>` : ''}
-    `;
-    grid.appendChild(card);
-  });
-}
-
-/* ─── COUNTDOWN ─── */
-function updateCountdown() {
-  const diff = CONFIG.RELEASE_DATE - new Date();
-  if (diff <= 0) { ['days','hours','mins','secs'].forEach(u => document.getElementById('cd-'+u).textContent='00'); return; }
-  document.getElementById('cd-days').textContent  = String(Math.floor(diff/86400000)).padStart(2,'0');
-  document.getElementById('cd-hours').textContent = String(Math.floor((diff%86400000)/3600000)).padStart(2,'0');
-  document.getElementById('cd-mins').textContent  = String(Math.floor((diff%3600000)/60000)).padStart(2,'0');
-  document.getElementById('cd-secs').textContent  = String(Math.floor((diff%60000)/1000)).padStart(2,'0');
+/* ─── UTILITIES ─── */
+function formatBytes(bytes) {
+  if (bytes === 0) return '0 B';
+  const k = 1024;
+  const sizes = ['B', 'KB', 'MB', 'GB'];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
 }
 
 /* ─── INIT ─── */
-(function init() {
-  if (CONFIG.MAINTENANCE_MODE) { navigate('maintenance'); document.getElementById('main-nav').style.display='none'; return; }
-  if (CONFIG.SHOW_RELEASE_PAGE) { navigate('release'); document.getElementById('main-nav').style.display='none'; updateCountdown(); setInterval(updateCountdown,1000); return; }
-
-  renderFileList('conch', CONFIG.CONCH_FILES);
-  renderFileList('cmdr',  CONFIG.CMDR_FILES);
-  renderAnnouncements();
-  navigate('main');
-})();
+fetchReleases();
 </script>
 </body>
 </html>
