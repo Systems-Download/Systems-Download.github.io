@@ -80,6 +80,21 @@
   .burger.open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
   .burger.open span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); background: var(--conch); }
 
+  /* ─── REFRESH BUTTON ─── */
+  .btn-refresh {
+    display: flex; align-items: center; justify-content: center;
+    width: 38px; height: 38px; cursor: pointer;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 8px; flex-shrink: 0;
+    transition: border-color 0.2s, background 0.2s, color 0.2s;
+    color: var(--muted);
+  }
+  .btn-refresh:hover { border-color: rgba(15,244,198,0.35); background: var(--surface2); color: var(--conch); }
+  .btn-refresh:disabled { opacity: 0.4; cursor: not-allowed; pointer-events: none; }
+  .btn-refresh svg { width: 15px; height: 15px; }
+  .btn-refresh.spinning svg { animation: spin 0.7s linear infinite; }
+  @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
   /* ─── DRAWER ─── */
   .drawer-overlay {
     position: fixed; inset: 0; z-index: 98;
@@ -502,6 +517,9 @@ const CONFIG = {
   <div class="nav-right">
     <a class="nav-link active" href="index.html">Downloads</a>
     <a class="nav-link" href="announcements.html">Announcements</a>
+    <button class="btn-refresh" id="refresh-btn" onclick="refreshReleases()" aria-label="Reload files" title="Reload files">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+    </button>
     <button class="burger" id="burger-btn" onclick="toggleDrawer()" aria-label="Menu">
       <span></span><span></span><span></span>
     </button>
