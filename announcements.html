@@ -250,11 +250,15 @@
     font-family: var(--mono); font-size: 0.65rem; letter-spacing: 0.1em;
     text-transform: uppercase; padding: 0.2rem 0.55rem; border-radius: 4px;
   }
-  .tag-update  { background: rgba(15,244,198,0.1); color: var(--conch); border: 1px solid rgba(15,244,198,0.2); }
-  .tag-patch   { background: rgba(255,79,94,0.1); color: var(--cmdr); border: 1px solid rgba(255,79,94,0.2); }
-  .tag-notice  { background: rgba(255,200,50,0.1); color: #ffc832; border: 1px solid rgba(255,200,50,0.2); }
-  .tag-feature { background: rgba(120,80,255,0.1); color: #a880ff; border: 1px solid rgba(120,80,255,0.2); }
-  .tag-pinned  { background: rgba(15,244,198,0.06); color: var(--conch); border: 1px solid rgba(15,244,198,0.15); opacity: 0.8; }
+  .tag-update     { background: rgba(15,244,198,0.1); color: var(--conch); border: 1px solid rgba(15,244,198,0.2); }
+  .tag-patch      { background: rgba(255,79,94,0.1); color: var(--cmdr); border: 1px solid rgba(255,79,94,0.2); }
+  .tag-notice     { background: rgba(255,200,50,0.1); color: #ffc832; border: 1px solid rgba(255,200,50,0.2); }
+  .tag-feature    { background: rgba(120,80,255,0.1); color: #a880ff; border: 1px solid rgba(120,80,255,0.2); }
+  .tag-breaking   { background: rgba(255,50,80,0.12); color: #ff5080; border: 1px solid rgba(255,50,80,0.25); }
+  .tag-security   { background: rgba(255,150,0,0.1); color: #ff9600; border: 1px solid rgba(255,150,0,0.2); }
+  .tag-deprecation{ background: rgba(150,150,150,0.1); color: #9ca3af; border: 1px solid rgba(150,150,150,0.2); }
+  .tag-info       { background: rgba(60,140,255,0.1); color: #3c8cff; border: 1px solid rgba(60,140,255,0.2); }
+  .tag-pinned     { background: rgba(15,244,198,0.06); color: var(--conch); border: 1px solid rgba(15,244,198,0.15); opacity: 0.8; }
 
   .ann-card-title {
     font-size: 1.05rem; font-weight: 700; letter-spacing: -0.01em; color: var(--text);
@@ -321,44 +325,88 @@ const ANNOUNCEMENTS = [
     pinned: true,
     icon: '📦',
     tag: 'update',
-    title: 'Neue Releases verfügbar',
+    title: 'New Releases Available',
     date: '2025-05-01',
-    body: 'Neue Versionen von <strong>Conch</strong> und <strong>Cmdr</strong> sind jetzt verfügbar! Alle .rbxm Dateien werden automatisch von GitHub Releases geladen.',
+    body: 'New versions of <strong>Conch</strong> and <strong>Cmdr</strong> are now available! All .rbxm files are automatically loaded from GitHub Releases.',
     footer: 'conch',
-    footerText: 'Schau dir die Downloads Seite an für die neuesten Versionen',
+    footerText: 'Check out the Downloads page for the latest versions',
   },
   {
     id: 2,
     pinned: false,
     icon: '🔧',
     tag: 'patch',
-    title: 'Automatische Erkennung implementiert',
+    title: 'Automatic Detection Implemented',
     date: '2025-03-14',
-    body: 'Das System erkennt jetzt automatisch <strong>.rbxm Dateien</strong> in GitHub Releases und sortiert sie nach "Conch" oder "Cmdr" im Dateinamen.',
+    body: 'The system now automatically detects <strong>.rbxm files</strong> in GitHub Releases and sorts them by "Conch" or "Cmdr" in the filename.',
     footer: 'cmdr',
-    footerText: 'Keine manuelle Konfiguration mehr nötig',
+    footerText: 'No more manual configuration needed',
   },
   {
     id: 3,
     pinned: false,
-    icon: '📣',
-    tag: 'notice',
-    title: 'Download Hub ist live',
-    date: '2025-02-20',
-    body: 'Der neue <strong>Conch & Cmdr Download Hub</strong> ist jetzt verfügbar. Alle Dateien werden direkt von GitHub Releases geladen - kein Repository-Zugriff nötig.',
+    icon: '🔒',
+    tag: 'security',
+    title: 'Enhanced Security Checks',
+    date: '2025-03-10',
+    body: 'All downloaded files are now verified with <strong>SHA-256 checksums</strong> to ensure integrity and security.',
     footer: 'yellow',
-    footerText: 'Nur direkte Download-Links verfügbar',
+    footerText: 'Your safety is our priority',
   },
   {
     id: 4,
     pinned: false,
+    icon: '⚠️',
+    tag: 'breaking',
+    title: 'API Changes in v3.0',
+    date: '2025-03-01',
+    body: '<strong>Breaking:</strong> Legacy API endpoints have been removed. Please update to the new API structure before upgrading.',
+    footer: 'cmdr',
+    footerText: 'Check migration guide in documentation',
+  },
+  {
+    id: 5,
+    pinned: false,
+    icon: '📊',
+    tag: 'deprecation',
+    title: 'Old Format Support Ending',
+    date: '2025-02-25',
+    body: 'Support for <strong>.rbxl format</strong> will be deprecated in v4.0. Please migrate to .rbxm format.',
+    footer: 'conch',
+    footerText: 'Migration tools available in downloads',
+  },
+  {
+    id: 6,
+    pinned: false,
+    icon: '📣',
+    tag: 'notice',
+    title: 'Download Hub is Live',
+    date: '2025-02-20',
+    body: 'The new <strong>Conch & Cmdr Download Hub</strong> is now available. All files are loaded directly from GitHub Releases - no repository access needed.',
+    footer: 'yellow',
+    footerText: 'Only direct download links available',
+  },
+  {
+    id: 7,
+    pinned: false,
     icon: '✨',
     tag: 'feature',
-    title: 'Automatisches Sortieren',
+    title: 'Automatic Sorting',
     date: '2025-02-15',
-    body: 'Dateien werden jetzt automatisch sortiert basierend auf ihrem Namen. <strong>Beispiel:</strong> "Cmdr V3.rbxm" wird automatisch in die Cmdr-Sektion einsortiert.',
+    body: 'Files are now automatically sorted based on their name. <strong>Example:</strong> "Cmdr V3.rbxm" will automatically be sorted into the Cmdr section.',
     footer: 'conch',
-    footerText: 'Intelligente Erkennung läuft im Hintergrund',
+    footerText: 'Intelligent detection runs in the background',
+  },
+  {
+    id: 8,
+    pinned: false,
+    icon: 'ℹ️',
+    tag: 'info',
+    title: 'System Maintenance Scheduled',
+    date: '2025-02-10',
+    body: 'Scheduled maintenance window on <strong>February 15th, 2:00-4:00 AM UTC</strong>. Downloads may be temporarily unavailable.',
+    footer: 'yellow',
+    footerText: 'Plan your downloads accordingly',
   },
 ];
 </script>
@@ -423,7 +471,7 @@ const ANNOUNCEMENTS = [
   <div class="ann-hero">
     <div class="ann-hero-label">Live Updates</div>
     <h1>Announcements<br><em>&amp; Changelog</em></h1>
-    <p>Neuigkeiten, Updates und Änderungen für Conch &amp; Cmdr.</p>
+    <p>Latest news, updates and changes for Conch &amp; Cmdr.</p>
   </div>
   
   <div class="ann-grid" id="ann-grid"></div>
@@ -455,13 +503,21 @@ const TAG_CLASS = {
   update: 'tag-update', 
   patch: 'tag-patch', 
   notice: 'tag-notice', 
-  feature: 'tag-feature' 
+  feature: 'tag-feature',
+  breaking: 'tag-breaking',
+  security: 'tag-security',
+  deprecation: 'tag-deprecation',
+  info: 'tag-info'
 };
 const TAG_LABEL = { 
   update: 'Update', 
   patch: 'Patch', 
   notice: 'Notice', 
-  feature: 'Feature' 
+  feature: 'Feature',
+  breaking: 'Breaking',
+  security: 'Security',
+  deprecation: 'Deprecated',
+  info: 'Info'
 };
 
 function renderAnnouncements() {
@@ -469,11 +525,11 @@ function renderAnnouncements() {
   const items = ANNOUNCEMENTS || [];
 
   if (items.length === 0) {
-    grid.innerHTML = `<div class="ann-empty">Keine Announcements verfügbar.</div>`;
+    grid.innerHTML = `<div class="ann-empty">No announcements available.</div>`;
     return;
   }
 
-  // Pinned zuerst sortieren
+  // Sort pinned first
   const sorted = [...items].sort((a, b) => (b.pinned ? 1 : 0) - (a.pinned ? 1 : 0));
 
   grid.innerHTML = '';
