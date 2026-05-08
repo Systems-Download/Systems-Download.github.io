@@ -7,474 +7,182 @@
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
   :root {
-    --conch: #0ff4c6;
-    --conch-dim: #0bb88e;
-    --conch-dark: #003d2a;
-    --cmdr: #ff4f5e;
-    --cmdr-dim: #c8333f;
-    --cmdr-dark: #3d0007;
-    --bg: #0b0c0f;
-    --surface: #13151a;
-    --surface2: #1a1d24;
-    --border: rgba(255,255,255,0.07);
-    --text: #e8eaf0;
-    --muted: #6b7280;
-    --mono: 'JetBrains Mono', monospace;
-    --sans: 'Syne', sans-serif;
+    --conch: #0ff4c6; --conch-dim: #0bb88e;
+    --cmdr: #ff4f5e;  --cmdr-dim: #c8333f;
+    --bg: #0b0c0f; --surface: #13151a; --surface2: #1a1d24;
+    --border: rgba(255,255,255,0.07); --text: #e8eaf0; --muted: #6b7280;
+    --mono: 'JetBrains Mono', monospace; --sans: 'Syne', sans-serif;
   }
-
   html { scroll-behavior: smooth; }
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: var(--sans);
-    min-height: 100vh;
-    overflow-x: hidden;
-  }
+  body { background: var(--bg); color: var(--text); font-family: var(--sans); min-height: 100vh; overflow-x: hidden; }
 
-  /* ─── NAV ─── */
-  nav {
-    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 1rem 2.5rem;
-    background: rgba(11,12,15,0.9);
-    backdrop-filter: blur(12px);
-    border-bottom: 1px solid var(--border);
-    height: 64px;
-  }
-  .nav-logo {
-    font-size: 1.1rem; font-weight: 800; letter-spacing: -0.02em;
-    display: flex; gap: 0.4em; align-items: center;
-    cursor: pointer; user-select: none;
-  }
-  .nav-logo span:first-child { color: var(--conch); }
-  .nav-logo span:last-child  { color: var(--cmdr); }
-  .nav-logo .sep { color: var(--muted); }
+  /* NAV */
+  nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 1rem 2.5rem; background: rgba(11,12,15,0.9); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); height: 64px; }
+  .nav-logo { font-size: 1.1rem; font-weight: 800; letter-spacing: -0.02em; display: flex; gap: 0.4em; align-items: center; user-select: none; }
+  .nav-logo .c { color: var(--conch); } .nav-logo .r { color: var(--cmdr); } .nav-logo .sep { color: var(--muted); }
+  .nav-right { display: flex; align-items: center; gap: 0.6rem; }
+  nav a.nav-link { color: var(--muted); text-decoration: none; font-size: 0.8rem; font-family: var(--mono); letter-spacing: 0.04em; transition: color 0.2s; padding: 0 0.3rem; }
+  nav a.nav-link:hover { color: var(--text); } nav a.nav-link.active { color: var(--conch); }
 
-  .nav-right { display: flex; align-items: center; gap: 1.5rem; }
-  nav a.nav-link {
-    color: var(--muted); text-decoration: none; font-size: 0.8rem;
-    font-family: var(--mono); letter-spacing: 0.04em; transition: color 0.2s;
-  }
-  nav a.nav-link:hover { color: var(--text); }
-  nav a.nav-link.active { color: var(--conch); }
+  /* LANG */
+  .lang-select { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; color: var(--muted); font-family: var(--mono); font-size: 0.72rem; padding: 0.42rem 0.6rem; cursor: pointer; outline: none; transition: border-color 0.2s, color 0.2s; appearance: none; }
+  .lang-select:hover { border-color: rgba(255,255,255,0.18); color: var(--text); }
+  .lang-select option { background: #1a1d24; }
 
-  /* ─── BURGER ─── */
-  .burger {
-    display: flex; flex-direction: column; justify-content: center;
-    gap: 5px; width: 38px; height: 38px; cursor: pointer;
-    background: var(--surface); border: 1px solid var(--border);
-    border-radius: 8px; padding: 9px;
-    transition: border-color 0.2s, background 0.2s;
-    flex-shrink: 0;
-  }
+  /* ICON BTN */
+  .icon-btn { display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; cursor: pointer; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; flex-shrink: 0; transition: border-color 0.2s, background 0.2s, color 0.2s; color: var(--muted); }
+  .icon-btn:hover { border-color: rgba(15,244,198,0.35); background: var(--surface2); color: var(--conch); }
+  .icon-btn:disabled { opacity: 0.4; cursor: not-allowed; pointer-events: none; }
+  .icon-btn svg { width: 15px; height: 15px; }
+  .icon-btn.spinning svg { animation: spin 0.7s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* BURGER */
+  .burger { display: flex; flex-direction: column; justify-content: center; gap: 5px; width: 36px; height: 36px; cursor: pointer; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 9px; transition: border-color 0.2s, background 0.2s; flex-shrink: 0; }
   .burger:hover { border-color: rgba(255,255,255,0.18); background: var(--surface2); }
-  .burger span {
-    display: block; height: 1.5px; border-radius: 2px;
-    background: var(--muted); transition: all 0.3s;
-    transform-origin: center;
-  }
+  .burger span { display: block; height: 1.5px; border-radius: 2px; background: var(--muted); transition: all 0.3s; transform-origin: center; }
   .burger.open span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); background: var(--conch); }
   .burger.open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
   .burger.open span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); background: var(--conch); }
 
-  /* ─── REFRESH BUTTON ─── */
-  .btn-refresh {
-    display: flex; align-items: center; justify-content: center;
-    width: 38px; height: 38px; cursor: pointer;
-    background: var(--surface); border: 1px solid var(--border);
-    border-radius: 8px; flex-shrink: 0;
-    transition: border-color 0.2s, background 0.2s, color 0.2s;
-    color: var(--muted);
-  }
-  .btn-refresh:hover { border-color: rgba(15,244,198,0.35); background: var(--surface2); color: var(--conch); }
-  .btn-refresh:disabled { opacity: 0.4; cursor: not-allowed; pointer-events: none; }
-  .btn-refresh svg { width: 15px; height: 15px; }
-  .btn-refresh.spinning svg { animation: spin 0.7s linear infinite; }
-  @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-
-  /* ─── DRAWER ─── */
-  .drawer-overlay {
-    position: fixed; inset: 0; z-index: 98;
-    background: rgba(0,0,0,0.5);
-    opacity: 0; pointer-events: none;
-    transition: opacity 0.3s;
-  }
+  /* DRAWER */
+  .drawer-overlay { position: fixed; inset: 0; z-index: 98; background: rgba(0,0,0,0.5); opacity: 0; pointer-events: none; transition: opacity 0.3s; }
   .drawer-overlay.open { opacity: 1; pointer-events: all; }
-
-  .drawer {
-    position: fixed; top: 0; right: 0; bottom: 0; z-index: 99;
-    width: 280px;
-    background: #0e1014;
-    border-left: 1px solid var(--border);
-    transform: translateX(100%);
-    transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-    display: flex; flex-direction: column;
-    padding: 0;
-  }
+  .drawer { position: fixed; top: 0; right: 0; bottom: 0; z-index: 99; width: 280px; background: #0e1014; border-left: 1px solid var(--border); transform: translateX(100%); transition: transform 0.35s cubic-bezier(0.4,0,0.2,1); display: flex; flex-direction: column; }
   .drawer.open { transform: translateX(0); }
-
-  .drawer-head {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 1.2rem 1.5rem;
-    border-bottom: 1px solid var(--border);
-    height: 64px;
-  }
-  .drawer-logo {
-    font-size: 1rem; font-weight: 800; letter-spacing: -0.02em;
-    display: flex; gap: 0.3em;
-  }
-  .drawer-logo span:first-child { color: var(--conch); }
-  .drawer-logo span:last-child  { color: var(--cmdr); }
-  .drawer-logo .sep { color: var(--muted); }
-
-  .drawer-close {
-    background: none; border: none; cursor: pointer;
-    color: var(--muted); font-size: 1.1rem; padding: 0.3rem;
-    transition: color 0.2s; line-height: 1;
-  }
+  .drawer-head { display: flex; align-items: center; justify-content: space-between; padding: 1.2rem 1.5rem; border-bottom: 1px solid var(--border); height: 64px; }
+  .drawer-logo { font-size: 1rem; font-weight: 800; display: flex; gap: 0.3em; }
+  .drawer-logo .c { color: var(--conch); } .drawer-logo .r { color: var(--cmdr); } .drawer-logo .sep { color: var(--muted); }
+  .drawer-close { background: none; border: none; cursor: pointer; color: var(--muted); font-size: 1.1rem; padding: 0.3rem; transition: color 0.2s; }
   .drawer-close:hover { color: var(--text); }
-
-  .drawer-section-label {
-    font-family: var(--mono); font-size: 0.62rem;
-    letter-spacing: 0.14em; text-transform: uppercase;
-    color: var(--muted); padding: 1.2rem 1.5rem 0.5rem;
-    opacity: 0.6;
-  }
-
+  .drawer-slabel { font-family: var(--mono); font-size: 0.62rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); padding: 1.2rem 1.5rem 0.5rem; opacity: 0.6; }
   .drawer-nav { flex: 1; overflow-y: auto; padding: 0.5rem 0.75rem; }
-
-  .drawer-item {
-    display: flex; align-items: center; gap: 0.75rem;
-    padding: 0.75rem 0.75rem; border-radius: 8px;
-    cursor: pointer; transition: background 0.18s;
-    text-decoration: none; color: var(--muted);
-    font-family: var(--mono); font-size: 0.82rem;
-    letter-spacing: 0.02em;
-    margin-bottom: 2px;
-    border: 1px solid transparent;
-  }
+  .drawer-item { display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem; border-radius: 8px; text-decoration: none; color: var(--muted); font-family: var(--mono); font-size: 0.82rem; margin-bottom: 2px; border: 1px solid transparent; transition: background 0.18s; }
   .drawer-item:hover { background: var(--surface); border-color: var(--border); color: var(--text); }
   .drawer-item.active { background: rgba(15,244,198,0.07); border-color: rgba(15,244,198,0.15); color: var(--conch); }
+  .drawer-icon { width: 28px; height: 28px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 0.85rem; flex-shrink: 0; background: var(--surface2); border: 1px solid var(--border); }
+  .drawer-div { height: 1px; background: var(--border); margin: 0.75rem; }
+  .drawer-footer { padding: 1.2rem 1.5rem; border-top: 1px solid var(--border); font-family: var(--mono); font-size: 0.7rem; color: var(--muted); opacity: 0.5; }
 
-  .drawer-icon {
-    width: 28px; height: 28px; border-radius: 6px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 0.85rem; flex-shrink: 0;
-    background: var(--surface2); border: 1px solid var(--border);
-  }
-
-  .drawer-divider { height: 1px; background: var(--border); margin: 0.75rem 0.75rem; }
-
-  .drawer-footer {
-    padding: 1.2rem 1.5rem;
-    border-top: 1px solid var(--border);
-    font-family: var(--mono); font-size: 0.7rem; color: var(--muted);
-    opacity: 0.5;
-  }
-
-  /* ─── HERO ─── */
-  .hero {
-    padding: 9rem 2.5rem 5rem;
-    text-align: center;
-    position: relative;
-    overflow: hidden;
-  }
-  .hero::before {
-    content: '';
-    position: absolute; top: -120px; left: 50%; transform: translateX(-50%);
-    width: 700px; height: 700px; border-radius: 50%;
-    background: radial-gradient(circle, rgba(0,255,198,0.04) 0%, transparent 70%);
-    pointer-events: none;
-  }
-  .hero h1 {
-    font-size: clamp(2.8rem, 7vw, 5.5rem);
-    font-weight: 800; line-height: 1.05; letter-spacing: -0.03em;
-    margin-bottom: 1.2rem;
-  }
-  .hero h1 em     { font-style: normal; color: var(--conch); }
-  .hero h1 strong { font-style: normal; color: var(--cmdr); }
-  .hero p {
-    font-family: var(--mono); font-size: 0.9rem;
-    color: var(--muted); max-width: 520px; margin: 0 auto 2.5rem;
-    line-height: 1.8;
-  }
+  /* HERO */
+  .hero { padding: 9rem 2.5rem 5rem; text-align: center; position: relative; overflow: hidden; }
+  .hero::before { content: ''; position: absolute; top: -120px; left: 50%; transform: translateX(-50%); width: 700px; height: 700px; border-radius: 50%; background: radial-gradient(circle, rgba(0,255,198,0.04) 0%, transparent 70%); pointer-events: none; }
+  .hero h1 { font-size: clamp(2.8rem, 7vw, 5.5rem); font-weight: 800; line-height: 1.05; letter-spacing: -0.03em; margin-bottom: 1.2rem; }
+  .hero h1 em { font-style: normal; color: var(--conch); } .hero h1 strong { font-style: normal; color: var(--cmdr); }
+  .hero p { font-family: var(--mono); font-size: 0.9rem; color: var(--muted); max-width: 520px; margin: 0 auto 2.5rem; line-height: 1.8; }
   .scroll-hint { display: inline-flex; gap: 1.5rem; flex-wrap: wrap; justify-content: center; }
-  .scroll-hint a {
-    padding: 0.6rem 1.4rem; border-radius: 6px;
-    font-family: var(--mono); font-size: 0.8rem; letter-spacing: 0.05em;
-    text-decoration: none; transition: all 0.2s;
-  }
-  .scroll-hint a.c { border: 1px solid var(--conch); color: var(--conch); }
-  .scroll-hint a.c:hover { background: rgba(0,255,198,0.08); }
-  .scroll-hint a.r { border: 1px solid var(--cmdr); color: var(--cmdr); }
-  .scroll-hint a.r:hover { background: rgba(255,79,94,0.08); }
+  .scroll-hint a { padding: 0.6rem 1.4rem; border-radius: 6px; font-family: var(--mono); font-size: 0.8rem; letter-spacing: 0.05em; text-decoration: none; transition: all 0.2s; }
+  .scroll-hint a.c { border: 1px solid var(--conch); color: var(--conch); } .scroll-hint a.c:hover { background: rgba(0,255,198,0.08); }
+  .scroll-hint a.r { border: 1px solid var(--cmdr);  color: var(--cmdr);  } .scroll-hint a.r:hover { background: rgba(255,79,94,0.08); }
 
-  /* ─── LIVE SEARCH ─── */
-  .search-wrap {
-    margin-bottom: 1.5rem;
-    position: relative;
-  }
-  .search-icon {
-    position: absolute; left: 1rem; top: 50%; transform: translateY(-50%);
-    color: var(--muted); font-size: 0.85rem; pointer-events: none;
-  }
-  .search-input {
-    width: 100%;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    color: var(--text);
-    font-family: var(--mono);
-    font-size: 0.82rem;
-    padding: 0.75rem 1rem 0.75rem 2.4rem;
-    outline: none;
-    transition: border-color 0.2s;
-  }
+  /* SEARCH */
+  .search-wrap { margin-bottom: 1.5rem; position: relative; }
+  .search-icon { position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: 0.85rem; pointer-events: none; }
+  .search-input { width: 100%; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; color: var(--text); font-family: var(--mono); font-size: 0.82rem; padding: 0.75rem 2.4rem; outline: none; transition: border-color 0.2s; }
   .search-input::placeholder { color: var(--muted); }
-  .search-input:focus { border-color: rgba(255,255,255,0.2); }
-  .search-input.conch-focus:focus { border-color: rgba(15,244,198,0.4); }
-  .search-input.cmdr-focus:focus  { border-color: rgba(255,79,94,0.4); }
-  .search-clear {
-    position: absolute; right: 0.8rem; top: 50%; transform: translateY(-50%);
-    background: none; border: none; cursor: pointer;
-    color: var(--muted); font-size: 0.9rem; padding: 0.2rem;
-    display: none; transition: color 0.2s; line-height: 1;
-  }
-  .search-clear:hover { color: var(--text); }
-  .search-clear.visible { display: block; }
+  .search-input.cf:focus { border-color: rgba(15,244,198,0.4); } .search-input.rf:focus { border-color: rgba(255,79,94,0.4); }
+  .search-clear { position: absolute; right: 0.8rem; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: var(--muted); font-size: 0.9rem; padding: 0.2rem; display: none; transition: color 0.2s; }
+  .search-clear:hover { color: var(--text); } .search-clear.vis { display: block; }
 
-  /* ─── SECTIONS ─── */
-  .section {
-    padding: 5rem 2.5rem;
-    max-width: 1100px;
-    margin: 0 auto;
-  }
-  .section-header {
-    display: flex; align-items: flex-end; gap: 1.2rem;
-    margin-bottom: 2.5rem;
-    padding-bottom: 1.5rem;
-    border-bottom: 1px solid var(--border);
-  }
-  .section-badge {
-    font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.12em;
-    text-transform: uppercase; padding: 0.3rem 0.7rem;
-    border-radius: 4px; line-height: 1;
-  }
-  .badge-conch { background: rgba(0,255,198,0.1); color: var(--conch); border: 1px solid rgba(0,255,198,0.2); }
-  .badge-cmdr  { background: rgba(255,79,94,0.1);  color: var(--cmdr);  border: 1px solid rgba(255,79,94,0.2); }
+  /* SECTIONS */
+  .section { padding: 5rem 2.5rem; max-width: 1100px; margin: 0 auto; }
+  .section-header { display: flex; align-items: flex-end; gap: 1.2rem; margin-bottom: 2.5rem; padding-bottom: 1.5rem; border-bottom: 1px solid var(--border); }
+  .sbadge { font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.12em; text-transform: uppercase; padding: 0.3rem 0.7rem; border-radius: 4px; }
+  .sbadge-c { background: rgba(0,255,198,0.1); color: var(--conch); border: 1px solid rgba(0,255,198,0.2); }
+  .sbadge-r { background: rgba(255,79,94,0.1);  color: var(--cmdr);  border: 1px solid rgba(255,79,94,0.2); }
   .section-header h2 { font-size: 2.6rem; font-weight: 800; letter-spacing: -0.03em; line-height: 1; }
-  .section-header h2.conch { color: var(--conch); }
-  .section-header h2.cmdr  { color: var(--cmdr); }
-  .section-desc {
-    font-family: var(--mono); font-size: 0.85rem; color: var(--muted);
-    line-height: 1.8; max-width: 600px; margin-bottom: 1.5rem;
-  }
+  .section-header h2.c { color: var(--conch); } .section-header h2.r { color: var(--cmdr); }
+  .section-desc { font-family: var(--mono); font-size: 0.85rem; color: var(--muted); line-height: 1.8; max-width: 600px; margin-bottom: 1.5rem; }
 
-  /* ─── FILE LIST ─── */
+  /* FILE LIST */
   .file-list { display: flex; flex-direction: column; gap: 0.6rem; }
-
-  .file-item {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    overflow: hidden;
-    transition: border-color 0.2s, transform 0.2s;
-    animation: slideIn 0.3s ease;
-  }
-  @keyframes slideIn {
-    from { opacity: 0; transform: translateY(8px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
+  .file-item { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; transition: border-color 0.2s, transform 0.2s; animation: slideIn 0.3s ease; }
+  @keyframes slideIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
   .file-item:hover { border-color: rgba(255,255,255,0.15); transform: translateX(2px); }
   .file-item.hidden { display: none; }
-
-  .file-main {
-    display: flex; align-items: center; gap: 1rem;
-    padding: 0.9rem 1.2rem;
-  }
-  .file-icon {
-    width: 36px; height: 36px; border-radius: 8px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 1rem; flex-shrink: 0;
-  }
-  .fi-conch { background: rgba(0,255,198,0.1); color: var(--conch); }
-  .fi-cmdr  { background: rgba(255,79,94,0.1);  color: var(--cmdr); }
+  .file-main { display: flex; align-items: center; gap: 1rem; padding: 0.9rem 1.2rem; }
+  .file-icon { width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1rem; flex-shrink: 0; }
+  .fi-c { background: rgba(0,255,198,0.1); color: var(--conch); } .fi-r { background: rgba(255,79,94,0.1); color: var(--cmdr); }
   .file-info { flex: 1; min-width: 0; }
-  .file-name {
-    font-family: var(--mono); font-size: 0.85rem; font-weight: 600;
-    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-    color: var(--text);
-  }
-  .file-version {
-    display: inline-block;
-    font-family: var(--mono); font-size: 0.68rem;
-    padding: 0.1rem 0.45rem; border-radius: 3px;
-    margin-left: 0.5rem; vertical-align: middle;
-  }
-  .fv-conch { background: rgba(0,255,198,0.12); color: var(--conch); }
-  .fv-cmdr  { background: rgba(255,79,94,0.12);  color: var(--cmdr); }
-  .file-meta { font-family: var(--mono); font-size: 0.72rem; color: var(--muted); margin-top: 0.15rem; }
-  .file-actions { display: flex; gap: 0.5rem; flex-shrink: 0; align-items: center; }
+  .file-name-row { display: flex; align-items: center; gap: 0.4rem; overflow: hidden; }
+  .file-name { font-family: var(--mono); font-size: 0.85rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--text); }
+  .fver { font-family: var(--mono); font-size: 0.68rem; padding: 0.1rem 0.45rem; border-radius: 3px; flex-shrink: 0; }
+  .fver-c { background: rgba(0,255,198,0.12); color: var(--conch); } .fver-r { background: rgba(255,79,94,0.12); color: var(--cmdr); }
+  .badge-new { font-family: var(--mono); font-size: 0.6rem; padding: 0.1rem 0.4rem; border-radius: 3px; background: rgba(255,200,50,0.15); color: #ffc832; border: 1px solid rgba(255,200,50,0.3); flex-shrink: 0; }
+  .file-meta { font-family: var(--mono); font-size: 0.71rem; color: var(--muted); margin-top: 0.2rem; display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap; }
+  .file-actions { display: flex; gap: 0.4rem; flex-shrink: 0; align-items: center; }
 
-  .btn-dl {
-    font-family: var(--mono); font-size: 0.75rem; letter-spacing: 0.04em;
-    padding: 0.45rem 1rem; border-radius: 6px; border: none;
-    cursor: pointer; text-decoration: none; display: inline-flex;
-    align-items: center; gap: 0.4em; transition: all 0.2s;
-    position: relative; overflow: hidden;
-  }
-  .btn-dl-conch { background: rgba(0,255,198,0.12); color: var(--conch); }
-  .btn-dl-conch:hover { background: rgba(0,255,198,0.22); }
-  .btn-dl-cmdr  { background: rgba(255,79,94,0.12);  color: var(--cmdr); }
-  .btn-dl-cmdr:hover  { background: rgba(255,79,94,0.22); }
+  /* BUTTONS */
+  .btn-dl { font-family: var(--mono); font-size: 0.75rem; letter-spacing: 0.04em; padding: 0.45rem 1rem; border-radius: 6px; border: none; cursor: pointer; display: inline-flex; align-items: center; gap: 0.4em; transition: all 0.2s; position: relative; overflow: hidden; }
+  .btn-dl-c { background: rgba(0,255,198,0.12); color: var(--conch); } .btn-dl-c:hover { background: rgba(0,255,198,0.22); }
+  .btn-dl-r { background: rgba(255,79,94,0.12);  color: var(--cmdr);  } .btn-dl-r:hover  { background: rgba(255,79,94,0.22); }
+  .btn-dl::after { content: ''; position: absolute; inset: 0; background: rgba(255,255,255,0.1); transform: scaleX(0); transform-origin: left; transition: transform 0.3s; }
+  .btn-dl.dling::after { transform: scaleX(1); }
 
-  /* download ripple */
-  .btn-dl::after {
-    content: ''; position: absolute; inset: 0;
-    background: rgba(255,255,255,0.1);
-    transform: scaleX(0); transform-origin: left;
-    transition: transform 0.3s ease;
-  }
-  .btn-dl.downloading::after { transform: scaleX(1); }
+  .btn-sm { font-family: var(--mono); font-size: 0.72rem; padding: 0.38rem 0.55rem; border-radius: 6px; border: 1px solid var(--border); background: none; color: var(--muted); cursor: pointer; display: inline-flex; align-items: center; transition: all 0.2s; }
+  .btn-sm:hover { border-color: rgba(255,255,255,0.18); color: var(--text); }
+  .btn-sm.copied { border-color: rgba(15,244,198,0.4); color: var(--conch); }
 
-  /* history toggle */
-  .btn-history {
-    font-family: var(--mono); font-size: 0.72rem;
-    padding: 0.4rem 0.7rem; border-radius: 6px;
-    border: 1px solid var(--border); background: none;
-    color: var(--muted); cursor: pointer;
-    display: inline-flex; align-items: center; gap: 0.35em;
-    transition: all 0.2s;
-  }
-  .btn-history:hover { border-color: rgba(255,255,255,0.18); color: var(--text); }
-  .btn-history.open { color: var(--text); border-color: rgba(255,255,255,0.18); }
-  .btn-history .arrow { transition: transform 0.2s; display: inline-block; }
-  .btn-history.open .arrow { transform: rotate(180deg); }
+  .btn-hist { font-family: var(--mono); font-size: 0.72rem; padding: 0.38rem 0.65rem; border-radius: 6px; border: 1px solid var(--border); background: none; color: var(--muted); cursor: pointer; display: inline-flex; align-items: center; gap: 0.3em; transition: all 0.2s; }
+  .btn-hist:hover { border-color: rgba(255,255,255,0.18); color: var(--text); }
+  .btn-hist.open { color: var(--text); border-color: rgba(255,255,255,0.18); }
+  .btn-hist .arr { transition: transform 0.2s; } .btn-hist.open .arr { transform: rotate(180deg); }
 
-  /* ─── VERSION HISTORY ─── */
-  .version-history {
-    border-top: 1px solid var(--border);
-    background: var(--bg);
-    overflow: hidden;
-    max-height: 0;
-    transition: max-height 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-  .version-history.open { max-height: 600px; }
+  .btn-dl-xs { font-family: var(--mono); font-size: 0.68rem; padding: 0.22rem 0.55rem; border-radius: 4px; border: none; cursor: pointer; display: inline-flex; align-items: center; transition: all 0.2s; flex-shrink: 0; }
+  .xs-c { background: rgba(0,255,198,0.08); color: var(--conch); } .xs-c:hover { background: rgba(0,255,198,0.18); }
+  .xs-r { background: rgba(255,79,94,0.08);  color: var(--cmdr); } .xs-r:hover  { background: rgba(255,79,94,0.18); }
 
-  .version-history-inner { padding: 0.75rem 1.2rem; }
-  .version-label {
-    font-family: var(--mono); font-size: 0.62rem; letter-spacing: 0.12em;
-    text-transform: uppercase; color: var(--muted); opacity: 0.6;
-    margin-bottom: 0.5rem;
-  }
-  .version-row {
-    display: flex; align-items: center; gap: 0.75rem;
-    padding: 0.5rem 0;
-    border-bottom: 1px solid var(--border);
-  }
-  .version-row:last-child { border-bottom: none; }
-  .version-tag {
-    font-family: var(--mono); font-size: 0.7rem;
-    padding: 0.1rem 0.45rem; border-radius: 3px;
-    flex-shrink: 0;
-  }
-  .vt-conch { background: rgba(0,255,198,0.08); color: var(--conch-dim); border: 1px solid rgba(0,255,198,0.15); }
-  .vt-cmdr  { background: rgba(255,79,94,0.08);  color: var(--cmdr-dim);  border: 1px solid rgba(255,79,94,0.15); }
-  .version-name { font-family: var(--mono); font-size: 0.78rem; color: var(--muted); flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .version-date { font-family: var(--mono); font-size: 0.7rem; color: var(--muted); opacity: 0.5; flex-shrink: 0; }
-  .btn-dl-small {
-    font-family: var(--mono); font-size: 0.68rem;
-    padding: 0.25rem 0.6rem; border-radius: 4px; border: none;
-    cursor: pointer; text-decoration: none; display: inline-flex;
-    align-items: center; gap: 0.3em; transition: all 0.2s; flex-shrink: 0;
-  }
-  .btn-sm-conch { background: rgba(0,255,198,0.08); color: var(--conch); }
-  .btn-sm-conch:hover { background: rgba(0,255,198,0.18); }
-  .btn-sm-cmdr  { background: rgba(255,79,94,0.08);  color: var(--cmdr); }
-  .btn-sm-cmdr:hover  { background: rgba(255,79,94,0.18); }
+  /* VERSION HISTORY */
+  .ver-history { border-top: 1px solid var(--border); background: var(--bg); overflow: hidden; max-height: 0; transition: max-height 0.35s cubic-bezier(0.4,0,0.2,1); }
+  .ver-history.open { max-height: 800px; }
+  .ver-inner { padding: 0.75rem 1.2rem; }
+  .ver-label { font-family: var(--mono); font-size: 0.62rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); opacity: 0.6; margin-bottom: 0.5rem; }
+  .ver-row { display: flex; align-items: center; gap: 0.75rem; padding: 0.5rem 0; border-bottom: 1px solid var(--border); }
+  .ver-row:last-child { border-bottom: none; }
+  .ver-tag { font-family: var(--mono); font-size: 0.7rem; padding: 0.1rem 0.45rem; border-radius: 3px; flex-shrink: 0; }
+  .vt-c { background: rgba(0,255,198,0.08); color: var(--conch-dim); border: 1px solid rgba(0,255,198,0.15); }
+  .vt-r { background: rgba(255,79,94,0.08);  color: var(--cmdr-dim);  border: 1px solid rgba(255,79,94,0.15); }
+  .ver-name { font-family: var(--mono); font-size: 0.78rem; color: var(--muted); flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .ver-date { font-family: var(--mono); font-size: 0.7rem; color: var(--muted); opacity: 0.5; flex-shrink: 0; }
 
-  /* ─── TOAST ─── */
-  #toast-container {
-    position: fixed; bottom: 1.5rem; right: 1.5rem;
-    z-index: 9999;
-    display: flex; flex-direction: column; gap: 0.5rem;
-    pointer-events: none;
-  }
-  .toast {
-    display: flex; align-items: flex-start; gap: 0.75rem;
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 0.85rem 1.1rem;
-    min-width: 260px; max-width: 340px;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
-    pointer-events: all;
-    animation: toastIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-    transition: opacity 0.3s, transform 0.3s;
-  }
-  .toast.hiding {
-    opacity: 0; transform: translateX(20px);
-  }
-  @keyframes toastIn {
-    from { opacity: 0; transform: translateX(20px) scale(0.95); }
-    to   { opacity: 1; transform: translateX(0) scale(1); }
-  }
-  .toast-icon {
-    width: 28px; height: 28px; border-radius: 6px; flex-shrink: 0;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 0.9rem;
-  }
-  .toast-icon-conch { background: rgba(0,255,198,0.12); color: var(--conch); }
-  .toast-icon-cmdr  { background: rgba(255,79,94,0.12);  color: var(--cmdr); }
-  .toast-icon-ok    { background: rgba(60,200,120,0.15); color: #3cc878; }
-  .toast-body { flex: 1; }
-  .toast-title {
-    font-family: var(--mono); font-size: 0.78rem; font-weight: 600;
-    color: var(--text); margin-bottom: 0.15rem;
-  }
-  .toast-sub {
-    font-family: var(--mono); font-size: 0.7rem; color: var(--muted);
-    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-    max-width: 220px;
-  }
-  .toast-bar {
-    position: absolute; bottom: 0; left: 0; height: 2px; border-radius: 0 0 10px 10px;
-    background: var(--conch); width: 100%;
-    animation: toastBar linear forwards;
-  }
-  @keyframes toastBar { from { width: 100%; } to { width: 0%; } }
-  .toast { position: relative; }
+  /* SKELETON */
+  .skel-item { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 0.9rem 1.2rem; display: flex; align-items: center; gap: 1rem; }
+  .skel { background: linear-gradient(90deg, var(--surface2) 25%, rgba(255,255,255,0.04) 50%, var(--surface2) 75%); background-size: 200% 100%; animation: shimmer 1.4s infinite; border-radius: 4px; }
+  @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+  .skel-ico { width: 36px; height: 36px; border-radius: 8px; flex-shrink: 0; }
+  .skel-body { flex: 1; display: flex; flex-direction: column; gap: 7px; }
+  .skel-l { height: 12px; } .skel-l.w80 { width: 80%; } .skel-l.w50 { width: 50%; }
+  .skel-btn { width: 88px; height: 32px; border-radius: 6px; flex-shrink: 0; }
 
-  /* ─── SEARCH EMPTY ─── */
-  .search-empty {
-    font-family: var(--mono); font-size: 0.8rem; color: var(--muted);
-    text-align: center; padding: 1.5rem; opacity: 0.6;
-    display: none;
-  }
-  .search-empty.visible { display: block; }
+  /* CONFETTI */
+  #confetti-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 8000; }
 
-  /* ─── UTILS ─── */
-  .loading-state, .empty-state, .error-state {
-    font-family: var(--mono); font-size: 0.8rem; color: var(--muted);
-    text-align: center; padding: 1.5rem; opacity: 0.6;
-  }
-  .loading-state { animation: pulse 1.5s ease-in-out infinite; }
-  @keyframes pulse { 0%,100% { opacity: 0.6; } 50% { opacity: 0.3; } }
+  /* TOAST */
+  #toast-container { position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: 9999; display: flex; flex-direction: column; gap: 0.5rem; pointer-events: none; }
+  .toast { display: flex; align-items: flex-start; gap: 0.75rem; background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 0.85rem 1.1rem; min-width: 260px; max-width: 340px; box-shadow: 0 8px 32px rgba(0,0,0,0.4); pointer-events: all; animation: toastIn 0.3s cubic-bezier(0.34,1.56,0.64,1); transition: opacity 0.3s, transform 0.3s; position: relative; overflow: hidden; }
+  .toast.out { opacity: 0; transform: translateX(20px); }
+  @keyframes toastIn { from { opacity: 0; transform: translateX(20px) scale(0.95); } to { opacity: 1; transform: translateX(0) scale(1); } }
+  .t-ico { width: 28px; height: 28px; border-radius: 6px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; }
+  .t-ic { background: rgba(0,255,198,0.12); color: var(--conch); }
+  .t-ir { background: rgba(255,79,94,0.12);  color: var(--cmdr); }
+  .t-iok { background: rgba(60,200,120,0.15); color: #3cc878; }
+  .t-inf { background: rgba(100,160,255,0.15); color: #64a0ff; }
+  .t-body { flex: 1; }
+  .t-title { font-family: var(--mono); font-size: 0.78rem; font-weight: 600; color: var(--text); margin-bottom: 0.15rem; }
+  .t-sub { font-family: var(--mono); font-size: 0.7rem; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 220px; }
+  .t-bar { position: absolute; bottom: 0; left: 0; height: 2px; border-radius: 0 0 10px 10px; animation: tbar linear forwards; }
+  @keyframes tbar { from { width: 100%; } to { width: 0%; } }
 
-  /* ─── DIVIDER ─── */
+  /* STATES */
+  .search-empty { font-family: var(--mono); font-size: 0.8rem; color: var(--muted); text-align: center; padding: 1.5rem; opacity: 0.6; display: none; }
+  .search-empty.vis { display: block; }
+  .empty-state, .error-state { font-family: var(--mono); font-size: 0.8rem; color: var(--muted); text-align: center; padding: 2rem 1.5rem; opacity: 0.6; line-height: 1.7; }
+
+  /* MISC */
   .divider { height: 1px; background: var(--border); margin: 0 2.5rem; }
+  footer { text-align: center; padding: 3rem 2.5rem; font-family: var(--mono); font-size: 0.75rem; color: var(--muted); border-top: 1px solid var(--border); margin-top: 4rem; opacity: 0.5; }
 
-  /* ─── FOOTER ─── */
-  footer {
-    text-align: center; padding: 3rem 2.5rem;
-    font-family: var(--mono); font-size: 0.75rem; color: var(--muted);
-    border-top: 1px solid var(--border); margin-top: 4rem; opacity: 0.5;
-  }
-
-  /* ─── RESPONSIVE ─── */
   @media (max-width: 640px) {
     nav { padding: 1rem 1.2rem; }
     .section { padding: 3rem 1.2rem; }
@@ -482,47 +190,46 @@
     .drawer { width: 260px; }
     #toast-container { bottom: 1rem; right: 1rem; left: 1rem; }
     .toast { min-width: unset; max-width: 100%; }
+    nav a.nav-link { display: none; }
+    .file-actions { gap: 0.3rem; }
+    .btn-hist span:first-child { display: none; }
   }
 </style>
 </head>
 <body>
 
-<!-- ═══════════════════════════════════════════════════════════════
-     CONFIG — EDIT HERE
-═══════════════════════════════════════════════════════════════ -->
 <script>
-const CONFIG = {
-  // GitHub repository (format: "owner/repo")
-  GITHUB_REPO: 'Systems-Download/Systems-Download.github.io',
-  
-  // How many releases to check (latest N releases)
-  MAX_RELEASES: 10,
-  
-  // Debug mode
-  DEBUG: true,
-};
-</script>
-<!-- ═══════════════════════════════════════════════════════════ -->
+const CONFIG = { GITHUB_REPO: 'Systems-Download/Systems-Download.github.io', MAX_RELEASES: 20, DEBUG: false };
 
-<!-- TOAST CONTAINER -->
+const T = {
+  en: { nav_dl:'Downloads', nav_ann:'Announcements', hero_sub:'Files are automatically loaded from GitHub Releases. All .rbxm files are detected and sorted.', desc_c:'All .rbxm files with "Conch" in the name.', desc_r:'All .rbxm files with "Cmdr" in the name.', srch_c:'Search Conch files...', srch_r:'Search Cmdr files...', bdl:'Downloads', bnew:'NEW', hist:'History', hist_lbl:'Previous versions', dl:'↓ Download', vcount:n=>`${n} versions`, dlc:n=>`${n} dl`, t_start:'Download started', t_done:'Download complete', t_ref:'Refreshing...', t_ref2:'Fetching latest releases', t_upd:'Up to date', t_upd2:'Releases reloaded', t_cp:'Link copied!', t_cp2:'Download link in clipboard', empty:s=>`No ${s} files found.`, empty_h:s=>`Make sure .rbxm files contain "${s}" in the filename.`, se:'No files match your search.', e404:'Repo not found or no Releases yet. Create a GitHub Release with .rbxm assets.', e403:'GitHub API rate limit exceeded. Try again later.', egn:'Error: ', footer:'Automatically loaded from GitHub Releases', dfooter:'Auto-updated from GitHub Releases' },
+  de: { nav_dl:'Downloads', nav_ann:'Ankündigungen', hero_sub:'Dateien werden automatisch von GitHub Releases geladen. Alle .rbxm Dateien werden erkannt und sortiert.', desc_c:'Alle .rbxm Dateien mit "Conch" im Namen.', desc_r:'Alle .rbxm Dateien mit "Cmdr" im Namen.', srch_c:'Conch Dateien suchen...', srch_r:'Cmdr Dateien suchen...', bdl:'Downloads', bnew:'NEU', hist:'Verlauf', hist_lbl:'Frühere Versionen', dl:'↓ Herunterladen', vcount:n=>`${n} Versionen`, dlc:n=>`${n} Dl`, t_start:'Download gestartet', t_done:'Download abgeschlossen', t_ref:'Wird aktualisiert...', t_ref2:'Neueste Releases werden geladen', t_upd:'Aktuell', t_upd2:'Releases neu geladen', t_cp:'Link kopiert!', t_cp2:'Link in Zwischenablage', empty:s=>`Keine ${s} Dateien gefunden.`, empty_h:s=>`Stelle sicher, dass .rbxm Dateien "${s}" im Namen haben.`, se:'Keine Dateien gefunden.', e404:'Repo nicht gefunden oder keine Releases. Erstelle einen GitHub Release mit .rbxm Dateien.', e403:'GitHub API Rate-Limit erreicht. Versuche es später.', egn:'Fehler: ', footer:'Automatisch von GitHub Releases geladen', dfooter:'Automatisch von GitHub Releases aktualisiert' },
+  es: { nav_dl:'Descargas', nav_ann:'Anuncios', hero_sub:'Los archivos se cargan automáticamente desde GitHub Releases.', desc_c:'Todos los archivos .rbxm con "Conch" en el nombre.', desc_r:'Todos los archivos .rbxm con "Cmdr" en el nombre.', srch_c:'Buscar archivos Conch...', srch_r:'Buscar archivos Cmdr...', bdl:'Descargas', bnew:'NUEVO', hist:'Historial', hist_lbl:'Versiones anteriores', dl:'↓ Descargar', vcount:n=>`${n} versiones`, dlc:n=>`${n} dl`, t_start:'Descarga iniciada', t_done:'Descarga completa', t_ref:'Actualizando...', t_ref2:'Cargando últimas versiones', t_upd:'Actualizado', t_upd2:'Versiones recargadas', t_cp:'¡Enlace copiado!', t_cp2:'Enlace en portapapeles', empty:s=>`No se encontraron archivos ${s}.`, empty_h:s=>`Asegúrate de que los .rbxm contienen "${s}".`, se:'Ningún archivo coincide.', e404:'Repositorio no encontrado o sin Releases.', e403:'Límite de API alcanzado. Inténtalo más tarde.', egn:'Error: ', footer:'Cargado desde GitHub Releases', dfooter:'Actualizado desde GitHub Releases' },
+  it: { nav_dl:'Download', nav_ann:'Annunci', hero_sub:'I file vengono caricati automaticamente da GitHub Releases.', desc_c:'Tutti i file .rbxm con "Conch" nel nome.', desc_r:'Tutti i file .rbxm con "Cmdr" nel nome.', srch_c:'Cerca file Conch...', srch_r:'Cerca file Cmdr...', bdl:'Download', bnew:'NUOVO', hist:'Cronologia', hist_lbl:'Versioni precedenti', dl:'↓ Scarica', vcount:n=>`${n} versioni`, dlc:n=>`${n} dl`, t_start:'Download avviato', t_done:'Download completato', t_ref:'Aggiornamento...', t_ref2:'Caricamento ultime versioni', t_upd:'Aggiornato', t_upd2:'Release ricaricate', t_cp:'Link copiato!', t_cp2:'Link negli appunti', empty:s=>`Nessun file ${s} trovato.`, empty_h:s=>`Assicurati che i .rbxm contengano "${s}".`, se:'Nessun file corrisponde.', e404:'Repository non trovato o nessuna Release.', e403:'Limite API raggiunto. Riprova più tardi.', egn:'Errore: ', footer:'Caricato da GitHub Releases', dfooter:'Aggiornato da GitHub Releases' },
+  fr: { nav_dl:'Téléchargements', nav_ann:'Annonces', hero_sub:'Les fichiers sont automatiquement chargés depuis GitHub Releases.', desc_c:'Tous les fichiers .rbxm avec "Conch" dans le nom.', desc_r:'Tous les fichiers .rbxm avec "Cmdr" dans le nom.', srch_c:'Rechercher Conch...', srch_r:'Rechercher Cmdr...', bdl:'Téléchargements', bnew:'NOUVEAU', hist:'Historique', hist_lbl:'Versions précédentes', dl:'↓ Télécharger', vcount:n=>`${n} versions`, dlc:n=>`${n} dl`, t_start:'Téléchargement lancé', t_done:'Téléchargement terminé', t_ref:'Actualisation...', t_ref2:'Chargement des dernières versions', t_upd:'À jour', t_upd2:'Releases rechargées', t_cp:'Lien copié !', t_cp2:'Lien dans le presse-papiers', empty:s=>`Aucun fichier ${s} trouvé.`, empty_h:s=>`Vérifiez que les .rbxm contiennent "${s}".`, se:'Aucun fichier ne correspond.', e404:'Dépôt introuvable ou sans Releases.', e403:'Limite API atteinte. Réessayez plus tard.', egn:'Erreur : ', footer:'Chargé depuis GitHub Releases', dfooter:'Mis à jour depuis GitHub Releases' },
+  pt: { nav_dl:'Downloads', nav_ann:'Anúncios', hero_sub:'Os arquivos são carregados automaticamente do GitHub Releases.', desc_c:'Todos os arquivos .rbxm com "Conch" no nome.', desc_r:'Todos os arquivos .rbxm com "Cmdr" no nome.', srch_c:'Buscar arquivos Conch...', srch_r:'Buscar arquivos Cmdr...', bdl:'Downloads', bnew:'NOVO', hist:'Histórico', hist_lbl:'Versões anteriores', dl:'↓ Baixar', vcount:n=>`${n} versões`, dlc:n=>`${n} dl`, t_start:'Download iniciado', t_done:'Download concluído', t_ref:'Atualizando...', t_ref2:'Carregando últimas versões', t_upd:'Atualizado', t_upd2:'Releases recarregadas', t_cp:'Link copiado!', t_cp2:'Link na área de transferência', empty:s=>`Nenhum arquivo ${s} encontrado.`, empty_h:s=>`Certifique-se que os .rbxm contêm "${s}".`, se:'Nenhum arquivo encontrado.', e404:'Repositório não encontrado ou sem Releases.', e403:'Limite da API atingido. Tente mais tarde.', egn:'Erro: ', footer:'Carregado do GitHub Releases', dfooter:'Atualizado do GitHub Releases' },
+};
+let lang = localStorage.getItem('cc_lang') || 'en';
+function t(k, ...a) { const v = (T[lang]||T.en)[k]; return typeof v==='function'?v(...a):(v||k); }
+</script>
+
+<canvas id="confetti-canvas"></canvas>
 <div id="toast-container"></div>
 
 <!-- NAV -->
 <nav>
-  <div class="nav-logo">
-    <span>Conch</span>
-    <span class="sep">/</span>
-    <span>Cmdr</span>
-  </div>
+  <div class="nav-logo"><span class="c">Conch</span><span class="sep">/</span><span class="r">Cmdr</span></div>
   <div class="nav-right">
-    <a class="nav-link active" href="index.html">Downloads</a>
-    <a class="nav-link" href="announcements.html">Announcements</a>
-    <button class="btn-refresh" id="refresh-btn" onclick="refreshReleases()" aria-label="Reload files" title="Reload files">
+    <a class="nav-link active" href="index.html" id="nl-dl">Downloads</a>
+    <a class="nav-link" href="announcements.html" id="nl-ann">Announcements</a>
+    <select class="lang-select" id="lang-sel" onchange="setLang(this.value)">
+      <option value="en">EN</option><option value="de">DE</option><option value="es">ES</option>
+      <option value="it">IT</option><option value="fr">FR</option><option value="pt">PT</option>
+    </select>
+    <button class="icon-btn" id="refresh-btn" onclick="doRefresh()" title="Refresh">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
     </button>
-    <button class="burger" id="burger-btn" onclick="toggleDrawer()" aria-label="Menu">
-      <span></span><span></span><span></span>
-    </button>
+    <button class="burger" id="burger-btn" onclick="toggleDrawer()"><span></span><span></span><span></span></button>
   </div>
 </nav>
 
@@ -530,426 +237,318 @@ const CONFIG = {
 <div class="drawer-overlay" id="drawer-overlay" onclick="closeDrawer()"></div>
 <div class="drawer" id="drawer">
   <div class="drawer-head">
-    <div class="drawer-logo">
-      <span>Conch</span>
-      <span class="sep">/</span>
-      <span>Cmdr</span>
-    </div>
+    <div class="drawer-logo"><span class="c">Conch</span><span class="sep">/</span><span class="r">Cmdr</span></div>
     <button class="drawer-close" onclick="closeDrawer()">✕</button>
   </div>
-
   <div class="drawer-nav">
-    <p class="drawer-section-label">Navigation</p>
-    <a class="drawer-item active" href="index.html" onclick="closeDrawer()">
-      <span class="drawer-icon">📥</span>
-      Downloads
-    </a>
-    <a class="drawer-item" href="announcements.html" onclick="closeDrawer()">
-      <span class="drawer-icon">📣</span>
-      Announcements
-    </a>
-
-    <div class="drawer-divider"></div>
-    <p class="drawer-section-label">Quick Jump</p>
-    <a class="drawer-item" href="#conch" onclick="closeDrawer()">
-      <span class="drawer-icon" style="color:var(--conch)">◈</span>
-      Conch Files
-    </a>
-    <a class="drawer-item" href="#cmdr" onclick="closeDrawer()">
-      <span class="drawer-icon" style="color:var(--cmdr)">◈</span>
-      Cmdr Files
-    </a>
+    <p class="drawer-slabel">Navigation</p>
+    <a class="drawer-item active" href="index.html" onclick="closeDrawer()"><span class="drawer-icon">📥</span><span id="dl-dl">Downloads</span></a>
+    <a class="drawer-item" href="announcements.html" onclick="closeDrawer()"><span class="drawer-icon">📣</span><span id="dl-ann">Announcements</span></a>
+    <div class="drawer-div"></div>
+    <p class="drawer-slabel">Quick Jump</p>
+    <a class="drawer-item" href="#conch" onclick="closeDrawer()"><span class="drawer-icon" style="color:var(--conch)">◈</span>Conch</a>
+    <a class="drawer-item" href="#cmdr"  onclick="closeDrawer()"><span class="drawer-icon" style="color:var(--cmdr)">◈</span>Cmdr</a>
   </div>
-
-  <div class="drawer-footer">Auto-updated from GitHub Releases</div>
+  <div class="drawer-footer" id="dl-footer">Auto-updated from GitHub Releases</div>
 </div>
 
 <!-- HERO -->
 <div class="hero">
   <h1><em>Conch</em> &amp; <strong>Cmdr</strong><br>Download Hub</h1>
-  <p>Files are automatically loaded from GitHub Releases. All <code style="background:var(--surface);padding:0.1em 0.4em;border-radius:4px;font-size:0.9em">.rbxm</code> files are detected and sorted.</p>
+  <p id="hero-sub"></p>
   <div class="scroll-hint">
     <a href="#conch" class="c">↓ Conch</a>
     <a href="#cmdr"  class="r">↓ Cmdr</a>
   </div>
 </div>
 
-<!-- CONCH SECTION -->
+<!-- CONCH -->
 <div class="section" id="conch">
   <div class="section-header">
-    <h2 class="conch">Conch</h2>
-    <span class="section-badge badge-conch">Downloads</span>
+    <h2 class="c">Conch</h2><span class="sbadge sbadge-c" id="sb-c"></span>
   </div>
-  <p class="section-desc">All <strong style="color:var(--conch)">.rbxm</strong> files with "Conch" in the name.</p>
-
-  <!-- SEARCH -->
+  <p class="section-desc" id="desc-c"></p>
   <div class="search-wrap">
     <span class="search-icon">🔍</span>
-    <input
-      class="search-input conch-focus"
-      id="search-conch"
-      type="text"
-      placeholder="Search Conch files..."
-      oninput="handleSearch('conch')"
-    >
+    <input class="search-input cf" id="search-conch" type="text" oninput="doSearch('conch')">
     <button class="search-clear" id="clear-conch" onclick="clearSearch('conch')">✕</button>
   </div>
-
-  <div class="file-list" id="conch-list">
-    <div class="loading-state">🔄 Loading Conch files from GitHub...</div>
-  </div>
-  <div class="search-empty" id="empty-conch">No files match your search.</div>
+  <div class="file-list" id="conch-list"></div>
+  <div class="search-empty" id="empty-conch"></div>
 </div>
 
 <div class="divider"></div>
 
-<!-- CMDR SECTION -->
+<!-- CMDR -->
 <div class="section" id="cmdr">
   <div class="section-header">
-    <h2 class="cmdr">Cmdr</h2>
-    <span class="section-badge badge-cmdr">Downloads</span>
+    <h2 class="r">Cmdr</h2><span class="sbadge sbadge-r" id="sb-r"></span>
   </div>
-  <p class="section-desc">All <strong style="color:var(--cmdr)">.rbxm</strong> files with "Cmdr" in the name.</p>
-
-  <!-- SEARCH -->
+  <p class="section-desc" id="desc-r"></p>
   <div class="search-wrap">
     <span class="search-icon">🔍</span>
-    <input
-      class="search-input cmdr-focus"
-      id="search-cmdr"
-      type="text"
-      placeholder="Search Cmdr files..."
-      oninput="handleSearch('cmdr')"
-    >
+    <input class="search-input rf" id="search-cmdr" type="text" oninput="doSearch('cmdr')">
     <button class="search-clear" id="clear-cmdr" onclick="clearSearch('cmdr')">✕</button>
   </div>
-
-  <div class="file-list" id="cmdr-list">
-    <div class="loading-state">🔄 Loading Cmdr files from GitHub...</div>
-  </div>
-  <div class="search-empty" id="empty-cmdr">No files match your search.</div>
+  <div class="file-list" id="cmdr-list"></div>
+  <div class="search-empty" id="empty-cmdr"></div>
 </div>
 
-<footer>Conch &amp; Cmdr — Automatically loaded from GitHub Releases</footer>
+<footer id="footer"></footer>
 
 <script>
-/* ─── DRAWER ─── */
-let drawerOpen = false;
-function toggleDrawer() { drawerOpen ? closeDrawer() : openDrawer(); }
-function openDrawer() {
-  drawerOpen = true;
-  document.getElementById('drawer').classList.add('open');
-  document.getElementById('drawer-overlay').classList.add('open');
-  document.getElementById('burger-btn').classList.add('open');
-  document.body.style.overflow = 'hidden';
-}
-function closeDrawer() {
-  drawerOpen = false;
-  document.getElementById('drawer').classList.remove('open');
-  document.getElementById('drawer-overlay').classList.remove('open');
-  document.getElementById('burger-btn').classList.remove('open');
-  document.body.style.overflow = '';
-}
+/* DRAWER */
+let _dopen = false;
+function toggleDrawer() { _dopen ? closeDrawer() : openDrawer(); }
+function openDrawer()  { _dopen=true;  ['drawer','drawer-overlay','burger-btn'].forEach(id=>document.getElementById(id).classList.add('open')); document.body.style.overflow='hidden'; }
+function closeDrawer() { _dopen=false; ['drawer','drawer-overlay','burger-btn'].forEach(id=>document.getElementById(id).classList.remove('open')); document.body.style.overflow=''; }
 
-/* ─── DEBUG ─── */
-function debugLog(msg, data) {
-  if (CONFIG.DEBUG) console.log(`[DEBUG] ${msg}`, data || '');
-}
-
-/* ─── TOAST ─── */
-function showToast({ title, sub, type = 'conch', duration = 3500 }) {
-  const container = document.getElementById('toast-container');
-  const toast = document.createElement('div');
-  toast.className = 'toast';
-
-  const iconMap = { conch: '↓', cmdr: '↓', ok: '✓' };
-  const iconClass = type === 'ok' ? 'toast-icon-ok' : (type === 'cmdr' ? 'toast-icon-cmdr' : 'toast-icon-conch');
-  const barColor = type === 'cmdr' ? 'var(--cmdr)' : (type === 'ok' ? '#3cc878' : 'var(--conch)');
-
-  toast.innerHTML = `
-    <div class="toast-icon ${iconClass}">${iconMap[type] || '↓'}</div>
-    <div class="toast-body">
-      <div class="toast-title">${title}</div>
-      ${sub ? `<div class="toast-sub">${sub}</div>` : ''}
-    </div>
-    <div class="toast-bar" style="animation-duration:${duration}ms; background:${barColor}"></div>
-  `;
-
-  container.appendChild(toast);
-
-  setTimeout(() => {
-    toast.classList.add('hiding');
-    setTimeout(() => toast.remove(), 320);
-  }, duration);
+/* LANG */
+function setLang(l) { lang=l; localStorage.setItem('cc_lang',l); applyLang(); rerender(); }
+function applyLang() {
+  document.getElementById('nl-dl').textContent   = t('nav_dl');
+  document.getElementById('nl-ann').textContent  = t('nav_ann');
+  document.getElementById('dl-dl').textContent   = t('nav_dl');
+  document.getElementById('dl-ann').textContent  = t('nav_ann');
+  document.getElementById('hero-sub').textContent= t('hero_sub');
+  document.getElementById('sb-c').textContent    = t('bdl');
+  document.getElementById('sb-r').textContent    = t('bdl');
+  document.getElementById('desc-c').textContent  = t('desc_c');
+  document.getElementById('desc-r').textContent  = t('desc_r');
+  document.getElementById('search-conch').placeholder = t('srch_c');
+  document.getElementById('search-cmdr').placeholder  = t('srch_r');
+  document.getElementById('empty-conch').textContent  = t('se');
+  document.getElementById('empty-cmdr').textContent   = t('se');
+  document.getElementById('footer').textContent  = 'Conch & Cmdr — ' + t('footer');
+  document.getElementById('dl-footer').textContent = t('dfooter');
+  document.getElementById('lang-sel').value = lang;
 }
 
-/* ─── DIRECT DOWNLOAD ─── */
-function triggerDownload(url, filename, type, btn) {
-  // Show button feedback
-  if (btn) {
-    btn.classList.add('downloading');
-    setTimeout(() => btn.classList.remove('downloading'), 400);
+/* DOWNLOAD COUNTER */
+function getDLC(f) { try { return parseInt(localStorage.getItem('dlc_'+f)||'0'); } catch { return 0; } }
+function incDLC(f) { try { localStorage.setItem('dlc_'+f, getDLC(f)+1); } catch {} }
+
+/* TOAST */
+function toast({title, sub, type='c', dur=3500}) {
+  const c = document.getElementById('toast-container');
+  const el = document.createElement('div'); el.className='toast';
+  const ico = {c:'↓',r:'↓',ok:'✓',i:'⚑'}[type]||'↓';
+  const icls = {c:'t-ic',r:'t-ir',ok:'t-iok',i:'t-inf'}[type]||'t-ic';
+  const bcol = {c:'var(--conch)',r:'var(--cmdr)',ok:'#3cc878',i:'#64a0ff'}[type]||'var(--conch)';
+  el.innerHTML = `<div class="t-ico ${icls}">${ico}</div><div class="t-body"><div class="t-title">${eh(title)}</div>${sub?`<div class="t-sub">${eh(sub)}</div>`:''}</div><div class="t-bar" style="animation-duration:${dur}ms;background:${bcol}"></div>`;
+  c.appendChild(el);
+  setTimeout(()=>{el.classList.add('out');setTimeout(()=>el.remove(),320);},dur);
+}
+
+/* CONFETTI */
+function confetti() {
+  const cv = document.getElementById('confetti-canvas');
+  const ctx = cv.getContext('2d');
+  cv.width = window.innerWidth; cv.height = window.innerHeight;
+  const cols = ['#0ff4c6','#ff4f5e','#ffc832','#64a0ff','#ff8c42','#a78bfa'];
+  const ps = Array.from({length:70},()=>({
+    x:Math.random()*cv.width, y:-10-Math.random()*60,
+    r:4+Math.random()*5, col:cols[Math.floor(Math.random()*cols.length)],
+    vx:(Math.random()-.5)*3, vy:2+Math.random()*4,
+    rot:Math.random()*Math.PI*2, rv:(Math.random()-.5)*.2,
+    sq:Math.random()>.5
+  }));
+  let af, alpha=1;
+  function draw() {
+    ctx.clearRect(0,0,cv.width,cv.height);
+    ps.forEach(p=>{
+      ctx.save(); ctx.globalAlpha=alpha; ctx.translate(p.x,p.y); ctx.rotate(p.rot); ctx.fillStyle=p.col;
+      if(p.sq){ctx.fillRect(-p.r,-p.r/2,p.r*2,p.r);}else{ctx.beginPath();ctx.arc(0,0,p.r/2,0,Math.PI*2);ctx.fill();}
+      ctx.restore();
+      p.x+=p.vx; p.y+=p.vy; p.rot+=p.rv; p.vy+=.06;
+    });
+    if(ps.every(p=>p.y>cv.height)){alpha-=.06;}
+    if(alpha<=0){ctx.clearRect(0,0,cv.width,cv.height);return;}
+    af=requestAnimationFrame(draw);
   }
+  if(af) cancelAnimationFrame(af); draw();
+}
 
-  // Show toast immediately
-  showToast({
-    title: 'Download started',
-    sub: filename,
-    type: type,
-    duration: 4000
-  });
-
-  // Fetch the file as a blob and force-download it
+/* DOWNLOAD */
+function dl(url, name, type, btn) {
+  if(btn){btn.classList.add('dling');setTimeout(()=>btn.classList.remove('dling'),400);}
+  toast({title:t('t_start'),sub:name,type,dur:4000});
   fetch(url)
-    .then(res => {
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      return res.blob();
+    .then(r=>{if(!r.ok)throw new Error('HTTP '+r.status);return r.blob();})
+    .then(blob=>{
+      const u=URL.createObjectURL(blob), a=document.createElement('a');
+      a.href=u; a.download=name; document.body.appendChild(a); a.click();
+      document.body.removeChild(a); URL.revokeObjectURL(u);
+      incDLC(name); refreshDLC(name);
+      toast({title:t('t_done'),sub:name,type:'ok',dur:3000}); confetti();
     })
-    .then(blob => {
-      const blobUrl = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = blobUrl;
-      a.download = filename;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(blobUrl);
-
-      showToast({ title: 'Download complete', sub: filename, type: 'ok', duration: 3000 });
-    })
-    .catch(err => {
-      // Fallback: open in new tab if fetch blocked (CORS etc.)
-      debugLog('Blob download failed, falling back:', err);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = filename;
-      a.target = '_blank';
-      a.rel = 'noopener';
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
+    .catch(()=>{
+      const a=document.createElement('a'); a.href=url; a.download=name; a.target='_blank'; a.rel='noopener';
+      document.body.appendChild(a); a.click(); document.body.removeChild(a);
+      incDLC(name); refreshDLC(name); confetti();
     });
 }
-
-/* ─── LIVE SEARCH ─── */
-function handleSearch(section) {
-  const input = document.getElementById(`search-${section}`);
-  const clearBtn = document.getElementById(`clear-${section}`);
-  const query = input.value.trim().toLowerCase();
-  const list = document.getElementById(`${section}-list`);
-  const emptyMsg = document.getElementById(`empty-${section}`);
-
-  clearBtn.classList.toggle('visible', query.length > 0);
-
-  const items = list.querySelectorAll('.file-item');
-  let visibleCount = 0;
-
-  items.forEach(item => {
-    const name = item.dataset.name || '';
-    const version = item.dataset.version || '';
-    const matches = name.includes(query) || version.includes(query);
-    item.classList.toggle('hidden', !matches);
-    if (matches) visibleCount++;
+function refreshDLC(name) {
+  document.querySelectorAll(`.dlc[data-f="${CSS.escape(name)}"]`).forEach(el=>{
+    const n=getDLC(name); el.textContent=n>0?t('dlc',n):''; el.style.display=n>0?'':'none';
   });
-
-  emptyMsg.classList.toggle('visible', visibleCount === 0 && items.length > 0 && query.length > 0);
 }
 
-function clearSearch(section) {
-  const input = document.getElementById(`search-${section}`);
-  input.value = '';
-  handleSearch(section);
+/* SHARE */
+function share(url, btn) {
+  const copy = () => {
+    btn.classList.add('copied'); btn.textContent='✓';
+    toast({title:t('t_cp'),sub:t('t_cp2'),type:'i',dur:2500});
+    setTimeout(()=>{btn.classList.remove('copied');btn.textContent='⎘';},2000);
+  };
+  if(navigator.clipboard){navigator.clipboard.writeText(url).then(copy).catch(()=>{fallbackCopy(url);copy();});}
+  else{fallbackCopy(url);copy();}
+}
+function fallbackCopy(text) {
+  const ta=document.createElement('textarea'); ta.value=text;
+  document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta);
 }
 
-/* ─── VERSION HISTORY TOGGLE ─── */
-function toggleHistory(id) {
-  const panel = document.getElementById(`hist-${id}`);
-  const btn = document.getElementById(`histbtn-${id}`);
-  const isOpen = panel.classList.contains('open');
-  panel.classList.toggle('open', !isOpen);
-  btn.classList.toggle('open', !isOpen);
+/* SEARCH */
+function doSearch(sec) {
+  const inp=document.getElementById('search-'+sec), clr=document.getElementById('clear-'+sec);
+  const q=inp.value.trim().toLowerCase(), list=document.getElementById(sec+'-list'), em=document.getElementById('empty-'+sec);
+  clr.classList.toggle('vis',q.length>0);
+  const items=list.querySelectorAll('.file-item'); let vis=0;
+  items.forEach(it=>{const m=(it.dataset.n||'').includes(q)||(it.dataset.v||'').includes(q);it.classList.toggle('hidden',!m);if(m)vis++;});
+  em.classList.toggle('vis',vis===0&&items.length>0&&q.length>0);
+}
+function clearSearch(sec){document.getElementById('search-'+sec).value='';doSearch(sec);}
+
+/* HISTORY TOGGLE */
+let _uid=0;
+function toggleHist(id){
+  const p=document.getElementById('h-'+id), b=document.getElementById('hb-'+id);
+  const o=p.classList.contains('open'); p.classList.toggle('open',!o); b.classList.toggle('open',!o);
 }
 
-/* ─── FETCH RELEASES ─── */
-async function fetchReleases() {
+/* SKELETON */
+function showSkel(id, n=3){
+  document.getElementById(id).innerHTML=Array.from({length:n},()=>`<div class="skel-item"><div class="skel skel-ico"></div><div class="skel-body"><div class="skel skel-l w80"></div><div class="skel skel-l w50"></div></div><div class="skel skel-btn"></div></div>`).join('');
+}
+
+/* VERSION SORT — higher version number = newer = shown first */
+function semver(s){const m=String(s).replace(/^v/i,'').match(/\d+/g);return m?m.map(Number):[0];}
+function cmpVer(a,b){const va=semver(a),vb=semver(b);for(let i=0;i<Math.max(va.length,vb.length);i++){const d=(vb[i]||0)-(va[i]||0);if(d)return d;}return 0;}
+
+/* CACHE */
+let _cc=[], _cr=[];
+
+/* FETCH */
+async function fetchReleases(){
+  showSkel('conch-list'); showSkel('cmdr-list');
   try {
-    const url = `https://api.github.com/repos/${CONFIG.GITHUB_REPO}/releases?per_page=${CONFIG.MAX_RELEASES}`;
-    debugLog('Fetching:', url);
-
-    const response = await fetch(url);
-    if (!response.ok) {
-      if (response.status === 404) {
-        throw new Error(`Repo "${CONFIG.GITHUB_REPO}" not found or has no Releases tab. Make sure the repo is public and you have created at least one Release with .rbxm assets.`);
-      }
-      throw new Error(`GitHub API error: ${response.status} ${response.statusText}`);
-    }
-
-    const releases = await response.json();
-    debugLog('Releases:', releases.length);
-
-    // Group files by base name (for version history)
-    const conchMap = {};
-    const cmdrMap  = {};
-
-    releases.forEach(release => {
-      const releaseDate = new Date(release.published_at).toLocaleDateString('en-US', {
-        year: 'numeric', month: 'short', day: 'numeric'
-      });
-
-      (release.assets || []).forEach(asset => {
-        const fileName = asset.name;
-        const fileNameLower = fileName.toLowerCase();
-        if (!fileNameLower.endsWith('.rbxm')) return;
-
-        const isConch = fileNameLower.includes('conch');
-        const isCmdr  = fileNameLower.includes('cmdr');
-        if (!isConch && !isCmdr) return;
-
-        const entry = {
-          name: fileName,
-          size: formatBytes(asset.size),
-          date: releaseDate,
-          version: release.tag_name || release.name || 'v?',
-          downloadUrl: asset.browser_download_url,
-          releaseDate: release.published_at
-        };
-
-        // Use file name as grouping key (strip version-like suffixes)
-        const baseKey = fileName.replace(/[_\-]v[\d.]+/i, '').replace(/\.rbxm$/i, '').toLowerCase();
-
-        if (isConch) {
-          if (!conchMap[baseKey]) conchMap[baseKey] = [];
-          conchMap[baseKey].push(entry);
-        } else {
-          if (!cmdrMap[baseKey]) cmdrMap[baseKey] = [];
-          cmdrMap[baseKey].push(entry);
-        }
+    const res = await fetch(`https://api.github.com/repos/${CONFIG.GITHUB_REPO}/releases?per_page=${CONFIG.MAX_RELEASES}`);
+    if(!res.ok) throw new Error(res.status===404?'404':res.status===403?'403':res.status+' '+res.statusText);
+    const releases = await res.json();
+    const cm={}, rm={};
+    releases.forEach(rel=>{
+      const date=new Date(rel.published_at).toLocaleDateString('en-US',{year:'numeric',month:'short',day:'numeric'});
+      const isNew=(Date.now()-new Date(rel.published_at).getTime())<7*24*3600*1000;
+      (rel.assets||[]).forEach(a=>{
+        const nm=a.name, lo=nm.toLowerCase();
+        if(!lo.endsWith('.rbxm')) return;
+        const isC=lo.includes('conch'), isR=lo.includes('cmdr');
+        if(!isC&&!isR) return;
+        const entry={name:nm,size:fmtB(a.size),date,version:rel.tag_name||rel.name||'v?',url:a.browser_download_url,ts:rel.published_at,isNew};
+        const key=nm.replace(/[_\-]v[\d.]+/i,'').replace(/\.rbxm$/i,'').toLowerCase();
+        if(isC){if(!cm[key])cm[key]=[];cm[key].push(entry);}
+        else   {if(!rm[key])rm[key]=[];rm[key].push(entry);}
       });
     });
-
-    // Sort each group: newest first
-    const sortGroup = map => {
-      Object.values(map).forEach(arr =>
-        arr.sort((a, b) => new Date(b.releaseDate) - new Date(a.releaseDate))
-      );
-    };
-    sortGroup(conchMap);
-    sortGroup(cmdrMap);
-
-    // Convert to array of groups, sorted by newest entry in group
-    const toGroups = map => Object.values(map)
-      .sort((a, b) => new Date(b[0].releaseDate) - new Date(a[0].releaseDate));
-
-    renderGroups('conch', toGroups(conchMap));
-    renderGroups('cmdr',  toGroups(cmdrMap));
-
-  } catch (error) {
-    console.error('Error fetching releases:', error);
-    let msg = '❌ Error loading files. ';
-    if (error.message.includes('configure GITHUB_REPO')) {
-      msg += 'Please set GITHUB_REPO in the CONFIG block.';
-    } else if (error.message.includes('404')) {
-      msg += 'Repository not found. Check GITHUB_REPO setting.';
-    } else if (error.message.includes('403')) {
-      msg += 'GitHub API rate limit exceeded. Try again later.';
-    } else {
-      msg += error.message;
-    }
-    document.getElementById('conch-list').innerHTML = `<div class="error-state">${msg}</div>`;
-    document.getElementById('cmdr-list').innerHTML  = `<div class="error-state">${msg}</div>`;
+    // Sort versions within each group: highest semver first
+    const srt=map=>Object.values(map).forEach(arr=>arr.sort((a,b)=>cmpVer(a.version,b.version)||new Date(b.ts)-new Date(a.ts)));
+    srt(cm); srt(rm);
+    // Sort groups: highest version group first
+    const toG=map=>Object.values(map).sort((a,b)=>cmpVer(a[0].version,b[0].version));
+    _cc=toG(cm); _cr=toG(rm);
+    render('conch',_cc); render('cmdr',_cr);
+  } catch(e) {
+    const msg = e.message==='404'?t('e404'):e.message==='403'?t('e403'):t('egn')+e.message;
+    ['conch-list','cmdr-list'].forEach(id=>document.getElementById(id).innerHTML=`<div class="error-state">❌ ${msg}</div>`);
   }
 }
 
-/* ─── RENDER ─── */
-let _uid = 0;
-function renderGroups(section, groups) {
-  const list = document.getElementById(section + '-list');
-  const isConch = section === 'conch';
-  const cls = isConch ? 'conch' : 'cmdr';
+function rerender(){if(_cc.length||_cr.length){render('conch',_cc);render('cmdr',_cr);}}
 
-  if (groups.length === 0) {
-    list.innerHTML = `<div class="empty-state">No ${isConch ? 'Conch' : 'Cmdr'} files found in releases.<br><small style="margin-top:0.5rem;display:block;opacity:0.7">Make sure your .rbxm files contain "${isConch ? 'Conch' : 'Cmdr'}" in the filename.</small></div>`;
+/* RENDER */
+function render(sec, groups){
+  const list=document.getElementById(sec+'-list'), isC=sec==='conch', cls=isC?'c':'r';
+  if(!groups.length){
+    list.innerHTML=`<div class="empty-state">${t('empty',isC?'Conch':'Cmdr')}<br><small style="margin-top:.5rem;display:block;opacity:.7">${t('empty_h',isC?'Conch':'Cmdr')}</small></div>`;
     return;
   }
+  list.innerHTML='';
+  groups.forEach(vers=>{
+    const latest=vers[0], hasH=vers.length>1, id=++_uid, dlc=getDLC(latest.name);
+    const el=document.createElement('div');
+    el.className='file-item'; el.dataset.n=latest.name.toLowerCase(); el.dataset.v=latest.version.toLowerCase();
 
-  list.innerHTML = '';
-
-  groups.forEach(versions => {
-    const latest = versions[0];
-    const hasHistory = versions.length > 1;
-    const id = ++_uid;
-
-    const item = document.createElement('div');
-    item.className = 'file-item';
-    item.dataset.name = latest.name.toLowerCase();
-    item.dataset.version = latest.version.toLowerCase();
-
-    // Build history rows HTML
-    let historyHTML = '';
-    if (hasHistory) {
-      const rows = versions.slice(1).map(v => `
-        <div class="version-row">
-          <span class="version-tag vt-${cls}">${v.version}</span>
-          <span class="version-name" title="${v.name}">${v.name}</span>
-          <span class="version-date">${v.date}</span>
-          <button
-            class="btn-dl-small btn-sm-${cls}"
-            onclick="triggerDownload('${v.downloadUrl}', '${v.name}', '${cls}', this)"
-          >↓</button>
-        </div>
-      `).join('');
-      historyHTML = `
-        <div class="version-history" id="hist-${id}">
-          <div class="version-history-inner">
-            <div class="version-label">Previous versions</div>
-            ${rows}
-          </div>
-        </div>
-      `;
+    let histHTML='';
+    if(hasH){
+      const rows=vers.slice(1).map(v=>`
+        <div class="ver-row">
+          <span class="ver-tag vt-${cls}">${eh(v.version)}</span>
+          <span class="ver-name" title="${eh(v.name)}">${eh(v.name)}</span>
+          <span class="ver-date">${v.date}</span>
+          <button class="btn-dl-xs xs-${cls}" onclick="dl('${ea(v.url)}','${ea(v.name)}','${cls}',this)">↓</button>
+        </div>`).join('');
+      histHTML=`<div class="ver-history" id="h-${id}"><div class="ver-inner"><div class="ver-label">${t('hist_lbl')}</div>${rows}</div></div>`;
     }
 
-    item.innerHTML = `
+    el.innerHTML=`
       <div class="file-main">
         <div class="file-icon fi-${cls}">🧩</div>
         <div class="file-info">
-          <div class="file-name" title="${latest.name}">
-            ${latest.name}
-            <span class="file-version fv-${cls}">${latest.version}</span>
+          <div class="file-name-row">
+            <span class="file-name" title="${eh(latest.name)}">${eh(latest.name)}</span>
+            <span class="fver fver-${cls}">${eh(latest.version)}</span>
+            ${latest.isNew?`<span class="badge-new">${t('bnew')}</span>`:''}
           </div>
-          <div class="file-meta">${latest.size} · ${latest.date} · .rbxm${hasHistory ? ` · ${versions.length} versions` : ''}</div>
+          <div class="file-meta">
+            <span>${latest.size}</span><span>·</span><span>${latest.date}</span><span>·</span><span>.rbxm</span>
+            ${hasH?`<span>·</span><span>${t('vcount',vers.length)}</span>`:''}
+            <span class="dlc" data-f="${eh(latest.name)}" style="${dlc>0?'':'display:none'}">${dlc>0?t('dlc',dlc):''}</span>
+          </div>
         </div>
         <div class="file-actions">
-          ${hasHistory ? `
-            <button class="btn-history" id="histbtn-${id}" onclick="toggleHistory(${id})" title="Show version history">
-              <span>History</span>
-              <span class="arrow">▾</span>
-            </button>
-          ` : ''}
-          <button
-            class="btn-dl btn-dl-${cls}"
-            onclick="triggerDownload('${latest.downloadUrl}', '${latest.name}', '${cls}', this)"
-          >↓ Download</button>
+          <button class="btn-sm" onclick="share('${ea(latest.url)}',this)" title="Copy link">⎘</button>
+          ${hasH?`<button class="btn-hist" id="hb-${id}" onclick="toggleHist(${id})"><span>${t('hist')}</span><span class="arr">▾</span></button>`:''}
+          <button class="btn-dl btn-dl-${cls}" onclick="dl('${ea(latest.url)}','${ea(latest.name)}','${cls}',this)">${t('dl')}</button>
         </div>
       </div>
-      ${historyHTML}
-    `;
-
-    list.appendChild(item);
+      ${histHTML}`;
+    list.appendChild(el);
   });
 }
 
-/* ─── UTILS ─── */
-function formatBytes(bytes) {
-  if (bytes === 0) return '0 B';
-  const k = 1024;
-  const sizes = ['B', 'KB', 'MB', 'GB'];
-  const i = Math.floor(Math.log(bytes) / Math.log(k));
-  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+/* REFRESH */
+async function doRefresh(){
+  const btn=document.getElementById('refresh-btn');
+  if(btn.disabled) return;
+  btn.disabled=true; btn.classList.add('spinning');
+  showSkel('conch-list'); showSkel('cmdr-list');
+  ['empty-conch','empty-cmdr'].forEach(id=>document.getElementById(id).classList.remove('vis'));
+  clearSearch('conch'); clearSearch('cmdr');
+  toast({title:t('t_ref'),sub:t('t_ref2'),type:'c',dur:2000});
+  await fetchReleases();
+  btn.disabled=false; btn.classList.remove('spinning');
+  toast({title:t('t_upd'),sub:t('t_upd2'),type:'ok',dur:2500});
 }
 
-/* ─── INIT ─── */
-debugLog('Init config:', CONFIG);
-fetchReleases();
+/* UTILS */
+function fmtB(b){if(!b)return'0 B';const k=1024,s=['B','KB','MB','GB'],i=Math.floor(Math.log(b)/Math.log(k));return parseFloat((b/Math.pow(k,i)).toFixed(2))+' '+s[i];}
+function eh(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function ea(s){return String(s).replace(/\\/g,'\\\\').replace(/'/g,"\\'");}
+
+/* INIT */
+document.getElementById('lang-sel').value=lang;
+applyLang(); showSkel('conch-list'); showSkel('cmdr-list'); fetchReleases();
 </script>
 </body>
 </html>
