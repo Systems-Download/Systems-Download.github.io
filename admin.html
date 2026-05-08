@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin — Conch & Cmdr</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<!-- bcryptjs for client-side password hashing -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bcryptjs/2.4.3/bcrypt.min.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --conch:#0ff4c6;--conch-dim:#0bb88e;
+  --cmdr:#ff4f5e;--cmdr-dim:#c8333f;
+  --bg:#0b0c0f;--surface:#13151a;--surface2:#1a1d24;--surface3:#21252f;
+  --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.12);
+  --text:#e8eaf0;--muted:#6b7280;--muted2:#4b5563;
+  --mono:'JetBrains Mono',monospace;--sans:'Syne',sans-serif;
+  --success:#3cc878;--warn:#ffc832;--danger:#ff4f5e;--info:#64a0ff;
+}
+html,body{height:100%;overflow:hidden}
+body{background:var(--bg);color:var(--text);font-family:var(--sans)}
+
+/* ── LOGIN SCREEN ── */
+#login-screen{position:fixed;inset:0;z-index:1000;background:var(--bg);display:flex;align-items:center;justify-content:center}
+#login-screen::before{content:'';position:fixed;top:-200px;left:50%;transform:translateX(-50%);width:600px;height:600px;border-radius:50%;background:radial-gradient(circle,rgba(15,244,198,0.05) 0%,transparent 70%);pointer-events:none}
+.login-box{background:var(--surface);border:1px solid var(--border2);border-radius:16px;padding:2.5rem 2rem;width:100%;max-width:400px;position:relative;z-index:1}
+.login-logo{display:flex;gap:.4em;align-items:center;justify-content:center;font-size:1.3rem;font-weight:800;letter-spacing:-.02em;margin-bottom:0.3rem}
+.login-logo .c{color:var(--conch)}.login-logo .r{color:var(--cmdr)}.login-logo .sep{color:var(--muted)}
+.login-sub{text-align:center;font-family:var(--mono);font-size:.72rem;color:var(--muted);margin-bottom:2rem}
+.form-group{margin-bottom:1rem}
+.form-label{font-family:var(--mono);font-size:.72rem;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;display:block;margin-bottom:.4rem}
+.form-input{width:100%;background:var(--surface2);border:1px solid var(--border2);border-radius:8px;color:var(--text);font-family:var(--mono);font-size:.85rem;padding:.7rem 1rem;outline:none;transition:border-color .2s}
+.form-input:focus{border-color:rgba(15,244,198,.4)}
+.form-input.err{border-color:var(--danger)}
+.login-attempts{font-family:var(--mono);font-size:.7rem;color:var(--warn);text-align:center;margin-bottom:1rem;min-height:1.2em}
+.btn-login{width:100%;padding:.75rem;border-radius:8px;border:none;background:rgba(15,244,198,.12);color:var(--conch);font-family:var(--mono);font-size:.82rem;letter-spacing:.05em;cursor:pointer;transition:all .2s;position:relative;overflow:hidden}
+.btn-login:hover{background:rgba(15,244,198,.2)}
+.btn-login:disabled{opacity:.5;cursor:not-allowed}
+.login-lock{text-align:center;font-family:var(--mono);font-size:.7rem;color:var(--danger);margin-top:.75rem;display:none}
+.security-badge{display:flex;align-items:center;gap:.5rem;justify-content:center;margin-top:1.5rem;padding-top:1.5rem;border-top:1px solid var(--border)}
+.sec-icon{font-size:.9rem}
+.sec-text{font-family:var(--mono);font-size:.65rem;color:var(--muted);opacity:.6}
+
+/* ── ADMIN LAYOUT ── */
+#admin-app{display:none;height:100vh;overflow:hidden;flex-direction:column}
+#admin-app.active{display:flex}
+
+/* TOP BAR */
+.topbar{height:56px;background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 1.5rem;flex-shrink:0}
+.topbar-logo{font-size:.95rem;font-weight:800;display:flex;gap:.35em;align-items:center}
+.topbar-logo .c{color:var(--conch)}.topbar-logo .r{color:var(--cmdr)}.topbar-logo .sep{color:var(--muted)}
+.topbar-tag{font-family:var(--mono);font-size:.62rem;padding:.15rem .5rem;border-radius:3px;background:rgba(15,244,198,.1);color:var(--conch);border:1px solid rgba(15,244,198,.2);letter-spacing:.06em}
+.topbar-right{display:flex;align-items:center;gap:.75rem}
+.topbar-user{font-family:var(--mono);font-size:.72rem;color:var(--muted)}
+.topbar-user span{color:var(--conch)}
+.btn-logout{font-family:var(--mono);font-size:.7rem;padding:.35rem .7rem;border-radius:6px;border:1px solid var(--border2);background:none;color:var(--muted);cursor:pointer;transition:all .2s}
+.btn-logout:hover{border-color:var(--danger);color:var(--danger)}
+
+/* MAIN AREA */
+.admin-body{display:flex;flex:1;overflow:hidden}
+
+/* SIDEBAR */
+.sidebar{width:200px;background:var(--surface);border-right:1px solid var(--border);padding:.75rem .6rem;display:flex;flex-direction:column;gap:2px;flex-shrink:0;overflow-y:auto}
+.nav-item{display:flex;align-items:center;gap:.65rem;padding:.6rem .75rem;border-radius:7px;cursor:pointer;font-family:var(--mono);font-size:.78rem;color:var(--muted);border:1px solid transparent;transition:all .15s;user-select:none}
+.nav-item:hover{background:var(--surface2);color:var(--text)}
+.nav-item.active{background:rgba(15,244,198,.07);border-color:rgba(15,244,198,.15);color:var(--conch)}
+.nav-item .ni{font-size:1rem;flex-shrink:0}
+.nav-sep{height:1px;background:var(--border);margin:.4rem 0}
+.nav-section{font-family:var(--mono);font-size:.58rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);padding:.6rem .75rem .2rem;opacity:.5}
+.status-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;margin-left:auto}
+.dot-on{background:var(--success)}.dot-off{background:var(--muted2)}.dot-warn{background:var(--warn)}
+
+/* CONTENT */
+.content{flex:1;overflow-y:auto;padding:1.5rem}
+.panel{display:none}.panel.active{display:block}
+.panel-title{font-size:1.4rem;font-weight:800;letter-spacing:-.02em;margin-bottom:.3rem}
+.panel-sub{font-family:var(--mono);font-size:.78rem;color:var(--muted);margin-bottom:1.5rem}
+
+/* CARDS */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:1.2rem 1.4rem;margin-bottom:1rem}
+.card-title{font-family:var(--mono);font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:1rem;opacity:.7}
+
+/* STAT GRID */
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:.75rem;margin-bottom:1.25rem}
+.stat{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:.9rem 1rem}
+.stat-val{font-size:1.5rem;font-weight:800;letter-spacing:-.03em}
+.stat-lbl{font-family:var(--mono);font-size:.68rem;color:var(--muted);margin-top:.2rem}
+.sv-c{color:var(--conch)}.sv-r{color:var(--cmdr)}.sv-g{color:var(--success)}.sv-w{color:var(--warn)}
+
+/* TOGGLE SWITCH */
+.toggle-row{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:.75rem 0;border-bottom:1px solid var(--border)}
+.toggle-row:last-child{border-bottom:none}
+.toggle-info{flex:1}.toggle-name{font-size:.9rem;font-weight:700;margin-bottom:.15rem}
+.toggle-desc{font-family:var(--mono);font-size:.72rem;color:var(--muted)}
+.toggle{position:relative;width:44px;height:24px;flex-shrink:0}
+.toggle input{opacity:0;width:0;height:0}
+.toggle-slider{position:absolute;inset:0;background:var(--surface2);border:1px solid var(--border2);border-radius:999px;cursor:pointer;transition:all .2s}
+.toggle-slider::before{content:'';position:absolute;width:16px;height:16px;left:3px;top:3px;background:var(--muted);border-radius:50%;transition:all .2s}
+.toggle input:checked+.toggle-slider{background:rgba(15,244,198,.15);border-color:rgba(15,244,198,.4)}
+.toggle input:checked+.toggle-slider::before{transform:translateX(20px);background:var(--conch)}
+
+/* FORM ELEMENTS */
+.field-group{margin-bottom:1rem}
+.field-label{font-family:var(--mono);font-size:.7rem;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;display:block;margin-bottom:.4rem}
+.field-input,.field-textarea,.field-select{width:100%;background:var(--surface2);border:1px solid var(--border2);border-radius:8px;color:var(--text);font-family:var(--mono);font-size:.82rem;padding:.65rem .9rem;outline:none;transition:border-color .2s}
+.field-input:focus,.field-textarea:focus,.field-select:focus{border-color:rgba(15,244,198,.4)}
+.field-textarea{resize:vertical;min-height:80px;line-height:1.6}
+.field-select option{background:var(--surface2)}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:.75rem}
+
+/* BUTTONS */
+.btn{font-family:var(--mono);font-size:.75rem;letter-spacing:.04em;padding:.5rem 1rem;border-radius:7px;border:none;cursor:pointer;display:inline-flex;align-items:center;gap:.4em;transition:all .2s;position:relative;overflow:hidden}
+.btn-c{background:rgba(15,244,198,.12);color:var(--conch)}.btn-c:hover{background:rgba(15,244,198,.22)}
+.btn-r{background:rgba(255,79,94,.12);color:var(--cmdr)}.btn-r:hover{background:rgba(255,79,94,.22)}
+.btn-ghost{background:var(--surface2);color:var(--muted);border:1px solid var(--border2)}.btn-ghost:hover{color:var(--text)}
+.btn-danger{background:rgba(255,79,94,.12);color:var(--danger)}.btn-danger:hover{background:rgba(255,79,94,.25)}
+.btn-sm{padding:.35rem .7rem;font-size:.7rem}
+.btn-full{width:100%;justify-content:center}
+.btn-row{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.75rem}
+
+/* ANNOUNCEMENT LIST */
+.ann-item{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:.9rem 1rem;margin-bottom:.5rem;display:flex;gap:1rem;align-items:flex-start}
+.ann-type{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:.45rem}
+.ann-body{flex:1;min-width:0}
+.ann-title-text{font-size:.88rem;font-weight:700;margin-bottom:.2rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ann-preview{font-family:var(--mono);font-size:.72rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ann-meta{font-family:var(--mono);font-size:.65rem;color:var(--muted2);margin-top:.3rem}
+.ann-actions{display:flex;gap:.3rem;flex-shrink:0}
+.type-info{background:var(--info)}.type-warning{background:var(--warn)}.type-danger{background:var(--danger)}.type-success{background:var(--success)}
+
+/* BLACKLIST */
+.bl-item{display:flex;align-items:center;gap:.75rem;background:var(--surface2);border:1px solid var(--border);border-radius:7px;padding:.65rem .9rem;margin-bottom:.4rem}
+.bl-pattern{font-family:var(--mono);font-size:.8rem;flex:1;color:var(--text)}
+.bl-reason{font-family:var(--mono);font-size:.7rem;color:var(--muted);flex:1}
+
+/* ACTIVITY LOG */
+.log-item{display:flex;gap:.75rem;align-items:flex-start;padding:.6rem 0;border-bottom:1px solid var(--border)}
+.log-item:last-child{border-bottom:none}
+.log-time{font-family:var(--mono);font-size:.67rem;color:var(--muted2);flex-shrink:0;width:140px}
+.log-user{font-family:var(--mono);font-size:.72rem;color:var(--conch);flex-shrink:0;width:80px;overflow:hidden;text-overflow:ellipsis}
+.log-action{font-family:var(--mono);font-size:.72rem;color:var(--text);flex:1}
+
+/* LIVE PREVIEW */
+.preview-container{border:1px solid var(--border);border-radius:10px;overflow:hidden;background:#000;position:relative}
+.preview-bar{background:var(--surface2);padding:.5rem .9rem;display:flex;align-items:center;gap:.5rem;border-bottom:1px solid var(--border)}
+.preview-dot{width:10px;height:10px;border-radius:50%}
+.preview-url{font-family:var(--mono);font-size:.7rem;color:var(--muted);flex:1;text-align:center}
+.preview-iframe{width:100%;height:500px;border:none;transform-origin:top left}
+
+/* TOAST */
+#a-toast{position:fixed;bottom:1.5rem;right:1.5rem;z-index:9999;display:flex;flex-direction:column;gap:.4rem;pointer-events:none}
+.atoast{background:var(--surface2);border:1px solid var(--border2);border-radius:9px;padding:.75rem 1rem;font-family:var(--mono);font-size:.75rem;display:flex;align-items:center;gap:.6rem;animation:atin .25s ease;pointer-events:all;transition:opacity .25s,transform .25s;min-width:220px}
+.atoast.out{opacity:0;transform:translateX(20px)}
+@keyframes atin{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:translateX(0)}}
+.at-ok{color:var(--success)}.at-err{color:var(--danger)}.at-info{color:var(--info)}.at-warn{color:var(--warn)}
+
+/* BANNER PREVIEW */
+.banner-preview{padding:.65rem 1.2rem;border-radius:7px;font-family:var(--mono);font-size:.78rem;margin-top:.75rem;text-align:center}
+.bp-info{background:rgba(100,160,255,.12);color:var(--info);border:1px solid rgba(100,160,255,.2)}
+.bp-warning{background:rgba(255,200,50,.12);color:var(--warn);border:1px solid rgba(255,200,50,.2)}
+.bp-danger{background:rgba(255,79,94,.12);color:var(--danger);border:1px solid rgba(255,79,94,.2)}
+.bp-success{background:rgba(60,200,120,.12);color:var(--success);border:1px solid rgba(60,200,120,.2)}
+
+/* MAINTENANCE VISUAL */
+.maint-preview{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:1.5rem;text-align:center;margin-top:.75rem}
+.maint-icon{font-size:2rem;margin-bottom:.75rem}
+.maint-title{font-size:1rem;font-weight:800;color:var(--warn);margin-bottom:.4rem}
+.maint-msg{font-family:var(--mono);font-size:.75rem;color:var(--muted)}
+
+/* RATE BAR */
+.rate-bar-wrap{height:4px;background:var(--surface2);border-radius:2px;margin-top:.4rem;overflow:hidden}
+.rate-bar{height:100%;border-radius:2px;transition:width .3s}
+
+/* SCROLLBAR */
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
+
+@media(max-width:700px){.sidebar{width:52px}.nav-item span{display:none}.nav-section{display:none}.field-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<!-- ════════════════════════════════════════════
+     ⚙️  CONFIG — FILL IN YOUR SUPABASE DETAILS
+════════════════════════════════════════════ -->
+<script>
+const SUPA = {
+  // Get from: Supabase Dashboard → Settings → API
+  URL:         'https://YOUR_PROJECT.supabase.co',
+  // Use the SERVICE_ROLE key (keeps admin actions secure, never expose to public)
+  SERVICE_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJtZGtvYXVpYm16aGdudnJ3aGZkIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3ODI2ODYwOSwiZXhwIjoyMDkzODQ0NjA5fQ.ty9qKheTA9CrdWDwbuR9uf_FjfZTb9PKgRQNXdyKdjk',
+
+  // Session timeout in minutes (auto-logout)
+  SESSION_TIMEOUT: 30,
+
+  // Max failed login attempts before lockout
+  MAX_ATTEMPTS: 5,
+  LOCKOUT_MINUTES: 15,
+};
+</script>
+<!-- ════════════════════════════════════════════ -->
+
+<!-- LOGIN SCREEN -->
+<div id="login-screen">
+  <div class="login-box">
+    <div class="login-logo"><span class="c">Conch</span><span class="sep">/</span><span class="r">Cmdr</span></div>
+    <div class="login-sub">Admin Panel · Secure Login</div>
+
+    <div class="form-group">
+      <label class="form-label">Username</label>
+      <input class="form-input" id="login-user" type="text" autocomplete="username" placeholder="admin" onkeydown="if(event.key==='Enter')doLogin()">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Password</label>
+      <input class="form-input" id="login-pass" type="password" autocomplete="current-password" placeholder="••••••••••" onkeydown="if(event.key==='Enter')doLogin()">
+    </div>
+    <div class="login-attempts" id="login-msg"></div>
+    <button class="btn-login" id="login-btn" onclick="doLogin()">Sign in →</button>
+    <div class="login-lock" id="login-lock">🔒 Too many attempts. Wait <span id="lock-timer">15:00</span></div>
+    <div class="security-badge">
+      <span class="sec-icon">🔐</span>
+      <span class="sec-text">bcrypt · rate-limited · session timeout · supabase RLS</span>
+    </div>
+  </div>
+</div>
+
+<!-- ADMIN APP -->
+<div id="admin-app">
+  <!-- TOP BAR -->
+  <div class="topbar">
+    <div style="display:flex;align-items:center;gap:.75rem">
+      <div class="topbar-logo"><span class="c">Conch</span><span class="sep">/</span><span class="r">Cmdr</span></div>
+      <span class="topbar-tag">ADMIN</span>
+    </div>
+    <div class="topbar-right">
+      <span class="topbar-user">Logged in as <span id="tb-user">—</span></span>
+      <button class="btn-logout" onclick="doLogout()">Logout</button>
+    </div>
+  </div>
+
+  <div class="admin-body">
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+      <div class="nav-section">Overview</div>
+      <div class="nav-item active" onclick="showPanel('dashboard')"><span class="ni">📊</span><span>Dashboard</span></div>
+      <div class="nav-sep"></div>
+      <div class="nav-section">Content</div>
+      <div class="nav-item" onclick="showPanel('announcements')"><span class="ni">📣</span><span>Announcements</span></div>
+      <div class="nav-item" onclick="showPanel('banner')"><span class="ni">📢</span><span>Banner</span><div class="status-dot dot-off" id="sd-banner"></div></div>
+      <div class="nav-sep"></div>
+      <div class="nav-section">Control</div>
+      <div class="nav-item" onclick="showPanel('maintenance')"><span class="ni">🔧</span><span>Maintenance</span><div class="status-dot dot-off" id="sd-maint"></div></div>
+      <div class="nav-item" onclick="showPanel('blacklist')"><span class="ni">🚫</span><span>Blacklist</span></div>
+      <div class="nav-sep"></div>
+      <div class="nav-section">Tools</div>
+      <div class="nav-item" onclick="showPanel('preview')"><span class="ni">👁️</span><span>Live Preview</span></div>
+      <div class="nav-item" onclick="showPanel('log')"><span class="ni">📋</span><span>Activity Log</span></div>
+    </div>
+
+    <!-- CONTENT -->
+    <div class="content">
+
+      <!-- DASHBOARD -->
+      <div class="panel active" id="panel-dashboard">
+        <div class="panel-title">Dashboard</div>
+        <div class="panel-sub">System overview and quick actions</div>
+        <div class="stat-grid">
+          <div class="stat"><div class="stat-val sv-c" id="st-anns">—</div><div class="stat-lbl">Announcements</div></div>
+          <div class="stat"><div class="stat-val sv-r" id="st-bl">—</div><div class="stat-lbl">Blacklisted Files</div></div>
+          <div class="stat"><div class="stat-val sv-g" id="st-maint">OFF</div><div class="stat-lbl">Maintenance</div></div>
+          <div class="stat"><div class="stat-val sv-w" id="st-banner">OFF</div><div class="stat-lbl">Banner</div></div>
+        </div>
+        <div class="card">
+          <div class="card-title">Quick Actions</div>
+          <div class="btn-row">
+            <button class="btn btn-c" onclick="showPanel('announcements')">📣 New Announcement</button>
+            <button class="btn btn-ghost" onclick="showPanel('banner')">📢 Edit Banner</button>
+            <button class="btn btn-danger" onclick="showPanel('maintenance')">🔧 Toggle Maintenance</button>
+            <button class="btn btn-ghost" onclick="showPanel('preview')">👁️ Preview Site</button>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">Recent Activity</div>
+          <div id="dash-log"><div style="font-family:var(--mono);font-size:.75rem;color:var(--muted);opacity:.6">Loading...</div></div>
+        </div>
+      </div>
+
+      <!-- ANNOUNCEMENTS -->
+      <div class="panel" id="panel-announcements">
+        <div class="panel-title">Announcements</div>
+        <div class="panel-sub">Create and manage public announcements</div>
+        <div class="card">
+          <div class="card-title">New Announcement</div>
+          <div class="field-row">
+            <div class="field-group">
+              <label class="field-label">Title</label>
+              <input class="field-input" id="ann-title" placeholder="v1.2.0 Released!">
+            </div>
+            <div class="field-group">
+              <label class="field-label">Type</label>
+              <select class="field-select" id="ann-type">
+                <option value="info">ℹ️ Info</option>
+                <option value="success">✅ Success</option>
+                <option value="warning">⚠️ Warning</option>
+                <option value="danger">🚨 Danger</option>
+              </select>
+            </div>
+          </div>
+          <div class="field-group">
+            <label class="field-label">Message</label>
+            <textarea class="field-textarea" id="ann-body" placeholder="Describe the announcement..."></textarea>
+          </div>
+          <div style="display:flex;align-items:center;gap:1rem">
+            <label style="display:flex;align-items:center;gap:.5rem;font-family:var(--mono);font-size:.75rem;color:var(--muted);cursor:pointer">
+              <input type="checkbox" id="ann-pin"> Pin to top
+            </label>
+            <label style="display:flex;align-items:center;gap:.5rem;font-family:var(--mono);font-size:.75rem;color:var(--muted);cursor:pointer">
+              <input type="checkbox" id="ann-visible" checked> Visible
+            </label>
+          </div>
+          <div class="btn-row">
+            <button class="btn btn-c btn-full" onclick="createAnnouncement()">📣 Publish Announcement</button>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">All Announcements</div>
+          <div id="ann-list"><div style="font-family:var(--mono);font-size:.75rem;color:var(--muted);opacity:.6">Loading...</div></div>
+        </div>
+      </div>
+
+      <!-- BANNER -->
+      <div class="panel" id="panel-banner">
+        <div class="panel-title">Site Banner</div>
+        <div class="panel-sub">Show a top banner on all active pages</div>
+        <div class="card">
+          <div class="toggle-row">
+            <div class="toggle-info">
+              <div class="toggle-name">Enable Banner</div>
+              <div class="toggle-desc">Show the banner on all pages instantly</div>
+            </div>
+            <label class="toggle"><input type="checkbox" id="tog-banner" onchange="saveSetting('banner_enabled',this.checked?'true':'false','banner')"><span class="toggle-slider"></span></label>
+          </div>
+          <div style="margin-top:1rem">
+            <div class="field-group">
+              <label class="field-label">Banner Text</label>
+              <input class="field-input" id="banner-text" placeholder="🎉 New update available! Check the latest releases.">
+            </div>
+            <div class="field-group">
+              <label class="field-label">Banner Type</label>
+              <select class="field-select" id="banner-type" onchange="updateBannerPreview()">
+                <option value="info">ℹ️ Info (Blue)</option>
+                <option value="success">✅ Success (Green)</option>
+                <option value="warning">⚠️ Warning (Yellow)</option>
+                <option value="danger">🚨 Danger (Red)</option>
+              </select>
+            </div>
+            <div id="banner-preview" class="banner-preview bp-info">Preview text</div>
+            <div class="btn-row">
+              <button class="btn btn-c btn-full" onclick="saveBanner()">💾 Save Banner</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- MAINTENANCE -->
+      <div class="panel" id="panel-maintenance">
+        <div class="panel-title">Maintenance Mode</div>
+        <div class="panel-sub">When active, visitors see a maintenance page instead of downloads</div>
+        <div class="card">
+          <div class="toggle-row">
+            <div class="toggle-info">
+              <div class="toggle-name" style="color:var(--warn)">⚠️ Maintenance Mode</div>
+              <div class="toggle-desc">Redirects all visitors to the maintenance page</div>
+            </div>
+            <label class="toggle"><input type="checkbox" id="tog-maint" onchange="saveSetting('maintenance_enabled',this.checked?'true':'false','maintenance')"><span class="toggle-slider"></span></label>
+          </div>
+          <div style="margin-top:1rem">
+            <div class="field-group">
+              <label class="field-label">Maintenance Message</label>
+              <textarea class="field-textarea" id="maint-msg" placeholder="We are performing scheduled maintenance. Back soon!"></textarea>
+            </div>
+            <div id="maint-preview" class="maint-preview">
+              <div class="maint-icon">🔧</div>
+              <div class="maint-title">Under Maintenance</div>
+              <div class="maint-msg" id="maint-msg-preview">We are performing scheduled maintenance.</div>
+            </div>
+            <div class="btn-row">
+              <button class="btn btn-c btn-full" onclick="saveMaintenanceMsg()">💾 Save Message</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- BLACKLIST -->
+      <div class="panel" id="panel-blacklist">
+        <div class="panel-title">File Blacklist</div>
+        <div class="panel-sub">Hide specific files from appearing on the download page</div>
+        <div class="card">
+          <div class="card-title">Add to Blacklist</div>
+          <div class="field-row">
+            <div class="field-group">
+              <label class="field-label">Filename / Pattern</label>
+              <input class="field-input" id="bl-pattern" placeholder="Conch_BROKEN.rbxm or *BETA*">
+            </div>
+            <div class="field-group">
+              <label class="field-label">Reason (optional)</label>
+              <input class="field-input" id="bl-reason" placeholder="Broken build">
+            </div>
+          </div>
+          <button class="btn btn-danger btn-full" onclick="addBlacklist()">🚫 Add to Blacklist</button>
+        </div>
+        <div class="card">
+          <div class="card-title">Blacklisted Files</div>
+          <div id="bl-list"><div style="font-family:var(--mono);font-size:.75rem;color:var(--muted);opacity:.6">Loading...</div></div>
+        </div>
+      </div>
+
+      <!-- LIVE PREVIEW -->
+      <div class="panel" id="panel-preview">
+        <div class="panel-title">Live Preview</div>
+        <div class="panel-sub">See how the download page looks with current settings</div>
+        <div class="btn-row" style="margin-bottom:1rem">
+          <button class="btn btn-c" onclick="reloadPreview()">🔄 Reload Preview</button>
+          <a class="btn btn-ghost" href="index.html" target="_blank">↗ Open in new tab</a>
+        </div>
+        <div class="preview-container">
+          <div class="preview-bar">
+            <div class="preview-dot" style="background:#ff5f57"></div>
+            <div class="preview-dot" style="background:#febc2e"></div>
+            <div class="preview-dot" style="background:#28c840"></div>
+            <div class="preview-url">index.html — Live Preview</div>
+          </div>
+          <iframe id="preview-frame" src="index.html" class="preview-iframe"></iframe>
+        </div>
+      </div>
+
+      <!-- ACTIVITY LOG -->
+      <div class="panel" id="panel-log">
+        <div class="panel-title">Activity Log</div>
+        <div class="panel-sub">All admin actions with timestamps</div>
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.75rem">
+            <div class="card-title" style="margin-bottom:0">Recent Actions</div>
+            <button class="btn btn-ghost btn-sm" onclick="loadLog()">🔄 Refresh</button>
+          </div>
+          <div id="log-list"><div style="font-family:var(--mono);font-size:.75rem;color:var(--muted);opacity:.6">Loading...</div></div>
+        </div>
+      </div>
+
+    </div><!-- /content -->
+  </div><!-- /admin-body -->
+</div><!-- /admin-app -->
+
+<div id="a-toast"></div>
+
+<script>
+/* ── SECURITY: Anti-brute-force ── */
+const _sec={
+  attempts:parseInt(sessionStorage.getItem('_la')||'0'),
+  lockedUntil:parseInt(sessionStorage.getItem('_lu')||'0'),
+  persist(){sessionStorage.setItem('_la',this.attempts);sessionStorage.setItem('_lu',this.lockedUntil)}
+};
+let _session=null,_sessionTimer=null;
+
+/* ── SUPABASE HELPER ── */
+async function supa(method,path,body){
+  const res=await fetch(`${SUPA.URL}/rest/v1/${path}`,{
+    method,
+    headers:{
+      'apikey':SUPA.SERVICE_KEY,
+      'Authorization':'Bearer '+SUPA.SERVICE_KEY,
+      'Content-Type':'application/json',
+      'Prefer': method==='POST'?'return=representation':'',
+    },
+    body:body?JSON.stringify(body):undefined
+  });
+  if(!res.ok){const e=await res.text();throw new Error(e)}
+  const ct=res.headers.get('content-type')||'';
+  return ct.includes('json')?res.json():null;
+}
+
+/* ── LOGIN ── */
+async function doLogin(){
+  const btn=document.getElementById('login-btn');
+  const now=Date.now();
+
+  // Check lockout
+  if(_sec.lockedUntil>now){startLockTimer();return}
+
+  const user=document.getElementById('login-user').value.trim();
+  const pass=document.getElementById('login-pass').value;
+  const msg=document.getElementById('login-msg');
+
+  if(!user||!pass){msg.textContent='Please enter username and password.';return}
+
+  btn.disabled=true;btn.textContent='Verifying...';msg.textContent='';
+
+  try{
+    // Fetch admin record from Supabase
+    const rows=await supa('GET',`admins?username=eq.${encodeURIComponent(user)}&select=id,username,password_hash,role`);
+    if(!rows||!rows.length){throw new Error('invalid')}
+    const admin=rows[0];
+
+    // bcrypt compare (never send plain password to server)
+    const ok=await dcodeIO.bcrypt.compare(pass,admin.password_hash);
+    if(!ok)throw new Error('invalid');
+
+    // Success — reset attempts
+    _sec.attempts=0;_sec.lockedUntil=0;_sec.persist();
+
+    // Create session
+    _session={username:admin.username,role:admin.role,expires:Date.now()+SUPA.SESSION_TIMEOUT*60*1000};
+
+    // Update last login
+    await supa('PATCH',`admins?username=eq.${encodeURIComponent(user)}`,{last_login:new Date().toISOString()});
+
+    // Log action
+    await logAction(admin.username,'login',{role:admin.role});
+
+    // Show app
+    document.getElementById('login-screen').style.display='none';
+    document.getElementById('admin-app').classList.add('active');
+    document.getElementById('tb-user').textContent=`${admin.username} (${admin.role})`;
+
+    startSessionTimer();
+    loadAll();
+
+  }catch(e){
+    _sec.attempts++;
+    const left=SUPA.MAX_ATTEMPTS-_sec.attempts;
+    if(_sec.attempts>=SUPA.MAX_ATTEMPTS){
+      _sec.lockedUntil=Date.now()+SUPA.LOCKOUT_MINUTES*60*1000;
+      _sec.persist();startLockTimer();
+    }else{
+      msg.textContent=`Invalid credentials. ${left} attempt${left!==1?'s':''} left.`;
+    }
+    _sec.persist();
+    document.getElementById('login-pass').value='';
+    document.getElementById('login-pass').classList.add('err');
+    setTimeout(()=>document.getElementById('login-pass').classList.remove('err'),800);
+  }
+  btn.disabled=false;btn.textContent='Sign in →';
+}
+
+function startLockTimer(){
+  const lockDiv=document.getElementById('login-lock'),timer=document.getElementById('lock-timer');
+  const btn=document.getElementById('login-btn');
+  lockDiv.style.display='block';btn.disabled=true;
+  const iv=setInterval(()=>{
+    const rem=Math.max(0,_sec.lockedUntil-Date.now());
+    if(rem<=0){clearInterval(iv);lockDiv.style.display='none';btn.disabled=false;_sec.attempts=0;_sec.persist();return}
+    const m=Math.floor(rem/60000),s=Math.floor((rem%60000)/1000);
+    timer.textContent=`${m}:${s.toString().padStart(2,'0')}`;
+  },1000);
+}
+
+function startSessionTimer(){
+  if(_sessionTimer)clearInterval(_sessionTimer);
+  _sessionTimer=setInterval(()=>{
+    if(!_session||Date.now()>_session.expires){doLogout();atToast('Session expired. Please log in again.','warn');}
+  },30000);
+}
+
+function doLogout(){
+  _session=null;if(_sessionTimer)clearInterval(_sessionTimer);
+  document.getElementById('admin-app').classList.remove('active');
+  document.getElementById('login-screen').style.display='flex';
+  document.getElementById('login-user').value='';
+  document.getElementById('login-pass').value='';
+}
+
+/* ── NAV ── */
+function showPanel(id){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('panel-'+id).classList.add('active');
+  event&&event.currentTarget&&event.currentTarget.classList.add('active');
+  if(id==='log')loadLog();
+  if(id==='preview')reloadPreview();
+}
+
+/* ── LOAD ALL ── */
+async function loadAll(){
+  await Promise.all([loadSettings(),loadAnnouncements(),loadBlacklist(),loadLog(true)]);
+}
+
+/* ── SETTINGS ── */
+let _settings={};
+async function loadSettings(){
+  try{
+    const rows=await supa('GET','site_settings?select=key,value');
+    if(rows)rows.forEach(r=>{_settings[r.key]=r.value});
+    // Banner
+    const bOn=_settings.banner_enabled==='true';
+    document.getElementById('tog-banner').checked=bOn;
+    document.getElementById('sd-banner').className='status-dot '+(bOn?'dot-on':'dot-off');
+    document.getElementById('st-banner').textContent=bOn?'ON':'OFF';
+    if(_settings.banner_text)document.getElementById('banner-text').value=_settings.banner_text;
+    if(_settings.banner_type){document.getElementById('banner-type').value=_settings.banner_type;updateBannerPreview();}
+    // Maintenance
+    const mOn=_settings.maintenance_enabled==='true';
+    document.getElementById('tog-maint').checked=mOn;
+    document.getElementById('sd-maint').className='status-dot '+(mOn?'dot-warn':'dot-off');
+    document.getElementById('st-maint').textContent=mOn?'ON':'OFF';
+    if(_settings.maintenance_message){document.getElementById('maint-msg').value=_settings.maintenance_message;document.getElementById('maint-msg-preview').textContent=_settings.maintenance_message;}
+  }catch(e){atToast('Failed to load settings','err')}
+}
+
+async function saveSetting(key,value,context){
+  try{
+    await supa('PATCH',`site_settings?key=eq.${key}`,{value,updated_by:_session?.username,updated_at:new Date().toISOString()});
+    _settings[key]=value;
+    await logAction(_session.username,'setting_change',{key,value});
+    if(context==='banner'){const on=value==='true';document.getElementById('sd-banner').className='status-dot '+(on?'dot-on':'dot-off');document.getElementById('st-banner').textContent=on?'ON':'OFF';}
+    if(context==='maintenance'){const on=value==='true';document.getElementById('sd-maint').className='status-dot '+(on?'dot-warn':'dot-off');document.getElementById('st-maint').textContent=on?'ON':'OFF';}
+    atToast('Setting saved','ok');
+  }catch(e){atToast('Failed to save: '+e.message,'err')}
+}
+
+function updateBannerPreview(){
+  const t=document.getElementById('banner-text').value||'Preview text';
+  const tp=document.getElementById('banner-type').value;
+  const el=document.getElementById('banner-preview');
+  el.className='banner-preview bp-'+tp;el.textContent=t;
+}
+document.getElementById('banner-text').addEventListener('input',updateBannerPreview);
+document.getElementById('maint-msg').addEventListener('input',()=>{document.getElementById('maint-msg-preview').textContent=document.getElementById('maint-msg').value||'...'});
+
+async function saveBanner(){
+  const text=document.getElementById('banner-text').value.trim();
+  const type=document.getElementById('banner-type').value;
+  if(!text){atToast('Banner text cannot be empty','warn');return}
+  try{
+    await supa('PATCH','site_settings?key=eq.banner_text',{value:text,updated_by:_session?.username,updated_at:new Date().toISOString()});
+    await supa('PATCH','site_settings?key=eq.banner_type',{value:type,updated_by:_session?.username,updated_at:new Date().toISOString()});
+    await logAction(_session.username,'banner_update',{text,type});
+    atToast('Banner saved','ok');
+  }catch(e){atToast('Failed: '+e.message,'err')}
+}
+
+async function saveMaintenanceMsg(){
+  const msg=document.getElementById('maint-msg').value.trim();
+  if(!msg){atToast('Message cannot be empty','warn');return}
+  try{
+    await supa('PATCH','site_settings?key=eq.maintenance_message',{value:msg,updated_by:_session?.username,updated_at:new Date().toISOString()});
+    await logAction(_session.username,'maintenance_message_update',{msg});
+    atToast('Message saved','ok');
+  }catch(e){atToast('Failed: '+e.message,'err')}
+}
+
+/* ── ANNOUNCEMENTS ── */
+async function loadAnnouncements(){
+  try{
+    const rows=await supa('GET','announcements?select=*&order=pinned.desc,created_at.desc');
+    const list=document.getElementById('ann-list');
+    document.getElementById('st-anns').textContent=rows?rows.length:0;
+    if(!rows||!rows.length){list.innerHTML='<div style="font-family:var(--mono);font-size:.75rem;color:var(--muted);opacity:.6">No announcements yet.</div>';return}
+    list.innerHTML=rows.map(a=>`
+      <div class="ann-item">
+        <div class="ann-type type-${a.type}"></div>
+        <div class="ann-body">
+          <div class="ann-title-text">${eh(a.title)}${a.pinned?' 📌':''}${!a.visible?' 🙈':''}</div>
+          <div class="ann-preview">${eh(a.body)}</div>
+          <div class="ann-meta">${new Date(a.created_at).toLocaleString()} · by ${eh(a.created_by)}</div>
+        </div>
+        <div class="ann-actions">
+          <button class="btn btn-ghost btn-sm" onclick="toggleAnnVisibility('${a.id}',${a.visible})">${a.visible?'Hide':'Show'}</button>
+          <button class="btn btn-danger btn-sm" onclick="deleteAnn('${a.id}')">✕</button>
+        </div>
+      </div>`).join('');
+  }catch(e){atToast('Failed to load announcements','err')}
+}
+
+async function createAnnouncement(){
+  const title=document.getElementById('ann-title').value.trim();
+  const body=document.getElementById('ann-body').value.trim();
+  const type=document.getElementById('ann-type').value;
+  const pinned=document.getElementById('ann-pin').checked;
+  const visible=document.getElementById('ann-visible').checked;
+  if(!title||!body){atToast('Title and message required','warn');return}
+  try{
+    await supa('POST','announcements',{title,body,type,pinned,visible,created_by:_session.username});
+    await logAction(_session.username,'create_announcement',{title,type});
+    document.getElementById('ann-title').value='';document.getElementById('ann-body').value='';
+    atToast('Announcement published!','ok');loadAnnouncements();
+  }catch(e){atToast('Failed: '+e.message,'err')}
+}
+
+async function deleteAnn(id){
+  if(!confirm('Delete this announcement?'))return;
+  try{await supa('DELETE',`announcements?id=eq.${id}`);await logAction(_session.username,'delete_announcement',{id});atToast('Deleted','ok');loadAnnouncements();}
+  catch(e){atToast('Failed: '+e.message,'err')}
+}
+
+async function toggleAnnVisibility(id,current){
+  try{await supa('PATCH',`announcements?id=eq.${id}`,{visible:!current,updated_at:new Date().toISOString()});await logAction(_session.username,'toggle_announcement',{id,visible:!current});loadAnnouncements();}
+  catch(e){atToast('Failed: '+e.message,'err')}
+}
+
+/* ── BLACKLIST ── */
+async function loadBlacklist(){
+  try{
+    const rows=await supa('GET','file_blacklist?select=*&order=added_at.desc');
+    const list=document.getElementById('bl-list');
+    document.getElementById('st-bl').textContent=rows?rows.length:0;
+    if(!rows||!rows.length){list.innerHTML='<div style="font-family:var(--mono);font-size:.75rem;color:var(--muted);opacity:.6">No files blacklisted.</div>';return}
+    list.innerHTML=rows.map(b=>`
+      <div class="bl-item">
+        <span class="bl-pattern">${eh(b.pattern)}</span>
+        <span class="bl-reason">${eh(b.reason||'—')}</span>
+        <span style="font-family:var(--mono);font-size:.65rem;color:var(--muted2)">${new Date(b.added_at).toLocaleDateString()}</span>
+        <button class="btn btn-danger btn-sm" onclick="removeBlacklist('${b.id}','${eh(b.pattern)}')">✕</button>
+      </div>`).join('');
+  }catch(e){atToast('Failed to load blacklist','err')}
+}
+
+async function addBlacklist(){
+  const pattern=document.getElementById('bl-pattern').value.trim();
+  const reason=document.getElementById('bl-reason').value.trim();
+  if(!pattern){atToast('Pattern required','warn');return}
+  try{
+    await supa('POST','file_blacklist',{pattern,reason:reason||null,added_by:_session.username});
+    await logAction(_session.username,'blacklist_add',{pattern,reason});
+    document.getElementById('bl-pattern').value='';document.getElementById('bl-reason').value='';
+    atToast('Added to blacklist','ok');loadBlacklist();
+  }catch(e){atToast('Failed: '+e.message,'err')}
+}
+
+async function removeBlacklist(id,pattern){
+  if(!confirm(`Remove "${pattern}" from blacklist?`))return;
+  try{await supa('DELETE',`file_blacklist?id=eq.${id}`);await logAction(_session.username,'blacklist_remove',{pattern});atToast('Removed','ok');loadBlacklist();}
+  catch(e){atToast('Failed: '+e.message,'err')}
+}
+
+/* ── ACTIVITY LOG ── */
+async function loadLog(dashOnly){
+  try{
+    const rows=await supa('GET','activity_log?select=*&order=created_at.desc&limit=50');
+    const fmt=rows?rows.map(r=>`
+      <div class="log-item">
+        <span class="log-time">${new Date(r.created_at).toLocaleString()}</span>
+        <span class="log-user">${eh(r.admin_username)}</span>
+        <span class="log-action">${eh(r.action)}${r.details?` — <span style="color:var(--muted)">${eh(JSON.stringify(r.details)).slice(0,60)}</span>`:''}
+        </span>
+      </div>`).join(''):'';
+    if(!dashOnly){const el=document.getElementById('log-list');if(el)el.innerHTML=fmt||'<div style="font-family:var(--mono);font-size:.75rem;color:var(--muted);opacity:.6">No activity yet.</div>';}
+    const dash=document.getElementById('dash-log');if(dash)dash.innerHTML=(rows?rows.slice(0,5):[]). map(r=>`<div class="log-item"><span class="log-time">${new Date(r.created_at).toLocaleString()}</span><span class="log-user">${eh(r.admin_username)}</span><span class="log-action">${eh(r.action)}</span></div>`).join('')||'<div style="font-family:var(--mono);font-size:.75rem;color:var(--muted);opacity:.6">No activity yet.</div>';
+  }catch(e){/* silent */}
+}
+
+async function logAction(user,action,details){
+  try{await supa('POST','activity_log',{admin_username:user,action,details:details||null});}catch{}
+}
+
+/* ── PREVIEW ── */
+function reloadPreview(){document.getElementById('preview-frame').src='index.html?t='+Date.now()}
+
+/* ── TOAST ── */
+function atToast(msg,type='ok'){
+  const c=document.getElementById('a-toast'),el=document.createElement('div');el.className='atoast';
+  const icons={ok:'✓',err:'✕',warn:'⚠',info:'ℹ'};
+  const cls={ok:'at-ok',err:'at-err',warn:'at-warn',info:'at-info'};
+  el.innerHTML=`<span class="${cls[type]}">${icons[type]||'•'}</span>${msg}`;
+  c.appendChild(el);setTimeout(()=>{el.classList.add('out');setTimeout(()=>el.remove(),260)},3000);
+}
+
+/* ── UTILS ── */
+function eh(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+
+// Init lockout check
+if(_sec.lockedUntil>Date.now())startLockTimer();
+</script>
+</body>
+</html>
