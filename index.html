@@ -4,6 +4,21 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Conch & Cmdr — Downloads</title>
+<script>
+/* MAINTENANCE + BANNER — runs before page loads */
+(async function(){
+  const SU='https://YOUR_PROJECT.supabase.co';
+  const SA='YOUR_ANON_KEY';
+  try{
+    const r=await fetch(SU+'/rest/v1/site_settings?key=in.(maintenance_enabled,banner_enabled,banner_text,banner_type)&select=key,value',
+      {headers:{'apikey':SA,'Authorization':'Bearer '+SA}});
+    if(!r.ok)return;
+    const rows=await r.json();const s={};rows.forEach(x=>s[x.key]=x.value);
+    if(s.maintenance_enabled==='true'){window.location.replace('maintenance.html');return;}
+    if(s.banner_enabled==='true'&&s.banner_text){window.__BANNER__={text:s.banner_text,type:s.banner_type||'info'};}
+  }catch(e){}
+})();
+</script>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
   *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -14,6 +29,14 @@
     --border:rgba(255,255,255,0.07);--text:#e8eaf0;--muted:#6b7280;
     --mono:'JetBrains Mono',monospace;--sans:'Syne',sans-serif;
   }
+
+  /* BANNER */
+  .site-banner{width:100%;padding:.6rem 2rem;text-align:center;font-family:var(--mono);font-size:.78rem;position:fixed;top:64px;left:0;right:0;z-index:99;display:none}
+  .site-banner.active{display:block}
+  .sb-info{background:rgba(100,160,255,.12);color:#64a0ff;border-bottom:1px solid rgba(100,160,255,.2)}
+  .sb-warning{background:rgba(255,200,50,.12);color:#ffc832;border-bottom:1px solid rgba(255,200,50,.2)}
+  .sb-danger{background:rgba(255,79,94,.12);color:#ff4f5e;border-bottom:1px solid rgba(255,79,94,.2)}
+  .sb-success{background:rgba(60,200,120,.12);color:#3cc878;border-bottom:1px solid rgba(60,200,120,.2)}
   html{scroll-behavior:smooth}
   body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:100vh;overflow-x:hidden}
 
@@ -221,6 +244,9 @@ let lang=localStorage.getItem('cc_lang')||'en';
 function t(k,...a){const v=(T[lang]||T.en)[k];return typeof v==='function'?v(...a):(v||k)}
 </script>
 
+
+<!-- SITE BANNER (controlled from admin panel) -->
+<div class="site-banner" id="site-banner"></div>
 <canvas id="confetti-canvas"></canvas>
 <div id="toast-container"></div>
 
@@ -530,6 +556,16 @@ async function doRefresh(){
 function fmtB(b){if(!b)return'0 B';const k=1024,s=['B','KB','MB','GB'],i=Math.floor(Math.log(b)/Math.log(k));return parseFloat((b/Math.pow(k,i)).toFixed(2))+' '+s[i]}
 function eh(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
 function ea(s){return String(s).replace(/\\/g,'\\\\').replace(/'/g,"\\'")}
+
+/* BANNER */
+(function(){
+  if(!window.__BANNER__)return;
+  const el=document.getElementById('site-banner');
+  if(!el)return;
+  el.textContent=window.__BANNER__.text;
+  el.className='site-banner sb-'+(window.__BANNER__.type||'info')+' active';
+  document.querySelector('.hero').style.paddingTop='10rem';
+})();
 
 /* INIT */
 document.getElementById('lang-sel').value=lang;
