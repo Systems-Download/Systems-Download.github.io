@@ -4,11 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Conch & Cmdr — Downloads</title>
+<div class="page-transition" id="page-transition"></div>
 <script>
 /* MAINTENANCE + BANNER — runs before page loads */
 (async function(){
-  const SU='https://rmdkoauibmzhgnvrwhfd.supabase.co';
-  const SA='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJtZGtvYXVpYm16aGdudnJ3aGZkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyNjg2MDksImV4cCI6MjA5Mzg0NDYwOX0.lu6T00f9y9-Q8HhVag-MGjJz6bTlJrYUwC7AApIxaFw';
+  const SU='https://YOUR_PROJECT.supabase.co';
+  const SA='YOUR_ANON_KEY';
   try{
     const r=await fetch(SU+'/rest/v1/site_settings?key=in.(maintenance_enabled,banner_enabled,banner_text,banner_type)&select=key,value',
       {headers:{'apikey':SA,'Authorization':'Bearer '+SA}});
@@ -19,6 +20,14 @@
   }catch(e){}
 })();
 </script>
+
+<!-- PWA -->
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0ff4c6">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Conch & Cmdr">
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
   *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -37,6 +46,24 @@
   .sb-warning{background:rgba(255,200,50,.12);color:#ffc832;border-bottom:1px solid rgba(255,200,50,.2)}
   .sb-danger{background:rgba(255,79,94,.12);color:#ff4f5e;border-bottom:1px solid rgba(255,79,94,.2)}
   .sb-success{background:rgba(60,200,120,.12);color:#3cc878;border-bottom:1px solid rgba(60,200,120,.2)}
+
+  /* PAGE TRANSITION */
+  .page-transition{position:fixed;inset:0;background:var(--bg);z-index:9999;pointer-events:none;opacity:0;transition:opacity .25s ease}
+  .page-transition.fade-out{opacity:1;pointer-events:all}
+
+  /* DISCORD BANNER */
+  .discord-banner{background:linear-gradient(135deg,rgba(88,101,242,.15),rgba(88,101,242,.05));border:1px solid rgba(88,101,242,.25);border-radius:10px;padding:1rem 1.5rem;display:flex;align-items:center;gap:1rem;margin:0 2.5rem 2rem;max-width:1056px;margin-left:auto;margin-right:auto}
+  .discord-icon{width:40px;height:40px;border-radius:10px;background:rgba(88,101,242,.2);display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0}
+  .discord-info{flex:1}
+  .discord-title{font-size:.9rem;font-weight:700;margin-bottom:.15rem}
+  .discord-sub{font-family:var(--mono);font-size:.72rem;color:var(--muted)}
+  .discord-btn{font-family:var(--mono);font-size:.75rem;padding:.5rem 1.1rem;border-radius:6px;background:rgba(88,101,242,.25);color:#8b9cf4;border:1px solid rgba(88,101,242,.35);text-decoration:none;transition:all .2s;white-space:nowrap;flex-shrink:0}
+  .discord-btn:hover{background:rgba(88,101,242,.4);color:#fff}
+
+  /* PWA INSTALL BUTTON */
+  .pwa-install-btn{display:none;font-family:var(--mono);font-size:.72rem;padding:.38rem .75rem;border-radius:6px;border:1px solid rgba(15,244,198,.25);background:rgba(15,244,198,.08);color:var(--conch);cursor:pointer;align-items:center;gap:.4rem;transition:all .2s}
+  .pwa-install-btn:hover{background:rgba(15,244,198,.15)}
+  .pwa-install-btn.visible{display:flex}
   html{scroll-behavior:smooth}
   body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:100vh;overflow-x:hidden}
 
@@ -256,6 +283,7 @@ function t(k,...a){const v=(T[lang]||T.en)[k];return typeof v==='function'?v(...
   <div class="nav-right">
     <a class="nav-link active" href="index.html" id="nl-dl">Downloads</a>
     <a class="nav-link" href="announcements.html" id="nl-ann">Announcements</a>
+    <button class="pwa-install-btn" id="pwa-btn" onclick="installPWA()">⬇ Install App</button>
     <select class="lang-select" id="lang-sel" onchange="setLang(this.value)">
       <option value="en">EN</option><option value="de">DE</option><option value="es">ES</option>
       <option value="it">IT</option><option value="fr">FR</option><option value="pt">PT</option>
@@ -299,6 +327,16 @@ function t(k,...a){const v=(T[lang]||T.en)[k];return typeof v==='function'?v(...
   </div>
 </div>
 
+
+<!-- DISCORD BANNER -->
+<div class="discord-banner">
+  <div class="discord-icon">💬</div>
+  <div class="discord-info">
+    <div class="discord-title">Join the Conch & Cmdr Discord</div>
+    <div class="discord-sub">Get updates, support, and talk to the community</div>
+  </div>
+  <a class="discord-btn" href="https://discord.gg/XaZSGVFvzV" target="_blank" rel="noopener">Join Server →</a>
+</div>
 <!-- CONCH -->
 <div class="section" id="conch">
   <div class="section-header"><h2 class="c">Conch</h2><span class="sbadge sbadge-c" id="sb-c"></span></div>
@@ -566,6 +604,47 @@ function ea(s){return String(s).replace(/\\/g,'\\\\').replace(/'/g,"\\'")}
   el.className='site-banner sb-'+(window.__BANNER__.type||'info')+' active';
   document.querySelector('.hero').style.paddingTop='10rem';
 })();
+
+
+/* PAGE TRANSITIONS */
+document.querySelectorAll('a[href]').forEach(a=>{
+  const href=a.getAttribute('href');
+  if(!href||href.startsWith('#')||href.startsWith('http')||href.startsWith('mailto')||a.target==='_blank')return;
+  a.addEventListener('click',e=>{
+    e.preventDefault();
+    const overlay=document.getElementById('page-transition');
+    overlay.classList.add('fade-out');
+    setTimeout(()=>window.location.href=href,250);
+  });
+});
+window.addEventListener('pageshow',()=>{
+  const overlay=document.getElementById('page-transition');
+  if(overlay)overlay.classList.remove('fade-out');
+});
+
+/* PWA SERVICE WORKER + INSTALL */
+let _deferredPrompt=null;
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('sw.js').catch(()=>{});
+}
+window.addEventListener('beforeinstallprompt',e=>{
+  e.preventDefault();_deferredPrompt=e;
+  const btn=document.getElementById('pwa-btn');
+  if(btn)btn.classList.add('visible');
+});
+function installPWA(){
+  if(!_deferredPrompt)return;
+  _deferredPrompt.prompt();
+  _deferredPrompt.userChoice.then(()=>{
+    _deferredPrompt=null;
+    const btn=document.getElementById('pwa-btn');
+    if(btn)btn.classList.remove('visible');
+  });
+}
+window.addEventListener('appinstalled',()=>{
+  const btn=document.getElementById('pwa-btn');if(btn)btn.classList.remove('visible');
+  toast({title:'App installed!',sub:'Conch & Cmdr added to your device',type:'ok',dur:3000});
+});
 
 /* INIT */
 document.getElementById('lang-sel').value=lang;
