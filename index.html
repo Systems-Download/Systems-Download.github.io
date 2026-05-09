@@ -7,8 +7,8 @@
 <script>
 /* MAINTENANCE + BANNER — runs before page loads */
 (async function(){
-  const SU='https://YOUR_PROJECT.supabase.co';
-  const SA='YOUR_ANON_KEY';
+  const SU='https://rmdkoauibmzhgnvrwhfd.supabase.co';
+  const SA='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJtZGtvYXVpYm16aGdudnJ3aGZkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyNjg2MDksImV4cCI6MjA5Mzg0NDYwOX0.lu6T00f9y9-Q8HhVag-MGjJz6bTlJrYUwC7AApIxaFw';
   try{
     const r=await fetch(SU+'/rest/v1/site_settings?key=in.(maintenance_enabled,banner_enabled,banner_text,banner_type)&select=key,value',
       {headers:{'apikey':SA,'Authorization':'Bearer '+SA}});
