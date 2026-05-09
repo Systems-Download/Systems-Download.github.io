@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Coming Soon — Conch & Cmdr</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--conch:#0ff4c6;--cmdr:#ff4f5e;--bg:#0b0c0f;--surface:#13151a;--surface2:#1a1d24;--border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.12);--text:#e8eaf0;--muted:#6b7280;--mono:'JetBrains Mono',monospace;--sans:'Syne',sans-serif;}
+html,body{height:100%;overflow:hidden}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);display:flex;align-items:center;justify-content:center;min-height:100vh;position:relative}
+.grid-bg{position:fixed;inset:0;background-image:linear-gradient(rgba(255,255,255,.02) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.02) 1px,transparent 1px);background-size:60px 60px;animation:gridMove 20s linear infinite;pointer-events:none;z-index:0}
+@keyframes gridMove{0%{background-position:0 0}100%{background-position:60px 60px}}
+.glow-c{position:fixed;top:-100px;left:-100px;width:500px;height:500px;background:radial-gradient(circle,rgba(15,244,198,.05) 0%,transparent 70%);pointer-events:none;z-index:0}
+.glow-r{position:fixed;bottom:-100px;right:-100px;width:500px;height:500px;background:radial-gradient(circle,rgba(255,79,94,.05) 0%,transparent 70%);pointer-events:none;z-index:0}
+canvas{position:fixed;inset:0;pointer-events:none;z-index:0}
+nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:1rem 2.5rem;background:rgba(11,12,15,.85);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);height:64px}
+.nav-logo{font-size:1.1rem;font-weight:800;display:flex;gap:.4em;text-decoration:none}
+.nav-logo .c{color:var(--conch)}.nav-logo .sep{color:var(--muted)}.nav-logo .r{color:var(--cmdr)}
+.container{position:relative;z-index:1;text-align:center;padding:2rem;max-width:620px;width:100%}
+.badge{display:inline-flex;align-items:center;gap:.5rem;font-family:var(--mono);font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;padding:.35rem .9rem;border-radius:999px;background:rgba(15,244,198,.08);color:var(--conch);border:1px solid rgba(15,244,198,.2);margin-bottom:1.5rem}
+.badge-dot{width:6px;height:6px;border-radius:50%;background:var(--conch);animation:bdot 1.5s ease-in-out infinite}
+@keyframes bdot{0%,100%{opacity:1}50%{opacity:.3}}
+h1{font-size:clamp(2.2rem,6vw,3.8rem);font-weight:800;line-height:1.05;letter-spacing:-.03em;margin-bottom:.75rem}
+h1 em{font-style:normal;color:var(--conch)}h1 strong{font-style:normal;color:var(--cmdr)}
+.sub{font-family:var(--mono);font-size:.85rem;color:var(--muted);max-width:420px;margin:0 auto 2.5rem;line-height:1.8}
+
+/* COUNTDOWN */
+.countdown{display:flex;align-items:center;justify-content:center;gap:1rem;margin-bottom:2.5rem;flex-wrap:wrap}
+.cd-item{background:var(--surface);border:1px solid var(--border2);border-radius:10px;padding:.9rem 1.1rem;min-width:75px;text-align:center;position:relative;overflow:hidden}
+.cd-item::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(15,244,198,.3),transparent)}
+.cd-num{font-size:2rem;font-weight:800;letter-spacing:-.04em;line-height:1;color:var(--text)}
+.cd-lbl{font-family:var(--mono);font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-top:.3rem}
+.cd-sep{font-size:1.5rem;font-weight:800;color:var(--muted);opacity:.4;animation:blink .8s step-end infinite}
+@keyframes blink{0%,100%{opacity:.4}50%{opacity:0}}
+
+/* TEASER FEATURES */
+.features{display:flex;gap:.75rem;justify-content:center;flex-wrap:wrap;margin-bottom:2.5rem}
+.feat{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:.6rem 1rem;font-family:var(--mono);font-size:.75rem;color:var(--muted);display:flex;align-items:center;gap:.5rem}
+
+/* PROGRESS */
+.progress-wrap{background:var(--surface2);border:1px solid var(--border);border-radius:999px;height:5px;max-width:400px;margin:0 auto 1rem;overflow:hidden}
+.progress-fill{height:100%;border-radius:999px;background:linear-gradient(90deg,var(--conch),rgba(15,244,198,.4));transition:width .5s}
+.progress-label{font-family:var(--mono);font-size:.7rem;color:var(--muted);margin-bottom:2rem}
+
+.btn-back{font-family:var(--mono);font-size:.78rem;padding:.6rem 1.3rem;border-radius:6px;border:1px solid var(--border2);background:none;color:var(--muted);cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:.4rem;transition:all .2s}
+.btn-back:hover{border-color:rgba(255,255,255,.2);color:var(--text)}
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════
+     EDIT THIS CONFIG:
+══════════════════════════════ -->
+<script>
+// Set your launch date here (YYYY-MM-DDTHH:MM:SS)
+const LAUNCH_DATE = '2026-06-01T00:00:00';
+const PROGRESS_PCT = 72; // Development progress %
+const TEASER_FEATURES = [
+  '✨ Cmdr v2.0',
+  '🚀 Conch rewrite',
+  '🔒 Security update',
+  '🌍 New languages',
+  '⚡ Performance boost',
+];
+const TEASER_TEXT = 'Something big is coming. A new version of Conch & Cmdr is in the works.';
+</script>
+
+<div class="grid-bg"></div>
+<div class="glow-c"></div>
+<div class="glow-r"></div>
+<canvas id="cv"></canvas>
+
+<nav>
+  <a class="nav-logo" href="index.html"><span class="c">Conch</span><span class="sep">/</span><span class="r">Cmdr</span></a>
+</nav>
+
+<div class="container">
+  <div class="badge"><div class="badge-dot"></div>Coming Soon</div>
+  <h1><em>Something</em> big<br>is <strong>coming</strong></h1>
+  <p class="sub" id="teaser-text"></p>
+
+  <div class="countdown">
+    <div class="cd-item"><div class="cd-num" id="cd-days">00</div><div class="cd-lbl">Days</div></div>
+    <div class="cd-sep">:</div>
+    <div class="cd-item"><div class="cd-num" id="cd-hours">00</div><div class="cd-lbl">Hours</div></div>
+    <div class="cd-sep">:</div>
+    <div class="cd-item"><div class="cd-num" id="cd-mins">00</div><div class="cd-lbl">Minutes</div></div>
+    <div class="cd-sep">:</div>
+    <div class="cd-item"><div class="cd-num" id="cd-secs">00</div><div class="cd-lbl">Seconds</div></div>
+  </div>
+
+  <div class="features" id="features-list"></div>
+
+  <div class="progress-wrap"><div class="progress-fill" id="prog-fill"></div></div>
+  <div class="progress-label" id="prog-label"></div>
+
+  <a class="btn-back" href="index.html">← Back to Downloads</a>
+</div>
+
+<script>
+document.getElementById('teaser-text').textContent=TEASER_TEXT;
+document.getElementById('features-list').innerHTML=TEASER_FEATURES.map(f=>`<div class="feat">${f}</div>`).join('');
+document.getElementById('prog-fill').style.width=PROGRESS_PCT+'%';
+document.getElementById('prog-label').textContent='Development progress: '+PROGRESS_PCT+'%';
+
+const target=new Date(LAUNCH_DATE).getTime();
+function tick(){
+  const now=Date.now(),diff=Math.max(0,target-now);
+  const d=Math.floor(diff/86400000),h=Math.floor((diff%86400000)/3600000);
+  const m=Math.floor((diff%3600000)/60000),s=Math.floor((diff%60000)/1000);
+  document.getElementById('cd-days').textContent=String(d).padStart(2,'0');
+  document.getElementById('cd-hours').textContent=String(h).padStart(2,'0');
+  document.getElementById('cd-mins').textContent=String(m).padStart(2,'0');
+  document.getElementById('cd-secs').textContent=String(s).padStart(2,'0');
+}
+tick();setInterval(tick,1000);
+
+/* PARTICLES */
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d');
+function rsz(){cv.width=window.innerWidth;cv.height=window.innerHeight}rsz();window.addEventListener('resize',rsz);
+const pts=Array.from({length:30},()=>({x:Math.random()*cv.width,y:Math.random()*cv.height,r:.5+Math.random()*1.5,col:Math.random()>.5?'rgba(15,244,198,':'rgba(255,79,94,',vx:(Math.random()-.5)*.3,vy:(Math.random()-.5)*.3,a:.1+Math.random()*.25}));
+function drawPts(){ctx.clearRect(0,0,cv.width,cv.height);pts.forEach(p=>{ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fillStyle=p.col+p.a+')';ctx.fill();p.x+=p.vx;p.y+=p.vy;if(p.x<0)p.x=cv.width;if(p.x>cv.width)p.x=0;if(p.y<0)p.y=cv.height;if(p.y>cv.height)p.y=0});requestAnimationFrame(drawPts)}
+drawPts();
+</script>
+</body>
+</html>
