@@ -186,9 +186,9 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans)}
 <script>
 const SUPA = {
   // Get from: Supabase Dashboard → Settings → API
-  URL:         'https://rmdkoauibmzhgnvrwhfd.supabase.co',
+  URL:         'https://YOUR_PROJECT.supabase.co',
   // Use the SERVICE_ROLE key (keeps admin actions secure, never expose to public)
-  SERVICE_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJtZGtvYXVpYm16aGdudnJ3aGZkIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3ODI2ODYwOSwiZXhwIjoyMDkzODQ0NjA5fQ.ty9qKheTA9CrdWDwbuR9uf_FjfZTb9PKgRQNXdyKdjk',
+  SERVICE_KEY: 'YOUR_SERVICE_ROLE_KEY',
 
   // Session timeout in minutes (auto-logout)
   SESSION_TIMEOUT: 30,
@@ -253,6 +253,11 @@ const SUPA = {
       <div class="nav-item" onclick="showPanel('blacklist')"><span class="ni">🚫</span><span>Blacklist</span></div>
       <div class="nav-sep"></div>
       <div class="nav-section">Tools</div>
+      <div class="nav-sep"></div>
+      <div class="nav-section">Admin</div>
+      <div class="nav-item" onclick="showPanel('admins')"><span class="ni">👥</span><span>Admin Users</span></div>
+      <div class="nav-item" onclick="showPanel('password')"><span class="ni">🔑</span><span>Change Password</span></div>
+      <div class="nav-item" onclick="showPanel('dbhealth')"><span class="ni">💾</span><span>DB Health</span></div>
       <div class="nav-item" onclick="showPanel('preview')"><span class="ni">👁️</span><span>Live Preview</span></div>
       <div class="nav-item" onclick="showPanel('log')"><span class="ni">📋</span><span>Activity Log</span></div>
     </div>
@@ -447,6 +452,83 @@ const SUPA = {
         </div>
       </div>
 
+
+      <!-- ADMIN USERS -->
+      <div class="panel" id="panel-admins">
+        <div class="panel-title">Admin Users</div>
+        <div class="panel-sub">Manage admin accounts — only owners can create or remove admins</div>
+        <div class="card" id="card-create-admin">
+          <div class="card-title">Create New Admin</div>
+          <div class="field-row">
+            <div class="field-group">
+              <label class="field-label">Username</label>
+              <input class="field-input" id="new-admin-user" placeholder="newmod">
+            </div>
+            <div class="field-group">
+              <label class="field-label">Role</label>
+              <select class="field-select" id="new-admin-role">
+                <option value="mod">Mod</option>
+                <option value="owner">Owner</option>
+              </select>
+            </div>
+          </div>
+          <div class="field-group">
+            <label class="field-label">Password</label>
+            <input class="field-input" id="new-admin-pass" type="password" placeholder="Min. 12 characters">
+          </div>
+          <div class="field-group">
+            <label class="field-label">Confirm Password</label>
+            <input class="field-input" id="new-admin-pass2" type="password" placeholder="Repeat password">
+          </div>
+          <button class="btn btn-c btn-full" onclick="createAdmin()">👥 Create Admin</button>
+        </div>
+        <div class="card">
+          <div class="card-title">All Admins</div>
+          <div id="admins-list"><div style="font-family:var(--mono);font-size:.75rem;color:var(--muted);opacity:.6">Loading...</div></div>
+        </div>
+      </div>
+
+      <!-- CHANGE PASSWORD -->
+      <div class="panel" id="panel-password">
+        <div class="panel-title">Change Password</div>
+        <div class="panel-sub">Update your own admin password — minimum 12 characters</div>
+        <div class="card">
+          <div class="field-group">
+            <label class="field-label">Current Password</label>
+            <input class="field-input" id="pw-current" type="password" placeholder="Your current password">
+          </div>
+          <div class="field-group">
+            <label class="field-label">New Password</label>
+            <input class="field-input" id="pw-new" type="password" placeholder="Min. 12 characters">
+          </div>
+          <div class="field-group">
+            <label class="field-label">Confirm New Password</label>
+            <input class="field-input" id="pw-confirm" type="password" placeholder="Repeat new password">
+          </div>
+          <div id="pw-strength" style="font-family:var(--mono);font-size:.7rem;margin:.5rem 0;min-height:1.2em"></div>
+          <button class="btn btn-c btn-full" onclick="changePassword()">🔑 Update Password</button>
+        </div>
+      </div>
+
+      <!-- DB HEALTH -->
+      <div class="panel" id="panel-dbhealth">
+        <div class="panel-title">DB Health</div>
+        <div class="panel-sub">Supabase connection status and table statistics</div>
+        <div class="stat-grid" id="db-stats">
+          <div class="stat"><div class="stat-val sv-g" id="db-ping">—</div><div class="stat-lbl">Ping (ms)</div></div>
+          <div class="stat"><div class="stat-val sv-c" id="db-anns-count">—</div><div class="stat-lbl">Announcements</div></div>
+          <div class="stat"><div class="stat-val sv-r" id="db-bl-count">—</div><div class="stat-lbl">Blacklisted</div></div>
+          <div class="stat"><div class="stat-val sv-w" id="db-log-count">—</div><div class="stat-lbl">Log Entries</div></div>
+        </div>
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.75rem">
+            <div class="card-title" style="margin-bottom:0">Connection Status</div>
+            <button class="btn btn-ghost btn-sm" onclick="runHealthCheck()">🔄 Recheck</button>
+          </div>
+          <div id="db-status-list"></div>
+        </div>
+      </div>
+
     </div><!-- /content -->
   </div><!-- /admin-body -->
 </div><!-- /admin-app -->
@@ -576,12 +658,14 @@ function showPanel(id){
   document.getElementById('panel-'+id).classList.add('active');
   event&&event.currentTarget&&event.currentTarget.classList.add('active');
   if(id==='log')loadLog();
+  if(id==='admins')loadAdmins();
+  if(id==='dbhealth')runHealthCheck();
   if(id==='preview')reloadPreview();
 }
 
 /* ── LOAD ALL ── */
 async function loadAll(){
-  await Promise.all([loadSettings(),loadAnnouncements(),loadBlacklist(),loadLog(true)]);
+  await Promise.all([loadSettings(),loadAnnouncements(),loadBlacklist(),loadLog(true),loadAdmins()]);
 }
 
 /* ── SETTINGS ── */
@@ -764,6 +848,145 @@ function atToast(msg,type='ok'){
   c.appendChild(el);setTimeout(()=>{el.classList.add('out');setTimeout(()=>el.remove(),260)},3000);
 }
 
+
+/* ── ADMIN USERS ── */
+async function loadAdmins(){
+  if(!_session||_session.role!=='owner'){
+    document.getElementById('card-create-admin').style.display='none';
+  }
+  try{
+    const rows=await supa('GET','admins?select=id,username,role,created_at,last_login&order=created_at.asc');
+    const list=document.getElementById('admins-list');
+    if(!rows||!rows.length){list.innerHTML='<div style="font-family:var(--mono);font-size:.75rem;color:var(--muted);opacity:.6">No admins found.</div>';return;}
+    list.innerHTML=rows.map(a=>`
+      <div class="ann-item">
+        <div class="ann-type" style="background:${a.role==='owner'?'var(--conch)':'var(--info)'}"></div>
+        <div class="ann-body">
+          <div class="ann-title-text">${eh(a.username)} <span style="font-size:.7rem;opacity:.6">(${a.role})</span></div>
+          <div class="ann-meta">Created: ${new Date(a.created_at).toLocaleDateString()} · Last login: ${a.last_login?new Date(a.last_login).toLocaleString():'Never'}</div>
+        </div>
+        <div class="ann-actions">
+          ${_session&&_session.role==='owner'&&a.username!==_session.username?`<button class="btn btn-danger btn-sm" onclick="deleteAdmin('${a.id}','${eh(a.username)}')">✕ Remove</button>`:'<span style="font-family:var(--mono);font-size:.68rem;color:var(--muted)">You</span>'}
+        </div>
+      </div>`).join('');
+  }catch(e){atToast('Failed to load admins: '+e.message,'err')}
+}
+
+async function createAdmin(){
+  if(!_session||_session.role!=='owner'){atToast('Only owners can create admins','err');return;}
+  const user=document.getElementById('new-admin-user').value.trim();
+  const pass=document.getElementById('new-admin-pass').value;
+  const pass2=document.getElementById('new-admin-pass2').value;
+  const role=document.getElementById('new-admin-role').value;
+  if(!user||!pass){atToast('Username and password required','warn');return;}
+  if(pass!==pass2){atToast('Passwords do not match','warn');return;}
+  if(pass.length<12){atToast('Password must be at least 12 characters','warn');return;}
+  try{
+    const hash=await dcodeIO.bcrypt.hash(pass,12);
+    await supa('POST','admins',{username:user,password_hash:hash,role});
+    await logAction(_session.username,'create_admin',{username:user,role});
+    document.getElementById('new-admin-user').value='';
+    document.getElementById('new-admin-pass').value='';
+    document.getElementById('new-admin-pass2').value='';
+    atToast('Admin created: '+user,'ok');loadAdmins();
+  }catch(e){atToast('Failed: '+e.message,'err')}
+}
+
+async function deleteAdmin(id,username){
+  if(!_session||_session.role!=='owner'){atToast('Only owners can remove admins','err');return;}
+  if(!confirm('Remove admin "'+username+'"? This cannot be undone.'))return;
+  try{
+    await supa('DELETE','admins?id=eq.'+id);
+    await logAction(_session.username,'delete_admin',{username});
+    atToast('Admin removed: '+username,'ok');loadAdmins();
+  }catch(e){atToast('Failed: '+e.message,'err')}
+}
+
+/* ── CHANGE PASSWORD ── */
+document.getElementById('pw-new').addEventListener('input',function(){
+  const v=this.value,el=document.getElementById('pw-strength');
+  if(!v){el.textContent='';return;}
+  let score=0,tips=[];
+  if(v.length>=12)score++;else tips.push('12+ chars');
+  if(/[A-Z]/.test(v))score++;else tips.push('uppercase');
+  if(/[0-9]/.test(v))score++;else tips.push('number');
+  if(/[^A-Za-z0-9]/.test(v))score++;else tips.push('symbol');
+  const labels=['Weak','Fair','Good','Strong'];
+  const colors=['var(--danger)','var(--warn)','var(--info)','var(--success)'];
+  el.innerHTML=`<span style="color:${colors[score-1]||colors[0]}">${labels[score-1]||labels[0]}</span>${tips.length?' — missing: '+tips.join(', '):''}`;
+});
+
+async function changePassword(){
+  const cur=document.getElementById('pw-current').value;
+  const nw=document.getElementById('pw-new').value;
+  const cf=document.getElementById('pw-confirm').value;
+  if(!cur||!nw||!cf){atToast('All fields required','warn');return;}
+  if(nw!==cf){atToast('New passwords do not match','warn');return;}
+  if(nw.length<12){atToast('Password must be at least 12 characters','warn');return;}
+  if(nw===cur){atToast('New password must differ from current','warn');return;}
+  try{
+    const rows=await supa('GET','admins?username=eq.'+encodeURIComponent(_session.username)+'&select=password_hash');
+    if(!rows||!rows.length)throw new Error('User not found');
+    const ok=await dcodeIO.bcrypt.compare(cur,rows[0].password_hash);
+    if(!ok){atToast('Current password is incorrect','err');return;}
+    const hash=await dcodeIO.bcrypt.hash(nw,12);
+    await supa('PATCH','admins?username=eq.'+encodeURIComponent(_session.username),{password_hash:hash});
+    await logAction(_session.username,'change_password',{});
+    document.getElementById('pw-current').value='';
+    document.getElementById('pw-new').value='';
+    document.getElementById('pw-confirm').value='';
+    document.getElementById('pw-strength').textContent='';
+    atToast('Password updated successfully','ok');
+  }catch(e){atToast('Failed: '+e.message,'err')}
+}
+
+/* ── DB HEALTH CHECK ── */
+async function runHealthCheck(){
+  const statusEl=document.getElementById('db-status-list');
+  statusEl.innerHTML='<div style="font-family:var(--mono);font-size:.75rem;color:var(--muted);opacity:.6">Checking...</div>';
+  const checks=[
+    {label:'Supabase Connection',table:'site_settings',key:'db-ping'},
+    {label:'Announcements Table',table:'announcements',key:'db-anns-count'},
+    {label:'Blacklist Table',table:'file_blacklist',key:'db-bl-count'},
+    {label:'Activity Log Table',table:'activity_log',key:'db-log-count'},
+  ];
+  const results=[];
+  for(const c of checks){
+    const t0=Date.now();
+    try{
+      const r=await supa('GET',c.table+'?select=count&head=true&count=exact');
+      const ms=Date.now()-t0;
+      const count=r?r.length:0;
+      if(c.key==='db-ping')document.getElementById('db-ping').textContent=ms+'ms';
+      else{
+        const el=document.getElementById(c.key);
+        if(el)el.textContent=count;
+      }
+      results.push({label:c.label,ok:true,ms});
+    }catch(e){results.push({label:c.label,ok:false,err:e.message});}
+  }
+  // Re-count properly
+  try{
+    const [a,b,l]=await Promise.all([
+      fetch(`${SUPA.URL}/rest/v1/announcements?select=count`,{headers:{'apikey':SUPA.SERVICE_KEY,'Authorization':'Bearer '+SUPA.SERVICE_KEY,'Prefer':'count=exact'}}),
+      fetch(`${SUPA.URL}/rest/v1/file_blacklist?select=count`,{headers:{'apikey':SUPA.SERVICE_KEY,'Authorization':'Bearer '+SUPA.SERVICE_KEY,'Prefer':'count=exact'}}),
+      fetch(`${SUPA.URL}/rest/v1/activity_log?select=count`,{headers:{'apikey':SUPA.SERVICE_KEY,'Authorization':'Bearer '+SUPA.SERVICE_KEY,'Prefer':'count=exact'}}),
+    ]);
+    const ac=a.headers.get('content-range'),bc=b.headers.get('content-range'),lc=l.headers.get('content-range');
+    if(ac)document.getElementById('db-anns-count').textContent=ac.split('/')[1]||'?';
+    if(bc)document.getElementById('db-bl-count').textContent=bc.split('/')[1]||'?';
+    if(lc)document.getElementById('db-log-count').textContent=lc.split('/')[1]||'?';
+  }catch{}
+  statusEl.innerHTML=results.map(r=>`
+    <div class="log-item">
+      <span style="font-size:.8rem">${r.ok?'✅':'❌'}</span>
+      <span class="log-action">${eh(r.label)}</span>
+      <span class="log-time" style="color:${r.ok?'var(--success)':'var(--danger)'}">${r.ok?r.ms+'ms':'Error'}</span>
+    </div>`).join('');
+}
+
+/* Override showPanel to load admins/health */
+const _origShowPanel=showPanel;
 /* ── UTILS ── */
 function eh(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
 
