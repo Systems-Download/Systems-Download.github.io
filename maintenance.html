@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Maintenance — Conch & Cmdr</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  :root{
+    --conch:#0ff4c6;--cmdr:#ff4f5e;
+    --bg:#0b0c0f;--surface:#13151a;--surface2:#1a1d24;
+    --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.12);
+    --text:#e8eaf0;--muted:#6b7280;
+    --mono:'JetBrains Mono',monospace;--sans:'Syne',sans-serif;
+    --warn:#ffc832;
+  }
+  html,body{height:100%;overflow:hidden}
+  body{background:var(--bg);color:var(--text);font-family:var(--sans);display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;position:relative}
+
+  /* GRID BG */
+  .grid-bg{position:fixed;inset:0;z-index:0;background-image:linear-gradient(rgba(255,255,255,0.02) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.02) 1px,transparent 1px);background-size:60px 60px;animation:gridMove 25s linear infinite;pointer-events:none}
+  @keyframes gridMove{0%{background-position:0 0}100%{background-position:60px 60px}}
+
+  /* GLOWS */
+  .glow-warn{position:fixed;top:50%;left:50%;transform:translate(-50%,-60%);width:700px;height:700px;background:radial-gradient(circle,rgba(255,200,50,0.04) 0%,transparent 65%);pointer-events:none;z-index:0;animation:glowPulse 5s ease-in-out infinite}
+  @keyframes glowPulse{0%,100%{opacity:0.5}50%{opacity:1}}
+
+  /* PARTICLES */
+  canvas{position:fixed;inset:0;z-index:0;pointer-events:none}
+
+  /* MAIN */
+  .container{position:relative;z-index:1;text-align:center;padding:2rem;max-width:560px;width:100%}
+
+  /* ANIMATED GEAR */
+  .gear-wrap{margin-bottom:2rem;position:relative;display:inline-block}
+  .gear{width:80px;height:80px;animation:gearSpin 4s linear infinite}
+  .gear-inner{width:50px;height:50px;animation:gearSpin 4s linear infinite reverse;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%)}
+  @keyframes gearSpin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+  .gear-wrap svg{filter:none}
+
+  /* BADGE */
+  .maint-badge{display:inline-flex;align-items:center;gap:.5rem;font-family:var(--mono);font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;padding:.35rem .9rem;border-radius:4px;background:rgba(255,200,50,0.1);color:var(--warn);border:1px solid rgba(255,200,50,0.25);margin-bottom:1.5rem}
+  .badge-dot{width:6px;height:6px;border-radius:50%;background:var(--warn);animation:badgePulse 1.5s ease-in-out infinite}
+  @keyframes badgePulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.5;transform:scale(0.7)}}
+
+  /* TITLE */
+  .maint-title{font-size:clamp(2rem,6vw,3.5rem);font-weight:800;line-height:1.05;letter-spacing:-0.03em;margin-bottom:1rem}
+  .maint-title .hl{color:var(--warn)}
+
+  /* MESSAGE */
+  .maint-msg{font-family:var(--mono);font-size:.88rem;color:var(--muted);line-height:1.8;max-width:420px;margin:0 auto 2.5rem;min-height:2.5rem}
+
+  /* TERMINAL */
+  .terminal{background:var(--surface);border:1px solid var(--border2);border-radius:10px;padding:1rem 1.25rem;margin:0 auto 2rem;max-width:440px;text-align:left}
+  .term-head{display:flex;align-items:center;gap:.5rem;margin-bottom:.75rem;padding-bottom:.75rem;border-bottom:1px solid var(--border)}
+  .td{width:10px;height:10px;border-radius:50%}
+  .td-r{background:#ff5f57}.td-y{background:#febc2e}.td-g{background:#28c840}
+  .term-body{font-family:var(--mono);font-size:.75rem;line-height:1.9}
+  .tp{color:var(--warn)}.tc{color:var(--text)}.tm{color:var(--muted)}
+  .tcursor{display:inline-block;width:8px;height:13px;background:var(--warn);animation:blink 1s step-end infinite;vertical-align:text-bottom;margin-left:2px}
+  @keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+
+  /* PROGRESS */
+  .progress-wrap{background:var(--surface2);border:1px solid var(--border);border-radius:999px;height:4px;max-width:300px;margin:0 auto 2rem;overflow:hidden}
+  .progress-bar{height:100%;background:linear-gradient(90deg,var(--conch),var(--warn));border-radius:999px;animation:progressAnim 3s ease-in-out infinite}
+  @keyframes progressAnim{0%{width:0%;margin-left:0}50%{width:70%;margin-left:0}80%{width:70%;margin-left:30%}100%{width:0%;margin-left:100%}}
+
+  /* ETA */
+  .eta-wrap{display:flex;align-items:center;justify-content:center;gap:.75rem;margin-bottom:2.5rem;flex-wrap:wrap}
+  .eta-item{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:.6rem 1rem;text-align:center;min-width:70px}
+  .eta-num{font-size:1.4rem;font-weight:800;letter-spacing:-0.03em;color:var(--warn)}
+  .eta-lbl{font-family:var(--mono);font-size:.6rem;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;margin-top:.1rem}
+
+  /* BUTTONS */
+  .btn-group{display:flex;gap:.75rem;justify-content:center;flex-wrap:wrap}
+  .btn{font-family:var(--mono);font-size:.78rem;letter-spacing:.04em;padding:.6rem 1.3rem;border-radius:6px;text-decoration:none;transition:all .2s;cursor:pointer;border:none;display:inline-flex;align-items:center;gap:.4em}
+  .btn-ghost{background:var(--surface);color:var(--muted);border:1px solid var(--border2)}.btn-ghost:hover{border-color:rgba(255,255,255,.2);color:var(--text)}
+
+  /* NAV */
+  nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:1rem 2.5rem;background:rgba(11,12,15,.85);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);height:64px}
+  .nav-logo{font-size:1.1rem;font-weight:800;letter-spacing:-.02em;display:flex;gap:.4em;align-items:center;text-decoration:none}
+  .nav-logo .c{color:var(--conch)}.nav-logo .sep{color:var(--muted)}.nav-logo .r{color:var(--cmdr)}
+  .nav-status{font-family:var(--mono);font-size:.72rem;display:flex;align-items:center;gap:.5rem;color:var(--warn)}
+  .ns-dot{width:7px;height:7px;border-radius:50%;background:var(--warn);animation:badgePulse 1.5s ease-in-out infinite}
+
+  /* FOOTER */
+  footer{position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%);font-family:var(--mono);font-size:.68rem;color:var(--muted);opacity:.4;white-space:nowrap}
+
+  @media(max-width:480px){nav{padding:1rem 1.2rem}.container{padding:1.2rem}}
+</style>
+</head>
+<body>
+
+<!-- ════════════════════════════════
+     CONFIG — same as admin.html
+════════════════════════════════ -->
+<script>
+const SUPA_URL    = 'https://YOUR_PROJECT.supabase.co';
+const SUPA_ANON   = 'YOUR_ANON_KEY'; // anon/public key — safe to use here
+const CHECK_INTERVAL = 30000; // re-check every 30s
+</script>
+<!-- ════════════════════════════════ -->
+
+<div class="grid-bg"></div>
+<div class="glow-warn"></div>
+<canvas id="cv"></canvas>
+
+<nav>
+  <a class="nav-logo" href="#"><span class="c">Conch</span><span class="sep">/</span><span class="r">Cmdr</span></a>
+  <div class="nav-status"><div class="ns-dot"></div><span>Maintenance in progress</span></div>
+</nav>
+
+<div class="container">
+  <!-- ANIMATED GEAR SVG -->
+  <div class="gear-wrap">
+    <svg class="gear" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M40 25a15 15 0 1 1 0 30A15 15 0 0 1 40 25zm0-5a20 20 0 1 0 0 40A20 20 0 0 0 40 20z" fill="none"/>
+      <path d="M33 5h14l2 8a23 23 0 0 1 5.5 3.2l8-2.5 7 12.1-6.2 5.5a23 23 0 0 1 0 6.4l6.2 5.5-7 12.1-8-2.5A23 23 0 0 1 49 56.8l-2 8H33l-2-8a23 23 0 0 1-5.5-3.2l-8 2.5-7-12.1 6.2-5.5a23 23 0 0 1 0-6.4L10.5 27.4l7-12.1 8 2.5A23 23 0 0 1 31 14.2z" fill="rgba(255,200,50,0.15)" stroke="#ffc832" stroke-width="1.5"/>
+      <circle cx="40" cy="40" r="10" fill="rgba(255,200,50,0.1)" stroke="#ffc832" stroke-width="1.5"/>
+      <circle cx="40" cy="40" r="4" fill="#ffc832"/>
+    </svg>
+  </div>
+
+  <div class="maint-badge"><div class="badge-dot"></div>Under Maintenance</div>
+
+  <h1 class="maint-title">We'll be <span class="hl">back soon</span></h1>
+  <p class="maint-msg" id="maint-message">Loading maintenance message...</p>
+
+  <div class="progress-wrap"><div class="progress-bar"></div></div>
+
+  <div class="terminal">
+    <div class="term-head">
+      <div class="td td-r"></div><div class="td td-y"></div><div class="td td-g"></div>
+    </div>
+    <div class="term-body">
+      <div><span class="tp">›</span> <span class="tc">status</span> <span class="tm">--service conch-cmdr</span></div>
+      <div><span class="tm">⟳  maintenance_mode  </span><span style="color:var(--warn)">ACTIVE</span></div>
+      <div><span class="tp">›</span> <span class="tc">eta</span> <span class="tm">--format human</span></div>
+      <div><span class="tm">→  back online soon. stand by.</span></div>
+      <div><span class="tp">›</span> <span class="tcursor"></span></div>
+    </div>
+  </div>
+
+  <div class="btn-group">
+    <button class="btn btn-ghost" onclick="checkStatus()">🔄 Check status</button>
+  </div>
+</div>
+
+<footer>Conch &amp; Cmdr — Maintenance Mode Active</footer>
+
+<script>
+/* PARTICLES */
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d');
+function resizeCv(){cv.width=window.innerWidth;cv.height=window.innerHeight}
+resizeCv();window.addEventListener('resize',resizeCv);
+const cols=['rgba(255,200,50,','rgba(15,244,198,','rgba(255,79,94,'];
+const pts=Array.from({length:35},()=>({x:Math.random()*cv.width,y:Math.random()*cv.height,r:1+Math.random()*2,col:cols[Math.floor(Math.random()*cols.length)],vx:(Math.random()-.5)*.35,vy:(Math.random()-.5)*.35,a:.1+Math.random()*.3}));
+function drawPts(){
+  ctx.clearRect(0,0,cv.width,cv.height);
+  pts.forEach(p=>{ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fillStyle=p.col+p.a+')';ctx.fill();p.x+=p.vx;p.y+=p.vy;if(p.x<0)p.x=cv.width;if(p.x>cv.width)p.x=0;if(p.y<0)p.y=cv.height;if(p.y>cv.height)p.y=0});
+  requestAnimationFrame(drawPts);
+}
+drawPts();
+
+/* CHECK MAINTENANCE STATUS from Supabase */
+async function checkStatus(){
+  try{
+    const res=await fetch(`${SUPA_URL}/rest/v1/site_settings?key=in.(maintenance_enabled,maintenance_message)&select=key,value`,{
+      headers:{'apikey':SUPA_ANON,'Authorization':'Bearer '+SUPA_ANON}
+    });
+    if(!res.ok)return;
+    const rows=await res.json();
+    const settings={};
+    rows.forEach(r=>settings[r.key]=r.value);
+
+    // Update message
+    const msgEl=document.getElementById('maint-message');
+    if(settings.maintenance_message)msgEl.textContent=settings.maintenance_message;
+
+    // If maintenance turned OFF → redirect to main site
+    if(settings.maintenance_enabled==='false'){
+      window.location.href='index.html';
+    }
+  }catch(e){/* silent — stay on page */}
+}
+
+/* Auto-check every 30s */
+checkStatus();
+setInterval(checkStatus,CHECK_INTERVAL);
+</script>
+</body>
+</html>
