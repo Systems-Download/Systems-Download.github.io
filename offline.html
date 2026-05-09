@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Offline — Conch & Cmdr</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--conch:#0ff4c6;--cmdr:#ff4f5e;--bg:#0b0c0f;--surface:#13151a;--surface2:#1a1d24;--border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.12);--text:#e8eaf0;--muted:#6b7280;--mono:'JetBrains Mono',monospace;--sans:'Syne',sans-serif;}
+html,body{height:100%;overflow:hidden}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);display:flex;align-items:center;justify-content:center;min-height:100vh;position:relative}
+.grid-bg{position:fixed;inset:0;background-image:linear-gradient(rgba(255,255,255,.015) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.015) 1px,transparent 1px);background-size:60px 60px;pointer-events:none;z-index:0}
+canvas{position:fixed;inset:0;pointer-events:none;z-index:0}
+nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:1rem 2.5rem;background:rgba(11,12,15,.85);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);height:64px}
+.nav-logo{font-size:1.1rem;font-weight:800;display:flex;gap:.4em;text-decoration:none}
+.nav-logo .c{color:var(--conch)}.nav-logo .sep{color:var(--muted)}.nav-logo .r{color:var(--cmdr)}
+.container{position:relative;z-index:1;text-align:center;padding:2rem;max-width:520px}
+.wifi-icon{font-size:4rem;margin-bottom:1.5rem;filter:grayscale(1);opacity:.4;animation:wifiPulse 2s ease-in-out infinite}
+@keyframes wifiPulse{0%,100%{opacity:.4}50%{opacity:.2}}
+.badge{display:inline-flex;align-items:center;gap:.5rem;font-family:var(--mono);font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;padding:.35rem .9rem;border-radius:999px;background:rgba(255,200,50,.08);color:#ffc832;border:1px solid rgba(255,200,50,.2);margin-bottom:1.5rem}
+h1{font-size:clamp(2rem,5vw,3rem);font-weight:800;letter-spacing:-.03em;margin-bottom:.75rem}
+h1 em{font-style:normal;color:var(--muted)}
+.sub{font-family:var(--mono);font-size:.83rem;color:var(--muted);line-height:1.8;max-width:380px;margin:0 auto 2.5rem}
+.terminal{background:var(--surface);border:1px solid var(--border2);border-radius:10px;padding:.9rem 1.1rem;max-width:360px;margin:0 auto 2rem;text-align:left}
+.t-head{display:flex;gap:.4rem;margin-bottom:.6rem;padding-bottom:.6rem;border-bottom:1px solid var(--border)}
+.td{width:10px;height:10px;border-radius:50%}
+.td-r{background:#ff5f57}.td-y{background:#febc2e}.td-g{background:#28c840}
+.t-body{font-family:var(--mono);font-size:.73rem;line-height:1.9;color:var(--muted)}
+.tp{color:#ffc832}.tc{color:var(--text)}.cursor{display:inline-block;width:7px;height:12px;background:#ffc832;animation:cur 1s step-end infinite;vertical-align:text-bottom}
+@keyframes cur{0%,100%{opacity:1}50%{opacity:0}}
+.btn-group{display:flex;gap:.75rem;justify-content:center;flex-wrap:wrap}
+.btn{font-family:var(--mono);font-size:.78rem;padding:.6rem 1.3rem;border-radius:6px;text-decoration:none;transition:all .2s;cursor:pointer;border:none;display:inline-flex;align-items:center;gap:.4em}
+.btn-c{background:rgba(15,244,198,.12);color:var(--conch);border:1px solid rgba(15,244,198,.2)}.btn-c:hover{background:rgba(15,244,198,.22)}
+.btn-ghost{background:var(--surface);color:var(--muted);border:1px solid var(--border2)}.btn-ghost:hover{color:var(--text)}
+.status-bar{position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%);font-family:var(--mono);font-size:.7rem;color:var(--muted);display:flex;align-items:center;gap:.5rem;background:var(--surface);border:1px solid var(--border);padding:.4rem .9rem;border-radius:999px;z-index:10}
+.status-dot{width:6px;height:6px;border-radius:50%;background:#ffc832;animation:bdot 1.5s ease-in-out infinite}
+@keyframes bdot{0%,100%{opacity:1}50%{opacity:.4}}
+</style>
+</head>
+<body>
+
+<div class="grid-bg"></div>
+<canvas id="cv"></canvas>
+
+<nav>
+  <div class="nav-logo"><span class="c">Conch</span><span class="sep">/</span><span class="r">Cmdr</span></div>
+</nav>
+
+<div class="container">
+  <div class="wifi-icon">📡</div>
+  <div class="badge">⚠ No Connection</div>
+  <h1>You're <em>offline</em></h1>
+  <p class="sub">No internet connection detected. Check your network and try again.</p>
+
+  <div class="terminal">
+    <div class="t-head"><div class="td td-r"></div><div class="td td-y"></div><div class="td td-g"></div></div>
+    <div class="t-body">
+      <div><span class="tp">›</span> <span class="tc">ping</span> conch-cmdr</div>
+      <div><span style="color:#ffc832">Request timeout</span> — no route to host</div>
+      <div><span class="tp">›</span> <span class="tc">retry</span> --wait<span class="cursor"></span></div>
+    </div>
+  </div>
+
+  <div class="btn-group">
+    <button class="btn btn-c" onclick="tryReconnect()">↻ Try Again</button>
+    <button class="btn btn-ghost" onclick="history.back()">← Go Back</button>
+  </div>
+</div>
+
+<div class="status-bar"><div class="status-dot"></div><span id="status-text">Waiting for connection...</span></div>
+
+<script>
+function tryReconnect(){
+  if(navigator.onLine){window.location.href='index.html';}
+  else{document.getElementById('status-text').textContent='Still offline — check your network';}
+}
+
+window.addEventListener('online',()=>{
+  document.getElementById('status-text').textContent='Connection restored! Redirecting...';
+  setTimeout(()=>window.location.href='index.html',1200);
+});
+
+/* PARTICLES */
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d');
+function rsz(){cv.width=window.innerWidth;cv.height=window.innerHeight}rsz();window.addEventListener('resize',rsz);
+const pts=Array.from({length:25},()=>({x:Math.random()*cv.width,y:Math.random()*cv.height,r:.5+Math.random()*1.5,a:.05+Math.random()*.15,vx:(Math.random()-.5)*.25,vy:(Math.random()-.5)*.25}));
+function draw(){ctx.clearRect(0,0,cv.width,cv.height);pts.forEach(p=>{ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fillStyle=`rgba(255,200,50,${p.a})`;ctx.fill();p.x+=p.vx;p.y+=p.vy;if(p.x<0)p.x=cv.width;if(p.x>cv.width)p.x=0;if(p.y<0)p.y=cv.height;if(p.y>cv.height)p.y=0});requestAnimationFrame(draw)}
+draw();
+</script>
+</body>
+</html>
