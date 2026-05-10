@@ -59,6 +59,51 @@
   .discord-sub{font-family:var(--mono);font-size:.72rem;color:var(--muted)}
   .discord-btn{font-family:var(--mono);font-size:.75rem;padding:.5rem 1.1rem;border-radius:6px;background:rgba(88,101,242,.25);color:#8b9cf4;border:1px solid rgba(88,101,242,.35);text-decoration:none;transition:all .2s;white-space:nowrap;flex-shrink:0}
   .discord-btn:hover{background:rgba(88,101,242,.4);color:#fff}
+  /* DOWNLOAD QUEUE (Cart) */
+  .queue-fab{position:fixed;bottom:2rem;right:2rem;z-index:500;display:flex;flex-direction:column;align-items:flex-end;gap:.5rem}
+  .queue-btn{width:52px;height:52px;border-radius:50%;background:var(--surface2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:1.3rem;transition:all .2s;position:relative;box-shadow:0 4px 20px rgba(0,0,0,.4)}
+  .queue-btn:hover{border-color:rgba(15,244,198,.4);background:var(--surface)}
+  .queue-badge{position:absolute;top:-4px;right:-4px;background:var(--conch);color:#000;font-family:var(--mono);font-size:.6rem;font-weight:700;width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;display:none}
+  .queue-badge.vis{display:flex}
+  .queue-panel{position:fixed;bottom:5.5rem;right:2rem;z-index:501;width:320px;background:var(--surface);border:1px solid var(--border);border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,.5);display:none;flex-direction:column;overflow:hidden;animation:queueIn .2s ease}
+  .queue-panel.open{display:flex}
+  @keyframes queueIn{from{opacity:0;transform:translateY(10px) scale(.97)}to{opacity:1;transform:translateY(0) scale(1)}}
+  .queue-head{display:flex;align-items:center;justify-content:space-between;padding:.85rem 1rem;border-bottom:1px solid var(--border)}
+  .queue-title{font-family:var(--mono);font-size:.78rem;font-weight:600;color:var(--text)}
+  .queue-close{background:none;border:none;color:var(--muted);cursor:pointer;font-size:.9rem;padding:.2rem;transition:color .2s}
+  .queue-close:hover{color:var(--text)}
+  .queue-list{max-height:260px;overflow-y:auto;padding:.5rem}
+  .queue-item{display:flex;align-items:center;gap:.6rem;padding:.55rem .6rem;border-radius:7px;margin-bottom:3px;background:var(--surface2);border:1px solid var(--border)}
+  .queue-item-icon{font-size:.9rem;flex-shrink:0}
+  .queue-item-name{font-family:var(--mono);font-size:.72rem;color:var(--text);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .queue-item-type{font-family:var(--mono);font-size:.65rem;padding:.1rem .35rem;border-radius:3px;flex-shrink:0}
+  .qit-c{background:rgba(15,244,198,.1);color:var(--conch)}.qit-r{background:rgba(255,79,94,.1);color:var(--cmdr)}
+  .queue-item-rm{background:none;border:none;color:var(--muted);cursor:pointer;font-size:.8rem;padding:.15rem;transition:color .2s;flex-shrink:0}
+  .queue-item-rm:hover{color:var(--cmdr)}
+  .queue-item.downloading{border-color:rgba(15,244,198,.3);animation:qpulse 1s ease-in-out infinite}
+  @keyframes qpulse{0%,100%{opacity:1}50%{opacity:.6}}
+  .queue-footer{padding:.75rem 1rem;border-top:1px solid var(--border);display:flex;gap:.5rem}
+  .queue-dl-btn{flex:1;font-family:var(--mono);font-size:.75rem;padding:.5rem;border-radius:7px;border:none;background:rgba(15,244,198,.12);color:var(--conch);cursor:pointer;transition:all .2s;font-weight:600}
+  .queue-dl-btn:hover{background:rgba(15,244,198,.22)}
+  .queue-dl-btn:disabled{opacity:.4;cursor:not-allowed}
+  .queue-clear-btn{font-family:var(--mono);font-size:.75rem;padding:.5rem .75rem;border-radius:7px;border:1px solid var(--border);background:none;color:var(--muted);cursor:pointer;transition:all .2s}
+  .queue-clear-btn:hover{border-color:var(--cmdr);color:var(--cmdr)}
+  .queue-empty{font-family:var(--mono);font-size:.75rem;color:var(--muted);text-align:center;padding:1.5rem;opacity:.5}
+  .queue-progress{height:2px;background:var(--conch);width:0%;transition:width .3s}
+
+  /* ADD TO QUEUE BTN on file items */
+  .btn-queue{font-family:var(--mono);font-size:.72rem;padding:.38rem .55rem;border-radius:6px;border:1px solid var(--border);background:none;color:var(--muted);cursor:pointer;display:inline-flex;align-items:center;transition:all .2s}
+  .btn-queue:hover{border-color:rgba(15,244,198,.35);color:var(--conch)}
+  .btn-queue.in-queue{border-color:rgba(15,244,198,.4);color:var(--conch);background:rgba(15,244,198,.06)}
+
+  /* FEATURED FILE */
+  .featured-wrap{max-width:1100px;margin:0 auto;padding:0 2.5rem 2rem}
+  .featured-card{background:linear-gradient(135deg,rgba(15,244,198,.06),rgba(15,244,198,.02));border:1px solid rgba(15,244,198,.2);border-radius:12px;padding:1rem 1.4rem;display:flex;align-items:center;gap:1rem}
+  .featured-badge{font-family:var(--mono);font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;padding:.2rem .55rem;border-radius:4px;background:rgba(15,244,198,.12);color:var(--conch);border:1px solid rgba(15,244,198,.2);flex-shrink:0}
+  .featured-icon{width:38px;height:38px;border-radius:9px;background:rgba(15,244,198,.1);display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0}
+  .featured-info{flex:1;min-width:0}
+  .featured-name{font-family:var(--mono);font-size:.85rem;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .featured-meta{font-family:var(--mono);font-size:.7rem;color:var(--muted);margin-top:.15rem}
 
   /* PWA INSTALL BUTTON */
   .pwa-install-btn{display:none;font-family:var(--mono);font-size:.72rem;padding:.38rem .75rem;border-radius:6px;border:1px solid rgba(15,244,198,.25);background:rgba(15,244,198,.08);color:var(--conch);cursor:pointer;align-items:center;gap:.4rem;transition:all .2s}
@@ -267,7 +312,13 @@ const T={
   pl:{nav_dl:'Pobieranie',nav_ann:'Ogłoszenia',hero_sub:'Pliki są automatycznie ładowane z GitHub Releases.',desc_c:'Wszystkie pliki .rbxm z "Conch" w nazwie.',desc_r:'Wszystkie pliki .rbxm z "Cmdr" w nazwie.',srch_c:'Szukaj Conch...',srch_r:'Szukaj Cmdr...',bdl:'Pobieranie',bnew:'NOWE',hist:'Historia',hist_lbl:'Poprzednie wersje',dl:'↓ Pobierz',vcount:n=>`${n} wersji`,dlc:n=>`${n} pob`,t_start:'Pobieranie rozpoczęte',t_done:'Pobieranie zakończone',t_prog:'Pobieranie...',t_ref:'Odświeżanie...',t_ref2:'Ładowanie najnowszych wydań',t_upd:'Aktualny',t_upd2:'Wydania załadowane ponownie',t_cp:'Link skopiowany!',t_cp2:'Link do pobrania w schowku',empty:s=>`Nie znaleziono plików ${s}.`,empty_h:s=>`Upewnij się, że .rbxm zawierają "${s}".`,se:'Brak wyników.',e404:'Repozytorium nie znalezione lub brak wydań.',e403:'Przekroczono limit API.',egn:'Błąd: ',footer:'Automatycznie ładowane z GitHub Releases',dfooter:'Automatycznie aktualizowane z GitHub Releases'},
   nl:{nav_dl:'Downloads',nav_ann:'Aankondigingen',hero_sub:'Bestanden worden automatisch geladen vanuit GitHub Releases.',desc_c:'Alle .rbxm bestanden met "Conch" in de naam.',desc_r:'Alle .rbxm bestanden met "Cmdr" in de naam.',srch_c:'Zoek Conch...',srch_r:'Zoek Cmdr...',bdl:'Downloads',bnew:'NIEUW',hist:'Geschiedenis',hist_lbl:'Vorige versies',dl:'↓ Downloaden',vcount:n=>`${n} versies`,dlc:n=>`${n} dl`,t_start:'Download gestart',t_done:'Download voltooid',t_prog:'Downloaden...',t_ref:'Verversen...',t_ref2:'Nieuwste releases laden',t_upd:'Up-to-date',t_upd2:'Releases herladen',t_cp:'Link gekopieerd!',t_cp2:'Downloadlink naar klembord',empty:s=>`Geen ${s} bestanden gevonden.`,empty_h:s=>`Zorg dat .rbxm bestanden "${s}" in de naam hebben.`,se:'Geen bestanden gevonden.',e404:'Repository niet gevonden of geen Releases.',e403:'GitHub API-limiet overschreden.',egn:'Fout: ',footer:'Automatisch geladen vanuit GitHub Releases',dfooter:'Automatisch bijgewerkt vanuit GitHub Releases'},
 };
-let lang=localStorage.getItem('cc_lang')||'en';
+let lang=(function(){
+  const saved=localStorage.getItem('cc_lang');
+  if(saved&&T[saved])return saved;
+  const bl=navigator.languages||[navigator.language||'en'];
+  for(const l of bl){const short=l.split('-')[0].toLowerCase();if(T[short])return short;}
+  return 'en';
+})();
 function t(k,...a){const v=(T[lang]||T.en)[k];return typeof v==='function'?v(...a):(v||k)}
 </script>
 
@@ -337,6 +388,41 @@ function t(k,...a){const v=(T[lang]||T.en)[k];return typeof v==='function'?v(...
   </div>
   <a class="discord-btn" href="https://discord.gg/XaZSGVFvzV" target="_blank" rel="noopener">Join Server →</a>
 </div>
+
+<!-- DOWNLOAD QUEUE FAB -->
+<div class="queue-fab">
+  <div class="queue-panel" id="queue-panel">
+    <div class="queue-head">
+      <span class="queue-title">🛒 Download Queue</span>
+      <button class="queue-close" onclick="toggleQueue()">✕</button>
+    </div>
+    <div class="queue-progress" id="queue-progress"></div>
+    <div class="queue-list" id="queue-list">
+      <div class="queue-empty">Queue is empty — add files with 🛒</div>
+    </div>
+    <div class="queue-footer">
+      <button class="queue-dl-btn" id="queue-dl-btn" onclick="startQueue()">↓ Download All</button>
+      <button class="queue-clear-btn" onclick="clearQueue()">Clear</button>
+    </div>
+  </div>
+  <button class="queue-btn" onclick="toggleQueue()" title="Download Queue">
+    🛒<span class="queue-badge" id="queue-badge">0</span>
+  </button>
+</div>
+
+<!-- FEATURED FILE (loaded from Supabase settings) -->
+<div class="featured-wrap" id="featured-wrap" style="display:none">
+  <div class="featured-card">
+    <span class="featured-badge">⭐ Recommended</span>
+    <div class="featured-icon">🧩</div>
+    <div class="featured-info">
+      <div class="featured-name" id="featured-name">—</div>
+      <div class="featured-meta" id="featured-meta">—</div>
+    </div>
+    <button class="btn-dl btn-dl-c" id="featured-dl-btn">↓ Download</button>
+  </div>
+</div>
+
 <!-- CONCH -->
 <div class="section" id="conch">
   <div class="section-header"><h2 class="c">Conch</h2><span class="sbadge sbadge-c" id="sb-c"></span></div>
@@ -566,6 +652,7 @@ function render(sec,groups){
         </div>
         <div class="file-actions">
           <button class="btn-sm" onclick="share('${ea(latest.url)}',this)" title="Copy link">⎘</button>
+          <button class="btn-queue" id="qbtn-${id}" onclick="addToQueue('${ea(latest.url)}','${ea(latest.name)}','${cls}','${id}')" title="Add to queue">🛒</button>
           ${hasH?`<button class="btn-hist" id="hb-${id}" onclick="toggleHist(${id})"><span>${t('hist')}</span><span class="arr">▾</span></button>`:''}
           <button class="btn-dl btn-dl-${cls}" onclick="dl('${ea(latest.url)}','${ea(latest.name)}','${cls}',this)">${t('dl')}</button>
         </div>
@@ -646,9 +733,133 @@ window.addEventListener('appinstalled',()=>{
   toast({title:'App installed!',sub:'Conch & Cmdr added to your device',type:'ok',dur:3000});
 });
 
+
+/* ── DOWNLOAD QUEUE ── */
+let _queue=[];
+let _queueRunning=false;
+
+function toggleQueue(){
+  const p=document.getElementById('queue-panel');
+  p.classList.toggle('open');
+  renderQueue();
+}
+
+function addToQueue(url,name,type,itemId){
+  if(_queue.find(q=>q.name===name)){
+    toast({title:'Already in queue',sub:name,type:'i',dur:2000});return;
+  }
+  _queue.push({url,name,type,done:false});
+  updateQueueBadge();
+  renderQueue();
+  // Style the button
+  const btn=document.getElementById('qbtn-'+itemId);
+  if(btn)btn.classList.add('in-queue');
+  toast({title:'Added to queue',sub:name,type:'c',dur:1800});
+}
+
+function removeFromQueue(idx){
+  const item=_queue[idx];
+  _queue.splice(idx,1);
+  // Reset button
+  document.querySelectorAll('.btn-queue.in-queue').forEach(b=>{
+    // find by name match - reset all buttons for this file
+  });
+  updateQueueBadge();renderQueue();
+}
+
+function clearQueue(){
+  _queue=[];
+  document.querySelectorAll('.btn-queue.in-queue').forEach(b=>b.classList.remove('in-queue'));
+  updateQueueBadge();renderQueue();
+}
+
+function updateQueueBadge(){
+  const badge=document.getElementById('queue-badge');
+  const n=_queue.filter(q=>!q.done).length;
+  badge.textContent=_queue.length;
+  badge.classList.toggle('vis',_queue.length>0);
+}
+
+function renderQueue(){
+  const list=document.getElementById('queue-list');
+  const dlBtn=document.getElementById('queue-dl-btn');
+  if(!_queue.length){
+    list.innerHTML='<div class="queue-empty">Queue is empty — add files with 🛒</div>';
+    if(dlBtn)dlBtn.disabled=true;return;
+  }
+  if(dlBtn)dlBtn.disabled=_queueRunning;
+  list.innerHTML=_queue.map((q,i)=>`
+    <div class="queue-item${q.done?' done':''}" id="qitem-${i}">
+      <span class="queue-item-icon">${q.done?'✅':'🧩'}</span>
+      <span class="queue-item-name" title="${eh(q.name)}">${eh(q.name)}</span>
+      <span class="queue-item-type qit-${q.type}">${q.type.toUpperCase()}</span>
+      ${!q.done&&!_queueRunning?`<button class="queue-item-rm" onclick="removeFromQueue(${i})">✕</button>`:''}
+    </div>`).join('');
+}
+
+async function startQueue(){
+  if(_queueRunning||!_queue.length)return;
+  _queueRunning=true;
+  const dlBtn=document.getElementById('queue-dl-btn');
+  if(dlBtn){dlBtn.disabled=true;dlBtn.textContent='Downloading...';}
+  const prog=document.getElementById('queue-progress');
+  const total=_queue.filter(q=>!q.done).length;
+  let done=0;
+  for(let i=0;i<_queue.length;i++){
+    const q=_queue[i];
+    if(q.done)continue;
+    const item=document.getElementById('qitem-'+i);
+    if(item)item.classList.add('downloading');
+    toast({title:'Downloading '+( done+1)+'/'+total,sub:q.name,type:q.type,dur:3000});
+    await new Promise(resolve=>{
+      fetch(q.url).then(r=>{
+        if(!r.ok)throw new Error('HTTP '+r.status);
+        return r.blob();
+      }).then(blob=>{
+        const u=URL.createObjectURL(blob),a=document.createElement('a');
+        a.href=u;a.download=q.name;document.body.appendChild(a);a.click();
+        document.body.removeChild(a);URL.revokeObjectURL(u);
+        incDLC(q.name);refreshDLC(q.name);
+      }).catch(()=>{
+        const a=document.createElement('a');a.href=q.url;a.download=q.name;a.target='_blank';
+        document.body.appendChild(a);a.click();document.body.removeChild(a);
+      }).finally(()=>{
+        q.done=true;done++;
+        if(prog)prog.style.width=Math.round((done/total)*100)+'%';
+        if(item)item.classList.remove('downloading');
+        renderQueue();
+        setTimeout(resolve,800); // small delay between downloads
+      });
+    });
+  }
+  _queueRunning=false;
+  if(dlBtn){dlBtn.disabled=false;dlBtn.textContent='↓ Download All';}
+  confetti();
+  toast({title:'All downloads complete!',sub:done+' files downloaded',type:'ok',dur:3500});
+  setTimeout(()=>{if(prog)prog.style.width='0%';},1500);
+}
+
+/* ── FEATURED FILE ── */
+async function loadFeatured(){
+  try{
+    const r=await fetch('https://rmdkoauibmzhgnvrwhfd.supabase.co/rest/v1/site_settings?key=in.(featured_file_name,featured_file_url,featured_file_meta,featured_enabled)&select=key,value',
+      {headers:{'apikey':'YOUR_ANON_KEY','Authorization':'Bearer YOUR_ANON_KEY'}});
+    if(!r.ok)return;
+    const rows=await r.json();const s={};rows.forEach(x=>s[x.key]=x.value);
+    if(s.featured_enabled!=='true'||!s.featured_file_name)return;
+    document.getElementById('featured-name').textContent=s.featured_file_name;
+    document.getElementById('featured-meta').textContent=s.featured_file_meta||'Recommended by the team';
+    const dlBtn=document.getElementById('featured-dl-btn');
+    if(dlBtn&&s.featured_file_url){
+      dlBtn.onclick=()=>dl(s.featured_file_url,s.featured_file_name,'c',dlBtn);
+    }
+    document.getElementById('featured-wrap').style.display='block';
+  }catch(e){}
+}
+
 /* INIT */
 document.getElementById('lang-sel').value=lang;
-applyLang();showSkel('conch-list');showSkel('cmdr-list');fetchReleases();
+applyLang();showSkel('conch-list');showSkel('cmdr-list');fetchReleases();loadFeatured();
 </script>
 </body>
 </html>
