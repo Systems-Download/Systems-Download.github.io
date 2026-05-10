@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FAQ — Conch & Cmdr</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--conch:#0ff4c6;--cmdr:#ff4f5e;--bg:#0b0c0f;--surface:#13151a;--surface2:#1a1d24;--border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.12);--text:#e8eaf0;--muted:#6b7280;--mono:'JetBrains Mono',monospace;--sans:'Syne',sans-serif;}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:100vh}
+nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:1rem 2.5rem;background:rgba(11,12,15,.9);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);height:64px}
+.nav-logo{font-size:1.1rem;font-weight:800;display:flex;gap:.4em;align-items:center;text-decoration:none}
+.nav-logo .c{color:var(--conch)}.nav-logo .sep{color:var(--muted)}.nav-logo .r{color:var(--cmdr)}
+.nav-right{display:flex;align-items:center;gap:1.5rem}
+nav a.nl{color:var(--muted);text-decoration:none;font-size:.8rem;font-family:var(--mono);letter-spacing:.04em;transition:color .2s}
+nav a.nl:hover{color:var(--text)}nav a.nl.active{color:var(--conch)}
+.page-transition{position:fixed;inset:0;background:var(--bg);z-index:9999;pointer-events:none;opacity:0;transition:opacity .25s ease}
+.wrap{max-width:740px;margin:0 auto;padding:7rem 2rem 5rem}
+.hero{text-align:center;margin-bottom:3.5rem}
+.hero-badge{display:inline-flex;align-items:center;gap:.5rem;font-family:var(--mono);font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;padding:.35rem .9rem;border-radius:20px;background:rgba(15,244,198,.08);color:var(--conch);border:1px solid rgba(15,244,198,.2);margin-bottom:1.2rem}
+.hero h1{font-size:clamp(2.2rem,5vw,3.5rem);font-weight:800;letter-spacing:-.03em;margin-bottom:.75rem}
+.hero h1 em{font-style:normal;color:var(--conch)}
+.hero p{font-family:var(--mono);font-size:.85rem;color:var(--muted);max-width:420px;margin:0 auto;line-height:1.8}
+.search-wrap{position:relative;margin-bottom:2rem}
+.search-icon{position:absolute;left:1rem;top:50%;transform:translateY(-50%);color:var(--muted);font-size:.85rem;pointer-events:none}
+.search-input{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:var(--mono);font-size:.82rem;padding:.75rem 1rem .75rem 2.4rem;outline:none;transition:border-color .2s}
+.search-input::placeholder{color:var(--muted)}.search-input:focus{border-color:rgba(15,244,198,.4)}
+.cat-label{font-family:var(--mono);font-size:.65rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);opacity:.6;margin-bottom:.6rem;margin-top:2rem}
+.cat-label:first-of-type{margin-top:0}
+.faq-item{background:var(--surface);border:1px solid var(--border);border-radius:10px;margin-bottom:.5rem;overflow:hidden;transition:border-color .2s}
+.faq-item:hover{border-color:rgba(255,255,255,.12)}
+.faq-item.open{border-color:rgba(15,244,198,.2)}
+.faq-item.hidden{display:none}
+.faq-q{display:flex;align-items:center;gap:.85rem;padding:1rem 1.2rem;cursor:pointer;user-select:none}
+.faq-icon{width:32px;height:32px;border-radius:8px;background:var(--surface2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:.9rem;flex-shrink:0}
+.faq-q-text{flex:1;font-size:.9rem;font-weight:700;letter-spacing:-.01em}
+.faq-arrow{color:var(--muted);font-size:.8rem;transition:transform .25s;flex-shrink:0}
+.faq-item.open .faq-arrow{transform:rotate(180deg);color:var(--conch)}
+.faq-a{max-height:0;overflow:hidden;transition:max-height .3s cubic-bezier(.4,0,.2,1)}
+.faq-item.open .faq-a{max-height:400px}
+.faq-a-inner{padding:.1rem 1.2rem 1.2rem 4rem;font-family:var(--mono);font-size:.8rem;color:var(--muted);line-height:1.85}
+.faq-a-inner a{color:var(--conch);text-decoration:none}.faq-a-inner a:hover{text-decoration:underline}
+.faq-a-inner code{background:var(--surface2);padding:.1rem .35rem;border-radius:4px;font-size:.85em}
+.no-results{font-family:var(--mono);font-size:.8rem;color:var(--muted);text-align:center;padding:3rem;opacity:.5;display:none}
+.no-results.vis{display:block}
+footer{text-align:center;padding:3rem 2rem;font-family:var(--mono);font-size:.7rem;color:var(--muted);border-top:1px solid var(--border);margin-top:3rem;opacity:.5}
+@media(max-width:640px){nav{padding:1rem 1.2rem}.wrap{padding:5rem 1.2rem 4rem}}
+</style>
+</head>
+<body>
+<div class="page-transition" id="page-transition"></div>
+
+<nav>
+  <a class="nav-logo" href="index.html"><span class="c">Conch</span><span class="sep">/</span><span class="r">Cmdr</span></a>
+  <div class="nav-right">
+    <a class="nl" href="index.html">Downloads</a>
+    <a class="nl" href="announcements.html">Announcements</a>
+    <a class="nl active" href="faq.html">FAQ</a>
+  </div>
+</nav>
+
+<div class="wrap">
+  <div class="hero">
+    <div class="hero-badge">❓ Help Center</div>
+    <h1>Frequently Asked<br><em>Questions</em></h1>
+    <p>Everything you need to know about Conch & Cmdr.</p>
+  </div>
+
+  <div class="search-wrap">
+    <span class="search-icon">🔍</span>
+    <input class="search-input" id="faq-search" type="text" placeholder="Search questions..." oninput="filterFAQ()">
+  </div>
+
+  <div id="faq-container"></div>
+  <div class="no-results" id="no-results">No questions match your search.</div>
+</div>
+
+<footer>Conch & Cmdr — FAQ · <a href="index.html" style="color:var(--conch);text-decoration:none">Back to Downloads</a></footer>
+
+<script>
+const FAQ = [
+  {
+    cat: '📥 Downloads',
+    items: [
+      { icon: '📥', q: 'How do I download a file?', a: 'Click the <code>↓ Download</code> button next to any file. The download starts immediately — no redirects, no ads.' },
+      { icon: '🛒', q: 'What is the Download Queue?', a: 'The shopping cart icon (🛒) at the bottom right lets you add multiple files to a queue and download them one after another with a single click. Great for downloading both Conch and Cmdr at once.' },
+      { icon: '📁', q: 'What file format are the downloads?', a: 'All files are <code>.rbxm</code> format — Roblox Model files. You can import them directly into Roblox Studio via File → Import from File.' },
+      { icon: '🔄', q: 'How do I get the latest version?', a: 'The page always shows the latest release at the top. If you think something is outdated, click the 🔄 Refresh button in the navigation bar to reload releases from GitHub.' },
+      { icon: '📋', q: 'How do I see older versions?', a: 'Click the <code>History ▾</code> button on any file card to expand a list of all previous versions with individual download buttons.' },
+    ]
+  },
+  {
+    cat: '🧩 Conch & Cmdr',
+    items: [
+      { icon: '❓', q: 'What is Conch?', a: 'Conch is a Roblox system built and maintained by Systems-Download. Check the Announcements page for the latest details and changelogs.' },
+      { icon: '❓', q: 'What is Cmdr?', a: 'Cmdr is a companion system to Conch. Both are distributed as <code>.rbxm</code> files and can be imported into Roblox Studio.' },
+      { icon: '🔢', q: 'What do the version numbers mean?', a: 'Versions follow semantic versioning: <code>v1.0.0</code> — major.minor.patch. Higher numbers = newer. BETA versions are pre-release and may contain bugs.' },
+      { icon: '🚀', q: 'How often are new versions released?', a: 'Releases happen as updates are ready. Check the Announcements page or join the Discord server to get notified.' },
+    ]
+  },
+  {
+    cat: '⚙️ Technical',
+    items: [
+      { icon: '🌍', q: 'How does the site load files?', a: 'Files are automatically fetched from GitHub Releases using the public GitHub API. No manual updates needed — when a new release is published on GitHub, it appears here automatically.' },
+      { icon: '🔒', q: 'Are the downloads safe?', a: 'Yes. Files come directly from the official GitHub repository. You can verify file integrity using the SHA256 checksums shown in the GitHub Releases page.' },
+      { icon: '📱', q: 'Can I install this page as an app?', a: 'Yes! This site is a Progressive Web App (PWA). If you see an <code>⬇ Install App</code> button in the navigation, click it to add the download page to your home screen or desktop.' },
+      { icon: '🌐', q: 'The page shows in the wrong language — how do I change it?', a: 'Use the language selector in the top navigation bar. Your choice is saved and applied automatically on your next visit. The site also auto-detects your browser language.' },
+    ]
+  },
+  {
+    cat: '🔧 Troubleshooting',
+    items: [
+      { icon: '❌', q: 'The download does not start — what do I do?', a: 'Try clicking Download again. If it still does not work, check your browser\'s download settings or try a different browser. Some browsers block automatic file downloads — allow it when prompted.' },
+      { icon: '🔄', q: 'The file list is empty or shows an error', a: 'This usually means the GitHub API rate limit was exceeded (60 requests/hour for unauthenticated users). Wait a few minutes and click the 🔄 Refresh button.' },
+      { icon: '📡', q: 'I see an Offline page — what happened?', a: 'Your device lost internet connection. The offline page appears automatically. As soon as your connection is restored, you will be redirected back to the download page.' },
+      { icon: '🔧', q: 'The site shows a Maintenance message', a: 'The team has temporarily enabled maintenance mode. Check back soon or join the Discord for updates on when it will be back.' },
+    ]
+  },
+  {
+    cat: '💬 Community',
+    items: [
+      { icon: '💬', q: 'Where can I get support?', a: 'Join the <a href="https://discord.gg/XaZSGVFvzV" target="_blank">Discord server</a> for direct support, announcements and community discussion.' },
+      { icon: '🐛', q: 'How do I report a bug?', a: 'Open an issue on the GitHub repository or post in the Discord server\'s support channel.' },
+      { icon: '💡', q: 'Can I suggest features?', a: 'Absolutely! Post your ideas in the Discord server. We read all suggestions.' },
+    ]
+  },
+];
+
+function renderFAQ(data){
+  const container=document.getElementById('faq-container');
+  container.innerHTML='';
+  let uid=0;
+  data.forEach(cat=>{
+    const cl=document.createElement('div');cl.className='cat-label';cl.textContent=cat.cat;container.appendChild(cl);
+    cat.items.forEach(item=>{
+      const id='faq-'+uid++;
+      const el=document.createElement('div');el.className='faq-item';el.dataset.q=(item.q+' '+item.a).toLowerCase();
+      el.innerHTML=`<div class="faq-q" onclick="toggleFAQ(this.parentElement)">
+        <div class="faq-icon">${item.icon}</div>
+        <div class="faq-q-text">${item.q}</div>
+        <span class="faq-arrow">▾</span>
+      </div>
+      <div class="faq-a"><div class="faq-a-inner">${item.a}</div></div>`;
+      container.appendChild(el);
+    });
+  });
+}
+
+function toggleFAQ(el){el.classList.toggle('open')}
+
+function filterFAQ(){
+  const q=document.getElementById('faq-search').value.trim().toLowerCase();
+  const items=document.querySelectorAll('.faq-item');
+  const labels=document.querySelectorAll('.cat-label');
+  let vis=0;
+  items.forEach(it=>{const match=!q||(it.dataset.q||'').includes(q);it.classList.toggle('hidden',!match);if(match)vis++;if(q&&match)it.classList.add('open');else if(q)it.classList.remove('open');});
+  labels.forEach(l=>{l.style.display='block'});
+  document.getElementById('no-results').classList.toggle('vis',vis===0&&q.length>0);
+}
+
+renderFAQ(FAQ);
+
+/* PAGE TRANSITIONS */
+document.querySelectorAll('a[href]').forEach(a=>{
+  const href=a.getAttribute('href');
+  if(!href||href.startsWith('#')||href.startsWith('http')||a.target==='_blank')return;
+  a.addEventListener('click',e=>{e.preventDefault();const o=document.getElementById('page-transition');if(o){o.style.pointerEvents='all';o.style.opacity='1';}setTimeout(()=>window.location.href=href,250);});
+});
+if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
+</script>
+</body>
+</html>
