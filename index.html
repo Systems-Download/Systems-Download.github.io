@@ -805,33 +805,38 @@ async function startQueue(){
   const prog=document.getElementById('queue-progress');
   const total=_queue.filter(q=>!q.done).length;
   let done=0;
-  for(let i=0;i<_queue.length;i++){
-    const q=_queue[i];
-    if(q.done)continue;
+  
+  toast({title:'Starting '+total+' downloads',sub:'Downloading all files simultaneously',type:'c',dur:3000});
+  
+  // Alle Downloads parallel starten
+  const downloadPromises=_queue.map((q,i)=>{
+    if(q.done)return Promise.resolve();
     const item=document.getElementById('qitem-'+i);
     if(item)item.classList.add('downloading');
-    toast({title:'Downloading '+( done+1)+'/'+total,sub:q.name,type:q.type,dur:3000});
-    await new Promise(resolve=>{
-      fetch(q.url).then(r=>{
-        if(!r.ok)throw new Error('HTTP '+r.status);
-        return r.blob();
-      }).then(blob=>{
-        const u=URL.createObjectURL(blob),a=document.createElement('a');
-        a.href=u;a.download=q.name;document.body.appendChild(a);a.click();
-        document.body.removeChild(a);URL.revokeObjectURL(u);
-        incDLC(q.name);refreshDLC(q.name);
-      }).catch(()=>{
-        const a=document.createElement('a');a.href=q.url;a.download=q.name;a.target='_blank';
-        document.body.appendChild(a);a.click();document.body.removeChild(a);
-      }).finally(()=>{
-        q.done=true;done++;
-        if(prog)prog.style.width=Math.round((done/total)*100)+'%';
-        if(item)item.classList.remove('downloading');
-        renderQueue();
-        setTimeout(resolve,800); // small delay between downloads
-      });
+    
+    return fetch(q.url).then(r=>{
+      if(!r.ok)throw new Error('HTTP '+r.status);
+      return r.blob();
+    }).then(blob=>{
+      const u=URL.createObjectURL(blob),a=document.createElement('a');
+      a.href=u;a.download=q.name;document.body.appendChild(a);a.click();
+      document.body.removeChild(a);URL.revokeObjectURL(u);
+      incDLC(q.name);refreshDLC(q.name);
+    }).catch(()=>{
+      const a=document.createElement('a');a.href=q.url;a.download=q.name;a.target='_blank';
+      document.body.appendChild(a);a.click();document.body.removeChild(a);
+      incDLC(q.name);refreshDLC(q.name);
+    }).finally(()=>{
+      q.done=true;done++;
+      if(prog)prog.style.width=Math.round((done/total)*100)+'%';
+      if(item)item.classList.remove('downloading');
+      renderQueue();
     });
-  }
+  });
+  
+  // Warten bis alle Downloads abgeschlossen sind
+  await Promise.all(downloadPromises);
+  
   _queueRunning=false;
   if(dlBtn){dlBtn.disabled=false;dlBtn.textContent='↓ Download All';}
   confetti();
