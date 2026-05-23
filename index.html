@@ -38,6 +38,14 @@
     --border:rgba(255,255,255,0.07);--text:#e8eaf0;--muted:#6b7280;
     --mono:'JetBrains Mono',monospace;--sans:'Syne',sans-serif;
   }
+  
+  /* LIGHT MODE */
+  :root.light-mode{
+    --bg:#f5f7fa;--surface:#ffffff;--surface2:#f0f2f5;
+    --border:rgba(0,0,0,0.08);--text:#1a1d24;--muted:#6b7280;
+  }
+  
+  body{transition:background-color 0.3s ease,color 0.3s ease}
 
   /* BANNER */
   .site-banner{width:100%;padding:.6rem 2rem;text-align:center;font-family:var(--mono);font-size:.78rem;position:fixed;top:64px;left:0;right:0;z-index:99;display:none}
@@ -132,6 +140,8 @@
   .icon-btn svg{width:15px;height:15px}
   .icon-btn.spinning svg{animation:spin 0.7s linear infinite}
   @keyframes spin{to{transform:rotate(360deg)}}
+  .icon-btn .theme-icon{font-size:1rem;transition:transform 0.3s ease}
+  .icon-btn:hover .theme-icon{transform:rotate(20deg)}
 
   /* BURGER */
   .burger{display:flex;flex-direction:column;justify-content:center;gap:5px;width:36px;height:36px;cursor:pointer;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:9px;transition:border-color 0.2s,background 0.2s;flex-shrink:0}
@@ -287,6 +297,36 @@
   .search-empty.vis{display:block}
   .empty-state,.error-state{font-family:var(--mono);font-size:0.8rem;color:var(--muted);text-align:center;padding:2rem 1.5rem;opacity:0.6;line-height:1.7}
 
+  /* EMAIL NOTIFICATION MODAL */
+  .email-modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:9998;display:none;align-items:center;justify-content:center;animation:fadeIn 0.2s ease}
+  .email-modal-overlay.open{display:flex}
+  @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+  .email-modal{background:var(--surface);border:1px solid var(--border);border-radius:12px;width:90%;max-width:480px;padding:2rem;box-shadow:0 20px 60px rgba(0,0,0,0.5);animation:modalSlideIn 0.3s cubic-bezier(0.34,1.56,0.64,1)}
+  @keyframes modalSlideIn{from{opacity:0;transform:translateY(-30px) scale(0.95)}to{opacity:1;transform:translateY(0) scale(1)}}
+  .email-modal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem}
+  .email-modal-title{font-size:1.3rem;font-weight:800;color:var(--text);display:flex;align-items:center;gap:0.5rem}
+  .email-modal-close{background:none;border:none;color:var(--muted);cursor:pointer;font-size:1.3rem;padding:0.3rem;transition:color 0.2s;width:32px;height:32px;border-radius:6px;display:flex;align-items:center;justify-content:center}
+  .email-modal-close:hover{color:var(--text);background:var(--surface2)}
+  .email-modal-desc{font-family:var(--mono);font-size:0.82rem;color:var(--muted);line-height:1.7;margin-bottom:1.5rem}
+  .email-modal-input{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:var(--mono);font-size:0.85rem;padding:0.75rem 1rem;outline:none;transition:border-color 0.2s;margin-bottom:1rem}
+  .email-modal-input:focus{border-color:rgba(15,244,198,0.4)}
+  .email-modal-input::placeholder{color:var(--muted);opacity:0.5}
+  .email-modal-checkboxes{margin-bottom:1.5rem}
+  .email-checkbox-item{display:flex;align-items:center;gap:0.6rem;padding:0.6rem;cursor:pointer;border-radius:6px;transition:background 0.2s;margin-bottom:0.3rem}
+  .email-checkbox-item:hover{background:var(--surface2)}
+  .email-checkbox-item input[type="checkbox"]{width:18px;height:18px;cursor:pointer;accent-color:var(--conch)}
+  .email-checkbox-item label{font-family:var(--mono);font-size:0.8rem;color:var(--text);cursor:pointer;flex:1}
+  .email-modal-buttons{display:flex;gap:0.75rem}
+  .email-modal-btn{flex:1;font-family:var(--mono);font-size:0.82rem;padding:0.7rem 1.2rem;border-radius:8px;border:none;cursor:pointer;transition:all 0.2s;font-weight:600}
+  .email-modal-btn.primary{background:rgba(15,244,198,0.15);color:var(--conch);border:1px solid rgba(15,244,198,0.3)}
+  .email-modal-btn.primary:hover{background:rgba(15,244,198,0.25)}
+  .email-modal-btn.secondary{background:var(--surface2);color:var(--muted);border:1px solid var(--border)}
+  .email-modal-btn.secondary:hover{border-color:var(--cmdr);color:var(--cmdr)}
+  .email-modal-success{text-align:center;padding:2rem 1rem}
+  .email-modal-success-icon{font-size:3rem;margin-bottom:1rem}
+  .email-modal-success-title{font-size:1.2rem;font-weight:700;color:var(--text);margin-bottom:0.5rem}
+  .email-modal-success-desc{font-family:var(--mono);font-size:0.8rem;color:var(--muted)}
+
   .divider{height:1px;background:var(--border);margin:0 2.5rem}
   footer{text-align:center;padding:3rem 2.5rem;font-family:var(--mono);font-size:0.75rem;color:var(--muted);border-top:1px solid var(--border);margin-top:4rem;opacity:0.5}
 
@@ -347,6 +387,9 @@ function t(k,...a){const v=(T[lang]||T.en)[k];return typeof v==='function'?v(...
       <option value="ko">KO</option><option value="tr">TR</option><option value="ar">AR</option>
       <option value="pl">PL</option><option value="nl">NL</option>
     </select>
+    <button class="icon-btn" id="theme-btn" onclick="toggleTheme()" title="Toggle Theme">
+      <span class="theme-icon" id="theme-icon">🌙</span>
+    </button>
     <button class="icon-btn" id="refresh-btn" onclick="doRefresh()" title="Refresh">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
     </button>
@@ -366,6 +409,9 @@ function t(k,...a){const v=(T[lang]||T.en)[k];return typeof v==='function'?v(...
     <a class="drawer-item active" href="index.html" onclick="closeDrawer()"><span class="drawer-icon">📥</span><span id="dl-dl">Downloads</span></a>
     <a class="drawer-item" href="announcements.html" onclick="closeDrawer()"><span class="drawer-icon">📣</span><span id="dl-ann">Announcements</span></a>
     <a class="drawer-item" href="https://systems-download.github.io/faq.html" onclick="closeDrawer()"><span class="drawer-icon">❓</span><span>FAQ</span></a>
+    <div class="drawer-div"></div>
+    <p class="drawer-slabel">Settings</p>
+    <a class="drawer-item" onclick="openEmailModal();closeDrawer()"><span class="drawer-icon">📧</span><span>Email Notifications</span></a>
     <div class="drawer-div"></div>
     <p class="drawer-slabel">Quick Jump</p>
     <a class="drawer-item" href="#conch" onclick="closeDrawer()"><span class="drawer-icon" style="color:var(--conch)">◈</span>Conch</a>
@@ -459,12 +505,182 @@ function t(k,...a){const v=(T[lang]||T.en)[k];return typeof v==='function'?v(...
 
 <footer id="footer"></footer>
 
+<!-- EMAIL NOTIFICATION MODAL -->
+<div class="email-modal-overlay" id="email-modal-overlay" onclick="closeEmailModal(event)">
+  <div class="email-modal" onclick="event.stopPropagation()">
+    <div id="email-modal-content">
+      <div class="email-modal-header">
+        <div class="email-modal-title">📧 Email Notifications</div>
+        <button class="email-modal-close" onclick="closeEmailModal()">✕</button>
+      </div>
+      <div class="email-modal-desc">
+        Get notified when new versions of Conch & Cmdr are released. We'll send you an email with the latest updates.
+      </div>
+      <input 
+        type="email" 
+        class="email-modal-input" 
+        id="email-input" 
+        placeholder="your.email@example.com"
+        required
+      >
+      <div class="email-modal-checkboxes">
+        <div class="email-checkbox-item">
+          <input type="checkbox" id="notify-conch" checked>
+          <label for="notify-conch">Notify me about Conch releases</label>
+        </div>
+        <div class="email-checkbox-item">
+          <input type="checkbox" id="notify-cmdr" checked>
+          <label for="notify-cmdr">Notify me about Cmdr releases</label>
+        </div>
+      </div>
+      <div class="email-modal-buttons">
+        <button class="email-modal-btn secondary" onclick="closeEmailModal()">Cancel</button>
+        <button class="email-modal-btn primary" onclick="subscribeEmail()">Subscribe</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script>
 /* DRAWER */
 let _dopen=false;
 function toggleDrawer(){_dopen?closeDrawer():openDrawer()}
 function openDrawer(){_dopen=true;['drawer','drawer-overlay','burger-btn'].forEach(id=>document.getElementById(id).classList.add('open'));document.body.style.overflow='hidden'}
 function closeDrawer(){_dopen=false;['drawer','drawer-overlay','burger-btn'].forEach(id=>document.getElementById(id).classList.remove('open'));document.body.style.overflow=''}
+
+/* THEME TOGGLE */
+function toggleTheme(){
+  const root=document.documentElement;
+  const icon=document.getElementById('theme-icon');
+  const isDark=!root.classList.contains('light-mode');
+  
+  if(isDark){
+    root.classList.add('light-mode');
+    icon.textContent='☀️';
+    localStorage.setItem('cc_theme','light');
+  }else{
+    root.classList.remove('light-mode');
+    icon.textContent='🌙';
+    localStorage.setItem('cc_theme','dark');
+  }
+}
+
+function loadTheme(){
+  const savedTheme=localStorage.getItem('cc_theme');
+  const icon=document.getElementById('theme-icon');
+  if(savedTheme==='light'){
+    document.documentElement.classList.add('light-mode');
+    if(icon)icon.textContent='☀️';
+  }else{
+    if(icon)icon.textContent='🌙';
+  }
+}
+
+/* EMAIL NOTIFICATION MODAL */
+function openEmailModal(){
+  document.getElementById('email-modal-overlay').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+
+function closeEmailModal(event){
+  if(event&&event.target!==event.currentTarget)return;
+  document.getElementById('email-modal-overlay').classList.remove('open');
+  document.body.style.overflow='';
+  // Reset form after a delay
+  setTimeout(()=>{
+    document.getElementById('email-modal-content').innerHTML=`
+      <div class="email-modal-header">
+        <div class="email-modal-title">📧 Email Notifications</div>
+        <button class="email-modal-close" onclick="closeEmailModal()">✕</button>
+      </div>
+      <div class="email-modal-desc">
+        Get notified when new versions of Conch & Cmdr are released. We'll send you an email with the latest updates.
+      </div>
+      <input 
+        type="email" 
+        class="email-modal-input" 
+        id="email-input" 
+        placeholder="your.email@example.com"
+        required
+      >
+      <div class="email-modal-checkboxes">
+        <div class="email-checkbox-item">
+          <input type="checkbox" id="notify-conch" checked>
+          <label for="notify-conch">Notify me about Conch releases</label>
+        </div>
+        <div class="email-checkbox-item">
+          <input type="checkbox" id="notify-cmdr" checked>
+          <label for="notify-cmdr">Notify me about Cmdr releases</label>
+        </div>
+      </div>
+      <div class="email-modal-buttons">
+        <button class="email-modal-btn secondary" onclick="closeEmailModal()">Cancel</button>
+        <button class="email-modal-btn primary" onclick="subscribeEmail()">Subscribe</button>
+      </div>
+    `;
+  },300);
+}
+
+async function subscribeEmail(){
+  const email=document.getElementById('email-input').value.trim();
+  const notifyConch=document.getElementById('notify-conch').checked;
+  const notifyCmdr=document.getElementById('notify-cmdr').checked;
+  
+  if(!email){
+    toast({title:'Email required',sub:'Please enter your email address',type:'w',dur:3000});
+    return;
+  }
+  
+  // Email validation
+  const emailRegex=/^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if(!emailRegex.test(email)){
+    toast({title:'Invalid email',sub:'Please enter a valid email address',type:'w',dur:3000});
+    return;
+  }
+  
+  if(!notifyConch&&!notifyCmdr){
+    toast({title:'Select at least one',sub:'Choose Conch or Cmdr notifications',type:'w',dur:3000});
+    return;
+  }
+  
+  try{
+    // Save to Supabase
+    const response=await fetch('https://rmdkoauibmzhgnvrwhfd.supabase.co/rest/v1/email_subscribers',{
+      method:'POST',
+      headers:{
+        'apikey':'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJtZGtvYXVpYm16aGdudnJ3aGZkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyNjg2MDksImV4cCI6MjA5Mzg0NDYwOX0.lu6T00f9y9-Q8HhVag-MGjJz6bTlJrYUwC7AApIxaFw',
+        'Authorization':'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJtZGtvYXVpYm16aGdudnJ3aGZkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyNjg2MDksImV4cCI6MjA5Mzg0NDYwOX0.lu6T00f9y9-Q8HhVag-MGjJz6bTlJrYUwC7AApIxaFw',
+        'Content-Type':'application/json',
+        'Prefer':'return=minimal'
+      },
+      body:JSON.stringify({
+        email:email,
+        notify_conch:notifyConch,
+        notify_cmdr:notifyCmdr,
+        subscribed_at:new Date().toISOString()
+      })
+    });
+    
+    if(response.ok||response.status===201){
+      // Show success message
+      document.getElementById('email-modal-content').innerHTML=`
+        <div class="email-modal-success">
+          <div class="email-modal-success-icon">✅</div>
+          <div class="email-modal-success-title">Successfully Subscribed!</div>
+          <div class="email-modal-success-desc">You'll receive email notifications when new ${notifyConch&&notifyCmdr?'Conch & Cmdr':notifyConch?'Conch':'Cmdr'} releases are published.</div>
+          <button class="email-modal-btn primary" onclick="closeEmailModal()" style="margin-top:1.5rem;width:100%">Close</button>
+        </div>
+      `;
+      confetti();
+      toast({title:'Subscribed!',sub:'Check your email for confirmation',type:'ok',dur:4000});
+    }else{
+      throw new Error('Subscription failed');
+    }
+  }catch(error){
+    console.error('Email subscription error:',error);
+    toast({title:'Subscription failed',sub:'Please try again later',type:'w',dur:3000});
+  }
+}
 
 /* LANG */
 function setLang(l){lang=l;localStorage.setItem('cc_lang',l);applyLang();rerender()}
