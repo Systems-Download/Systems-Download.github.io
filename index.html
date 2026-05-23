@@ -153,7 +153,14 @@
   .drawer-close:hover{color:var(--text)}
   .drawer-slabel{font-family:var(--mono);font-size:0.62rem;letter-spacing:0.14em;text-transform:uppercase;color:var(--muted);padding:1.2rem 1.5rem 0.5rem;opacity:0.6}
   .drawer-nav{flex:1;overflow-y:auto;padding:0.5rem 0.75rem}
-  .drawer-item{display:flex;align-items:center;gap:0.75rem;padding:0.75rem;border-radius:8px;text-decoration:none;color:var(--muted);font-family:var(--mono);font-size:0.82rem;margin-bottom:2px;border:1px solid transparent;transition:background 0.18s}
+  .drawer-item{display:flex;align-items:center;gap:0.75rem;padding:0.75rem;border-radius:8px;text-decoration:none;color:var(--muted);font-family:var(--mono);font-size:0.82rem;margin-bottom:2px;border:1px solid transparent;transition:background 0.18s;opacity:0;animation:drawerItemFadeIn 0.3s ease forwards}
+  .drawer-item:nth-child(1){animation-delay:0.05s}
+  .drawer-item:nth-child(2){animation-delay:0.1s}
+  .drawer-item:nth-child(3){animation-delay:0.15s}
+  .drawer-item:nth-child(4){animation-delay:0.2s}
+  .drawer-item:nth-child(5){animation-delay:0.25s}
+  .drawer-item:nth-child(6){animation-delay:0.3s}
+  @keyframes drawerItemFadeIn{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:translateX(0)}}
   .drawer-item:hover{background:var(--surface);border-color:var(--border);color:var(--text)}
   .drawer-item.active{background:rgba(15,244,198,0.07);border-color:rgba(15,244,198,0.15);color:var(--conch)}
   .drawer-icon{width:28px;height:28px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:0.85rem;flex-shrink:0;background:var(--surface2);border:1px solid var(--border)}
@@ -332,8 +339,6 @@ function t(k,...a){const v=(T[lang]||T.en)[k];return typeof v==='function'?v(...
 <nav>
   <div class="nav-logo"><span class="c">Conch</span><span class="sep">/</span><span class="r">Cmdr</span></div>
   <div class="nav-right">
-    <a class="nav-link active" href="index.html" id="nl-dl">Downloads</a>
-    <a class="nav-link" href="announcements.html" id="nl-ann">Announcements</a>
     <button class="pwa-install-btn" id="pwa-btn" onclick="installPWA()">⬇ Install App</button>
     <select class="lang-select" id="lang-sel" onchange="setLang(this.value)">
       <option value="en">EN</option><option value="de">DE</option><option value="es">ES</option>
@@ -360,6 +365,7 @@ function t(k,...a){const v=(T[lang]||T.en)[k];return typeof v==='function'?v(...
     <p class="drawer-slabel">Navigation</p>
     <a class="drawer-item active" href="index.html" onclick="closeDrawer()"><span class="drawer-icon">📥</span><span id="dl-dl">Downloads</span></a>
     <a class="drawer-item" href="announcements.html" onclick="closeDrawer()"><span class="drawer-icon">📣</span><span id="dl-ann">Announcements</span></a>
+    <a class="drawer-item" href="https://systems-download.github.io/faq.html" onclick="closeDrawer()"><span class="drawer-icon">❓</span><span>FAQ</span></a>
     <div class="drawer-div"></div>
     <p class="drawer-slabel">Quick Jump</p>
     <a class="drawer-item" href="#conch" onclick="closeDrawer()"><span class="drawer-icon" style="color:var(--conch)">◈</span>Conch</a>
@@ -803,38 +809,61 @@ async function startQueue(){
   const dlBtn=document.getElementById('queue-dl-btn');
   if(dlBtn){dlBtn.disabled=true;dlBtn.textContent='Downloading...';}
   const prog=document.getElementById('queue-progress');
-  const total=_queue.filter(q=>!q.done).length;
+  const itemsToDownload=_queue.filter(q=>!q.done);
+  const total=itemsToDownload.length;
   let done=0;
   
-  toast({title:'Starting '+total+' downloads',sub:'Downloading all files simultaneously',type:'c',dur:3000});
+  toast({title:'Starting '+total+' downloads',sub:'All files will download simultaneously',type:'c',dur:3000});
   
-  // Alle Downloads parallel starten
-  const downloadPromises=_queue.map((q,i)=>{
-    if(q.done)return Promise.resolve();
-    const item=document.getElementById('qitem-'+i);
-    if(item)item.classList.add('downloading');
-    
-    return fetch(q.url).then(r=>{
-      if(!r.ok)throw new Error('HTTP '+r.status);
-      return r.blob();
-    }).then(blob=>{
-      const u=URL.createObjectURL(blob),a=document.createElement('a');
-      a.href=u;a.download=q.name;document.body.appendChild(a);a.click();
-      document.body.removeChild(a);URL.revokeObjectURL(u);
-      incDLC(q.name);refreshDLC(q.name);
-    }).catch(()=>{
-      const a=document.createElement('a');a.href=q.url;a.download=q.name;a.target='_blank';
-      document.body.appendChild(a);a.click();document.body.removeChild(a);
-      incDLC(q.name);refreshDLC(q.name);
-    }).finally(()=>{
-      q.done=true;done++;
-      if(prog)prog.style.width=Math.round((done/total)*100)+'%';
-      if(item)item.classList.remove('downloading');
-      renderQueue();
-    });
+  // Alle Items als "downloading" markieren
+  _queue.forEach((q,i)=>{
+    if(!q.done){
+      const item=document.getElementById('qitem-'+i);
+      if(item)item.classList.add('downloading');
+    }
   });
   
-  // Warten bis alle Downloads abgeschlossen sind
+  // Alle Downloads SOFORT parallel starten - KEIN await zwischen den Starts
+  const downloadPromises=[];
+  for(let i=0;i<_queue.length;i++){
+    const q=_queue[i];
+    if(q.done)continue;
+    
+    // Download-Promise erstellen und SOFORT zur Liste hinzufügen
+    const downloadPromise=(async()=>{
+      try{
+        // Direkt den Browser-Download triggern ohne zu warten
+        const a=document.createElement('a');
+        a.href=q.url;
+        a.download=q.name;
+        a.target='_blank';
+        a.rel='noopener';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        
+        // Counter erhöhen und DLC speichern
+        incDLC(q.name);
+        refreshDLC(q.name);
+        
+        // Kurze Verzögerung für UI-Update
+        await new Promise(resolve=>setTimeout(resolve,200));
+      }catch(err){
+        console.error('Download error:',err);
+      }finally{
+        q.done=true;
+        done++;
+        if(prog)prog.style.width=Math.round((done/total)*100)+'%';
+        const item=document.getElementById('qitem-'+i);
+        if(item)item.classList.remove('downloading');
+        renderQueue();
+      }
+    })();
+    
+    downloadPromises.push(downloadPromise);
+  }
+  
+  // Jetzt auf ALLE Downloads gleichzeitig warten
   await Promise.all(downloadPromises);
   
   _queueRunning=false;
