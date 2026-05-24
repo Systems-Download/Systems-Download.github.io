@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Conch & Cmdr — Downloads</title>
-<div class="page-transition" id="page-transition"></div>
 <script>
 /* MAINTENANCE + BANNER — runs before page loads */
 (async function(){
@@ -40,28 +39,19 @@
     --border:rgba(255,255,255,0.07);--text:#e8eaf0;--muted:#6b7280;
     --mono:'JetBrains Mono',monospace;--sans:'Syne',sans-serif;
   }
-
-  /* LIGHT MODE */
   :root.light-mode{
     --bg:#f5f7fa;--surface:#ffffff;--surface2:#f0f2f5;
     --border:rgba(0,0,0,0.08);--text:#1a1d24;--muted:#6b7280;
   }
-
   body{transition:background-color 0.3s ease,color 0.3s ease}
-
-  /* BANNER */
   .site-banner{width:100%;padding:.6rem 2rem;text-align:center;font-family:var(--mono);font-size:.78rem;position:fixed;top:64px;left:0;right:0;z-index:99;display:none}
   .site-banner.active{display:block}
   .sb-info{background:rgba(100,160,255,.12);color:#64a0ff;border-bottom:1px solid rgba(100,160,255,.2)}
   .sb-warning{background:rgba(255,200,50,.12);color:#ffc832;border-bottom:1px solid rgba(255,200,50,.2)}
   .sb-danger{background:rgba(255,79,94,.12);color:#ff4f5e;border-bottom:1px solid rgba(255,79,94,.2)}
   .sb-success{background:rgba(60,200,120,.12);color:#3cc878;border-bottom:1px solid rgba(60,200,120,.2)}
-
-  /* PAGE TRANSITION */
   .page-transition{position:fixed;inset:0;background:var(--bg);z-index:9999;pointer-events:none;opacity:0;transition:opacity .25s ease}
   .page-transition.fade-out{opacity:1;pointer-events:all}
-
-  /* DISCORD BANNER */
   .discord-banner{background:linear-gradient(135deg,rgba(88,101,242,.15),rgba(88,101,242,.05));border:1px solid rgba(88,101,242,.25);border-radius:10px;padding:1rem 1.5rem;display:flex;align-items:center;gap:1rem;margin:0 2.5rem 2rem;max-width:1056px;margin-left:auto;margin-right:auto}
   .discord-icon{width:40px;height:40px;border-radius:10px;background:rgba(88,101,242,.2);display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0}
   .discord-info{flex:1}
@@ -69,8 +59,6 @@
   .discord-sub{font-family:var(--mono);font-size:.72rem;color:var(--muted)}
   .discord-btn{font-family:var(--mono);font-size:.75rem;padding:.5rem 1.1rem;border-radius:6px;background:rgba(88,101,242,.25);color:#8b9cf4;border:1px solid rgba(88,101,242,.35);text-decoration:none;transition:all .2s;white-space:nowrap;flex-shrink:0}
   .discord-btn:hover{background:rgba(88,101,242,.4);color:#fff}
-
-  /* DOWNLOAD QUEUE (Cart) */
   .queue-fab{position:fixed;bottom:2rem;right:2rem;z-index:500;display:flex;flex-direction:column;align-items:flex-end;gap:.5rem}
   .queue-btn{width:52px;height:52px;border-radius:50%;background:var(--surface2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:1.3rem;transition:all .2s;position:relative;box-shadow:0 4px 20px rgba(0,0,0,.4)}
   .queue-btn:hover{border-color:rgba(15,244,198,.4);background:var(--surface)}
@@ -101,13 +89,9 @@
   .queue-clear-btn:hover{border-color:var(--cmdr);color:var(--cmdr)}
   .queue-empty{font-family:var(--mono);font-size:.75rem;color:var(--muted);text-align:center;padding:1.5rem;opacity:.5}
   .queue-progress{height:2px;background:var(--conch);width:0%;transition:width .3s}
-
-  /* ADD TO QUEUE BTN on file items */
   .btn-queue{font-family:var(--mono);font-size:.72rem;padding:.38rem .55rem;border-radius:6px;border:1px solid var(--border);background:none;color:var(--muted);cursor:pointer;display:inline-flex;align-items:center;transition:all .2s}
   .btn-queue:hover{border-color:rgba(15,244,198,.35);color:var(--conch)}
   .btn-queue.in-queue{border-color:rgba(15,244,198,.4);color:var(--conch);background:rgba(15,244,198,.06)}
-
-  /* FEATURED FILE */
   .featured-wrap{max-width:1100px;margin:0 auto;padding:0 2.5rem 2rem}
   .featured-card{background:linear-gradient(135deg,rgba(15,244,198,.06),rgba(15,244,198,.02));border:1px solid rgba(15,244,198,.2);border-radius:12px;padding:1rem 1.4rem;display:flex;align-items:center;gap:1rem}
   .featured-badge{font-family:var(--mono);font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;padding:.2rem .55rem;border-radius:4px;background:rgba(15,244,198,.12);color:var(--conch);border:1px solid rgba(15,244,198,.2);flex-shrink:0}
@@ -115,28 +99,20 @@
   .featured-info{flex:1;min-width:0}
   .featured-name{font-family:var(--mono);font-size:.85rem;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .featured-meta{font-family:var(--mono);font-size:.7rem;color:var(--muted);margin-top:.15rem}
-
-  /* PWA INSTALL BUTTON */
   .pwa-install-btn{display:none;font-family:var(--mono);font-size:.72rem;padding:.38rem .75rem;border-radius:6px;border:1px solid rgba(15,244,198,.25);background:rgba(15,244,198,.08);color:var(--conch);cursor:pointer;align-items:center;gap:.4rem;transition:all .2s}
   .pwa-install-btn:hover{background:rgba(15,244,198,.15)}
   .pwa-install-btn.visible{display:flex}
   html{scroll-behavior:smooth}
   body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:100vh;overflow-x:hidden}
-
-  /* NAV */
   nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:1rem 2.5rem;background:rgba(11,12,15,0.9);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);height:64px}
   .nav-logo{font-size:1.1rem;font-weight:800;letter-spacing:-0.02em;display:flex;gap:0.4em;align-items:center;user-select:none}
   .nav-logo .c{color:var(--conch)}.nav-logo .r{color:var(--cmdr)}.nav-logo .sep{color:var(--muted)}
   .nav-right{display:flex;align-items:center;gap:0.6rem}
   nav a.nav-link{color:var(--muted);text-decoration:none;font-size:0.8rem;font-family:var(--mono);letter-spacing:0.04em;transition:color 0.2s;padding:0 0.3rem}
   nav a.nav-link:hover{color:var(--text)}nav a.nav-link.active{color:var(--conch)}
-
-  /* LANG */
   .lang-select{background:var(--surface);border:1px solid var(--border);border-radius:8px;color:var(--muted);font-family:var(--mono);font-size:0.72rem;padding:0.42rem 0.6rem;cursor:pointer;outline:none;transition:border-color 0.2s,color 0.2s;appearance:none}
   .lang-select:hover{border-color:rgba(255,255,255,0.18);color:var(--text)}
   .lang-select option{background:#1a1d24}
-
-  /* ICON BTN */
   .icon-btn{display:flex;align-items:center;justify-content:center;width:36px;height:36px;cursor:pointer;background:var(--surface);border:1px solid var(--border);border-radius:8px;flex-shrink:0;transition:border-color 0.2s,background 0.2s,color 0.2s;color:var(--muted)}
   .icon-btn:hover{border-color:rgba(15,244,198,0.35);background:var(--surface2);color:var(--conch)}
   .icon-btn:disabled{opacity:0.4;cursor:not-allowed;pointer-events:none}
@@ -145,16 +121,12 @@
   @keyframes spin{to{transform:rotate(360deg)}}
   .icon-btn .theme-icon{font-size:1rem;transition:transform 0.3s ease}
   .icon-btn:hover .theme-icon{transform:rotate(20deg)}
-
-  /* BURGER */
   .burger{display:flex;flex-direction:column;justify-content:center;gap:5px;width:36px;height:36px;cursor:pointer;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:9px;transition:border-color 0.2s,background 0.2s;flex-shrink:0}
   .burger:hover{border-color:rgba(255,255,255,0.18);background:var(--surface2)}
   .burger span{display:block;height:1.5px;border-radius:2px;background:var(--muted);transition:all 0.3s;transform-origin:center}
   .burger.open span:nth-child(1){transform:translateY(6.5px) rotate(45deg);background:var(--conch)}
   .burger.open span:nth-child(2){opacity:0;transform:scaleX(0)}
   .burger.open span:nth-child(3){transform:translateY(-6.5px) rotate(-45deg);background:var(--conch)}
-
-  /* DRAWER */
   .drawer-overlay{position:fixed;inset:0;z-index:98;background:rgba(0,0,0,0.5);opacity:0;pointer-events:none;transition:opacity 0.3s}
   .drawer-overlay.open{opacity:1;pointer-events:all}
   .drawer{position:fixed;top:0;right:0;bottom:0;z-index:99;width:280px;background:#0e1014;border-left:1px solid var(--border);transform:translateX(100%);transition:transform 0.35s cubic-bezier(0.4,0,0.2,1);display:flex;flex-direction:column}
@@ -167,20 +139,13 @@
   .drawer-slabel{font-family:var(--mono);font-size:0.62rem;letter-spacing:0.14em;text-transform:uppercase;color:var(--muted);padding:1.2rem 1.5rem 0.5rem;opacity:0.6}
   .drawer-nav{flex:1;overflow-y:auto;padding:0.5rem 0.75rem}
   .drawer-item{display:flex;align-items:center;gap:0.75rem;padding:0.75rem;border-radius:8px;text-decoration:none;color:var(--muted);font-family:var(--mono);font-size:0.82rem;margin-bottom:2px;border:1px solid transparent;transition:background 0.18s;opacity:0;animation:drawerItemFadeIn 0.3s ease forwards}
-  .drawer-item:nth-child(1){animation-delay:0.05s}
-  .drawer-item:nth-child(2){animation-delay:0.1s}
-  .drawer-item:nth-child(3){animation-delay:0.15s}
-  .drawer-item:nth-child(4){animation-delay:0.2s}
-  .drawer-item:nth-child(5){animation-delay:0.25s}
-  .drawer-item:nth-child(6){animation-delay:0.3s}
+  .drawer-item:nth-child(1){animation-delay:0.05s}.drawer-item:nth-child(2){animation-delay:0.1s}.drawer-item:nth-child(3){animation-delay:0.15s}.drawer-item:nth-child(4){animation-delay:0.2s}.drawer-item:nth-child(5){animation-delay:0.25s}.drawer-item:nth-child(6){animation-delay:0.3s}
   @keyframes drawerItemFadeIn{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:translateX(0)}}
   .drawer-item:hover{background:var(--surface);border-color:var(--border);color:var(--text)}
   .drawer-item.active{background:rgba(15,244,198,0.07);border-color:rgba(15,244,198,0.15);color:var(--conch)}
   .drawer-icon{width:28px;height:28px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:0.85rem;flex-shrink:0;background:var(--surface2);border:1px solid var(--border)}
   .drawer-div{height:1px;background:var(--border);margin:0.75rem}
   .drawer-footer{padding:1.2rem 1.5rem;border-top:1px solid var(--border);font-family:var(--mono);font-size:0.7rem;color:var(--muted);opacity:0.5}
-
-  /* HERO */
   .hero{padding:9rem 2.5rem 5rem;text-align:center;position:relative;overflow:hidden}
   .hero::before{content:'';position:absolute;top:-120px;left:50%;transform:translateX(-50%);width:700px;height:700px;border-radius:50%;background:radial-gradient(circle,rgba(0,255,198,0.04) 0%,transparent 70%);pointer-events:none}
   .hero h1{font-size:clamp(2.8rem,7vw,5.5rem);font-weight:800;line-height:1.05;letter-spacing:-0.03em;margin-bottom:1.2rem}
@@ -190,8 +155,6 @@
   .scroll-hint a{padding:0.6rem 1.4rem;border-radius:6px;font-family:var(--mono);font-size:0.8rem;letter-spacing:0.05em;text-decoration:none;transition:all 0.2s}
   .scroll-hint a.c{border:1px solid var(--conch);color:var(--conch)}.scroll-hint a.c:hover{background:rgba(0,255,198,0.08)}
   .scroll-hint a.r{border:1px solid var(--cmdr);color:var(--cmdr)}.scroll-hint a.r:hover{background:rgba(255,79,94,0.08)}
-
-  /* SEARCH */
   .search-wrap{margin-bottom:1.5rem;position:relative}
   .search-icon{position:absolute;left:1rem;top:50%;transform:translateY(-50%);color:var(--muted);font-size:0.85rem;pointer-events:none}
   .search-input{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:var(--mono);font-size:0.82rem;padding:0.75rem 2.4rem;outline:none;transition:border-color 0.2s}
@@ -199,18 +162,16 @@
   .search-input.cf:focus{border-color:rgba(15,244,198,0.4)}.search-input.rf:focus{border-color:rgba(255,79,94,0.4)}
   .search-clear{position:absolute;right:0.8rem;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--muted);font-size:0.9rem;padding:0.2rem;display:none;transition:color 0.2s}
   .search-clear:hover{color:var(--text)}.search-clear.vis{display:block}
-
-  /* SECTIONS */
   .section{padding:5rem 2.5rem;max-width:1100px;margin:0 auto}
   .section-header{display:flex;align-items:flex-end;gap:1.2rem;margin-bottom:2.5rem;padding-bottom:1.5rem;border-bottom:1px solid var(--border)}
   .sbadge{font-family:var(--mono);font-size:0.7rem;letter-spacing:0.12em;text-transform:uppercase;padding:0.3rem 0.7rem;border-radius:4px}
   .sbadge-c{background:rgba(0,255,198,0.1);color:var(--conch);border:1px solid rgba(0,255,198,0.2)}
   .sbadge-r{background:rgba(255,79,94,0.1);color:var(--cmdr);border:1px solid rgba(255,79,94,0.2)}
+  .sbadge-bc{background:rgba(245,158,11,0.1);color:var(--beta-c);border:1px solid rgba(245,158,11,0.25)}
+  .sbadge-br{background:rgba(167,139,250,0.1);color:var(--beta-r);border:1px solid rgba(167,139,250,0.25)}
   .section-header h2{font-size:2.6rem;font-weight:800;letter-spacing:-0.03em;line-height:1}
   .section-header h2.c{color:var(--conch)}.section-header h2.r{color:var(--cmdr)}
   .section-desc{font-family:var(--mono);font-size:0.85rem;color:var(--muted);line-height:1.8;max-width:600px;margin-bottom:1.5rem}
-
-  /* FILE LIST */
   .file-list{display:flex;flex-direction:column;gap:0.6rem}
   .file-item{background:var(--surface);border:1px solid var(--border);border-radius:8px;overflow:hidden;transition:border-color 0.2s,transform 0.2s;animation:slideIn 0.3s ease}
   @keyframes slideIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
@@ -232,55 +193,36 @@
   .badge-beta-r{background:rgba(167,139,250,0.15);color:var(--beta-r);border:1px solid rgba(167,139,250,0.3)}
   .file-meta{font-family:var(--mono);font-size:0.71rem;color:var(--muted);margin-top:0.2rem;display:flex;align-items:center;gap:0.4rem;flex-wrap:wrap}
   .file-actions{display:flex;gap:0.4rem;flex-shrink:0;align-items:center}
-
-  /* ── BETA SUBSECTION ── */
   .beta-subsection{margin-top:2.5rem}
   .beta-subsection-header{display:flex;align-items:center;gap:0.85rem;margin-bottom:1.2rem;padding-bottom:1rem;border-bottom:1px solid var(--border)}
   .beta-subsection-header h3{font-size:1.35rem;font-weight:800;letter-spacing:-0.02em;line-height:1}
-  .beta-subsection-header h3.bc{color:var(--beta-c)}
-  .beta-subsection-header h3.br{color:var(--beta-r)}
-  .sbadge-bc{background:rgba(245,158,11,0.1);color:var(--beta-c);border:1px solid rgba(245,158,11,0.25)}
-  .sbadge-br{background:rgba(167,139,250,0.1);color:var(--beta-r);border:1px solid rgba(167,139,250,0.25)}
+  .beta-subsection-header h3.bc{color:var(--beta-c)}.beta-subsection-header h3.br{color:var(--beta-r)}
   .beta-desc{font-family:var(--mono);font-size:0.8rem;color:var(--muted);line-height:1.7;margin-bottom:1rem;opacity:0.8}
-  /* Subtle left accent for beta items */
   .beta-subsection .file-item{border-left-width:2px}
   .beta-subsection.bc .file-item{border-left-color:rgba(245,158,11,0.35)}
   .beta-subsection.br .file-item{border-left-color:rgba(167,139,250,0.35)}
-
-  /* DOWNLOAD PROGRESS BAR */
   .dl-progress-wrap{height:3px;background:var(--surface2);overflow:hidden;transition:height 0.2s}
   .dl-progress-wrap.active{height:3px}
   .dl-progress-bar{height:100%;width:0%;transition:width 0.1s linear;border-radius:0 2px 2px 0}
-  .dlp-c{background:var(--conch)}.dlp-r{background:var(--cmdr)}
-  .dlp-bc{background:var(--beta-c)}.dlp-br{background:var(--beta-r)}
-
-  /* RIPPLE BUTTON */
+  .dlp-c{background:var(--conch)}.dlp-r{background:var(--cmdr)}.dlp-bc{background:var(--beta-c)}.dlp-br{background:var(--beta-r)}
   .btn-dl{font-family:var(--mono);font-size:0.75rem;letter-spacing:0.04em;padding:0.45rem 1rem;border-radius:6px;border:none;cursor:pointer;display:inline-flex;align-items:center;gap:0.4em;transition:background 0.2s;position:relative;overflow:hidden;user-select:none}
   .btn-dl-c{background:rgba(0,255,198,0.12);color:var(--conch)}.btn-dl-c:hover{background:rgba(0,255,198,0.22)}
   .btn-dl-r{background:rgba(255,79,94,0.12);color:var(--cmdr)}.btn-dl-r:hover{background:rgba(255,79,94,0.22)}
   .btn-dl-bc{background:rgba(245,158,11,0.12);color:var(--beta-c)}.btn-dl-bc:hover{background:rgba(245,158,11,0.22)}
   .btn-dl-br{background:rgba(167,139,250,0.12);color:var(--beta-r)}.btn-dl-br:hover{background:rgba(167,139,250,0.22)}
   .ripple{position:absolute;border-radius:50%;transform:scale(0);animation:rippleAnim 0.55s linear;pointer-events:none}
-  .ripple-c{background:rgba(15,244,198,0.35)}.ripple-r{background:rgba(255,79,94,0.35)}
-  .ripple-bc{background:rgba(245,158,11,0.35)}.ripple-br{background:rgba(167,139,250,0.35)}
+  .ripple-c{background:rgba(15,244,198,0.35)}.ripple-r{background:rgba(255,79,94,0.35)}.ripple-bc{background:rgba(245,158,11,0.35)}.ripple-br{background:rgba(167,139,250,0.35)}
   @keyframes rippleAnim{to{transform:scale(4);opacity:0}}
-
   .btn-sm{font-family:var(--mono);font-size:0.72rem;padding:0.38rem 0.55rem;border-radius:6px;border:1px solid var(--border);background:none;color:var(--muted);cursor:pointer;display:inline-flex;align-items:center;transition:all 0.2s;position:relative;overflow:hidden}
-  .btn-sm:hover{border-color:rgba(255,255,255,0.18);color:var(--text)}
-  .btn-sm.copied{border-color:rgba(15,244,198,0.4);color:var(--conch)}
-
+  .btn-sm:hover{border-color:rgba(255,255,255,0.18);color:var(--text)}.btn-sm.copied{border-color:rgba(15,244,198,0.4);color:var(--conch)}
   .btn-hist{font-family:var(--mono);font-size:0.72rem;padding:0.38rem 0.65rem;border-radius:6px;border:1px solid var(--border);background:none;color:var(--muted);cursor:pointer;display:inline-flex;align-items:center;gap:0.3em;transition:all 0.2s;position:relative;overflow:hidden}
-  .btn-hist:hover{border-color:rgba(255,255,255,0.18);color:var(--text)}
-  .btn-hist.open{color:var(--text);border-color:rgba(255,255,255,0.18)}
+  .btn-hist:hover{border-color:rgba(255,255,255,0.18);color:var(--text)}.btn-hist.open{color:var(--text);border-color:rgba(255,255,255,0.18)}
   .btn-hist .arr{transition:transform 0.2s}.btn-hist.open .arr{transform:rotate(180deg)}
-
   .btn-dl-xs{font-family:var(--mono);font-size:0.68rem;padding:0.22rem 0.55rem;border-radius:4px;border:none;cursor:pointer;display:inline-flex;align-items:center;transition:all 0.2s;flex-shrink:0;position:relative;overflow:hidden}
   .xs-c{background:rgba(0,255,198,0.08);color:var(--conch)}.xs-c:hover{background:rgba(0,255,198,0.18)}
   .xs-r{background:rgba(255,79,94,0.08);color:var(--cmdr)}.xs-r:hover{background:rgba(255,79,94,0.18)}
   .xs-bc{background:rgba(245,158,11,0.08);color:var(--beta-c)}.xs-bc:hover{background:rgba(245,158,11,0.18)}
   .xs-br{background:rgba(167,139,250,0.08);color:var(--beta-r)}.xs-br:hover{background:rgba(167,139,250,0.18)}
-
-  /* VERSION HISTORY */
   .ver-history{border-top:1px solid var(--border);background:var(--bg);overflow:hidden;max-height:0;transition:max-height 0.35s cubic-bezier(0.4,0,0.2,1)}
   .ver-history.open{max-height:800px}
   .ver-inner{padding:0.75rem 1.2rem}
@@ -294,8 +236,6 @@
   .vt-br{background:rgba(167,139,250,0.08);color:var(--beta-r-dim);border:1px solid rgba(167,139,250,0.15)}
   .ver-name{font-family:var(--mono);font-size:0.78rem;color:var(--muted);flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .ver-date{font-family:var(--mono);font-size:0.7rem;color:var(--muted);opacity:0.5;flex-shrink:0}
-
-  /* SKELETON */
   .skel-item{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:0.9rem 1.2rem;display:flex;align-items:center;gap:1rem}
   .skel{background:linear-gradient(90deg,var(--surface2) 25%,rgba(255,255,255,0.04) 50%,var(--surface2) 75%);background-size:200% 100%;animation:shimmer 1.4s infinite;border-radius:4px}
   @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
@@ -303,31 +243,22 @@
   .skel-body{flex:1;display:flex;flex-direction:column;gap:7px}
   .skel-l{height:12px}.skel-l.w80{width:80%}.skel-l.w50{width:50%}
   .skel-btn{width:88px;height:32px;border-radius:6px;flex-shrink:0}
-
-  /* CONFETTI */
   #confetti-canvas{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:8000}
-
-  /* TOAST */
   #toast-container{position:fixed;bottom:1.5rem;right:1.5rem;z-index:9999;display:flex;flex-direction:column;gap:0.5rem;pointer-events:none}
   .toast{display:flex;align-items:flex-start;gap:0.75rem;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:0.85rem 1.1rem;min-width:260px;max-width:340px;box-shadow:0 8px 32px rgba(0,0,0,0.4);pointer-events:all;animation:toastIn 0.3s cubic-bezier(0.34,1.56,0.64,1);transition:opacity 0.3s,transform 0.3s;position:relative;overflow:hidden}
   .toast.out{opacity:0;transform:translateX(20px)}
   @keyframes toastIn{from{opacity:0;transform:translateX(20px) scale(0.95)}to{opacity:1;transform:translateX(0) scale(1)}}
   .t-ico{width:28px;height:28px;border-radius:6px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:0.9rem}
   .t-ic{background:rgba(0,255,198,0.12);color:var(--conch)}.t-ir{background:rgba(255,79,94,0.12);color:var(--cmdr)}
-  .t-iok{background:rgba(60,200,120,0.15);color:#3cc878}.t-inf{background:rgba(100,160,255,0.15);color:#64a0ff}
-  .t-iwarn{background:rgba(255,200,50,0.15);color:#ffc832}
+  .t-iok{background:rgba(60,200,120,0.15);color:#3cc878}.t-inf{background:rgba(100,160,255,0.15);color:#64a0ff}.t-iwarn{background:rgba(255,200,50,0.15);color:#ffc832}
   .t-body{flex:1}
   .t-title{font-family:var(--mono);font-size:0.78rem;font-weight:600;color:var(--text);margin-bottom:0.15rem}
   .t-sub{font-family:var(--mono);font-size:0.7rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:220px}
   .t-bar{position:absolute;bottom:0;left:0;height:2px;border-radius:0 0 10px 10px;animation:tbar linear forwards}
   @keyframes tbar{from{width:100%}to{width:0%}}
-
-  /* STATES */
   .search-empty{font-family:var(--mono);font-size:0.8rem;color:var(--muted);text-align:center;padding:1.5rem;opacity:0.6;display:none}
   .search-empty.vis{display:block}
   .empty-state,.error-state{font-family:var(--mono);font-size:0.8rem;color:var(--muted);text-align:center;padding:2rem 1.5rem;opacity:0.6;line-height:1.7}
-
-  /* EMAIL NOTIFICATION MODAL */
   .email-modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:9998;display:none;align-items:center;justify-content:center;animation:fadeIn 0.2s ease}
   .email-modal-overlay.open{display:flex}
   @keyframes fadeIn{from{opacity:0}to{opacity:1}}
@@ -356,10 +287,8 @@
   .email-modal-success-icon{font-size:3rem;margin-bottom:1rem}
   .email-modal-success-title{font-size:1.2rem;font-weight:700;color:var(--text);margin-bottom:0.5rem}
   .email-modal-success-desc{font-family:var(--mono);font-size:0.8rem;color:var(--muted)}
-
   .divider{height:1px;background:var(--border);margin:0 2.5rem}
   footer{text-align:center;padding:3rem 2.5rem;font-family:var(--mono);font-size:0.75rem;color:var(--muted);border-top:1px solid var(--border);margin-top:4rem;opacity:0.5}
-
   @media(max-width:640px){
     nav{padding:1rem 1.2rem}.section{padding:3rem 1.2rem}.hero{padding:8rem 1.2rem 3rem}
     .drawer{width:260px}#toast-container{bottom:1rem;right:1rem;left:1rem}.toast{min-width:unset;max-width:100%}
@@ -369,43 +298,11 @@
 </head>
 <body>
 
-<script>
-const CONFIG={GITHUB_REPO:'Systems-Download/Systems-Download.github.io',MAX_RELEASES:20,DEBUG:false};
-
-/* ── TRANSLATIONS (14 languages) ── */
-const T={
-  en:{nav_dl:'Downloads',nav_ann:'Announcements',hero_sub:'Files are automatically loaded from GitHub Releases. All .rbxm files are detected and sorted.',desc_c:'All .rbxm files with "Conch" in the name.',desc_r:'All .rbxm files with "Cmdr" in the name.',desc_bc:'Pre-release and experimental Conch builds. May contain bugs.',desc_br:'Pre-release and experimental Cmdr builds. May contain bugs.',srch_c:'Search Conch files...',srch_r:'Search Cmdr files...',srch_bc:'Search Beta Conch...',srch_br:'Search Beta Cmdr...',bdl:'Downloads',bnew:'NEW',bbeta:'BETA',hist:'History',hist_lbl:'Previous versions',dl:'↓ Download',vcount:n=>`${n} versions`,dlc:n=>`${n} dl`,t_start:'Download started',t_done:'Download complete',t_prog:'Downloading...',t_ref:'Refreshing...',t_ref2:'Fetching latest releases',t_upd:'Up to date',t_upd2:'Releases reloaded',t_cp:'Link copied!',t_cp2:'Download link in clipboard',empty:s=>`No ${s} files found.`,empty_h:s=>`Make sure .rbxm files contain "${s}" in the filename.`,se:'No files match your search.',e404:'Repo not found or no Releases yet. Create a GitHub Release with .rbxm assets.',e403:'GitHub API rate limit exceeded. Try again later.',egn:'Error: ',footer:'Automatically loaded from GitHub Releases',dfooter:'Auto-updated from GitHub Releases'},
-  de:{nav_dl:'Downloads',nav_ann:'Ankündigungen',hero_sub:'Dateien werden automatisch von GitHub Releases geladen. Alle .rbxm Dateien werden erkannt und sortiert.',desc_c:'Alle .rbxm Dateien mit "Conch" im Namen.',desc_r:'Alle .rbxm Dateien mit "Cmdr" im Namen.',desc_bc:'Vorabversionen von Conch. Können Fehler enthalten.',desc_br:'Vorabversionen von Cmdr. Können Fehler enthalten.',srch_c:'Conch Dateien suchen...',srch_r:'Cmdr Dateien suchen...',srch_bc:'Beta Conch suchen...',srch_br:'Beta Cmdr suchen...',bdl:'Downloads',bnew:'NEU',bbeta:'BETA',hist:'Verlauf',hist_lbl:'Frühere Versionen',dl:'↓ Herunterladen',vcount:n=>`${n} Versionen`,dlc:n=>`${n} Dl`,t_start:'Download gestartet',t_done:'Download abgeschlossen',t_prog:'Lädt herunter...',t_ref:'Wird aktualisiert...',t_ref2:'Neueste Releases werden geladen',t_upd:'Aktuell',t_upd2:'Releases neu geladen',t_cp:'Link kopiert!',t_cp2:'Link in Zwischenablage',empty:s=>`Keine ${s} Dateien gefunden.`,empty_h:s=>`Stelle sicher, dass .rbxm Dateien "${s}" im Namen haben.`,se:'Keine Dateien gefunden.',e404:'Repo nicht gefunden oder keine Releases. Erstelle einen GitHub Release mit .rbxm Dateien.',e403:'GitHub API Rate-Limit erreicht. Versuche es später.',egn:'Fehler: ',footer:'Automatisch von GitHub Releases geladen',dfooter:'Automatisch von GitHub Releases aktualisiert'},
-  es:{nav_dl:'Descargas',nav_ann:'Anuncios',hero_sub:'Los archivos se cargan automáticamente desde GitHub Releases.',desc_c:'Todos los archivos .rbxm con "Conch" en el nombre.',desc_r:'Todos los archivos .rbxm con "Cmdr" en el nombre.',desc_bc:'Versiones previas de Conch. Pueden contener errores.',desc_br:'Versiones previas de Cmdr. Pueden contener errores.',srch_c:'Buscar Conch...',srch_r:'Buscar Cmdr...',srch_bc:'Buscar Beta Conch...',srch_br:'Buscar Beta Cmdr...',bdl:'Descargas',bnew:'NUEVO',bbeta:'BETA',hist:'Historial',hist_lbl:'Versiones anteriores',dl:'↓ Descargar',vcount:n=>`${n} versiones`,dlc:n=>`${n} dl`,t_start:'Descarga iniciada',t_done:'Descarga completa',t_prog:'Descargando...',t_ref:'Actualizando...',t_ref2:'Cargando últimas versiones',t_upd:'Actualizado',t_upd2:'Versiones recargadas',t_cp:'¡Enlace copiado!',t_cp2:'Enlace en portapapeles',empty:s=>`No se encontraron archivos ${s}.`,empty_h:s=>`Asegúrate de que los .rbxm contienen "${s}".`,se:'Ningún archivo coincide.',e404:'Repositorio no encontrado o sin Releases.',e403:'Límite de API alcanzado.',egn:'Error: ',footer:'Cargado desde GitHub Releases',dfooter:'Actualizado desde GitHub Releases'},
-  it:{nav_dl:'Download',nav_ann:'Annunci',hero_sub:'I file vengono caricati automaticamente da GitHub Releases.',desc_c:'Tutti i file .rbxm con "Conch" nel nome.',desc_r:'Tutti i file .rbxm con "Cmdr" nel nome.',desc_bc:'Build pre-release di Conch. Potrebbero contenere bug.',desc_br:'Build pre-release di Cmdr. Potrebbero contenere bug.',srch_c:'Cerca Conch...',srch_r:'Cerca Cmdr...',srch_bc:'Cerca Beta Conch...',srch_br:'Cerca Beta Cmdr...',bdl:'Download',bnew:'NUOVO',bbeta:'BETA',hist:'Cronologia',hist_lbl:'Versioni precedenti',dl:'↓ Scarica',vcount:n=>`${n} versioni`,dlc:n=>`${n} dl`,t_start:'Download avviato',t_done:'Download completato',t_prog:'Scaricando...',t_ref:'Aggiornamento...',t_ref2:'Caricamento ultime versioni',t_upd:'Aggiornato',t_upd2:'Release ricaricate',t_cp:'Link copiato!',t_cp2:'Link negli appunti',empty:s=>`Nessun file ${s} trovato.`,empty_h:s=>`Assicurati che i .rbxm contengano "${s}".`,se:'Nessun file corrisponde.',e404:'Repository non trovato o nessuna Release.',e403:'Limite API raggiunto.',egn:'Errore: ',footer:'Caricato da GitHub Releases',dfooter:'Aggiornato da GitHub Releases'},
-  fr:{nav_dl:'Téléchargements',nav_ann:'Annonces',hero_sub:'Les fichiers sont automatiquement chargés depuis GitHub Releases.',desc_c:'Tous les fichiers .rbxm avec "Conch" dans le nom.',desc_r:'Tous les fichiers .rbxm avec "Cmdr" dans le nom.',desc_bc:'Versions bêta de Conch. Peuvent contenir des bugs.',desc_br:'Versions bêta de Cmdr. Peuvent contenir des bugs.',srch_c:'Rechercher Conch...',srch_r:'Rechercher Cmdr...',srch_bc:'Rechercher Beta Conch...',srch_br:'Rechercher Beta Cmdr...',bdl:'Téléchargements',bnew:'NOUVEAU',bbeta:'BÊTA',hist:'Historique',hist_lbl:'Versions précédentes',dl:'↓ Télécharger',vcount:n=>`${n} versions`,dlc:n=>`${n} dl`,t_start:'Téléchargement lancé',t_done:'Téléchargement terminé',t_prog:'Téléchargement...',t_ref:'Actualisation...',t_ref2:'Chargement des dernières versions',t_upd:'À jour',t_upd2:'Releases rechargées',t_cp:'Lien copié !',t_cp2:'Lien dans le presse-papiers',empty:s=>`Aucun fichier ${s} trouvé.`,empty_h:s=>`Vérifiez que les .rbxm contiennent "${s}".`,se:'Aucun fichier ne correspond.',e404:'Dépôt introuvable ou sans Releases.',e403:'Limite API atteinte.',egn:'Erreur : ',footer:'Chargé depuis GitHub Releases',dfooter:'Mis à jour depuis GitHub Releases'},
-  pt:{nav_dl:'Downloads',nav_ann:'Anúncios',hero_sub:'Os arquivos são carregados automaticamente do GitHub Releases.',desc_c:'Todos os arquivos .rbxm com "Conch" no nome.',desc_r:'Todos os arquivos .rbxm com "Cmdr" no nome.',desc_bc:'Versões beta do Conch. Podem conter bugs.',desc_br:'Versões beta do Cmdr. Podem conter bugs.',srch_c:'Buscar Conch...',srch_r:'Buscar Cmdr...',srch_bc:'Buscar Beta Conch...',srch_br:'Buscar Beta Cmdr...',bdl:'Downloads',bnew:'NOVO',bbeta:'BETA',hist:'Histórico',hist_lbl:'Versões anteriores',dl:'↓ Baixar',vcount:n=>`${n} versões`,dlc:n=>`${n} dl`,t_start:'Download iniciado',t_done:'Download concluído',t_prog:'Baixando...',t_ref:'Atualizando...',t_ref2:'Carregando últimas versões',t_upd:'Atualizado',t_upd2:'Releases recarregadas',t_cp:'Link copiado!',t_cp2:'Link na área de transferência',empty:s=>`Nenhum arquivo ${s} encontrado.`,empty_h:s=>`Certifique-se que os .rbxm contêm "${s}".`,se:'Nenhum arquivo encontrado.',e404:'Repositório não encontrado ou sem Releases.',e403:'Limite da API atingido.',egn:'Erro: ',footer:'Carregado do GitHub Releases',dfooter:'Atualizado do GitHub Releases'},
-  ru:{nav_dl:'Загрузки',nav_ann:'Объявления',hero_sub:'Файлы автоматически загружаются из GitHub Releases.',desc_c:'Все файлы .rbxm с "Conch" в названии.',desc_r:'Все файлы .rbxm с "Cmdr" в названии.',desc_bc:'Бета-версии Conch. Могут содержать ошибки.',desc_br:'Бета-версии Cmdr. Могут содержать ошибки.',srch_c:'Поиск Conch...',srch_r:'Поиск Cmdr...',srch_bc:'Поиск Beta Conch...',srch_br:'Поиск Beta Cmdr...',bdl:'Загрузки',bnew:'НОВОЕ',bbeta:'БЕТА',hist:'История',hist_lbl:'Предыдущие версии',dl:'↓ Скачать',vcount:n=>`${n} версий`,dlc:n=>`${n} зг`,t_start:'Загрузка началась',t_done:'Загрузка завершена',t_prog:'Загрузка...',t_ref:'Обновление...',t_ref2:'Загрузка последних релизов',t_upd:'Актуально',t_upd2:'Релизы обновлены',t_cp:'Ссылка скопирована!',t_cp2:'Ссылка в буфере обмена',empty:s=>`Файлы ${s} не найдены.`,empty_h:s=>`Убедитесь, что .rbxm содержат "${s}" в имени.`,se:'Файлы не найдены.',e404:'Репозиторий не найден или нет Releases.',e403:'Превышен лимит API.',egn:'Ошибка: ',footer:'Автозагрузка из GitHub Releases',dfooter:'Обновляется из GitHub Releases'},
-  ja:{nav_dl:'ダウンロード',nav_ann:'お知らせ',hero_sub:'ファイルはGitHub Releasesから自動的に読み込まれます。',desc_c:'"Conch"を含む.rbxmファイル一覧。',desc_r:'"Cmdr"を含む.rbxmファイル一覧。',desc_bc:'Conchのベータビルド。バグが含まれる場合があります。',desc_br:'Cmdrのベータビルド。バグが含まれる場合があります。',srch_c:'Conchを検索...',srch_r:'Cmdrを検索...',srch_bc:'Beta Conchを検索...',srch_br:'Beta Cmdrを検索...',bdl:'ダウンロード',bnew:'新着',bbeta:'ベータ',hist:'履歴',hist_lbl:'旧バージョン',dl:'↓ ダウンロード',vcount:n=>`${n}バージョン`,dlc:n=>`${n}DL`,t_start:'ダウンロード開始',t_done:'ダウンロード完了',t_prog:'ダウンロード中...',t_ref:'更新中...',t_ref2:'最新リリースを取得中',t_upd:'最新',t_upd2:'リリースを再読み込み',t_cp:'リンクをコピー！',t_cp2:'ダウンロードリンクをコピーしました',empty:s=>`${s}ファイルが見つかりません。`,empty_h:s=>`ファイル名に"${s}"が含まれているか確認してください。`,se:'一致するファイルがありません。',e404:'リポジトリが見つからないかリリースがありません。',e403:'APIレート制限を超えました。',egn:'エラー: ',footer:'GitHub Releasesから自動読み込み',dfooter:'GitHub Releasesから自動更新'},
-  zh:{nav_dl:'下载',nav_ann:'公告',hero_sub:'文件自动从 GitHub Releases 加载。',desc_c:'所有文件名含 "Conch" 的 .rbxm 文件。',desc_r:'所有文件名含 "Cmdr" 的 .rbxm 文件。',desc_bc:'Conch 的测试版构建，可能包含错误。',desc_br:'Cmdr 的测试版构建，可能包含错误。',srch_c:'搜索 Conch...',srch_r:'搜索 Cmdr...',srch_bc:'搜索 Beta Conch...',srch_br:'搜索 Beta Cmdr...',bdl:'下载',bnew:'新',bbeta:'测试版',hist:'历史',hist_lbl:'旧版本',dl:'↓ 下载',vcount:n=>`${n} 个版本`,dlc:n=>`${n} 次`,t_start:'开始下载',t_done:'下载完成',t_prog:'下载中...',t_ref:'刷新中...',t_ref2:'正在获取最新发布',t_upd:'已是最新',t_upd2:'发布已重新加载',t_cp:'链接已复制！',t_cp2:'下载链接已复制到剪贴板',empty:s=>`未找到 ${s} 文件。`,empty_h:s=>`请确保 .rbxm 文件名包含 "${s}"。`,se:'没有匹配的文件。',e404:'仓库不存在或尚无发布。',e403:'超出 GitHub API 请求限制。',egn:'错误：',footer:'自动从 GitHub Releases 加载',dfooter:'从 GitHub Releases 自动更新'},
-  ko:{nav_dl:'다운로드',nav_ann:'공지사항',hero_sub:'파일은 GitHub Releases에서 자동으로 불러옵니다.',desc_c:'"Conch"가 포함된 .rbxm 파일 목록.',desc_r:'"Cmdr"가 포함된 .rbxm 파일 목록.',desc_bc:'Conch 베타 빌드. 버그가 포함될 수 있습니다.',desc_br:'Cmdr 베타 빌드. 버그가 포함될 수 있습니다.',srch_c:'Conch 검색...',srch_r:'Cmdr 검색...',srch_bc:'Beta Conch 검색...',srch_br:'Beta Cmdr 검색...',bdl:'다운로드',bnew:'신규',bbeta:'베타',hist:'기록',hist_lbl:'이전 버전',dl:'↓ 다운로드',vcount:n=>`${n}개 버전`,dlc:n=>`${n}회`,t_start:'다운로드 시작',t_done:'다운로드 완료',t_prog:'다운로드 중...',t_ref:'새로고침 중...',t_ref2:'최신 릴리스 가져오는 중',t_upd:'최신 상태',t_upd2:'릴리스 다시 로드됨',t_cp:'링크 복사됨!',t_cp2:'다운로드 링크가 클립보드에 복사되었습니다',empty:s=>`${s} 파일을 찾을 수 없습니다.`,empty_h:s=>`.rbxm 파일명에 "${s}"이 포함되어 있는지 확인하세요.`,se:'검색 결과가 없습니다.',e404:'저장소를 찾을 수 없거나 릴리스가 없습니다.',e403:'GitHub API 요청 한도 초과.',egn:'오류: ',footer:'GitHub Releases에서 자동으로 불러옴',dfooter:'GitHub Releases에서 자동 업데이트'},
-  tr:{nav_dl:'İndirmeler',nav_ann:'Duyurular',hero_sub:'Dosyalar GitHub Releases\'tan otomatik yüklenir.',desc_c:'"Conch" içeren .rbxm dosyaları.',desc_r:'"Cmdr" içeren .rbxm dosyaları.',desc_bc:'Conch beta yapıları. Hatalar içerebilir.',desc_br:'Cmdr beta yapıları. Hatalar içerebilir.',srch_c:'Conch ara...',srch_r:'Cmdr ara...',srch_bc:'Beta Conch ara...',srch_br:'Beta Cmdr ara...',bdl:'İndirmeler',bnew:'YENİ',bbeta:'BETA',hist:'Geçmiş',hist_lbl:'Önceki sürümler',dl:'↓ İndir',vcount:n=>`${n} sürüm`,dlc:n=>`${n} ind`,t_start:'İndirme başladı',t_done:'İndirme tamamlandı',t_prog:'İndiriliyor...',t_ref:'Yenileniyor...',t_ref2:'Son sürümler yükleniyor',t_upd:'Güncel',t_upd2:'Sürümler yenilendi',t_cp:'Bağlantı kopyalandı!',t_cp2:'İndirme bağlantısı panoya kopyalandı',empty:s=>`${s} dosyası bulunamadı.`,empty_h:s=>`.rbxm dosyalarının "${s}" içerdiğinden emin olun.`,se:'Arama sonucu bulunamadı.',e404:'Depo bulunamadı veya Release yok.',e403:'GitHub API hız limiti aşıldı.',egn:'Hata: ',footer:'GitHub Releases\'tan otomatik yüklendi',dfooter:'GitHub Releases\'tan otomatik güncellendi'},
-  ar:{nav_dl:'تنزيلات',nav_ann:'الإعلانات',hero_sub:'يتم تحميل الملفات تلقائياً من GitHub Releases.',desc_c:'جميع ملفات .rbxm التي تحتوي "Conch".',desc_r:'جميع ملفات .rbxm التي تحتوي "Cmdr".',desc_bc:'إصدارات تجريبية من Conch. قد تحتوي على أخطاء.',desc_br:'إصدارات تجريبية من Cmdr. قد تحتوي على أخطاء.',srch_c:'البحث في Conch...',srch_r:'البحث في Cmdr...',srch_bc:'البحث في Beta Conch...',srch_br:'البحث في Beta Cmdr...',bdl:'تنزيلات',bnew:'جديد',bbeta:'تجريبي',hist:'السجل',hist_lbl:'إصدارات سابقة',dl:'↓ تنزيل',vcount:n=>`${n} إصدار`,dlc:n=>`${n} تنز`,t_start:'بدأ التنزيل',t_done:'اكتمل التنزيل',t_prog:'جارٍ التنزيل...',t_ref:'جارٍ التحديث...',t_ref2:'جلب أحدث الإصدارات',t_upd:'محدّث',t_upd2:'تم إعادة تحميل الإصدارات',t_cp:'تم نسخ الرابط!',t_cp2:'رابط التنزيل في الحافظة',empty:s=>`لم يُعثر على ملفات ${s}.`,empty_h:s=>`تأكد أن ملفات .rbxm تحتوي "${s}".`,se:'لا توجد نتائج.',e404:'المستودع غير موجود أو لا توجد إصدارات.',e403:'تجاوز حد API.',egn:'خطأ: ',footer:'تحميل تلقائي من GitHub Releases',dfooter:'تحديث تلقائي من GitHub Releases'},
-  pl:{nav_dl:'Pobieranie',nav_ann:'Ogłoszenia',hero_sub:'Pliki są automatycznie ładowane z GitHub Releases.',desc_c:'Wszystkie pliki .rbxm z "Conch" w nazwie.',desc_r:'Wszystkie pliki .rbxm z "Cmdr" w nazwie.',desc_bc:'Wersje beta Conch. Mogą zawierać błędy.',desc_br:'Wersje beta Cmdr. Mogą zawierać błędy.',srch_c:'Szukaj Conch...',srch_r:'Szukaj Cmdr...',srch_bc:'Szukaj Beta Conch...',srch_br:'Szukaj Beta Cmdr...',bdl:'Pobieranie',bnew:'NOWE',bbeta:'BETA',hist:'Historia',hist_lbl:'Poprzednie wersje',dl:'↓ Pobierz',vcount:n=>`${n} wersji`,dlc:n=>`${n} pob`,t_start:'Pobieranie rozpoczęte',t_done:'Pobieranie zakończone',t_prog:'Pobieranie...',t_ref:'Odświeżanie...',t_ref2:'Ładowanie najnowszych wydań',t_upd:'Aktualny',t_upd2:'Wydania załadowane ponownie',t_cp:'Link skopiowany!',t_cp2:'Link do pobrania w schowku',empty:s=>`Nie znaleziono plików ${s}.`,empty_h:s=>`Upewnij się, że .rbxm zawierają "${s}".`,se:'Brak wyników.',e404:'Repozytorium nie znalezione lub brak wydań.',e403:'Przekroczono limit API.',egn:'Błąd: ',footer:'Automatycznie ładowane z GitHub Releases',dfooter:'Automatycznie aktualizowane z GitHub Releases'},
-  nl:{nav_dl:'Downloads',nav_ann:'Aankondigingen',hero_sub:'Bestanden worden automatisch geladen vanuit GitHub Releases.',desc_c:'Alle .rbxm bestanden met "Conch" in de naam.',desc_r:'Alle .rbxm bestanden met "Cmdr" in de naam.',desc_bc:'Beta builds van Conch. Kunnen bugs bevatten.',desc_br:'Beta builds van Cmdr. Kunnen bugs bevatten.',srch_c:'Zoek Conch...',srch_r:'Zoek Cmdr...',srch_bc:'Zoek Beta Conch...',srch_br:'Zoek Beta Cmdr...',bdl:'Downloads',bnew:'NIEUW',bbeta:'BETA',hist:'Geschiedenis',hist_lbl:'Vorige versies',dl:'↓ Downloaden',vcount:n=>`${n} versies`,dlc:n=>`${n} dl`,t_start:'Download gestart',t_done:'Download voltooid',t_prog:'Downloaden...',t_ref:'Verversen...',t_ref2:'Nieuwste releases laden',t_upd:'Up-to-date',t_upd2:'Releases herladen',t_cp:'Link gekopieerd!',t_cp2:'Downloadlink naar klembord',empty:s=>`Geen ${s} bestanden gevonden.`,empty_h:s=>`Zorg dat .rbxm bestanden "${s}" in de naam hebben.`,se:'Geen bestanden gevonden.',e404:'Repository niet gevonden of geen Releases.',e403:'GitHub API-limiet overschreden.',egn:'Fout: ',footer:'Automatisch geladen vanuit GitHub Releases',dfooter:'Automatisch bijgewerkt vanuit GitHub Releases'},
-};
-let lang=(function(){
-  const saved=localStorage.getItem('cc_lang');
-  if(saved&&T[saved])return saved;
-  const bl=navigator.languages||[navigator.language||'en'];
-  for(const l of bl){const short=l.split('-')[0].toLowerCase();if(T[short])return short;}
-  return 'en';
-})();
-function t(k,...a){const v=(T[lang]||T.en)[k];return typeof v==='function'?v(...a):(v||k)}
-</script>
-
-
-<!-- SITE BANNER (controlled from admin panel) -->
+<div class="page-transition" id="page-transition"></div>
 <div class="site-banner" id="site-banner"></div>
 <canvas id="confetti-canvas"></canvas>
 <div id="toast-container"></div>
 
-<!-- NAV -->
 <nav>
   <div class="nav-logo"><span class="c">Conch</span><span class="sep">/</span><span class="r">Cmdr</span></div>
   <div class="nav-right">
@@ -427,7 +324,6 @@ function t(k,...a){const v=(T[lang]||T.en)[k];return typeof v==='function'?v(...
   </div>
 </nav>
 
-<!-- DRAWER -->
 <div class="drawer-overlay" id="drawer-overlay" onclick="closeDrawer()"></div>
 <div class="drawer" id="drawer">
   <div class="drawer-head">
@@ -446,23 +342,21 @@ function t(k,...a){const v=(T[lang]||T.en)[k];return typeof v==='function'?v(...
     <p class="drawer-slabel">Quick Jump</p>
     <a class="drawer-item" href="#conch" onclick="closeDrawer()"><span class="drawer-icon" style="color:var(--conch)">◈</span>Conch</a>
     <a class="drawer-item" href="#beta-conch" onclick="closeDrawer()"><span class="drawer-icon" style="color:var(--beta-c)">◈</span>Beta Conch</a>
-    <a class="drawer-item" href="#cmdr"  onclick="closeDrawer()"><span class="drawer-icon" style="color:var(--cmdr)">◈</span>Cmdr</a>
+    <a class="drawer-item" href="#cmdr" onclick="closeDrawer()"><span class="drawer-icon" style="color:var(--cmdr)">◈</span>Cmdr</a>
     <a class="drawer-item" href="#beta-cmdr" onclick="closeDrawer()"><span class="drawer-icon" style="color:var(--beta-r)">◈</span>Beta Cmdr</a>
   </div>
   <div class="drawer-footer" id="dl-footer">Auto-updated from GitHub Releases</div>
 </div>
 
-<!-- HERO -->
 <div class="hero">
   <h1><em>Conch</em> &amp; <strong>Cmdr</strong><br>Download Hub</h1>
   <p id="hero-sub"></p>
   <div class="scroll-hint">
     <a href="#conch" class="c">↓ Conch</a>
-    <a href="#cmdr"  class="r">↓ Cmdr</a>
+    <a href="#cmdr" class="r">↓ Cmdr</a>
   </div>
 </div>
 
-<!-- DISCORD BANNER -->
 <div class="discord-banner">
   <div class="discord-icon">💬</div>
   <div class="discord-info">
@@ -472,7 +366,6 @@ function t(k,...a){const v=(T[lang]||T.en)[k];return typeof v==='function'?v(...
   <a class="discord-btn" href="https://discord.gg/XaZSGVFvzV" target="_blank" rel="noopener">Join Server →</a>
 </div>
 
-<!-- DOWNLOAD QUEUE FAB -->
 <div class="queue-fab">
   <div class="queue-panel" id="queue-panel">
     <div class="queue-head">
@@ -493,7 +386,6 @@ function t(k,...a){const v=(T[lang]||T.en)[k];return typeof v==='function'?v(...
   </button>
 </div>
 
-<!-- FEATURED FILE (loaded from Supabase settings) -->
 <div class="featured-wrap" id="featured-wrap" style="display:none">
   <div class="featured-card">
     <span class="featured-badge">⭐ Recommended</span>
@@ -506,7 +398,7 @@ function t(k,...a){const v=(T[lang]||T.en)[k];return typeof v==='function'?v(...
   </div>
 </div>
 
-<!-- ════════════════════════════ CONCH ════════════════════════════ -->
+<!-- CONCH -->
 <div class="section" id="conch">
   <div class="section-header"><h2 class="c">Conch</h2><span class="sbadge sbadge-c" id="sb-c"></span></div>
   <p class="section-desc" id="desc-c"></p>
@@ -517,8 +409,7 @@ function t(k,...a){const v=(T[lang]||T.en)[k];return typeof v==='function'?v(...
   </div>
   <div class="file-list" id="conch-list"></div>
   <div class="search-empty" id="empty-conch"></div>
-
-  <!-- ── BETA CONCH SUBSECTION ── -->
+  <!-- Beta Conch Subsection -->
   <div class="beta-subsection bc" id="beta-conch-wrap" style="display:none">
     <div class="beta-subsection-header" id="beta-conch">
       <h3 class="bc">Beta Conch</h3>
@@ -537,7 +428,7 @@ function t(k,...a){const v=(T[lang]||T.en)[k];return typeof v==='function'?v(...
 
 <div class="divider"></div>
 
-<!-- ════════════════════════════ CMDR ════════════════════════════ -->
+<!-- CMDR -->
 <div class="section" id="cmdr">
   <div class="section-header"><h2 class="r">Cmdr</h2><span class="sbadge sbadge-r" id="sb-r"></span></div>
   <p class="section-desc" id="desc-r"></p>
@@ -548,8 +439,7 @@ function t(k,...a){const v=(T[lang]||T.en)[k];return typeof v==='function'?v(...
   </div>
   <div class="file-list" id="cmdr-list"></div>
   <div class="search-empty" id="empty-cmdr"></div>
-
-  <!-- ── BETA CMDR SUBSECTION ── -->
+  <!-- Beta Cmdr Subsection -->
   <div class="beta-subsection br" id="beta-cmdr-wrap" style="display:none">
     <div class="beta-subsection-header" id="beta-cmdr">
       <h3 class="br">Beta Cmdr</h3>
@@ -568,7 +458,6 @@ function t(k,...a){const v=(T[lang]||T.en)[k];return typeof v==='function'?v(...
 
 <footer id="footer"></footer>
 
-<!-- EMAIL NOTIFICATION MODAL -->
 <div class="email-modal-overlay" id="email-modal-overlay" onclick="closeEmailModal(event)">
   <div class="email-modal" onclick="event.stopPropagation()">
     <div id="email-modal-content">
@@ -576,16 +465,8 @@ function t(k,...a){const v=(T[lang]||T.en)[k];return typeof v==='function'?v(...
         <div class="email-modal-title">📧 Email Notifications</div>
         <button class="email-modal-close" onclick="closeEmailModal()">✕</button>
       </div>
-      <div class="email-modal-desc">
-        Get notified when new versions of Conch & Cmdr are released. We'll send you an email with the latest updates.
-      </div>
-      <input 
-        type="email" 
-        class="email-modal-input" 
-        id="email-input" 
-        placeholder="your.email@example.com"
-        required
-      >
+      <div class="email-modal-desc">Get notified when new versions of Conch & Cmdr are released.</div>
+      <input type="email" class="email-modal-input" id="email-input" placeholder="your.email@example.com" required>
       <div class="email-modal-checkboxes">
         <div class="email-checkbox-item">
           <input type="checkbox" id="notify-conch" checked>
@@ -605,61 +486,71 @@ function t(k,...a){const v=(T[lang]||T.en)[k];return typeof v==='function'?v(...
 </div>
 
 <script>
+const CONFIG={GITHUB_REPO:'Systems-Download/Systems-Download.github.io',MAX_RELEASES:20,DEBUG:false};
+
+const T={
+  en:{nav_dl:'Downloads',nav_ann:'Announcements',hero_sub:'Files are automatically loaded from GitHub Releases. All .rbxm files are detected and sorted.',desc_c:'All .rbxm files with "Conch" in the name.',desc_r:'All .rbxm files with "Cmdr" in the name.',desc_bc:'Pre-release and experimental Conch builds. May contain bugs.',desc_br:'Pre-release and experimental Cmdr builds. May contain bugs.',srch_c:'Search Conch files...',srch_r:'Search Cmdr files...',srch_bc:'Search Beta Conch...',srch_br:'Search Beta Cmdr...',bdl:'Downloads',bnew:'NEW',bbeta:'BETA',hist:'History',hist_lbl:'Previous versions',dl:'↓ Download',vcount:n=>`${n} versions`,dlc:n=>`${n} dl`,t_start:'Download started',t_done:'Download complete',t_ref:'Refreshing...',t_ref2:'Fetching latest releases',t_upd:'Up to date',t_upd2:'Releases reloaded',t_cp:'Link copied!',t_cp2:'Download link in clipboard',empty:s=>`No ${s} files found.`,empty_h:s=>`Make sure .rbxm files contain "${s}" in the filename.`,se:'No files match your search.',e404:'Repo not found or no Releases yet.',e403:'GitHub API rate limit exceeded. Try again later.',egn:'Error: ',footer:'Automatically loaded from GitHub Releases',dfooter:'Auto-updated from GitHub Releases'},
+  de:{nav_dl:'Downloads',nav_ann:'Ankündigungen',hero_sub:'Dateien werden automatisch von GitHub Releases geladen.',desc_c:'Alle .rbxm Dateien mit "Conch" im Namen.',desc_r:'Alle .rbxm Dateien mit "Cmdr" im Namen.',desc_bc:'Vorabversionen von Conch. Können Fehler enthalten.',desc_br:'Vorabversionen von Cmdr. Können Fehler enthalten.',srch_c:'Conch suchen...',srch_r:'Cmdr suchen...',srch_bc:'Beta Conch suchen...',srch_br:'Beta Cmdr suchen...',bdl:'Downloads',bnew:'NEU',bbeta:'BETA',hist:'Verlauf',hist_lbl:'Frühere Versionen',dl:'↓ Herunterladen',vcount:n=>`${n} Versionen`,dlc:n=>`${n} Dl`,t_start:'Download gestartet',t_done:'Download abgeschlossen',t_ref:'Wird aktualisiert...',t_ref2:'Neueste Releases werden geladen',t_upd:'Aktuell',t_upd2:'Releases neu geladen',t_cp:'Link kopiert!',t_cp2:'Link in Zwischenablage',empty:s=>`Keine ${s} Dateien gefunden.`,empty_h:s=>`Stelle sicher, dass .rbxm Dateien "${s}" im Namen haben.`,se:'Keine Dateien gefunden.',e404:'Repo nicht gefunden oder keine Releases.',e403:'API Rate-Limit erreicht.',egn:'Fehler: ',footer:'Automatisch von GitHub Releases geladen',dfooter:'Automatisch von GitHub Releases aktualisiert'},
+  es:{nav_dl:'Descargas',nav_ann:'Anuncios',hero_sub:'Los archivos se cargan automáticamente desde GitHub Releases.',desc_c:'Todos los archivos .rbxm con "Conch" en el nombre.',desc_r:'Todos los archivos .rbxm con "Cmdr" en el nombre.',desc_bc:'Versiones previas de Conch.',desc_br:'Versiones previas de Cmdr.',srch_c:'Buscar Conch...',srch_r:'Buscar Cmdr...',srch_bc:'Buscar Beta Conch...',srch_br:'Buscar Beta Cmdr...',bdl:'Descargas',bnew:'NUEVO',bbeta:'BETA',hist:'Historial',hist_lbl:'Versiones anteriores',dl:'↓ Descargar',vcount:n=>`${n} versiones`,dlc:n=>`${n} dl`,t_start:'Descarga iniciada',t_done:'Descarga completa',t_ref:'Actualizando...',t_ref2:'Cargando últimas versiones',t_upd:'Actualizado',t_upd2:'Versiones recargadas',t_cp:'¡Enlace copiado!',t_cp2:'Enlace en portapapeles',empty:s=>`No se encontraron archivos ${s}.`,empty_h:s=>`Asegúrate de que los .rbxm contienen "${s}".`,se:'Ningún archivo coincide.',e404:'Repositorio no encontrado.',e403:'Límite de API alcanzado.',egn:'Error: ',footer:'Cargado desde GitHub Releases',dfooter:'Actualizado desde GitHub Releases'},
+  it:{nav_dl:'Download',nav_ann:'Annunci',hero_sub:'I file vengono caricati automaticamente da GitHub Releases.',desc_c:'Tutti i file .rbxm con "Conch" nel nome.',desc_r:'Tutti i file .rbxm con "Cmdr" nel nome.',desc_bc:'Build pre-release di Conch.',desc_br:'Build pre-release di Cmdr.',srch_c:'Cerca Conch...',srch_r:'Cerca Cmdr...',srch_bc:'Cerca Beta Conch...',srch_br:'Cerca Beta Cmdr...',bdl:'Download',bnew:'NUOVO',bbeta:'BETA',hist:'Cronologia',hist_lbl:'Versioni precedenti',dl:'↓ Scarica',vcount:n=>`${n} versioni`,dlc:n=>`${n} dl`,t_start:'Download avviato',t_done:'Download completato',t_ref:'Aggiornamento...',t_ref2:'Caricamento ultime versioni',t_upd:'Aggiornato',t_upd2:'Release ricaricate',t_cp:'Link copiato!',t_cp2:'Link negli appunti',empty:s=>`Nessun file ${s} trovato.`,empty_h:s=>`Assicurati che i .rbxm contengano "${s}".`,se:'Nessun file corrisponde.',e404:'Repository non trovato.',e403:'Limite API raggiunto.',egn:'Errore: ',footer:'Caricato da GitHub Releases',dfooter:'Aggiornato da GitHub Releases'},
+  fr:{nav_dl:'Téléchargements',nav_ann:'Annonces',hero_sub:'Les fichiers sont automatiquement chargés depuis GitHub Releases.',desc_c:'Tous les fichiers .rbxm avec "Conch" dans le nom.',desc_r:'Tous les fichiers .rbxm avec "Cmdr" dans le nom.',desc_bc:'Versions bêta de Conch.',desc_br:'Versions bêta de Cmdr.',srch_c:'Rechercher Conch...',srch_r:'Rechercher Cmdr...',srch_bc:'Rechercher Beta Conch...',srch_br:'Rechercher Beta Cmdr...',bdl:'Téléchargements',bnew:'NOUVEAU',bbeta:'BÊTA',hist:'Historique',hist_lbl:'Versions précédentes',dl:'↓ Télécharger',vcount:n=>`${n} versions`,dlc:n=>`${n} dl`,t_start:'Téléchargement lancé',t_done:'Téléchargement terminé',t_ref:'Actualisation...',t_ref2:'Chargement des dernières versions',t_upd:'À jour',t_upd2:'Releases rechargées',t_cp:'Lien copié !',t_cp2:'Lien dans le presse-papiers',empty:s=>`Aucun fichier ${s} trouvé.`,empty_h:s=>`Vérifiez que les .rbxm contiennent "${s}".`,se:'Aucun fichier ne correspond.',e404:'Dépôt introuvable.',e403:'Limite API atteinte.',egn:'Erreur : ',footer:'Chargé depuis GitHub Releases',dfooter:'Mis à jour depuis GitHub Releases'},
+  pt:{nav_dl:'Downloads',nav_ann:'Anúncios',hero_sub:'Os arquivos são carregados automaticamente do GitHub Releases.',desc_c:'Todos os arquivos .rbxm com "Conch" no nome.',desc_r:'Todos os arquivos .rbxm com "Cmdr" no nome.',desc_bc:'Versões beta do Conch.',desc_br:'Versões beta do Cmdr.',srch_c:'Buscar Conch...',srch_r:'Buscar Cmdr...',srch_bc:'Buscar Beta Conch...',srch_br:'Buscar Beta Cmdr...',bdl:'Downloads',bnew:'NOVO',bbeta:'BETA',hist:'Histórico',hist_lbl:'Versões anteriores',dl:'↓ Baixar',vcount:n=>`${n} versões`,dlc:n=>`${n} dl`,t_start:'Download iniciado',t_done:'Download concluído',t_ref:'Atualizando...',t_ref2:'Carregando últimas versões',t_upd:'Atualizado',t_upd2:'Releases recarregadas',t_cp:'Link copiado!',t_cp2:'Link na área de transferência',empty:s=>`Nenhum arquivo ${s} encontrado.`,empty_h:s=>`Certifique-se que os .rbxm contêm "${s}".`,se:'Nenhum arquivo encontrado.',e404:'Repositório não encontrado.',e403:'Limite da API atingido.',egn:'Erro: ',footer:'Carregado do GitHub Releases',dfooter:'Atualizado do GitHub Releases'},
+  ru:{nav_dl:'Загрузки',nav_ann:'Объявления',hero_sub:'Файлы автоматически загружаются из GitHub Releases.',desc_c:'Все файлы .rbxm с "Conch" в названии.',desc_r:'Все файлы .rbxm с "Cmdr" в названии.',desc_bc:'Бета-версии Conch.',desc_br:'Бета-версии Cmdr.',srch_c:'Поиск Conch...',srch_r:'Поиск Cmdr...',srch_bc:'Поиск Beta Conch...',srch_br:'Поиск Beta Cmdr...',bdl:'Загрузки',bnew:'НОВОЕ',bbeta:'БЕТА',hist:'История',hist_lbl:'Предыдущие версии',dl:'↓ Скачать',vcount:n=>`${n} версий`,dlc:n=>`${n} зг`,t_start:'Загрузка началась',t_done:'Загрузка завершена',t_ref:'Обновление...',t_ref2:'Загрузка последних релизов',t_upd:'Актуально',t_upd2:'Релизы обновлены',t_cp:'Ссылка скопирована!',t_cp2:'Ссылка в буфере обмена',empty:s=>`Файлы ${s} не найдены.`,empty_h:s=>`Убедитесь, что .rbxm содержат "${s}".`,se:'Файлы не найдены.',e404:'Репозиторий не найден.',e403:'Превышен лимит API.',egn:'Ошибка: ',footer:'Автозагрузка из GitHub Releases',dfooter:'Обновляется из GitHub Releases'},
+  ja:{nav_dl:'ダウンロード',nav_ann:'お知らせ',hero_sub:'ファイルはGitHub Releasesから自動的に読み込まれます。',desc_c:'"Conch"を含む.rbxmファイル。',desc_r:'"Cmdr"を含む.rbxmファイル。',desc_bc:'Conchのベータビルド。',desc_br:'Cmdrのベータビルド。',srch_c:'Conchを検索...',srch_r:'Cmdrを検索...',srch_bc:'Beta Conchを検索...',srch_br:'Beta Cmdrを検索...',bdl:'ダウンロード',bnew:'新着',bbeta:'ベータ',hist:'履歴',hist_lbl:'旧バージョン',dl:'↓ ダウンロード',vcount:n=>`${n}バージョン`,dlc:n=>`${n}DL`,t_start:'ダウンロード開始',t_done:'ダウンロード完了',t_ref:'更新中...',t_ref2:'最新リリースを取得中',t_upd:'最新',t_upd2:'リリースを再読み込み',t_cp:'リンクをコピー！',t_cp2:'リンクをコピーしました',empty:s=>`${s}ファイルが見つかりません。`,empty_h:s=>`"${s}"が含まれているか確認してください。`,se:'一致するファイルがありません。',e404:'リポジトリが見つかりません。',e403:'APIレート制限を超えました。',egn:'エラー: ',footer:'GitHub Releasesから自動読み込み',dfooter:'GitHub Releasesから自動更新'},
+  zh:{nav_dl:'下载',nav_ann:'公告',hero_sub:'文件自动从 GitHub Releases 加载。',desc_c:'所有文件名含 "Conch" 的 .rbxm 文件。',desc_r:'所有文件名含 "Cmdr" 的 .rbxm 文件。',desc_bc:'Conch 测试版构建。',desc_br:'Cmdr 测试版构建。',srch_c:'搜索 Conch...',srch_r:'搜索 Cmdr...',srch_bc:'搜索 Beta Conch...',srch_br:'搜索 Beta Cmdr...',bdl:'下载',bnew:'新',bbeta:'测试版',hist:'历史',hist_lbl:'旧版本',dl:'↓ 下载',vcount:n=>`${n} 个版本`,dlc:n=>`${n} 次`,t_start:'开始下载',t_done:'下载完成',t_ref:'刷新中...',t_ref2:'正在获取最新发布',t_upd:'已是最新',t_upd2:'发布已重新加载',t_cp:'链接已复制！',t_cp2:'下载链接已复制',empty:s=>`未找到 ${s} 文件。`,empty_h:s=>`请确保文件名包含 "${s}"。`,se:'没有匹配的文件。',e404:'仓库不存在或尚无发布。',e403:'超出 API 请求限制。',egn:'错误：',footer:'自动从 GitHub Releases 加载',dfooter:'从 GitHub Releases 自动更新'},
+  ko:{nav_dl:'다운로드',nav_ann:'공지사항',hero_sub:'파일은 GitHub Releases에서 자동으로 불러옵니다.',desc_c:'"Conch"가 포함된 .rbxm 파일.',desc_r:'"Cmdr"가 포함된 .rbxm 파일.',desc_bc:'Conch 베타 빌드.',desc_br:'Cmdr 베타 빌드.',srch_c:'Conch 검색...',srch_r:'Cmdr 검색...',srch_bc:'Beta Conch 검색...',srch_br:'Beta Cmdr 검색...',bdl:'다운로드',bnew:'신규',bbeta:'베타',hist:'기록',hist_lbl:'이전 버전',dl:'↓ 다운로드',vcount:n=>`${n}개 버전`,dlc:n=>`${n}회`,t_start:'다운로드 시작',t_done:'다운로드 완료',t_ref:'새로고침 중...',t_ref2:'최신 릴리스 가져오는 중',t_upd:'최신 상태',t_upd2:'릴리스 다시 로드됨',t_cp:'링크 복사됨!',t_cp2:'클립보드에 복사되었습니다',empty:s=>`${s} 파일을 찾을 수 없습니다.`,empty_h:s=>`"${s}"이 포함되어 있는지 확인하세요.`,se:'검색 결과가 없습니다.',e404:'저장소를 찾을 수 없습니다.',e403:'API 요청 한도 초과.',egn:'오류: ',footer:'GitHub Releases에서 자동으로 불러옴',dfooter:'GitHub Releases에서 자동 업데이트'},
+  tr:{nav_dl:'İndirmeler',nav_ann:'Duyurular',hero_sub:'Dosyalar GitHub Releases\'tan otomatik yüklenir.',desc_c:'"Conch" içeren .rbxm dosyaları.',desc_r:'"Cmdr" içeren .rbxm dosyaları.',desc_bc:'Conch beta yapıları.',desc_br:'Cmdr beta yapıları.',srch_c:'Conch ara...',srch_r:'Cmdr ara...',srch_bc:'Beta Conch ara...',srch_br:'Beta Cmdr ara...',bdl:'İndirmeler',bnew:'YENİ',bbeta:'BETA',hist:'Geçmiş',hist_lbl:'Önceki sürümler',dl:'↓ İndir',vcount:n=>`${n} sürüm`,dlc:n=>`${n} ind`,t_start:'İndirme başladı',t_done:'İndirme tamamlandı',t_ref:'Yenileniyor...',t_ref2:'Son sürümler yükleniyor',t_upd:'Güncel',t_upd2:'Sürümler yenilendi',t_cp:'Bağlantı kopyalandı!',t_cp2:'Bağlantı panoya kopyalandı',empty:s=>`${s} dosyası bulunamadı.`,empty_h:s=>`"${s}" içerdiğinden emin olun.`,se:'Arama sonucu bulunamadı.',e404:'Depo bulunamadı.',e403:'API hız limiti aşıldı.',egn:'Hata: ',footer:'GitHub Releases\'tan otomatik yüklendi',dfooter:'GitHub Releases\'tan otomatik güncellendi'},
+  ar:{nav_dl:'تنزيلات',nav_ann:'الإعلانات',hero_sub:'يتم تحميل الملفات تلقائياً من GitHub Releases.',desc_c:'ملفات .rbxm التي تحتوي "Conch".',desc_r:'ملفات .rbxm التي تحتوي "Cmdr".',desc_bc:'إصدارات تجريبية من Conch.',desc_br:'إصدارات تجريبية من Cmdr.',srch_c:'البحث في Conch...',srch_r:'البحث في Cmdr...',srch_bc:'البحث في Beta Conch...',srch_br:'البحث في Beta Cmdr...',bdl:'تنزيلات',bnew:'جديد',bbeta:'تجريبي',hist:'السجل',hist_lbl:'إصدارات سابقة',dl:'↓ تنزيل',vcount:n=>`${n} إصدار`,dlc:n=>`${n} تنز`,t_start:'بدأ التنزيل',t_done:'اكتمل التنزيل',t_ref:'جارٍ التحديث...',t_ref2:'جلب أحدث الإصدارات',t_upd:'محدّث',t_upd2:'تم إعادة تحميل الإصدارات',t_cp:'تم نسخ الرابط!',t_cp2:'رابط التنزيل في الحافظة',empty:s=>`لم يُعثر على ملفات ${s}.`,empty_h:s=>`تأكد أن الملفات تحتوي "${s}".`,se:'لا توجد نتائج.',e404:'المستودع غير موجود.',e403:'تجاوز حد API.',egn:'خطأ: ',footer:'تحميل تلقائي من GitHub Releases',dfooter:'تحديث تلقائي من GitHub Releases'},
+  pl:{nav_dl:'Pobieranie',nav_ann:'Ogłoszenia',hero_sub:'Pliki są automatycznie ładowane z GitHub Releases.',desc_c:'Pliki .rbxm z "Conch" w nazwie.',desc_r:'Pliki .rbxm z "Cmdr" w nazwie.',desc_bc:'Wersje beta Conch.',desc_br:'Wersje beta Cmdr.',srch_c:'Szukaj Conch...',srch_r:'Szukaj Cmdr...',srch_bc:'Szukaj Beta Conch...',srch_br:'Szukaj Beta Cmdr...',bdl:'Pobieranie',bnew:'NOWE',bbeta:'BETA',hist:'Historia',hist_lbl:'Poprzednie wersje',dl:'↓ Pobierz',vcount:n=>`${n} wersji`,dlc:n=>`${n} pob`,t_start:'Pobieranie rozpoczęte',t_done:'Pobieranie zakończone',t_ref:'Odświeżanie...',t_ref2:'Ładowanie najnowszych wydań',t_upd:'Aktualny',t_upd2:'Wydania załadowane ponownie',t_cp:'Link skopiowany!',t_cp2:'Link w schowku',empty:s=>`Nie znaleziono plików ${s}.`,empty_h:s=>`Upewnij się, że .rbxm zawierają "${s}".`,se:'Brak wyników.',e404:'Repozytorium nie znalezione.',e403:'Przekroczono limit API.',egn:'Błąd: ',footer:'Automatycznie ładowane z GitHub Releases',dfooter:'Automatycznie aktualizowane z GitHub Releases'},
+  nl:{nav_dl:'Downloads',nav_ann:'Aankondigingen',hero_sub:'Bestanden worden automatisch geladen vanuit GitHub Releases.',desc_c:'Alle .rbxm bestanden met "Conch" in de naam.',desc_r:'Alle .rbxm bestanden met "Cmdr" in de naam.',desc_bc:'Beta builds van Conch.',desc_br:'Beta builds van Cmdr.',srch_c:'Zoek Conch...',srch_r:'Zoek Cmdr...',srch_bc:'Zoek Beta Conch...',srch_br:'Zoek Beta Cmdr...',bdl:'Downloads',bnew:'NIEUW',bbeta:'BETA',hist:'Geschiedenis',hist_lbl:'Vorige versies',dl:'↓ Downloaden',vcount:n=>`${n} versies`,dlc:n=>`${n} dl`,t_start:'Download gestart',t_done:'Download voltooid',t_ref:'Verversen...',t_ref2:'Nieuwste releases laden',t_upd:'Up-to-date',t_upd2:'Releases herladen',t_cp:'Link gekopieerd!',t_cp2:'Downloadlink naar klembord',empty:s=>`Geen ${s} bestanden gevonden.`,empty_h:s=>`Zorg dat .rbxm bestanden "${s}" in de naam hebben.`,se:'Geen bestanden gevonden.',e404:'Repository niet gevonden.',e403:'GitHub API-limiet overschreden.',egn:'Fout: ',footer:'Automatisch geladen vanuit GitHub Releases',dfooter:'Automatisch bijgewerkt vanuit GitHub Releases'},
+};
+
+let lang=(function(){
+  const saved=localStorage.getItem('cc_lang');
+  if(saved&&T[saved])return saved;
+  const bl=navigator.languages||[navigator.language||'en'];
+  for(const l of bl){const short=l.split('-')[0].toLowerCase();if(T[short])return short;}
+  return 'en';
+})();
+function t(k,...a){const v=(T[lang]||T.en)[k];return typeof v==='function'?v(...a):(v||k)}
+
 /* DRAWER */
 let _dopen=false;
 function toggleDrawer(){_dopen?closeDrawer():openDrawer()}
 function openDrawer(){_dopen=true;['drawer','drawer-overlay','burger-btn'].forEach(id=>document.getElementById(id).classList.add('open'));document.body.style.overflow='hidden'}
 function closeDrawer(){_dopen=false;['drawer','drawer-overlay','burger-btn'].forEach(id=>document.getElementById(id).classList.remove('open'));document.body.style.overflow=''}
 
-/* THEME TOGGLE */
+/* THEME */
 function toggleTheme(){
-  const root=document.documentElement;
-  const icon=document.getElementById('theme-icon');
-  const isDark=!root.classList.contains('light-mode');
-  if(isDark){root.classList.add('light-mode');icon.textContent='☀️';localStorage.setItem('cc_theme','light');}
+  const root=document.documentElement,icon=document.getElementById('theme-icon');
+  if(!root.classList.contains('light-mode')){root.classList.add('light-mode');icon.textContent='☀️';localStorage.setItem('cc_theme','light');}
   else{root.classList.remove('light-mode');icon.textContent='🌙';localStorage.setItem('cc_theme','dark');}
 }
 function loadTheme(){
-  const savedTheme=localStorage.getItem('cc_theme');
   const icon=document.getElementById('theme-icon');
-  if(savedTheme==='light'){document.documentElement.classList.add('light-mode');if(icon)icon.textContent='☀️';}
+  if(localStorage.getItem('cc_theme')==='light'){document.documentElement.classList.add('light-mode');if(icon)icon.textContent='☀️';}
   else{if(icon)icon.textContent='🌙';}
 }
 
-/* EMAIL NOTIFICATION MODAL */
-function openEmailModal(){
-  document.getElementById('email-modal-overlay').classList.add('open');
-  document.body.style.overflow='hidden';
-}
+/* EMAIL MODAL */
+function openEmailModal(){document.getElementById('email-modal-overlay').classList.add('open');document.body.style.overflow='hidden';}
 function closeEmailModal(event){
   if(event&&event.target!==event.currentTarget)return;
   document.getElementById('email-modal-overlay').classList.remove('open');
   document.body.style.overflow='';
   setTimeout(()=>{
     document.getElementById('email-modal-content').innerHTML=`
-      <div class="email-modal-header">
-        <div class="email-modal-title">📧 Email Notifications</div>
-        <button class="email-modal-close" onclick="closeEmailModal()">✕</button>
-      </div>
-      <div class="email-modal-desc">
-        Get notified when new versions of Conch & Cmdr are released. We'll send you an email with the latest updates.
-      </div>
+      <div class="email-modal-header"><div class="email-modal-title">📧 Email Notifications</div><button class="email-modal-close" onclick="closeEmailModal()">✕</button></div>
+      <div class="email-modal-desc">Get notified when new versions of Conch & Cmdr are released.</div>
       <input type="email" class="email-modal-input" id="email-input" placeholder="your.email@example.com" required>
       <div class="email-modal-checkboxes">
-        <div class="email-checkbox-item">
-          <input type="checkbox" id="notify-conch" checked>
-          <label for="notify-conch">Notify me about Conch releases</label>
-        </div>
-        <div class="email-checkbox-item">
-          <input type="checkbox" id="notify-cmdr" checked>
-          <label for="notify-cmdr">Notify me about Cmdr releases</label>
-        </div>
+        <div class="email-checkbox-item"><input type="checkbox" id="notify-conch" checked><label for="notify-conch">Notify me about Conch releases</label></div>
+        <div class="email-checkbox-item"><input type="checkbox" id="notify-cmdr" checked><label for="notify-cmdr">Notify me about Cmdr releases</label></div>
       </div>
       <div class="email-modal-buttons">
         <button class="email-modal-btn secondary" onclick="closeEmailModal()">Cancel</button>
         <button class="email-modal-btn primary" onclick="subscribeEmail()">Subscribe</button>
-      </div>
-    `;
+      </div>`;
   },300);
 }
 async function subscribeEmail(){
@@ -667,58 +558,30 @@ async function subscribeEmail(){
   const notifyConch=document.getElementById('notify-conch').checked;
   const notifyCmdr=document.getElementById('notify-cmdr').checked;
   if(!email){toast({title:'Email required',sub:'Please enter your email address',type:'w',dur:3000});return;}
-  const emailRegex=/^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if(!emailRegex.test(email)){toast({title:'Invalid email',sub:'Please enter a valid email address',type:'w',dur:3000});return;}
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){toast({title:'Invalid email',sub:'Please enter a valid email address',type:'w',dur:3000});return;}
   if(!notifyConch&&!notifyCmdr){toast({title:'Select at least one',sub:'Choose Conch or Cmdr notifications',type:'w',dur:3000});return;}
   try{
     const SA='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJtZGtvYXVpYm16aGdudnJ3aGZkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyNjg2MDksImV4cCI6MjA5Mzg0NDYwOX0.lu6T00f9y9-Q8HhVag-MGjJz6bTlJrYUwC7AApIxaFw';
     const h={'apikey':SA,'Authorization':'Bearer '+SA};
-    const checkResponse=await fetch(`https://rmdkoauibmzhgnvrwhfd.supabase.co/rest/v1/email_subscribers?email=eq.${encodeURIComponent(email)}&select=id,email`,{headers:h});
-    const existing=await checkResponse.json();
-    let response;
+    const chk=await fetch(`https://rmdkoauibmzhgnvrwhfd.supabase.co/rest/v1/email_subscribers?email=eq.${encodeURIComponent(email)}&select=id`,{headers:h});
+    const existing=await chk.json();
+    let res;
     if(existing&&existing.length>0){
-      response=await fetch(`https://rmdkoauibmzhgnvrwhfd.supabase.co/rest/v1/email_subscribers?email=eq.${encodeURIComponent(email)}`,{method:'PATCH',headers:{...h,'Content-Type':'application/json','Prefer':'return=minimal'},body:JSON.stringify({notify_conch:notifyConch,notify_cmdr:notifyCmdr,updated_at:new Date().toISOString()})});
+      res=await fetch(`https://rmdkoauibmzhgnvrwhfd.supabase.co/rest/v1/email_subscribers?email=eq.${encodeURIComponent(email)}`,{method:'PATCH',headers:{...h,'Content-Type':'application/json','Prefer':'return=minimal'},body:JSON.stringify({notify_conch:notifyConch,notify_cmdr:notifyCmdr,updated_at:new Date().toISOString()})});
     }else{
-      response=await fetch('https://rmdkoauibmzhgnvrwhfd.supabase.co/rest/v1/email_subscribers',{method:'POST',headers:{...h,'Content-Type':'application/json','Prefer':'return=minimal'},body:JSON.stringify({email,notify_conch:notifyConch,notify_cmdr:notifyCmdr,subscribed_at:new Date().toISOString(),created_at:new Date().toISOString()})});
+      res=await fetch('https://rmdkoauibmzhgnvrwhfd.supabase.co/rest/v1/email_subscribers',{method:'POST',headers:{...h,'Content-Type':'application/json','Prefer':'return=minimal'},body:JSON.stringify({email,notify_conch:notifyConch,notify_cmdr:notifyCmdr,subscribed_at:new Date().toISOString(),created_at:new Date().toISOString()})});
     }
-    if(response.ok||response.status===201||response.status===204){
-      document.getElementById('email-modal-content').innerHTML=`
-        <div class="email-modal-success">
-          <div class="email-modal-success-icon">✅</div>
-          <div class="email-modal-success-title">Successfully Subscribed!</div>
-          <div class="email-modal-success-desc">
-            You'll receive an email notification when new ${notifyConch&&notifyCmdr?'Conch & Cmdr':notifyConch?'Conch':'Cmdr'} releases are published.
-            <br><br>
-            <strong>Email Message Preview:</strong><br>
-            <em style="color:var(--muted);font-size:0.75rem;display:block;margin-top:0.5rem;padding:0.75rem;background:var(--surface2);border-radius:6px;line-height:1.6;">
-              Hello!<br><br>
-              The website released a new version of ${notifyConch&&notifyCmdr?'Conch/Cmdr':notifyConch?'Conch':'Cmdr'}.<br>
-              Check it out on https://systems-download.github.io!
-            </em>
-          </div>
-          <button class="email-modal-btn primary" onclick="closeEmailModal()" style="margin-top:1.5rem;width:100%">Close</button>
-        </div>
-      `;
+    if(res.ok||res.status===201||res.status===204){
+      document.getElementById('email-modal-content').innerHTML=`<div class="email-modal-success"><div class="email-modal-success-icon">✅</div><div class="email-modal-success-title">Successfully Subscribed!</div><div class="email-modal-success-desc">You'll be notified of new ${notifyConch&&notifyCmdr?'Conch & Cmdr':notifyConch?'Conch':'Cmdr'} releases.</div><button class="email-modal-btn primary" onclick="closeEmailModal()" style="margin-top:1.5rem;width:100%">Close</button></div>`;
       confetti();toast({title:'Subscribed!',sub:'You will be notified of new releases',type:'ok',dur:4000});
-    }else{throw new Error('Subscription failed');}
-  }catch(error){
-    console.error('Email subscription error:',error);
-    toast({title:'Subscription failed',sub:'Please try again later',type:'w',dur:3000});
-  }
+    }else{throw new Error('failed');}
+  }catch(e){toast({title:'Subscription failed',sub:'Please try again later',type:'w',dur:3000});}
 }
 
 /* LANG */
 function setLang(l){lang=l;localStorage.setItem('cc_lang',l);applyLang();rerender()}
 function applyLang(){
-  const ids={
-    ['dl-dl']:'nav_dl',['dl-ann']:'nav_ann',
-    ['hero-sub']:'hero_sub',
-    ['sb-c']:'bdl',['sb-r']:'bdl',
-    ['desc-c']:'desc_c',['desc-r']:'desc_r',
-    ['desc-bc']:'desc_bc',['desc-br']:'desc_br',
-    ['empty-conch']:'se',['empty-cmdr']:'se',
-    ['empty-beta-conch']:'se',['empty-beta-cmdr']:'se'
-  };
+  const ids={['dl-dl']:'nav_dl',['dl-ann']:'nav_ann',['hero-sub']:'hero_sub',['sb-c']:'bdl',['sb-r']:'bdl',['desc-c']:'desc_c',['desc-r']:'desc_r',['desc-bc']:'desc_bc',['desc-br']:'desc_br',['empty-conch']:'se',['empty-cmdr']:'se',['empty-beta-conch']:'se',['empty-beta-cmdr']:'se'};
   Object.entries(ids).forEach(([id,k])=>{const el=document.getElementById(id);if(el)el.textContent=t(k)});
   document.getElementById('search-conch').placeholder=t('srch_c');
   document.getElementById('search-cmdr').placeholder=t('srch_r');
@@ -734,8 +597,8 @@ function getDLC(f){try{return parseInt(localStorage.getItem('dlc_'+f)||'0')}catc
 function incDLC(f){try{localStorage.setItem('dlc_'+f,getDLC(f)+1)}catch{}}
 function refreshDLC(name){
   document.querySelectorAll(`.dlc[data-f="${CSS.escape(name)}"]`).forEach(el=>{
-    const n=getDLC(name);el.textContent=n>0?t('dlc',n):'';el.style.display=n>0?'':'none'
-  })
+    const n=getDLC(name);el.textContent=n>0?t('dlc',n):'';el.style.display=n>0?'':'none';
+  });
 }
 
 /* TOAST */
@@ -758,7 +621,7 @@ function confetti(){
   let af,alpha=1;
   function draw(){ctx.clearRect(0,0,cv.width,cv.height);ps.forEach(p=>{ctx.save();ctx.globalAlpha=alpha;ctx.translate(p.x,p.y);ctx.rotate(p.rot);ctx.fillStyle=p.col;if(p.sq){ctx.fillRect(-p.r,-p.r/2,p.r*2,p.r)}else{ctx.beginPath();ctx.arc(0,0,p.r/2,0,Math.PI*2);ctx.fill()}ctx.restore();p.x+=p.vx;p.y+=p.vy;p.rot+=p.rv;p.vy+=.06});
   if(ps.every(p=>p.y>cv.height)){alpha-=.06}if(alpha<=0){ctx.clearRect(0,0,cv.width,cv.height);return}af=requestAnimationFrame(draw)}
-  if(af)cancelAnimationFrame(af);draw()
+  if(af)cancelAnimationFrame(af);draw();
 }
 
 /* RIPPLE */
@@ -766,10 +629,10 @@ function addRipple(btn,cls){
   const r=document.createElement('span');r.className='ripple '+cls;
   const rect=btn.getBoundingClientRect(),size=Math.max(rect.width,rect.height);
   r.style.cssText=`width:${size}px;height:${size}px;left:${(rect.width-size)/2}px;top:${(rect.height-size)/2}px`;
-  btn.appendChild(r);setTimeout(()=>r.remove(),600)
+  btn.appendChild(r);setTimeout(()=>r.remove(),600);
 }
 
-/* DOWNLOAD with real progress */
+/* DOWNLOAD */
 function dl(url,name,type,btn){
   addRipple(btn,'ripple-'+type);
   const itemEl=btn.closest('.file-item');
@@ -777,38 +640,33 @@ function dl(url,name,type,btn){
   const progBar=itemEl?itemEl.querySelector('.dl-progress-bar'):null;
   if(progWrap)progWrap.classList.add('active');
   toast({title:t('t_start'),sub:name,type:'c',dur:3000});
-  fetch(url)
-    .then(res=>{
-      if(!res.ok)throw new Error('HTTP '+res.status);
-      const total=parseInt(res.headers.get('content-length')||'0');
-      const reader=res.body.getReader();
-      const chunks=[];let received=0;
-      function pump(){
-        return reader.read().then(({done,value})=>{
-          if(done){
-            const blob=new Blob(chunks);
-            const u=URL.createObjectURL(blob),a=document.createElement('a');
-            a.href=u;a.download=name;document.body.appendChild(a);a.click();
-            document.body.removeChild(a);URL.revokeObjectURL(u);
-            if(progBar){progBar.style.width='100%';setTimeout(()=>{if(progWrap)progWrap.classList.remove('active');progBar.style.width='0%'},600)}
-            incDLC(name);refreshDLC(name);
-            toast({title:t('t_done'),sub:name,type:'ok',dur:3000});
-            confetti();return;
-          }
-          chunks.push(value);received+=value.length;
-          if(total>0&&progBar){progBar.style.width=Math.round((received/total)*100)+'%'}
-          else if(progBar){const fake=Math.min((progBar.style.width?parseFloat(progBar.style.width):0)+5,90);progBar.style.width=fake+'%'}
-          return pump();
-        })
-      }
-      return pump();
-    })
-    .catch(()=>{
-      if(progWrap)progWrap.classList.remove('active');
-      const a=document.createElement('a');a.href=url;a.download=name;a.target='_blank';a.rel='noopener';
-      document.body.appendChild(a);a.click();document.body.removeChild(a);
-      incDLC(name);refreshDLC(name);confetti();
-    });
+  fetch(url).then(res=>{
+    if(!res.ok)throw new Error('HTTP '+res.status);
+    const total=parseInt(res.headers.get('content-length')||'0');
+    const reader=res.body.getReader();
+    const chunks=[];let received=0;
+    function pump(){
+      return reader.read().then(({done,value})=>{
+        if(done){
+          const blob=new Blob(chunks),u=URL.createObjectURL(blob),a=document.createElement('a');
+          a.href=u;a.download=name;document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(u);
+          if(progBar){progBar.style.width='100%';setTimeout(()=>{if(progWrap)progWrap.classList.remove('active');progBar.style.width='0%'},600)}
+          incDLC(name);refreshDLC(name);
+          toast({title:t('t_done'),sub:name,type:'ok',dur:3000});confetti();return;
+        }
+        chunks.push(value);received+=value.length;
+        if(total>0&&progBar){progBar.style.width=Math.round((received/total)*100)+'%'}
+        else if(progBar){const fake=Math.min((progBar.style.width?parseFloat(progBar.style.width):0)+5,90);progBar.style.width=fake+'%'}
+        return pump();
+      });
+    }
+    return pump();
+  }).catch(()=>{
+    if(progWrap)progWrap.classList.remove('active');
+    const a=document.createElement('a');a.href=url;a.download=name;a.target='_blank';a.rel='noopener';
+    document.body.appendChild(a);a.click();document.body.removeChild(a);
+    incDLC(name);refreshDLC(name);confetti();
+  });
 }
 
 /* SHARE */
@@ -819,14 +677,14 @@ function share(url,btn){
 }
 function fb(text){const ta=document.createElement('textarea');ta.value=text;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta)}
 
-/* SEARCH — now handles beta-conch and beta-cmdr too */
+/* SEARCH */
 function doSearch(sec){
   const inp=document.getElementById('search-'+sec),clr=document.getElementById('clear-'+sec);
   const q=inp.value.trim().toLowerCase(),list=document.getElementById(sec+'-list'),em=document.getElementById('empty-'+sec);
   clr.classList.toggle('vis',q.length>0);
   const items=list.querySelectorAll('.file-item');let vis=0;
   items.forEach(it=>{const m=(it.dataset.n||'').includes(q)||(it.dataset.v||'').includes(q);it.classList.toggle('hidden',!m);if(m)vis++});
-  em.classList.toggle('vis',vis===0&&items.length>0&&q.length>0)
+  em.classList.toggle('vis',vis===0&&items.length>0&&q.length>0);
 }
 function clearSearch(sec){document.getElementById('search-'+sec).value='';doSearch(sec)}
 
@@ -837,23 +695,20 @@ function toggleHist(id){const p=document.getElementById('h-'+id),b=document.getE
 /* SKELETON */
 function showSkel(id,n=3){document.getElementById(id).innerHTML=Array.from({length:n},()=>`<div class="skel-item"><div class="skel skel-ico"></div><div class="skel-body"><div class="skel skel-l w80"></div><div class="skel skel-l w50"></div></div><div class="skel skel-btn"></div></div>`).join('')}
 
-/* SEMVER SORT */
+/* SEMVER */
 function semver(s){const m=String(s).replace(/^v/i,'').match(/\d+/g);return m?m.map(Number):[0]}
 function cmpVer(a,b){const va=semver(a),vb=semver(b);for(let i=0;i<Math.max(va.length,vb.length);i++){const d=(vb[i]||0)-(va[i]||0);if(d)return d}return 0}
 
-/* CACHE — now includes beta groups */
+/* CACHE */
 let _cc=[],_cr=[],_ccb=[],_crb=[];
 
-/* ── FETCH ── */
+/* FETCH */
 async function fetchReleases(){
   showSkel('conch-list');showSkel('cmdr-list');
   try{
-    const cacheBuster='&_cb='+Date.now();
-    const res=await fetch(`https://api.github.com/repos/${CONFIG.GITHUB_REPO}/releases?per_page=${CONFIG.MAX_RELEASES}${cacheBuster}`);
+    const res=await fetch(`https://api.github.com/repos/${CONFIG.GITHUB_REPO}/releases?per_page=${CONFIG.MAX_RELEASES}&_cb=${Date.now()}`);
     if(!res.ok)throw new Error(res.status===404?'404':res.status===403?'403':res.status+' '+res.statusText);
     const releases=await res.json();
-
-    /* Four maps: conch stable, conch beta, cmdr stable, cmdr beta */
     const cm={},cmb={},rm={},rmb={};
     releases.forEach(rel=>{
       const date=new Date(rel.published_at).toLocaleDateString('en-US',{year:'numeric',month:'short',day:'numeric'});
@@ -863,26 +718,18 @@ async function fetchReleases(){
         if(!lo.endsWith('.rbxm'))return;
         const isC=lo.includes('conch'),isR=lo.includes('cmdr');
         if(!isC&&!isR)return;
-        /* Beta detection: filename must contain "beta" (case-insensitive) */
         const isBeta=lo.includes('beta');
         const entry={name:nm,size:fmtB(a.size),date,version:rel.tag_name||rel.name||'v?',url:a.browser_download_url,ts:rel.published_at,isNew,isBeta};
         const key=nm.replace(/[_\-]v[\d.]+/i,'').replace(/\.rbxm$/i,'').toLowerCase();
-        if(isC){
-          const map=isBeta?cmb:cm;
-          if(!map[key])map[key]=[];map[key].push(entry);
-        }else{
-          const map=isBeta?rmb:rm;
-          if(!map[key])map[key]=[];map[key].push(entry);
-        }
-      })
+        if(isC){const map=isBeta?cmb:cm;if(!map[key])map[key]=[];map[key].push(entry);}
+        else{const map=isBeta?rmb:rm;if(!map[key])map[key]=[];map[key].push(entry);}
+      });
     });
-    const srt=map=>Object.values(map).forEach(arr=>arr.sort((a,b)=>cmpVer(a.version,b.version)||new Date(b.ts)-new Date(a.ts)));
-    [cm,cmb,rm,rmb].forEach(srt);
+    [cm,cmb,rm,rmb].forEach(map=>Object.values(map).forEach(arr=>arr.sort((a,b)=>cmpVer(a.version,b.version)||new Date(b.ts)-new Date(a.ts))));
     const toG=map=>Object.values(map).sort((a,b)=>cmpVer(a[0].version,b[0].version));
     _cc=toG(cm);_ccb=toG(cmb);_cr=toG(rm);_crb=toG(rmb);
     render('conch',_cc,'c');render('cmdr',_cr,'r');
     renderBeta('beta-conch',_ccb,'bc');renderBeta('beta-cmdr',_crb,'br');
-    if(CONFIG.DEBUG)console.log('✅ Stable — Conch:',_cc.length,'Cmdr:',_cr.length,'| Beta — Conch:',_ccb.length,'Cmdr:',_crb.length);
   }catch(e){
     const msg=e.message==='404'?t('e404'):e.message==='403'?t('e403'):t('egn')+e.message;
     ['conch-list','cmdr-list'].forEach(id=>document.getElementById(id).innerHTML=`<div class="error-state">❌ ${msg}</div>`);
@@ -895,7 +742,7 @@ function rerender(){
   }
 }
 
-/* ── RENDER (stable) ── */
+/* RENDER STABLE */
 function render(sec,groups,cls){
   const list=document.getElementById(sec+'-list'),isC=(cls==='c');
   if(!groups.length){list.innerHTML=`<div class="empty-state">${t('empty',isC?'Conch':'Cmdr')}<br><small style="margin-top:.5rem;display:block;opacity:.7">${t('empty_h',isC?'Conch':'Cmdr')}</small></div>`;return}
@@ -934,21 +781,16 @@ function render(sec,groups,cls){
       <div class="dl-progress-wrap"><div class="dl-progress-bar dlp-${cls}"></div></div>
       ${histHTML}`;
     list.appendChild(el);
-  })
+  });
 }
 
-/* ── RENDER BETA ── */
+/* RENDER BETA */
 function renderBeta(sec,groups,cls){
-  const wrapId=sec+'-wrap';
-  const wrap=document.getElementById(wrapId);
-  const list=document.getElementById(sec+'-list');
+  const wrap=document.getElementById(sec+'-wrap'),list=document.getElementById(sec+'-list');
   if(!wrap||!list)return;
-  /* Show/hide the whole subsection */
   if(!groups.length){wrap.style.display='none';return;}
   wrap.style.display='block';
   list.innerHTML='';
-  /* cls is 'bc' (beta conch) or 'br' (beta cmdr) */
-  /* We reuse the same render logic but with beta-specific classes */
   groups.forEach(vers=>{
     const latest=vers[0],hasH=vers.length>1,id=++_uid,dlc=getDLC(latest.name);
     const el=document.createElement('div');
@@ -984,10 +826,10 @@ function renderBeta(sec,groups,cls){
       <div class="dl-progress-wrap"><div class="dl-progress-bar dlp-${cls}"></div></div>
       ${histHTML}`;
     list.appendChild(el);
-  })
+  });
 }
 
-/* ── REFRESH ── */
+/* REFRESH */
 async function doRefresh(){
   const btn=document.getElementById('refresh-btn');
   if(btn.disabled)return;
@@ -1009,8 +851,7 @@ function ea(s){return String(s).replace(/\\/g,'\\\\').replace(/'/g,"\\'")}
 /* BANNER */
 (function(){
   if(!window.__BANNER__)return;
-  const el=document.getElementById('site-banner');
-  if(!el)return;
+  const el=document.getElementById('site-banner');if(!el)return;
   el.textContent=window.__BANNER__.text;
   el.className='site-banner sb-'+(window.__BANNER__.type||'info')+' active';
   document.querySelector('.hero').style.paddingTop='10rem';
@@ -1032,7 +873,7 @@ window.addEventListener('pageshow',()=>{
   if(overlay)overlay.classList.remove('fade-out');
 });
 
-/* PWA SERVICE WORKER + INSTALL */
+/* PWA */
 let _deferredPrompt=null;
 if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').catch(()=>{});}
 window.addEventListener('beforeinstallprompt',e=>{
@@ -1042,20 +883,16 @@ window.addEventListener('beforeinstallprompt',e=>{
 function installPWA(){
   if(!_deferredPrompt)return;
   _deferredPrompt.prompt();
-  _deferredPrompt.userChoice.then(()=>{
-    _deferredPrompt=null;
-    const btn=document.getElementById('pwa-btn');if(btn)btn.classList.remove('visible');
-  });
+  _deferredPrompt.userChoice.then(()=>{_deferredPrompt=null;const btn=document.getElementById('pwa-btn');if(btn)btn.classList.remove('visible');});
 }
 window.addEventListener('appinstalled',()=>{
   const btn=document.getElementById('pwa-btn');if(btn)btn.classList.remove('visible');
   toast({title:'App installed!',sub:'Conch & Cmdr added to your device',type:'ok',dur:3000});
 });
 
-/* ── DOWNLOAD QUEUE ── */
-let _queue=[];
-let _queueRunning=false;
-function toggleQueue(){const p=document.getElementById('queue-panel');p.classList.toggle('open');renderQueue();}
+/* DOWNLOAD QUEUE */
+let _queue=[],_queueRunning=false;
+function toggleQueue(){document.getElementById('queue-panel').classList.toggle('open');renderQueue();}
 function addToQueue(url,name,type,itemId){
   if(_queue.find(q=>q.name===name)){toast({title:'Already in queue',sub:name,type:'i',dur:2000});return;}
   _queue.push({url,name,type,done:false});
@@ -1087,20 +924,18 @@ async function startQueue(){
   const dlBtn=document.getElementById('queue-dl-btn');
   if(dlBtn){dlBtn.disabled=true;dlBtn.textContent='Downloading...';}
   const prog=document.getElementById('queue-progress');
-  const itemsToDownload=_queue.filter(q=>!q.done);
-  const total=itemsToDownload.length;let done=0;
+  const total=_queue.filter(q=>!q.done).length;let done=0;
   toast({title:'Starting '+total+' downloads',sub:'All files will download simultaneously',type:'c',dur:3000});
   _queue.forEach((q,i)=>{if(!q.done){const item=document.getElementById('qitem-'+i);if(item)item.classList.add('downloading');}});
-  const downloadPromises=[];
-  for(let i=0;i<_queue.length;i++){
-    const q=_queue[i];if(q.done)continue;
-    const downloadPromise=(async()=>{
+  await Promise.all(_queue.map((q,i)=>{
+    if(q.done)return Promise.resolve();
+    return (async()=>{
       try{
         const a=document.createElement('a');a.href=q.url;a.download=q.name;a.target='_blank';a.rel='noopener';
         document.body.appendChild(a);a.click();document.body.removeChild(a);
         incDLC(q.name);refreshDLC(q.name);
-        await new Promise(resolve=>setTimeout(resolve,200));
-      }catch(err){console.error('Download error:',err);}
+        await new Promise(r=>setTimeout(r,200));
+      }catch(err){console.error('Queue download error:',err);}
       finally{
         q.done=true;done++;
         if(prog)prog.style.width=Math.round((done/total)*100)+'%';
@@ -1108,16 +943,14 @@ async function startQueue(){
         renderQueue();
       }
     })();
-    downloadPromises.push(downloadPromise);
-  }
-  await Promise.all(downloadPromises);
+  }));
   _queueRunning=false;
   if(dlBtn){dlBtn.disabled=false;dlBtn.textContent='↓ Download All';}
   confetti();toast({title:'All downloads complete!',sub:done+' files downloaded',type:'ok',dur:3500});
   setTimeout(()=>{if(prog)prog.style.width='0%';},1500);
 }
 
-/* ── FEATURED FILE ── */
+/* FEATURED FILE */
 async function loadFeatured(){
   try{
     const SA='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJtZGtvYXVpYm16aGdudnJ3aGZkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyNjg2MDksImV4cCI6MjA5Mzg0NDYwOX0.lu6T00f9y9-Q8HhVag-MGjJz6bTlJrYUwC7AApIxaFw';
@@ -1141,1174 +974,6 @@ applyLang();
 showSkel('conch-list');showSkel('cmdr-list');
 fetchReleases();
 loadFeatured();
-</script>
-</body>
-</html>
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Conch & Cmdr — Downloads</title>
-<div class="page-transition" id="page-transition"></div>
-<script>
-/* MAINTENANCE + BANNER — runs before page loads */
-(async function(){
-  const SU='https://rmdkoauibmzhgnvrwhfd.supabase.co';
-  const SA='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJtZGtvYXVpYm16aGdudnJ3aGZkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyNjg2MDksImV4cCI6MjA5Mzg0NDYwOX0.lu6T00f9y9-Q8HhVag-MGjJz6bTlJrYUwC7AApIxaFw';
-  try{
-    const r=await fetch(SU+'/rest/v1/site_settings?key=in.(maintenance_enabled,banner_enabled,banner_text,banner_type)&select=key,value',
-      {headers:{'apikey':SA,'Authorization':'Bearer '+SA}});
-    if(!r.ok)return;
-    const rows=await r.json();const s={};rows.forEach(x=>s[x.key]=x.value);
-    if(s.maintenance_enabled==='true'){window.location.replace('maintenance.html');return;}
-    if(s.banner_enabled==='true'&&s.banner_text){window.__BANNER__={text:s.banner_text,type:s.banner_type||'info'};}
-  }catch(e){}
-})();
-</script>
-
-<!-- PWA -->
-<link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#0ff4c6">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Conch & Cmdr">
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
-<style>
-  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-  :root{
-    --conch:#0ff4c6;--conch-dim:#0bb88e;
-    --cmdr:#ff4f5e;--cmdr-dim:#c8333f;
-    --bg:#0b0c0f;--surface:#13151a;--surface2:#1a1d24;
-    --border:rgba(255,255,255,0.07);--text:#e8eaf0;--muted:#6b7280;
-    --mono:'JetBrains Mono',monospace;--sans:'Syne',sans-serif;
-  }
-  
-  /* LIGHT MODE */
-  :root.light-mode{
-    --bg:#f5f7fa;--surface:#ffffff;--surface2:#f0f2f5;
-    --border:rgba(0,0,0,0.08);--text:#1a1d24;--muted:#6b7280;
-  }
-  
-  body{transition:background-color 0.3s ease,color 0.3s ease}
-
-  /* BANNER */
-  .site-banner{width:100%;padding:.6rem 2rem;text-align:center;font-family:var(--mono);font-size:.78rem;position:fixed;top:64px;left:0;right:0;z-index:99;display:none}
-  .site-banner.active{display:block}
-  .sb-info{background:rgba(100,160,255,.12);color:#64a0ff;border-bottom:1px solid rgba(100,160,255,.2)}
-  .sb-warning{background:rgba(255,200,50,.12);color:#ffc832;border-bottom:1px solid rgba(255,200,50,.2)}
-  .sb-danger{background:rgba(255,79,94,.12);color:#ff4f5e;border-bottom:1px solid rgba(255,79,94,.2)}
-  .sb-success{background:rgba(60,200,120,.12);color:#3cc878;border-bottom:1px solid rgba(60,200,120,.2)}
-
-  /* PAGE TRANSITION */
-  .page-transition{position:fixed;inset:0;background:var(--bg);z-index:9999;pointer-events:none;opacity:0;transition:opacity .25s ease}
-  .page-transition.fade-out{opacity:1;pointer-events:all}
-
-  /* DISCORD BANNER */
-  .discord-banner{background:linear-gradient(135deg,rgba(88,101,242,.15),rgba(88,101,242,.05));border:1px solid rgba(88,101,242,.25);border-radius:10px;padding:1rem 1.5rem;display:flex;align-items:center;gap:1rem;margin:0 2.5rem 2rem;max-width:1056px;margin-left:auto;margin-right:auto}
-  .discord-icon{width:40px;height:40px;border-radius:10px;background:rgba(88,101,242,.2);display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0}
-  .discord-info{flex:1}
-  .discord-title{font-size:.9rem;font-weight:700;margin-bottom:.15rem}
-  .discord-sub{font-family:var(--mono);font-size:.72rem;color:var(--muted)}
-  .discord-btn{font-family:var(--mono);font-size:.75rem;padding:.5rem 1.1rem;border-radius:6px;background:rgba(88,101,242,.25);color:#8b9cf4;border:1px solid rgba(88,101,242,.35);text-decoration:none;transition:all .2s;white-space:nowrap;flex-shrink:0}
-  .discord-btn:hover{background:rgba(88,101,242,.4);color:#fff}
-  /* DOWNLOAD QUEUE (Cart) */
-  .queue-fab{position:fixed;bottom:2rem;right:2rem;z-index:500;display:flex;flex-direction:column;align-items:flex-end;gap:.5rem}
-  .queue-btn{width:52px;height:52px;border-radius:50%;background:var(--surface2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:1.3rem;transition:all .2s;position:relative;box-shadow:0 4px 20px rgba(0,0,0,.4)}
-  .queue-btn:hover{border-color:rgba(15,244,198,.4);background:var(--surface)}
-  .queue-badge{position:absolute;top:-4px;right:-4px;background:var(--conch);color:#000;font-family:var(--mono);font-size:.6rem;font-weight:700;width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;display:none}
-  .queue-badge.vis{display:flex}
-  .queue-panel{position:fixed;bottom:5.5rem;right:2rem;z-index:501;width:320px;background:var(--surface);border:1px solid var(--border);border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,.5);display:none;flex-direction:column;overflow:hidden;animation:queueIn .2s ease}
-  .queue-panel.open{display:flex}
-  @keyframes queueIn{from{opacity:0;transform:translateY(10px) scale(.97)}to{opacity:1;transform:translateY(0) scale(1)}}
-  .queue-head{display:flex;align-items:center;justify-content:space-between;padding:.85rem 1rem;border-bottom:1px solid var(--border)}
-  .queue-title{font-family:var(--mono);font-size:.78rem;font-weight:600;color:var(--text)}
-  .queue-close{background:none;border:none;color:var(--muted);cursor:pointer;font-size:.9rem;padding:.2rem;transition:color .2s}
-  .queue-close:hover{color:var(--text)}
-  .queue-list{max-height:260px;overflow-y:auto;padding:.5rem}
-  .queue-item{display:flex;align-items:center;gap:.6rem;padding:.55rem .6rem;border-radius:7px;margin-bottom:3px;background:var(--surface2);border:1px solid var(--border)}
-  .queue-item-icon{font-size:.9rem;flex-shrink:0}
-  .queue-item-name{font-family:var(--mono);font-size:.72rem;color:var(--text);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-  .queue-item-type{font-family:var(--mono);font-size:.65rem;padding:.1rem .35rem;border-radius:3px;flex-shrink:0}
-  .qit-c{background:rgba(15,244,198,.1);color:var(--conch)}.qit-r{background:rgba(255,79,94,.1);color:var(--cmdr)}
-  .queue-item-rm{background:none;border:none;color:var(--muted);cursor:pointer;font-size:.8rem;padding:.15rem;transition:color .2s;flex-shrink:0}
-  .queue-item-rm:hover{color:var(--cmdr)}
-  .queue-item.downloading{border-color:rgba(15,244,198,.3);animation:qpulse 1s ease-in-out infinite}
-  @keyframes qpulse{0%,100%{opacity:1}50%{opacity:.6}}
-  .queue-footer{padding:.75rem 1rem;border-top:1px solid var(--border);display:flex;gap:.5rem}
-  .queue-dl-btn{flex:1;font-family:var(--mono);font-size:.75rem;padding:.5rem;border-radius:7px;border:none;background:rgba(15,244,198,.12);color:var(--conch);cursor:pointer;transition:all .2s;font-weight:600}
-  .queue-dl-btn:hover{background:rgba(15,244,198,.22)}
-  .queue-dl-btn:disabled{opacity:.4;cursor:not-allowed}
-  .queue-clear-btn{font-family:var(--mono);font-size:.75rem;padding:.5rem .75rem;border-radius:7px;border:1px solid var(--border);background:none;color:var(--muted);cursor:pointer;transition:all .2s}
-  .queue-clear-btn:hover{border-color:var(--cmdr);color:var(--cmdr)}
-  .queue-empty{font-family:var(--mono);font-size:.75rem;color:var(--muted);text-align:center;padding:1.5rem;opacity:.5}
-  .queue-progress{height:2px;background:var(--conch);width:0%;transition:width .3s}
-
-  /* ADD TO QUEUE BTN on file items */
-  .btn-queue{font-family:var(--mono);font-size:.72rem;padding:.38rem .55rem;border-radius:6px;border:1px solid var(--border);background:none;color:var(--muted);cursor:pointer;display:inline-flex;align-items:center;transition:all .2s}
-  .btn-queue:hover{border-color:rgba(15,244,198,.35);color:var(--conch)}
-  .btn-queue.in-queue{border-color:rgba(15,244,198,.4);color:var(--conch);background:rgba(15,244,198,.06)}
-
-  /* FEATURED FILE */
-  .featured-wrap{max-width:1100px;margin:0 auto;padding:0 2.5rem 2rem}
-  .featured-card{background:linear-gradient(135deg,rgba(15,244,198,.06),rgba(15,244,198,.02));border:1px solid rgba(15,244,198,.2);border-radius:12px;padding:1rem 1.4rem;display:flex;align-items:center;gap:1rem}
-  .featured-badge{font-family:var(--mono);font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;padding:.2rem .55rem;border-radius:4px;background:rgba(15,244,198,.12);color:var(--conch);border:1px solid rgba(15,244,198,.2);flex-shrink:0}
-  .featured-icon{width:38px;height:38px;border-radius:9px;background:rgba(15,244,198,.1);display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0}
-  .featured-info{flex:1;min-width:0}
-  .featured-name{font-family:var(--mono);font-size:.85rem;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .featured-meta{font-family:var(--mono);font-size:.7rem;color:var(--muted);margin-top:.15rem}
-
-  /* PWA INSTALL BUTTON */
-  .pwa-install-btn{display:none;font-family:var(--mono);font-size:.72rem;padding:.38rem .75rem;border-radius:6px;border:1px solid rgba(15,244,198,.25);background:rgba(15,244,198,.08);color:var(--conch);cursor:pointer;align-items:center;gap:.4rem;transition:all .2s}
-  .pwa-install-btn:hover{background:rgba(15,244,198,.15)}
-  .pwa-install-btn.visible{display:flex}
-  html{scroll-behavior:smooth}
-  body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:100vh;overflow-x:hidden}
-
-  /* NAV */
-  nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:1rem 2.5rem;background:rgba(11,12,15,0.9);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);height:64px}
-  .nav-logo{font-size:1.1rem;font-weight:800;letter-spacing:-0.02em;display:flex;gap:0.4em;align-items:center;user-select:none}
-  .nav-logo .c{color:var(--conch)}.nav-logo .r{color:var(--cmdr)}.nav-logo .sep{color:var(--muted)}
-  .nav-right{display:flex;align-items:center;gap:0.6rem}
-  nav a.nav-link{color:var(--muted);text-decoration:none;font-size:0.8rem;font-family:var(--mono);letter-spacing:0.04em;transition:color 0.2s;padding:0 0.3rem}
-  nav a.nav-link:hover{color:var(--text)}nav a.nav-link.active{color:var(--conch)}
-
-  /* LANG */
-  .lang-select{background:var(--surface);border:1px solid var(--border);border-radius:8px;color:var(--muted);font-family:var(--mono);font-size:0.72rem;padding:0.42rem 0.6rem;cursor:pointer;outline:none;transition:border-color 0.2s,color 0.2s;appearance:none}
-  .lang-select:hover{border-color:rgba(255,255,255,0.18);color:var(--text)}
-  .lang-select option{background:#1a1d24}
-
-  /* ICON BTN */
-  .icon-btn{display:flex;align-items:center;justify-content:center;width:36px;height:36px;cursor:pointer;background:var(--surface);border:1px solid var(--border);border-radius:8px;flex-shrink:0;transition:border-color 0.2s,background 0.2s,color 0.2s;color:var(--muted)}
-  .icon-btn:hover{border-color:rgba(15,244,198,0.35);background:var(--surface2);color:var(--conch)}
-  .icon-btn:disabled{opacity:0.4;cursor:not-allowed;pointer-events:none}
-  .icon-btn svg{width:15px;height:15px}
-  .icon-btn.spinning svg{animation:spin 0.7s linear infinite}
-  @keyframes spin{to{transform:rotate(360deg)}}
-  .icon-btn .theme-icon{font-size:1rem;transition:transform 0.3s ease}
-  .icon-btn:hover .theme-icon{transform:rotate(20deg)}
-
-  /* BURGER */
-  .burger{display:flex;flex-direction:column;justify-content:center;gap:5px;width:36px;height:36px;cursor:pointer;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:9px;transition:border-color 0.2s,background 0.2s;flex-shrink:0}
-  .burger:hover{border-color:rgba(255,255,255,0.18);background:var(--surface2)}
-  .burger span{display:block;height:1.5px;border-radius:2px;background:var(--muted);transition:all 0.3s;transform-origin:center}
-  .burger.open span:nth-child(1){transform:translateY(6.5px) rotate(45deg);background:var(--conch)}
-  .burger.open span:nth-child(2){opacity:0;transform:scaleX(0)}
-  .burger.open span:nth-child(3){transform:translateY(-6.5px) rotate(-45deg);background:var(--conch)}
-
-  /* DRAWER */
-  .drawer-overlay{position:fixed;inset:0;z-index:98;background:rgba(0,0,0,0.5);opacity:0;pointer-events:none;transition:opacity 0.3s}
-  .drawer-overlay.open{opacity:1;pointer-events:all}
-  .drawer{position:fixed;top:0;right:0;bottom:0;z-index:99;width:280px;background:#0e1014;border-left:1px solid var(--border);transform:translateX(100%);transition:transform 0.35s cubic-bezier(0.4,0,0.2,1);display:flex;flex-direction:column}
-  .drawer.open{transform:translateX(0)}
-  .drawer-head{display:flex;align-items:center;justify-content:space-between;padding:1.2rem 1.5rem;border-bottom:1px solid var(--border);height:64px}
-  .drawer-logo{font-size:1rem;font-weight:800;display:flex;gap:0.3em}
-  .drawer-logo .c{color:var(--conch)}.drawer-logo .r{color:var(--cmdr)}.drawer-logo .sep{color:var(--muted)}
-  .drawer-close{background:none;border:none;cursor:pointer;color:var(--muted);font-size:1.1rem;padding:0.3rem;transition:color 0.2s}
-  .drawer-close:hover{color:var(--text)}
-  .drawer-slabel{font-family:var(--mono);font-size:0.62rem;letter-spacing:0.14em;text-transform:uppercase;color:var(--muted);padding:1.2rem 1.5rem 0.5rem;opacity:0.6}
-  .drawer-nav{flex:1;overflow-y:auto;padding:0.5rem 0.75rem}
-  .drawer-item{display:flex;align-items:center;gap:0.75rem;padding:0.75rem;border-radius:8px;text-decoration:none;color:var(--muted);font-family:var(--mono);font-size:0.82rem;margin-bottom:2px;border:1px solid transparent;transition:background 0.18s;opacity:0;animation:drawerItemFadeIn 0.3s ease forwards}
-  .drawer-item:nth-child(1){animation-delay:0.05s}
-  .drawer-item:nth-child(2){animation-delay:0.1s}
-  .drawer-item:nth-child(3){animation-delay:0.15s}
-  .drawer-item:nth-child(4){animation-delay:0.2s}
-  .drawer-item:nth-child(5){animation-delay:0.25s}
-  .drawer-item:nth-child(6){animation-delay:0.3s}
-  @keyframes drawerItemFadeIn{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:translateX(0)}}
-  .drawer-item:hover{background:var(--surface);border-color:var(--border);color:var(--text)}
-  .drawer-item.active{background:rgba(15,244,198,0.07);border-color:rgba(15,244,198,0.15);color:var(--conch)}
-  .drawer-icon{width:28px;height:28px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:0.85rem;flex-shrink:0;background:var(--surface2);border:1px solid var(--border)}
-  .drawer-div{height:1px;background:var(--border);margin:0.75rem}
-  .drawer-footer{padding:1.2rem 1.5rem;border-top:1px solid var(--border);font-family:var(--mono);font-size:0.7rem;color:var(--muted);opacity:0.5}
-
-  /* HERO */
-  .hero{padding:9rem 2.5rem 5rem;text-align:center;position:relative;overflow:hidden}
-  .hero::before{content:'';position:absolute;top:-120px;left:50%;transform:translateX(-50%);width:700px;height:700px;border-radius:50%;background:radial-gradient(circle,rgba(0,255,198,0.04) 0%,transparent 70%);pointer-events:none}
-  .hero h1{font-size:clamp(2.8rem,7vw,5.5rem);font-weight:800;line-height:1.05;letter-spacing:-0.03em;margin-bottom:1.2rem}
-  .hero h1 em{font-style:normal;color:var(--conch)}.hero h1 strong{font-style:normal;color:var(--cmdr)}
-  .hero p{font-family:var(--mono);font-size:0.9rem;color:var(--muted);max-width:520px;margin:0 auto 2.5rem;line-height:1.8}
-  .scroll-hint{display:inline-flex;gap:1.5rem;flex-wrap:wrap;justify-content:center}
-  .scroll-hint a{padding:0.6rem 1.4rem;border-radius:6px;font-family:var(--mono);font-size:0.8rem;letter-spacing:0.05em;text-decoration:none;transition:all 0.2s}
-  .scroll-hint a.c{border:1px solid var(--conch);color:var(--conch)}.scroll-hint a.c:hover{background:rgba(0,255,198,0.08)}
-  .scroll-hint a.r{border:1px solid var(--cmdr);color:var(--cmdr)}.scroll-hint a.r:hover{background:rgba(255,79,94,0.08)}
-
-  /* SEARCH */
-  .search-wrap{margin-bottom:1.5rem;position:relative}
-  .search-icon{position:absolute;left:1rem;top:50%;transform:translateY(-50%);color:var(--muted);font-size:0.85rem;pointer-events:none}
-  .search-input{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:var(--mono);font-size:0.82rem;padding:0.75rem 2.4rem;outline:none;transition:border-color 0.2s}
-  .search-input::placeholder{color:var(--muted)}
-  .search-input.cf:focus{border-color:rgba(15,244,198,0.4)}.search-input.rf:focus{border-color:rgba(255,79,94,0.4)}
-  .search-clear{position:absolute;right:0.8rem;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--muted);font-size:0.9rem;padding:0.2rem;display:none;transition:color 0.2s}
-  .search-clear:hover{color:var(--text)}.search-clear.vis{display:block}
-
-  /* SECTIONS */
-  .section{padding:5rem 2.5rem;max-width:1100px;margin:0 auto}
-  .section-header{display:flex;align-items:flex-end;gap:1.2rem;margin-bottom:2.5rem;padding-bottom:1.5rem;border-bottom:1px solid var(--border)}
-  .sbadge{font-family:var(--mono);font-size:0.7rem;letter-spacing:0.12em;text-transform:uppercase;padding:0.3rem 0.7rem;border-radius:4px}
-  .sbadge-c{background:rgba(0,255,198,0.1);color:var(--conch);border:1px solid rgba(0,255,198,0.2)}
-  .sbadge-r{background:rgba(255,79,94,0.1);color:var(--cmdr);border:1px solid rgba(255,79,94,0.2)}
-  .section-header h2{font-size:2.6rem;font-weight:800;letter-spacing:-0.03em;line-height:1}
-  .section-header h2.c{color:var(--conch)}.section-header h2.r{color:var(--cmdr)}
-  .section-desc{font-family:var(--mono);font-size:0.85rem;color:var(--muted);line-height:1.8;max-width:600px;margin-bottom:1.5rem}
-
-  /* FILE LIST */
-  .file-list{display:flex;flex-direction:column;gap:0.6rem}
-  .file-item{background:var(--surface);border:1px solid var(--border);border-radius:8px;overflow:hidden;transition:border-color 0.2s,transform 0.2s;animation:slideIn 0.3s ease}
-  @keyframes slideIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
-  .file-item:hover{border-color:rgba(255,255,255,0.15);transform:translateX(2px)}
-  .file-item.hidden{display:none}
-  .file-main{display:flex;align-items:center;gap:1rem;padding:0.9rem 1.2rem}
-  .file-icon{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0}
-  .fi-c{background:rgba(0,255,198,0.1);color:var(--conch)}.fi-r{background:rgba(255,79,94,0.1);color:var(--cmdr)}
-  .file-info{flex:1;min-width:0}
-  .file-name-row{display:flex;align-items:center;gap:0.4rem;overflow:hidden;flex-wrap:wrap}
-  .file-name{font-family:var(--mono);font-size:0.85rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--text)}
-  .fver{font-family:var(--mono);font-size:0.68rem;padding:0.1rem 0.45rem;border-radius:3px;flex-shrink:0}
-  .fver-c{background:rgba(0,255,198,0.12);color:var(--conch)}.fver-r{background:rgba(255,79,94,0.12);color:var(--cmdr)}
-  .badge-new{font-family:var(--mono);font-size:0.6rem;padding:0.1rem 0.4rem;border-radius:3px;background:rgba(255,200,50,0.15);color:#ffc832;border:1px solid rgba(255,200,50,0.3);flex-shrink:0}
-  .file-meta{font-family:var(--mono);font-size:0.71rem;color:var(--muted);margin-top:0.2rem;display:flex;align-items:center;gap:0.4rem;flex-wrap:wrap}
-  .file-actions{display:flex;gap:0.4rem;flex-shrink:0;align-items:center}
-
-  /* DOWNLOAD PROGRESS BAR */
-  .dl-progress-wrap{height:3px;background:var(--surface2);overflow:hidden;transition:height 0.2s}
-  .dl-progress-wrap.active{height:3px}
-  .dl-progress-bar{height:100%;width:0%;transition:width 0.1s linear;border-radius:0 2px 2px 0}
-  .dlp-c{background:var(--conch)}.dlp-r{background:var(--cmdr)}
-
-  /* RIPPLE BUTTON */
-  .btn-dl{font-family:var(--mono);font-size:0.75rem;letter-spacing:0.04em;padding:0.45rem 1rem;border-radius:6px;border:none;cursor:pointer;display:inline-flex;align-items:center;gap:0.4em;transition:background 0.2s;position:relative;overflow:hidden;user-select:none}
-  .btn-dl-c{background:rgba(0,255,198,0.12);color:var(--conch)}.btn-dl-c:hover{background:rgba(0,255,198,0.22)}
-  .btn-dl-r{background:rgba(255,79,94,0.12);color:var(--cmdr)}.btn-dl-r:hover{background:rgba(255,79,94,0.22)}
-  .ripple{position:absolute;border-radius:50%;transform:scale(0);animation:rippleAnim 0.55s linear;pointer-events:none}
-  .ripple-c{background:rgba(15,244,198,0.35)}.ripple-r{background:rgba(255,79,94,0.35)}
-  @keyframes rippleAnim{to{transform:scale(4);opacity:0}}
-
-  .btn-sm{font-family:var(--mono);font-size:0.72rem;padding:0.38rem 0.55rem;border-radius:6px;border:1px solid var(--border);background:none;color:var(--muted);cursor:pointer;display:inline-flex;align-items:center;transition:all 0.2s;position:relative;overflow:hidden}
-  .btn-sm:hover{border-color:rgba(255,255,255,0.18);color:var(--text)}
-  .btn-sm.copied{border-color:rgba(15,244,198,0.4);color:var(--conch)}
-
-  .btn-hist{font-family:var(--mono);font-size:0.72rem;padding:0.38rem 0.65rem;border-radius:6px;border:1px solid var(--border);background:none;color:var(--muted);cursor:pointer;display:inline-flex;align-items:center;gap:0.3em;transition:all 0.2s;position:relative;overflow:hidden}
-  .btn-hist:hover{border-color:rgba(255,255,255,0.18);color:var(--text)}
-  .btn-hist.open{color:var(--text);border-color:rgba(255,255,255,0.18)}
-  .btn-hist .arr{transition:transform 0.2s}.btn-hist.open .arr{transform:rotate(180deg)}
-
-  .btn-dl-xs{font-family:var(--mono);font-size:0.68rem;padding:0.22rem 0.55rem;border-radius:4px;border:none;cursor:pointer;display:inline-flex;align-items:center;transition:all 0.2s;flex-shrink:0;position:relative;overflow:hidden}
-  .xs-c{background:rgba(0,255,198,0.08);color:var(--conch)}.xs-c:hover{background:rgba(0,255,198,0.18)}
-  .xs-r{background:rgba(255,79,94,0.08);color:var(--cmdr)}.xs-r:hover{background:rgba(255,79,94,0.18)}
-
-  /* VERSION HISTORY */
-  .ver-history{border-top:1px solid var(--border);background:var(--bg);overflow:hidden;max-height:0;transition:max-height 0.35s cubic-bezier(0.4,0,0.2,1)}
-  .ver-history.open{max-height:800px}
-  .ver-inner{padding:0.75rem 1.2rem}
-  .ver-label{font-family:var(--mono);font-size:0.62rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);opacity:0.6;margin-bottom:0.5rem}
-  .ver-row{display:flex;align-items:center;gap:0.75rem;padding:0.5rem 0;border-bottom:1px solid var(--border)}
-  .ver-row:last-child{border-bottom:none}
-  .ver-tag{font-family:var(--mono);font-size:0.7rem;padding:0.1rem 0.45rem;border-radius:3px;flex-shrink:0}
-  .vt-c{background:rgba(0,255,198,0.08);color:var(--conch-dim);border:1px solid rgba(0,255,198,0.15)}
-  .vt-r{background:rgba(255,79,94,0.08);color:var(--cmdr-dim);border:1px solid rgba(255,79,94,0.15)}
-  .ver-name{font-family:var(--mono);font-size:0.78rem;color:var(--muted);flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .ver-date{font-family:var(--mono);font-size:0.7rem;color:var(--muted);opacity:0.5;flex-shrink:0}
-
-  /* SKELETON */
-  .skel-item{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:0.9rem 1.2rem;display:flex;align-items:center;gap:1rem}
-  .skel{background:linear-gradient(90deg,var(--surface2) 25%,rgba(255,255,255,0.04) 50%,var(--surface2) 75%);background-size:200% 100%;animation:shimmer 1.4s infinite;border-radius:4px}
-  @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
-  .skel-ico{width:36px;height:36px;border-radius:8px;flex-shrink:0}
-  .skel-body{flex:1;display:flex;flex-direction:column;gap:7px}
-  .skel-l{height:12px}.skel-l.w80{width:80%}.skel-l.w50{width:50%}
-  .skel-btn{width:88px;height:32px;border-radius:6px;flex-shrink:0}
-
-  /* CONFETTI */
-  #confetti-canvas{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:8000}
-
-  /* TOAST */
-  #toast-container{position:fixed;bottom:1.5rem;right:1.5rem;z-index:9999;display:flex;flex-direction:column;gap:0.5rem;pointer-events:none}
-  .toast{display:flex;align-items:flex-start;gap:0.75rem;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:0.85rem 1.1rem;min-width:260px;max-width:340px;box-shadow:0 8px 32px rgba(0,0,0,0.4);pointer-events:all;animation:toastIn 0.3s cubic-bezier(0.34,1.56,0.64,1);transition:opacity 0.3s,transform 0.3s;position:relative;overflow:hidden}
-  .toast.out{opacity:0;transform:translateX(20px)}
-  @keyframes toastIn{from{opacity:0;transform:translateX(20px) scale(0.95)}to{opacity:1;transform:translateX(0) scale(1)}}
-  .t-ico{width:28px;height:28px;border-radius:6px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:0.9rem}
-  .t-ic{background:rgba(0,255,198,0.12);color:var(--conch)}.t-ir{background:rgba(255,79,94,0.12);color:var(--cmdr)}
-  .t-iok{background:rgba(60,200,120,0.15);color:#3cc878}.t-inf{background:rgba(100,160,255,0.15);color:#64a0ff}
-  .t-iwarn{background:rgba(255,200,50,0.15);color:#ffc832}
-  .t-body{flex:1}
-  .t-title{font-family:var(--mono);font-size:0.78rem;font-weight:600;color:var(--text);margin-bottom:0.15rem}
-  .t-sub{font-family:var(--mono);font-size:0.7rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:220px}
-  .t-bar{position:absolute;bottom:0;left:0;height:2px;border-radius:0 0 10px 10px;animation:tbar linear forwards}
-  @keyframes tbar{from{width:100%}to{width:0%}}
-
-  /* STATES */
-  .search-empty{font-family:var(--mono);font-size:0.8rem;color:var(--muted);text-align:center;padding:1.5rem;opacity:0.6;display:none}
-  .search-empty.vis{display:block}
-  .empty-state,.error-state{font-family:var(--mono);font-size:0.8rem;color:var(--muted);text-align:center;padding:2rem 1.5rem;opacity:0.6;line-height:1.7}
-
-  /* EMAIL NOTIFICATION MODAL */
-  .email-modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:9998;display:none;align-items:center;justify-content:center;animation:fadeIn 0.2s ease}
-  .email-modal-overlay.open{display:flex}
-  @keyframes fadeIn{from{opacity:0}to{opacity:1}}
-  .email-modal{background:var(--surface);border:1px solid var(--border);border-radius:12px;width:90%;max-width:480px;padding:2rem;box-shadow:0 20px 60px rgba(0,0,0,0.5);animation:modalSlideIn 0.3s cubic-bezier(0.34,1.56,0.64,1)}
-  @keyframes modalSlideIn{from{opacity:0;transform:translateY(-30px) scale(0.95)}to{opacity:1;transform:translateY(0) scale(1)}}
-  .email-modal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem}
-  .email-modal-title{font-size:1.3rem;font-weight:800;color:var(--text);display:flex;align-items:center;gap:0.5rem}
-  .email-modal-close{background:none;border:none;color:var(--muted);cursor:pointer;font-size:1.3rem;padding:0.3rem;transition:color 0.2s;width:32px;height:32px;border-radius:6px;display:flex;align-items:center;justify-content:center}
-  .email-modal-close:hover{color:var(--text);background:var(--surface2)}
-  .email-modal-desc{font-family:var(--mono);font-size:0.82rem;color:var(--muted);line-height:1.7;margin-bottom:1.5rem}
-  .email-modal-input{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:var(--mono);font-size:0.85rem;padding:0.75rem 1rem;outline:none;transition:border-color 0.2s;margin-bottom:1rem}
-  .email-modal-input:focus{border-color:rgba(15,244,198,0.4)}
-  .email-modal-input::placeholder{color:var(--muted);opacity:0.5}
-  .email-modal-checkboxes{margin-bottom:1.5rem}
-  .email-checkbox-item{display:flex;align-items:center;gap:0.6rem;padding:0.6rem;cursor:pointer;border-radius:6px;transition:background 0.2s;margin-bottom:0.3rem}
-  .email-checkbox-item:hover{background:var(--surface2)}
-  .email-checkbox-item input[type="checkbox"]{width:18px;height:18px;cursor:pointer;accent-color:var(--conch)}
-  .email-checkbox-item label{font-family:var(--mono);font-size:0.8rem;color:var(--text);cursor:pointer;flex:1}
-  .email-modal-buttons{display:flex;gap:0.75rem}
-  .email-modal-btn{flex:1;font-family:var(--mono);font-size:0.82rem;padding:0.7rem 1.2rem;border-radius:8px;border:none;cursor:pointer;transition:all 0.2s;font-weight:600}
-  .email-modal-btn.primary{background:rgba(15,244,198,0.15);color:var(--conch);border:1px solid rgba(15,244,198,0.3)}
-  .email-modal-btn.primary:hover{background:rgba(15,244,198,0.25)}
-  .email-modal-btn.secondary{background:var(--surface2);color:var(--muted);border:1px solid var(--border)}
-  .email-modal-btn.secondary:hover{border-color:var(--cmdr);color:var(--cmdr)}
-  .email-modal-success{text-align:center;padding:2rem 1rem}
-  .email-modal-success-icon{font-size:3rem;margin-bottom:1rem}
-  .email-modal-success-title{font-size:1.2rem;font-weight:700;color:var(--text);margin-bottom:0.5rem}
-  .email-modal-success-desc{font-family:var(--mono);font-size:0.8rem;color:var(--muted)}
-
-  .divider{height:1px;background:var(--border);margin:0 2.5rem}
-  footer{text-align:center;padding:3rem 2.5rem;font-family:var(--mono);font-size:0.75rem;color:var(--muted);border-top:1px solid var(--border);margin-top:4rem;opacity:0.5}
-
-  @media(max-width:640px){
-    nav{padding:1rem 1.2rem}.section{padding:3rem 1.2rem}.hero{padding:8rem 1.2rem 3rem}
-    .drawer{width:260px}#toast-container{bottom:1rem;right:1rem;left:1rem}.toast{min-width:unset;max-width:100%}
-    nav a.nav-link{display:none}.file-actions{gap:0.3rem}.btn-hist span:first-child{display:none}
-  }
-</style>
-</head>
-<body>
-
-<script>
-const CONFIG={GITHUB_REPO:'Systems-Download/Systems-Download.github.io',MAX_RELEASES:20,DEBUG:false};
-
-/* ── TRANSLATIONS (14 languages) ── */
-const T={
-  en:{nav_dl:'Downloads',nav_ann:'Announcements',hero_sub:'Files are automatically loaded from GitHub Releases. All .rbxm files are detected and sorted.',desc_c:'All .rbxm files with "Conch" in the name.',desc_r:'All .rbxm files with "Cmdr" in the name.',srch_c:'Search Conch files...',srch_r:'Search Cmdr files...',bdl:'Downloads',bnew:'NEW',hist:'History',hist_lbl:'Previous versions',dl:'↓ Download',vcount:n=>`${n} versions`,dlc:n=>`${n} dl`,t_start:'Download started',t_done:'Download complete',t_prog:'Downloading...',t_ref:'Refreshing...',t_ref2:'Fetching latest releases',t_upd:'Up to date',t_upd2:'Releases reloaded',t_cp:'Link copied!',t_cp2:'Download link in clipboard',empty:s=>`No ${s} files found.`,empty_h:s=>`Make sure .rbxm files contain "${s}" in the filename.`,se:'No files match your search.',e404:'Repo not found or no Releases yet. Create a GitHub Release with .rbxm assets.',e403:'GitHub API rate limit exceeded. Try again later.',egn:'Error: ',footer:'Automatically loaded from GitHub Releases',dfooter:'Auto-updated from GitHub Releases'},
-  de:{nav_dl:'Downloads',nav_ann:'Ankündigungen',hero_sub:'Dateien werden automatisch von GitHub Releases geladen. Alle .rbxm Dateien werden erkannt und sortiert.',desc_c:'Alle .rbxm Dateien mit "Conch" im Namen.',desc_r:'Alle .rbxm Dateien mit "Cmdr" im Namen.',srch_c:'Conch Dateien suchen...',srch_r:'Cmdr Dateien suchen...',bdl:'Downloads',bnew:'NEU',hist:'Verlauf',hist_lbl:'Frühere Versionen',dl:'↓ Herunterladen',vcount:n=>`${n} Versionen`,dlc:n=>`${n} Dl`,t_start:'Download gestartet',t_done:'Download abgeschlossen',t_prog:'Lädt herunter...',t_ref:'Wird aktualisiert...',t_ref2:'Neueste Releases werden geladen',t_upd:'Aktuell',t_upd2:'Releases neu geladen',t_cp:'Link kopiert!',t_cp2:'Link in Zwischenablage',empty:s=>`Keine ${s} Dateien gefunden.`,empty_h:s=>`Stelle sicher, dass .rbxm Dateien "${s}" im Namen haben.`,se:'Keine Dateien gefunden.',e404:'Repo nicht gefunden oder keine Releases. Erstelle einen GitHub Release mit .rbxm Dateien.',e403:'GitHub API Rate-Limit erreicht. Versuche es später.',egn:'Fehler: ',footer:'Automatisch von GitHub Releases geladen',dfooter:'Automatisch von GitHub Releases aktualisiert'},
-  es:{nav_dl:'Descargas',nav_ann:'Anuncios',hero_sub:'Los archivos se cargan automáticamente desde GitHub Releases.',desc_c:'Todos los archivos .rbxm con "Conch" en el nombre.',desc_r:'Todos los archivos .rbxm con "Cmdr" en el nombre.',srch_c:'Buscar Conch...',srch_r:'Buscar Cmdr...',bdl:'Descargas',bnew:'NUEVO',hist:'Historial',hist_lbl:'Versiones anteriores',dl:'↓ Descargar',vcount:n=>`${n} versiones`,dlc:n=>`${n} dl`,t_start:'Descarga iniciada',t_done:'Descarga completa',t_prog:'Descargando...',t_ref:'Actualizando...',t_ref2:'Cargando últimas versiones',t_upd:'Actualizado',t_upd2:'Versiones recargadas',t_cp:'¡Enlace copiado!',t_cp2:'Enlace en portapapeles',empty:s=>`No se encontraron archivos ${s}.`,empty_h:s=>`Asegúrate de que los .rbxm contienen "${s}".`,se:'Ningún archivo coincide.',e404:'Repositorio no encontrado o sin Releases.',e403:'Límite de API alcanzado.',egn:'Error: ',footer:'Cargado desde GitHub Releases',dfooter:'Actualizado desde GitHub Releases'},
-  it:{nav_dl:'Download',nav_ann:'Annunci',hero_sub:'I file vengono caricati automaticamente da GitHub Releases.',desc_c:'Tutti i file .rbxm con "Conch" nel nome.',desc_r:'Tutti i file .rbxm con "Cmdr" nel nome.',srch_c:'Cerca Conch...',srch_r:'Cerca Cmdr...',bdl:'Download',bnew:'NUOVO',hist:'Cronologia',hist_lbl:'Versioni precedenti',dl:'↓ Scarica',vcount:n=>`${n} versioni`,dlc:n=>`${n} dl`,t_start:'Download avviato',t_done:'Download completato',t_prog:'Scaricando...',t_ref:'Aggiornamento...',t_ref2:'Caricamento ultime versioni',t_upd:'Aggiornato',t_upd2:'Release ricaricate',t_cp:'Link copiato!',t_cp2:'Link negli appunti',empty:s=>`Nessun file ${s} trovato.`,empty_h:s=>`Assicurati che i .rbxm contengano "${s}".`,se:'Nessun file corrisponde.',e404:'Repository non trovato o nessuna Release.',e403:'Limite API raggiunto.',egn:'Errore: ',footer:'Caricato da GitHub Releases',dfooter:'Aggiornato da GitHub Releases'},
-  fr:{nav_dl:'Téléchargements',nav_ann:'Annonces',hero_sub:'Les fichiers sont automatiquement chargés depuis GitHub Releases.',desc_c:'Tous les fichiers .rbxm avec "Conch" dans le nom.',desc_r:'Tous les fichiers .rbxm avec "Cmdr" dans le nom.',srch_c:'Rechercher Conch...',srch_r:'Rechercher Cmdr...',bdl:'Téléchargements',bnew:'NOUVEAU',hist:'Historique',hist_lbl:'Versions précédentes',dl:'↓ Télécharger',vcount:n=>`${n} versions`,dlc:n=>`${n} dl`,t_start:'Téléchargement lancé',t_done:'Téléchargement terminé',t_prog:'Téléchargement...',t_ref:'Actualisation...',t_ref2:'Chargement des dernières versions',t_upd:'À jour',t_upd2:'Releases rechargées',t_cp:'Lien copié !',t_cp2:'Lien dans le presse-papiers',empty:s=>`Aucun fichier ${s} trouvé.`,empty_h:s=>`Vérifiez que les .rbxm contiennent "${s}".`,se:'Aucun fichier ne correspond.',e404:'Dépôt introuvable ou sans Releases.',e403:'Limite API atteinte.',egn:'Erreur : ',footer:'Chargé depuis GitHub Releases',dfooter:'Mis à jour depuis GitHub Releases'},
-  pt:{nav_dl:'Downloads',nav_ann:'Anúncios',hero_sub:'Os arquivos são carregados automaticamente do GitHub Releases.',desc_c:'Todos os arquivos .rbxm com "Conch" no nome.',desc_r:'Todos os arquivos .rbxm com "Cmdr" no nome.',srch_c:'Buscar Conch...',srch_r:'Buscar Cmdr...',bdl:'Downloads',bnew:'NOVO',hist:'Histórico',hist_lbl:'Versões anteriores',dl:'↓ Baixar',vcount:n=>`${n} versões`,dlc:n=>`${n} dl`,t_start:'Download iniciado',t_done:'Download concluído',t_prog:'Baixando...',t_ref:'Atualizando...',t_ref2:'Carregando últimas versões',t_upd:'Atualizado',t_upd2:'Releases recarregadas',t_cp:'Link copiado!',t_cp2:'Link na área de transferência',empty:s=>`Nenhum arquivo ${s} encontrado.`,empty_h:s=>`Certifique-se que os .rbxm contêm "${s}".`,se:'Nenhum arquivo encontrado.',e404:'Repositório não encontrado ou sem Releases.',e403:'Limite da API atingido.',egn:'Erro: ',footer:'Carregado do GitHub Releases',dfooter:'Atualizado do GitHub Releases'},
-  ru:{nav_dl:'Загрузки',nav_ann:'Объявления',hero_sub:'Файлы автоматически загружаются из GitHub Releases.',desc_c:'Все файлы .rbxm с "Conch" в названии.',desc_r:'Все файлы .rbxm с "Cmdr" в названии.',srch_c:'Поиск Conch...',srch_r:'Поиск Cmdr...',bdl:'Загрузки',bnew:'НОВОЕ',hist:'История',hist_lbl:'Предыдущие версии',dl:'↓ Скачать',vcount:n=>`${n} версий`,dlc:n=>`${n} зг`,t_start:'Загрузка началась',t_done:'Загрузка завершена',t_prog:'Загрузка...',t_ref:'Обновление...',t_ref2:'Загрузка последних релизов',t_upd:'Актуально',t_upd2:'Релизы обновлены',t_cp:'Ссылка скопирована!',t_cp2:'Ссылка в буфере обмена',empty:s=>`Файлы ${s} не найдены.`,empty_h:s=>`Убедитесь, что .rbxm содержат "${s}" в имени.`,se:'Файлы не найдены.',e404:'Репозиторий не найден или нет Releases.',e403:'Превышен лимит API.',egn:'Ошибка: ',footer:'Автозагрузка из GitHub Releases',dfooter:'Обновляется из GitHub Releases'},
-  ja:{nav_dl:'ダウンロード',nav_ann:'お知らせ',hero_sub:'ファイルはGitHub Releasesから自動的に読み込まれます。',desc_c:'"Conch"を含む.rbxmファイル一覧。',desc_r:'"Cmdr"を含む.rbxmファイル一覧。',srch_c:'Conchを検索...',srch_r:'Cmdrを検索...',bdl:'ダウンロード',bnew:'新着',hist:'履歴',hist_lbl:'旧バージョン',dl:'↓ ダウンロード',vcount:n=>`${n}バージョン`,dlc:n=>`${n}DL`,t_start:'ダウンロード開始',t_done:'ダウンロード完了',t_prog:'ダウンロード中...',t_ref:'更新中...',t_ref2:'最新リリースを取得中',t_upd:'最新',t_upd2:'リリースを再読み込み',t_cp:'リンクをコピー！',t_cp2:'ダウンロードリンクをコピーしました',empty:s=>`${s}ファイルが見つかりません。`,empty_h:s=>`ファイル名に"${s}"が含まれているか確認してください。`,se:'一致するファイルがありません。',e404:'リポジトリが見つからないかリリースがありません。',e403:'APIレート制限を超えました。',egn:'エラー: ',footer:'GitHub Releasesから自動読み込み',dfooter:'GitHub Releasesから自動更新'},
-  zh:{nav_dl:'下载',nav_ann:'公告',hero_sub:'文件自动从 GitHub Releases 加载。',desc_c:'所有文件名含 "Conch" 的 .rbxm 文件。',desc_r:'所有文件名含 "Cmdr" 的 .rbxm 文件。',srch_c:'搜索 Conch...',srch_r:'搜索 Cmdr...',bdl:'下载',bnew:'新',hist:'历史',hist_lbl:'旧版本',dl:'↓ 下载',vcount:n=>`${n} 个版本`,dlc:n=>`${n} 次`,t_start:'开始下载',t_done:'下载完成',t_prog:'下载中...',t_ref:'刷新中...',t_ref2:'正在获取最新发布',t_upd:'已是最新',t_upd2:'发布已重新加载',t_cp:'链接已复制！',t_cp2:'下载链接已复制到剪贴板',empty:s=>`未找到 ${s} 文件。`,empty_h:s=>`请确保 .rbxm 文件名包含 "${s}"。`,se:'没有匹配的文件。',e404:'仓库不存在或尚无发布。',e403:'超出 GitHub API 请求限制。',egn:'错误：',footer:'自动从 GitHub Releases 加载',dfooter:'从 GitHub Releases 自动更新'},
-  ko:{nav_dl:'다운로드',nav_ann:'공지사항',hero_sub:'파일은 GitHub Releases에서 자동으로 불러옵니다.',desc_c:'"Conch"가 포함된 .rbxm 파일 목록.',desc_r:'"Cmdr"가 포함된 .rbxm 파일 목록.',srch_c:'Conch 검색...',srch_r:'Cmdr 검색...',bdl:'다운로드',bnew:'신규',hist:'기록',hist_lbl:'이전 버전',dl:'↓ 다운로드',vcount:n=>`${n}개 버전`,dlc:n=>`${n}회`,t_start:'다운로드 시작',t_done:'다운로드 완료',t_prog:'다운로드 중...',t_ref:'새로고침 중...',t_ref2:'최신 릴리스 가져오는 중',t_upd:'최신 상태',t_upd2:'릴리스 다시 로드됨',t_cp:'링크 복사됨!',t_cp2:'다운로드 링크가 클립보드에 복사되었습니다',empty:s=>`${s} 파일을 찾을 수 없습니다.`,empty_h:s=>`.rbxm 파일명에 "${s}"이 포함되어 있는지 확인하세요.`,se:'검색 결과가 없습니다.',e404:'저장소를 찾을 수 없거나 릴리스가 없습니다.',e403:'GitHub API 요청 한도 초과.',egn:'오류: ',footer:'GitHub Releases에서 자동으로 불러옴',dfooter:'GitHub Releases에서 자동 업데이트'},
-  tr:{nav_dl:'İndirmeler',nav_ann:'Duyurular',hero_sub:'Dosyalar GitHub Releases\'tan otomatik yüklenir.',desc_c:'"Conch" içeren .rbxm dosyaları.',desc_r:'"Cmdr" içeren .rbxm dosyaları.',srch_c:'Conch ara...',srch_r:'Cmdr ara...',bdl:'İndirmeler',bnew:'YENİ',hist:'Geçmiş',hist_lbl:'Önceki sürümler',dl:'↓ İndir',vcount:n=>`${n} sürüm`,dlc:n=>`${n} ind`,t_start:'İndirme başladı',t_done:'İndirme tamamlandı',t_prog:'İndiriliyor...',t_ref:'Yenileniyor...',t_ref2:'Son sürümler yükleniyor',t_upd:'Güncel',t_upd2:'Sürümler yenilendi',t_cp:'Bağlantı kopyalandı!',t_cp2:'İndirme bağlantısı panoya kopyalandı',empty:s=>`${s} dosyası bulunamadı.`,empty_h:s=>`.rbxm dosyalarının "${s}" içerdiğinden emin olun.`,se:'Arama sonucu bulunamadı.',e404:'Depo bulunamadı veya Release yok.',e403:'GitHub API hız limiti aşıldı.',egn:'Hata: ',footer:'GitHub Releases\'tan otomatik yüklendi',dfooter:'GitHub Releases\'tan otomatik güncellendi'},
-  ar:{nav_dl:'تنزيلات',nav_ann:'الإعلانات',hero_sub:'يتم تحميل الملفات تلقائياً من GitHub Releases.',desc_c:'جميع ملفات .rbxm التي تحتوي "Conch".',desc_r:'جميع ملفات .rbxm التي تحتوي "Cmdr".',srch_c:'البحث في Conch...',srch_r:'البحث في Cmdr...',bdl:'تنزيلات',bnew:'جديد',hist:'السجل',hist_lbl:'إصدارات سابقة',dl:'↓ تنزيل',vcount:n=>`${n} إصدار`,dlc:n=>`${n} تنز`,t_start:'بدأ التنزيل',t_done:'اكتمل التنزيل',t_prog:'جارٍ التنزيل...',t_ref:'جارٍ التحديث...',t_ref2:'جلب أحدث الإصدارات',t_upd:'محدّث',t_upd2:'تم إعادة تحميل الإصدارات',t_cp:'تم نسخ الرابط!',t_cp2:'رابط التنزيل في الحافظة',empty:s=>`لم يُعثر على ملفات ${s}.`,empty_h:s=>`تأكد أن ملفات .rbxm تحتوي "${s}".`,se:'لا توجد نتائج.',e404:'المستودع غير موجود أو لا توجد إصدارات.',e403:'تجاوز حد API.',egn:'خطأ: ',footer:'تحميل تلقائي من GitHub Releases',dfooter:'تحديث تلقائي من GitHub Releases'},
-  pl:{nav_dl:'Pobieranie',nav_ann:'Ogłoszenia',hero_sub:'Pliki są automatycznie ładowane z GitHub Releases.',desc_c:'Wszystkie pliki .rbxm z "Conch" w nazwie.',desc_r:'Wszystkie pliki .rbxm z "Cmdr" w nazwie.',srch_c:'Szukaj Conch...',srch_r:'Szukaj Cmdr...',bdl:'Pobieranie',bnew:'NOWE',hist:'Historia',hist_lbl:'Poprzednie wersje',dl:'↓ Pobierz',vcount:n=>`${n} wersji`,dlc:n=>`${n} pob`,t_start:'Pobieranie rozpoczęte',t_done:'Pobieranie zakończone',t_prog:'Pobieranie...',t_ref:'Odświeżanie...',t_ref2:'Ładowanie najnowszych wydań',t_upd:'Aktualny',t_upd2:'Wydania załadowane ponownie',t_cp:'Link skopiowany!',t_cp2:'Link do pobrania w schowku',empty:s=>`Nie znaleziono plików ${s}.`,empty_h:s=>`Upewnij się, że .rbxm zawierają "${s}".`,se:'Brak wyników.',e404:'Repozytorium nie znalezione lub brak wydań.',e403:'Przekroczono limit API.',egn:'Błąd: ',footer:'Automatycznie ładowane z GitHub Releases',dfooter:'Automatycznie aktualizowane z GitHub Releases'},
-  nl:{nav_dl:'Downloads',nav_ann:'Aankondigingen',hero_sub:'Bestanden worden automatisch geladen vanuit GitHub Releases.',desc_c:'Alle .rbxm bestanden met "Conch" in de naam.',desc_r:'Alle .rbxm bestanden met "Cmdr" in de naam.',srch_c:'Zoek Conch...',srch_r:'Zoek Cmdr...',bdl:'Downloads',bnew:'NIEUW',hist:'Geschiedenis',hist_lbl:'Vorige versies',dl:'↓ Downloaden',vcount:n=>`${n} versies`,dlc:n=>`${n} dl`,t_start:'Download gestart',t_done:'Download voltooid',t_prog:'Downloaden...',t_ref:'Verversen...',t_ref2:'Nieuwste releases laden',t_upd:'Up-to-date',t_upd2:'Releases herladen',t_cp:'Link gekopieerd!',t_cp2:'Downloadlink naar klembord',empty:s=>`Geen ${s} bestanden gevonden.`,empty_h:s=>`Zorg dat .rbxm bestanden "${s}" in de naam hebben.`,se:'Geen bestanden gevonden.',e404:'Repository niet gevonden of geen Releases.',e403:'GitHub API-limiet overschreden.',egn:'Fout: ',footer:'Automatisch geladen vanuit GitHub Releases',dfooter:'Automatisch bijgewerkt vanuit GitHub Releases'},
-};
-let lang=(function(){
-  const saved=localStorage.getItem('cc_lang');
-  if(saved&&T[saved])return saved;
-  const bl=navigator.languages||[navigator.language||'en'];
-  for(const l of bl){const short=l.split('-')[0].toLowerCase();if(T[short])return short;}
-  return 'en';
-})();
-function t(k,...a){const v=(T[lang]||T.en)[k];return typeof v==='function'?v(...a):(v||k)}
-</script>
-
-
-<!-- SITE BANNER (controlled from admin panel) -->
-<div class="site-banner" id="site-banner"></div>
-<canvas id="confetti-canvas"></canvas>
-<div id="toast-container"></div>
-
-<!-- NAV -->
-<nav>
-  <div class="nav-logo"><span class="c">Conch</span><span class="sep">/</span><span class="r">Cmdr</span></div>
-  <div class="nav-right">
-    <button class="pwa-install-btn" id="pwa-btn" onclick="installPWA()">⬇ Install App</button>
-    <select class="lang-select" id="lang-sel" onchange="setLang(this.value)">
-      <option value="en">EN</option><option value="de">DE</option><option value="es">ES</option>
-      <option value="it">IT</option><option value="fr">FR</option><option value="pt">PT</option>
-      <option value="ru">RU</option><option value="ja">JA</option><option value="zh">ZH</option>
-      <option value="ko">KO</option><option value="tr">TR</option><option value="ar">AR</option>
-      <option value="pl">PL</option><option value="nl">NL</option>
-    </select>
-    <button class="icon-btn" id="theme-btn" onclick="toggleTheme()" title="Toggle Theme">
-      <span class="theme-icon" id="theme-icon">🌙</span>
-    </button>
-    <button class="icon-btn" id="refresh-btn" onclick="doRefresh()" title="Refresh">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
-    </button>
-    <button class="burger" id="burger-btn" onclick="toggleDrawer()"><span></span><span></span><span></span></button>
-  </div>
-</nav>
-
-<!-- DRAWER -->
-<div class="drawer-overlay" id="drawer-overlay" onclick="closeDrawer()"></div>
-<div class="drawer" id="drawer">
-  <div class="drawer-head">
-    <div class="drawer-logo"><span class="c">Conch</span><span class="sep">/</span><span class="r">Cmdr</span></div>
-    <button class="drawer-close" onclick="closeDrawer()">✕</button>
-  </div>
-  <div class="drawer-nav">
-    <p class="drawer-slabel">Navigation</p>
-    <a class="drawer-item active" href="index.html" onclick="closeDrawer()"><span class="drawer-icon">📥</span><span id="dl-dl">Downloads</span></a>
-    <a class="drawer-item" href="announcements.html" onclick="closeDrawer()"><span class="drawer-icon">📣</span><span id="dl-ann">Announcements</span></a>
-    <a class="drawer-item" href="https://systems-download.github.io/faq.html" onclick="closeDrawer()"><span class="drawer-icon">❓</span><span>FAQ</span></a>
-    <div class="drawer-div"></div>
-    <p class="drawer-slabel">Settings</p>
-    <a class="drawer-item" onclick="openEmailModal();closeDrawer()"><span class="drawer-icon">📧</span><span>Email Notifications</span></a>
-    <div class="drawer-div"></div>
-    <p class="drawer-slabel">Quick Jump</p>
-    <a class="drawer-item" href="#conch" onclick="closeDrawer()"><span class="drawer-icon" style="color:var(--conch)">◈</span>Conch</a>
-    <a class="drawer-item" href="#cmdr"  onclick="closeDrawer()"><span class="drawer-icon" style="color:var(--cmdr)">◈</span>Cmdr</a>
-  </div>
-  <div class="drawer-footer" id="dl-footer">Auto-updated from GitHub Releases</div>
-</div>
-
-<!-- HERO -->
-<div class="hero">
-  <h1><em>Conch</em> &amp; <strong>Cmdr</strong><br>Download Hub</h1>
-  <p id="hero-sub"></p>
-  <div class="scroll-hint">
-    <a href="#conch" class="c">↓ Conch</a>
-    <a href="#cmdr"  class="r">↓ Cmdr</a>
-  </div>
-</div>
-
-
-<!-- DISCORD BANNER -->
-<div class="discord-banner">
-  <div class="discord-icon">💬</div>
-  <div class="discord-info">
-    <div class="discord-title">Join the Conch & Cmdr Discord</div>
-    <div class="discord-sub">Get updates, support, and talk to the community</div>
-  </div>
-  <a class="discord-btn" href="https://discord.gg/XaZSGVFvzV" target="_blank" rel="noopener">Join Server →</a>
-</div>
-
-<!-- DOWNLOAD QUEUE FAB -->
-<div class="queue-fab">
-  <div class="queue-panel" id="queue-panel">
-    <div class="queue-head">
-      <span class="queue-title">🛒 Download Queue</span>
-      <button class="queue-close" onclick="toggleQueue()">✕</button>
-    </div>
-    <div class="queue-progress" id="queue-progress"></div>
-    <div class="queue-list" id="queue-list">
-      <div class="queue-empty">Queue is empty — add files with 🛒</div>
-    </div>
-    <div class="queue-footer">
-      <button class="queue-dl-btn" id="queue-dl-btn" onclick="startQueue()">↓ Download All</button>
-      <button class="queue-clear-btn" onclick="clearQueue()">Clear</button>
-    </div>
-  </div>
-  <button class="queue-btn" onclick="toggleQueue()" title="Download Queue">
-    🛒<span class="queue-badge" id="queue-badge">0</span>
-  </button>
-</div>
-
-<!-- FEATURED FILE (loaded from Supabase settings) -->
-<div class="featured-wrap" id="featured-wrap" style="display:none">
-  <div class="featured-card">
-    <span class="featured-badge">⭐ Recommended</span>
-    <div class="featured-icon">🧩</div>
-    <div class="featured-info">
-      <div class="featured-name" id="featured-name">—</div>
-      <div class="featured-meta" id="featured-meta">—</div>
-    </div>
-    <button class="btn-dl btn-dl-c" id="featured-dl-btn">↓ Download</button>
-  </div>
-</div>
-
-<!-- CONCH -->
-<div class="section" id="conch">
-  <div class="section-header"><h2 class="c">Conch</h2><span class="sbadge sbadge-c" id="sb-c"></span></div>
-  <p class="section-desc" id="desc-c"></p>
-  <div class="search-wrap">
-    <span class="search-icon">🔍</span>
-    <input class="search-input cf" id="search-conch" type="text" oninput="doSearch('conch')">
-    <button class="search-clear" id="clear-conch" onclick="clearSearch('conch')">✕</button>
-  </div>
-  <div class="file-list" id="conch-list"></div>
-  <div class="search-empty" id="empty-conch"></div>
-</div>
-
-<div class="divider"></div>
-
-<!-- CMDR -->
-<div class="section" id="cmdr">
-  <div class="section-header"><h2 class="r">Cmdr</h2><span class="sbadge sbadge-r" id="sb-r"></span></div>
-  <p class="section-desc" id="desc-r"></p>
-  <div class="search-wrap">
-    <span class="search-icon">🔍</span>
-    <input class="search-input rf" id="search-cmdr" type="text" oninput="doSearch('cmdr')">
-    <button class="search-clear" id="clear-cmdr" onclick="clearSearch('cmdr')">✕</button>
-  </div>
-  <div class="file-list" id="cmdr-list"></div>
-  <div class="search-empty" id="empty-cmdr"></div>
-</div>
-
-<footer id="footer"></footer>
-
-<!-- EMAIL NOTIFICATION MODAL -->
-<div class="email-modal-overlay" id="email-modal-overlay" onclick="closeEmailModal(event)">
-  <div class="email-modal" onclick="event.stopPropagation()">
-    <div id="email-modal-content">
-      <div class="email-modal-header">
-        <div class="email-modal-title">📧 Email Notifications</div>
-        <button class="email-modal-close" onclick="closeEmailModal()">✕</button>
-      </div>
-      <div class="email-modal-desc">
-        Get notified when new versions of Conch & Cmdr are released. We'll send you an email with the latest updates.
-      </div>
-      <input 
-        type="email" 
-        class="email-modal-input" 
-        id="email-input" 
-        placeholder="your.email@example.com"
-        required
-      >
-      <div class="email-modal-checkboxes">
-        <div class="email-checkbox-item">
-          <input type="checkbox" id="notify-conch" checked>
-          <label for="notify-conch">Notify me about Conch releases</label>
-        </div>
-        <div class="email-checkbox-item">
-          <input type="checkbox" id="notify-cmdr" checked>
-          <label for="notify-cmdr">Notify me about Cmdr releases</label>
-        </div>
-      </div>
-      <div class="email-modal-buttons">
-        <button class="email-modal-btn secondary" onclick="closeEmailModal()">Cancel</button>
-        <button class="email-modal-btn primary" onclick="subscribeEmail()">Subscribe</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<script>
-/* DRAWER */
-let _dopen=false;
-function toggleDrawer(){_dopen?closeDrawer():openDrawer()}
-function openDrawer(){_dopen=true;['drawer','drawer-overlay','burger-btn'].forEach(id=>document.getElementById(id).classList.add('open'));document.body.style.overflow='hidden'}
-function closeDrawer(){_dopen=false;['drawer','drawer-overlay','burger-btn'].forEach(id=>document.getElementById(id).classList.remove('open'));document.body.style.overflow=''}
-
-/* THEME TOGGLE */
-function toggleTheme(){
-  const root=document.documentElement;
-  const icon=document.getElementById('theme-icon');
-  const isDark=!root.classList.contains('light-mode');
-  
-  if(isDark){
-    root.classList.add('light-mode');
-    icon.textContent='☀️';
-    localStorage.setItem('cc_theme','light');
-  }else{
-    root.classList.remove('light-mode');
-    icon.textContent='🌙';
-    localStorage.setItem('cc_theme','dark');
-  }
-}
-
-function loadTheme(){
-  const savedTheme=localStorage.getItem('cc_theme');
-  const icon=document.getElementById('theme-icon');
-  if(savedTheme==='light'){
-    document.documentElement.classList.add('light-mode');
-    if(icon)icon.textContent='☀️';
-  }else{
-    if(icon)icon.textContent='🌙';
-  }
-}
-
-/* EMAIL NOTIFICATION MODAL */
-function openEmailModal(){
-  document.getElementById('email-modal-overlay').classList.add('open');
-  document.body.style.overflow='hidden';
-}
-
-function closeEmailModal(event){
-  if(event&&event.target!==event.currentTarget)return;
-  document.getElementById('email-modal-overlay').classList.remove('open');
-  document.body.style.overflow='';
-  // Reset form after a delay
-  setTimeout(()=>{
-    document.getElementById('email-modal-content').innerHTML=`
-      <div class="email-modal-header">
-        <div class="email-modal-title">📧 Email Notifications</div>
-        <button class="email-modal-close" onclick="closeEmailModal()">✕</button>
-      </div>
-      <div class="email-modal-desc">
-        Get notified when new versions of Conch & Cmdr are released. We'll send you an email with the latest updates.
-      </div>
-      <input 
-        type="email" 
-        class="email-modal-input" 
-        id="email-input" 
-        placeholder="your.email@example.com"
-        required
-      >
-      <div class="email-modal-checkboxes">
-        <div class="email-checkbox-item">
-          <input type="checkbox" id="notify-conch" checked>
-          <label for="notify-conch">Notify me about Conch releases</label>
-        </div>
-        <div class="email-checkbox-item">
-          <input type="checkbox" id="notify-cmdr" checked>
-          <label for="notify-cmdr">Notify me about Cmdr releases</label>
-        </div>
-      </div>
-      <div class="email-modal-buttons">
-        <button class="email-modal-btn secondary" onclick="closeEmailModal()">Cancel</button>
-        <button class="email-modal-btn primary" onclick="subscribeEmail()">Subscribe</button>
-      </div>
-    `;
-  },300);
-}
-
-async function subscribeEmail(){
-  const email=document.getElementById('email-input').value.trim();
-  const notifyConch=document.getElementById('notify-conch').checked;
-  const notifyCmdr=document.getElementById('notify-cmdr').checked;
-  
-  if(!email){
-    toast({title:'Email required',sub:'Please enter your email address',type:'w',dur:3000});
-    return;
-  }
-  
-  // Email validation
-  const emailRegex=/^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if(!emailRegex.test(email)){
-    toast({title:'Invalid email',sub:'Please enter a valid email address',type:'w',dur:3000});
-    return;
-  }
-  
-  if(!notifyConch&&!notifyCmdr){
-    toast({title:'Select at least one',sub:'Choose Conch or Cmdr notifications',type:'w',dur:3000});
-    return;
-  }
-  
-  try{
-    // Check if email already exists
-    const checkResponse=await fetch(
-      `https://rmdkoauibmzhgnvrwhfd.supabase.co/rest/v1/email_subscribers?email=eq.${encodeURIComponent(email)}&select=id,email`,
-      {
-        headers:{
-          'apikey':'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJtZGtvYXVpYm16aGdudnJ3aGZkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyNjg2MDksImV4cCI6MjA5Mzg0NDYwOX0.lu6T00f9y9-Q8HhVag-MGjJz6bTlJrYUwC7AApIxaFw',
-          'Authorization':'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJtZGtvYXVpYm16aGdudnJ3aGZkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyNjg2MDksImV4cCI6MjA5Mzg0NDYwOX0.lu6T00f9y9-Q8HhVag-MGjJz6bTlJrYUwC7AApIxaFw'
-        }
-      }
-    );
-    
-    const existing=await checkResponse.json();
-    
-    let response;
-    if(existing&&existing.length>0){
-      // Update existing subscription
-      response=await fetch(
-        `https://rmdkoauibmzhgnvrwhfd.supabase.co/rest/v1/email_subscribers?email=eq.${encodeURIComponent(email)}`,
-        {
-          method:'PATCH',
-          headers:{
-            'apikey':'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJtZGtvYXVpYm16aGdudnJ3aGZkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyNjg2MDksImV4cCI6MjA5Mzg0NDYwOX0.lu6T00f9y9-Q8HhVag-MGjJz6bTlJrYUwC7AApIxaFw',
-            'Authorization':'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJtZGtvYXVpYm16aGdudnJ3aGZkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyNjg2MDksImV4cCI6MjA5Mzg0NDYwOX0.lu6T00f9y9-Q8HhVag-MGjJz6bTlJrYUwC7AApIxaFw',
-            'Content-Type':'application/json',
-            'Prefer':'return=minimal'
-          },
-          body:JSON.stringify({
-            notify_conch:notifyConch,
-            notify_cmdr:notifyCmdr,
-            updated_at:new Date().toISOString()
-          })
-        }
-      );
-    }else{
-      // Create new subscription
-      response=await fetch('https://rmdkoauibmzhgnvrwhfd.supabase.co/rest/v1/email_subscribers',{
-        method:'POST',
-        headers:{
-          'apikey':'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJtZGtvYXVpYm16aGdudnJ3aGZkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyNjg2MDksImV4cCI6MjA5Mzg0NDYwOX0.lu6T00f9y9-Q8HhVag-MGjJz6bTlJrYUwC7AApIxaFw',
-          'Authorization':'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJtZGtvYXVpYm16aGdudnJ3aGZkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyNjg2MDksImV4cCI6MjA5Mzg0NDYwOX0.lu6T00f9y9-Q8HhVag-MGjJz6bTlJrYUwC7AApIxaFw',
-          'Content-Type':'application/json',
-          'Prefer':'return=minimal'
-        },
-        body:JSON.stringify({
-          email:email,
-          notify_conch:notifyConch,
-          notify_cmdr:notifyCmdr,
-          subscribed_at:new Date().toISOString(),
-          created_at:new Date().toISOString()
-        })
-      });
-    }
-    
-    if(response.ok||response.status===201||response.status===204){
-      // Show success message
-      document.getElementById('email-modal-content').innerHTML=`
-        <div class="email-modal-success">
-          <div class="email-modal-success-icon">✅</div>
-          <div class="email-modal-success-title">Successfully Subscribed!</div>
-          <div class="email-modal-success-desc">
-            You'll receive an email notification when new ${notifyConch&&notifyCmdr?'Conch & Cmdr':notifyConch?'Conch':'Cmdr'} releases are published.
-            <br><br>
-            <strong>Email Message Preview:</strong><br>
-            <em style="color:var(--muted);font-size:0.75rem;display:block;margin-top:0.5rem;padding:0.75rem;background:var(--surface2);border-radius:6px;line-height:1.6;">
-              Hello!<br><br>
-              The website released a new version of ${notifyConch&&notifyCmdr?'Conch/Cmdr':notifyConch?'Conch':'Cmdr'}.<br>
-              Check it out on https://systems-download.github.io!
-            </em>
-          </div>
-          <button class="email-modal-btn primary" onclick="closeEmailModal()" style="margin-top:1.5rem;width:100%">Close</button>
-        </div>
-      `;
-      confetti();
-      toast({title:'Subscribed!',sub:'You will be notified of new releases',type:'ok',dur:4000});
-    }else{
-      throw new Error('Subscription failed');
-    }
-  }catch(error){
-    console.error('Email subscription error:',error);
-    toast({title:'Subscription failed',sub:'Please try again later',type:'w',dur:3000});
-  }
-}
-
-/* LANG */
-function setLang(l){lang=l;localStorage.setItem('cc_lang',l);applyLang();rerender()}
-function applyLang(){
-  const ids={['nl-dl']:'nav_dl',['nl-ann']:'nav_ann',['dl-dl']:'nav_dl',['dl-ann']:'nav_ann',['hero-sub']:'hero_sub',['sb-c']:'bdl',['sb-r']:'bdl',['desc-c']:'desc_c',['desc-r']:'desc_r',['empty-conch']:'se',['empty-cmdr']:'se'};
-  Object.entries(ids).forEach(([id,k])=>{const el=document.getElementById(id);if(el)el.textContent=t(k)});
-  document.getElementById('search-conch').placeholder=t('srch_c');
-  document.getElementById('search-cmdr').placeholder=t('srch_r');
-  document.getElementById('footer').textContent='Conch & Cmdr — '+t('footer');
-  document.getElementById('dl-footer').textContent=t('dfooter');
-  document.getElementById('lang-sel').value=lang;
-}
-
-/* DOWNLOAD COUNTER */
-function getDLC(f){try{return parseInt(localStorage.getItem('dlc_'+f)||'0')}catch{return 0}}
-function incDLC(f){try{localStorage.setItem('dlc_'+f,getDLC(f)+1)}catch{}}
-function refreshDLC(name){
-  document.querySelectorAll(`.dlc[data-f="${CSS.escape(name)}"]`).forEach(el=>{
-    const n=getDLC(name);el.textContent=n>0?t('dlc',n):'';el.style.display=n>0?'':'none'
-  })
-}
-
-/* TOAST */
-function toast({title,sub,type='c',dur=3500}){
-  const c=document.getElementById('toast-container'),el=document.createElement('div');el.className='toast';
-  const ico={c:'↓',r:'↓',ok:'✓',i:'⚑',w:'!'}[type]||'↓';
-  const icls={c:'t-ic',r:'t-ir',ok:'t-iok',i:'t-inf',w:'t-iwarn'}[type]||'t-ic';
-  const bcol={c:'var(--conch)',r:'var(--cmdr)',ok:'#3cc878',i:'#64a0ff',w:'#ffc832'}[type]||'var(--conch)';
-  el.innerHTML=`<div class="t-ico ${icls}">${ico}</div><div class="t-body"><div class="t-title">${eh(title)}</div>${sub?`<div class="t-sub">${eh(sub)}</div>`:''}</div><div class="t-bar" style="animation-duration:${dur}ms;background:${bcol}"></div>`;
-  c.appendChild(el);
-  setTimeout(()=>{el.classList.add('out');setTimeout(()=>el.remove(),320)},dur);
-}
-
-/* CONFETTI */
-function confetti(){
-  const cv=document.getElementById('confetti-canvas'),ctx=cv.getContext('2d');
-  cv.width=window.innerWidth;cv.height=window.innerHeight;
-  const cols=['#0ff4c6','#ff4f5e','#ffc832','#64a0ff','#ff8c42','#a78bfa'];
-  const ps=Array.from({length:70},()=>({x:Math.random()*cv.width,y:-10-Math.random()*60,r:4+Math.random()*5,col:cols[Math.floor(Math.random()*cols.length)],vx:(Math.random()-.5)*3,vy:2+Math.random()*4,rot:Math.random()*Math.PI*2,rv:(Math.random()-.5)*.2,sq:Math.random()>.5}));
-  let af,alpha=1;
-  function draw(){ctx.clearRect(0,0,cv.width,cv.height);ps.forEach(p=>{ctx.save();ctx.globalAlpha=alpha;ctx.translate(p.x,p.y);ctx.rotate(p.rot);ctx.fillStyle=p.col;if(p.sq){ctx.fillRect(-p.r,-p.r/2,p.r*2,p.r)}else{ctx.beginPath();ctx.arc(0,0,p.r/2,0,Math.PI*2);ctx.fill()}ctx.restore();p.x+=p.vx;p.y+=p.vy;p.rot+=p.rv;p.vy+=.06});
-  if(ps.every(p=>p.y>cv.height)){alpha-=.06}if(alpha<=0){ctx.clearRect(0,0,cv.width,cv.height);return}af=requestAnimationFrame(draw)}
-  if(af)cancelAnimationFrame(af);draw()
-}
-
-/* RIPPLE */
-function addRipple(btn,cls){
-  const r=document.createElement('span');r.className='ripple '+cls;
-  const rect=btn.getBoundingClientRect(),size=Math.max(rect.width,rect.height);
-  r.style.cssText=`width:${size}px;height:${size}px;left:${(rect.width-size)/2}px;top:${(rect.height-size)/2}px`;
-  btn.appendChild(r);setTimeout(()=>r.remove(),600)
-}
-
-/* DOWNLOAD with real progress */
-function dl(url,name,type,btn){
-  addRipple(btn,'ripple-'+type);
-  const itemEl=btn.closest('.file-item');
-  const progWrap=itemEl?itemEl.querySelector('.dl-progress-wrap'):null;
-  const progBar=itemEl?itemEl.querySelector('.dl-progress-bar'):null;
-  if(progWrap)progWrap.classList.add('active');
-  toast({title:t('t_start'),sub:name,type,dur:3000});
-
-  fetch(url)
-    .then(res=>{
-      if(!res.ok)throw new Error('HTTP '+res.status);
-      const total=parseInt(res.headers.get('content-length')||'0');
-      const reader=res.body.getReader();
-      const chunks=[];let received=0;
-      function pump(){
-        return reader.read().then(({done,value})=>{
-          if(done){
-            const blob=new Blob(chunks);
-            const u=URL.createObjectURL(blob),a=document.createElement('a');
-            a.href=u;a.download=name;document.body.appendChild(a);a.click();
-            document.body.removeChild(a);URL.revokeObjectURL(u);
-            if(progBar){progBar.style.width='100%';setTimeout(()=>{if(progWrap)progWrap.classList.remove('active');progBar.style.width='0%'},600)}
-            incDLC(name);refreshDLC(name);
-            toast({title:t('t_done'),sub:name,type:'ok',dur:3000});
-            confetti();return;
-          }
-          chunks.push(value);received+=value.length;
-          if(total>0&&progBar){progBar.style.width=Math.round((received/total)*100)+'%'}
-          else if(progBar){const fake=Math.min((progBar.style.width?parseFloat(progBar.style.width):0)+5,90);progBar.style.width=fake+'%'}
-          return pump();
-        })
-      }
-      return pump();
-    })
-    .catch(()=>{
-      if(progWrap)progWrap.classList.remove('active');
-      const a=document.createElement('a');a.href=url;a.download=name;a.target='_blank';a.rel='noopener';
-      document.body.appendChild(a);a.click();document.body.removeChild(a);
-      incDLC(name);refreshDLC(name);confetti();
-    });
-}
-
-/* SHARE */
-function share(url,btn){
-  addRipple(btn,'ripple-c');
-  const copy=()=>{btn.classList.add('copied');btn.textContent='✓';toast({title:t('t_cp'),sub:t('t_cp2'),type:'i',dur:2500});setTimeout(()=>{btn.classList.remove('copied');btn.textContent='⎘'},2000)};
-  if(navigator.clipboard)navigator.clipboard.writeText(url).then(copy).catch(()=>{fb(url);copy()});else{fb(url);copy()}
-}
-function fb(text){const ta=document.createElement('textarea');ta.value=text;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta)}
-
-/* SEARCH */
-function doSearch(sec){
-  const inp=document.getElementById('search-'+sec),clr=document.getElementById('clear-'+sec);
-  const q=inp.value.trim().toLowerCase(),list=document.getElementById(sec+'-list'),em=document.getElementById('empty-'+sec);
-  clr.classList.toggle('vis',q.length>0);
-  const items=list.querySelectorAll('.file-item');let vis=0;
-  items.forEach(it=>{const m=(it.dataset.n||'').includes(q)||(it.dataset.v||'').includes(q);it.classList.toggle('hidden',!m);if(m)vis++});
-  em.classList.toggle('vis',vis===0&&items.length>0&&q.length>0)
-}
-function clearSearch(sec){document.getElementById('search-'+sec).value='';doSearch(sec)}
-
-/* HISTORY */
-let _uid=0;
-function toggleHist(id){const p=document.getElementById('h-'+id),b=document.getElementById('hb-'+id),o=p.classList.contains('open');p.classList.toggle('open',!o);b.classList.toggle('open',!o)}
-
-/* SKELETON */
-function showSkel(id,n=3){document.getElementById(id).innerHTML=Array.from({length:n},()=>`<div class="skel-item"><div class="skel skel-ico"></div><div class="skel-body"><div class="skel skel-l w80"></div><div class="skel skel-l w50"></div></div><div class="skel skel-btn"></div></div>`).join('')}
-
-/* SEMVER SORT */
-function semver(s){const m=String(s).replace(/^v/i,'').match(/\d+/g);return m?m.map(Number):[0]}
-function cmpVer(a,b){const va=semver(a),vb=semver(b);for(let i=0;i<Math.max(va.length,vb.length);i++){const d=(vb[i]||0)-(va[i]||0);if(d)return d}return 0}
-
-/* CACHE */
-let _cc=[],_cr=[];
-
-/* FETCH - VERBESSERT: Gelöschte Releases werden automatisch entfernt */
-async function fetchReleases(){
-  showSkel('conch-list');showSkel('cmdr-list');
-  try{
-    // Cache-Busting: Stelle sicher, dass immer frische Daten von GitHub geladen werden
-    const cacheBuster='&_cb='+Date.now();
-    const res=await fetch(`https://api.github.com/repos/${CONFIG.GITHUB_REPO}/releases?per_page=${CONFIG.MAX_RELEASES}${cacheBuster}`);
-    if(!res.ok)throw new Error(res.status===404?'404':res.status===403?'403':res.status+' '+res.statusText);
-    const releases=await res.json();
-    
-    // WICHTIG: Listen komplett neu aufbauen - alte/gelöschte Releases werden NICHT übertragen
-    // Nur Releases die AKTUELL auf GitHub existieren werden hier verarbeitet
-    const cm={},rm={};
-    releases.forEach(rel=>{
-      const date=new Date(rel.published_at).toLocaleDateString('en-US',{year:'numeric',month:'short',day:'numeric'});
-      const isNew=(Date.now()-new Date(rel.published_at).getTime())<7*24*3600*1000;
-      (rel.assets||[]).forEach(a=>{
-        const nm=a.name,lo=nm.toLowerCase();
-        if(!lo.endsWith('.rbxm'))return;
-        const isC=lo.includes('conch'),isR=lo.includes('cmdr');
-        if(!isC&&!isR)return;
-        const entry={name:nm,size:fmtB(a.size),date,version:rel.tag_name||rel.name||'v?',url:a.browser_download_url,ts:rel.published_at,isNew};
-        const key=nm.replace(/[_\-]v[\d.]+/i,'').replace(/\.rbxm$/i,'').toLowerCase();
-        if(isC){if(!cm[key])cm[key]=[];cm[key].push(entry)}else{if(!rm[key])rm[key]=[];rm[key].push(entry)}
-      })
-    });
-    const srt=map=>Object.values(map).forEach(arr=>arr.sort((a,b)=>cmpVer(a.version,b.version)||new Date(b.ts)-new Date(a.ts)));
-    srt(cm);srt(rm);
-    const toG=map=>Object.values(map).sort((a,b)=>cmpVer(a[0].version,b[0].version));
-    
-    // Alte Cache-Daten werden komplett ersetzt - gelöschte Releases verschwinden automatisch
-    _cc=toG(cm);_cr=toG(rm);
-    render('conch',_cc);render('cmdr',_cr);
-    
-    if(CONFIG.DEBUG)console.log('✅ Releases geladen - Conch:',_cc.length,'Gruppen, Cmdr:',_cr.length,'Gruppen');
-  }catch(e){
-    const msg=e.message==='404'?t('e404'):e.message==='403'?t('e403'):t('egn')+e.message;
-    ['conch-list','cmdr-list'].forEach(id=>document.getElementById(id).innerHTML=`<div class="error-state">❌ ${msg}</div>`);
-  }
-}
-function rerender(){if(_cc.length||_cr.length){render('conch',_cc);render('cmdr',_cr)}}
-
-/* RENDER */
-function render(sec,groups){
-  const list=document.getElementById(sec+'-list'),isC=sec==='conch',cls=isC?'c':'r';
-  if(!groups.length){list.innerHTML=`<div class="empty-state">${t('empty',isC?'Conch':'Cmdr')}<br><small style="margin-top:.5rem;display:block;opacity:.7">${t('empty_h',isC?'Conch':'Cmdr')}</small></div>`;return}
-  list.innerHTML='';
-  groups.forEach(vers=>{
-    const latest=vers[0],hasH=vers.length>1,id=++_uid,dlc=getDLC(latest.name);
-    const el=document.createElement('div');
-    el.className='file-item';el.dataset.n=latest.name.toLowerCase();el.dataset.v=latest.version.toLowerCase();
-    let histHTML='';
-    if(hasH){
-      const rows=vers.slice(1).map(v=>`<div class="ver-row"><span class="ver-tag vt-${cls}">${eh(v.version)}</span><span class="ver-name" title="${eh(v.name)}">${eh(v.name)}</span><span class="ver-date">${v.date}</span><button class="btn-dl-xs xs-${cls}" onclick="dl('${ea(v.url)}','${ea(v.name)}','${cls}',this)">↓</button></div>`).join('');
-      histHTML=`<div class="ver-history" id="h-${id}"><div class="ver-inner"><div class="ver-label">${t('hist_lbl')}</div>${rows}</div></div>`;
-    }
-    el.innerHTML=`
-      <div class="file-main">
-        <div class="file-icon fi-${cls}">🧩</div>
-        <div class="file-info">
-          <div class="file-name-row">
-            <span class="file-name" title="${eh(latest.name)}">${eh(latest.name)}</span>
-            <span class="fver fver-${cls}">${eh(latest.version)}</span>
-            ${latest.isNew?`<span class="badge-new">${t('bnew')}</span>`:''}
-          </div>
-          <div class="file-meta">
-            <span>${latest.size}</span><span>·</span><span>${latest.date}</span><span>·</span><span>.rbxm</span>
-            ${hasH?`<span>·</span><span>${t('vcount',vers.length)}</span>`:''}
-            <span class="dlc" data-f="${eh(latest.name)}" style="${dlc>0?'':'display:none'}">${dlc>0?t('dlc',dlc):''}</span>
-          </div>
-        </div>
-        <div class="file-actions">
-          <button class="btn-sm" onclick="share('${ea(latest.url)}',this)" title="Copy link">⎘</button>
-          <button class="btn-queue" id="qbtn-${id}" onclick="addToQueue('${ea(latest.url)}','${ea(latest.name)}','${cls}','${id}')" title="Add to queue">🛒</button>
-          ${hasH?`<button class="btn-hist" id="hb-${id}" onclick="toggleHist(${id})"><span>${t('hist')}</span><span class="arr">▾</span></button>`:''}
-          <button class="btn-dl btn-dl-${cls}" onclick="dl('${ea(latest.url)}','${ea(latest.name)}','${cls}',this)">${t('dl')}</button>
-        </div>
-      </div>
-      <div class="dl-progress-wrap"><div class="dl-progress-bar dlp-${cls}"></div></div>
-      ${histHTML}`;
-    list.appendChild(el);
-  })
-}
-
-/* REFRESH */
-async function doRefresh(){
-  const btn=document.getElementById('refresh-btn');
-  if(btn.disabled)return;
-  btn.disabled=true;btn.classList.add('spinning');
-  showSkel('conch-list');showSkel('cmdr-list');
-  ['empty-conch','empty-cmdr'].forEach(id=>document.getElementById(id).classList.remove('vis'));
-  clearSearch('conch');clearSearch('cmdr');
-  toast({title:t('t_ref'),sub:t('t_ref2'),type:'c',dur:2000});
-  await fetchReleases();
-  btn.disabled=false;btn.classList.remove('spinning');
-  toast({title:t('t_upd'),sub:t('t_upd2'),type:'ok',dur:2500});
-}
-
-/* UTILS */
-function fmtB(b){if(!b)return'0 B';const k=1024,s=['B','KB','MB','GB'],i=Math.floor(Math.log(b)/Math.log(k));return parseFloat((b/Math.pow(k,i)).toFixed(2))+' '+s[i]}
-function eh(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
-function ea(s){return String(s).replace(/\\/g,'\\\\').replace(/'/g,"\\'")}
-
-/* BANNER */
-(function(){
-  if(!window.__BANNER__)return;
-  const el=document.getElementById('site-banner');
-  if(!el)return;
-  el.textContent=window.__BANNER__.text;
-  el.className='site-banner sb-'+(window.__BANNER__.type||'info')+' active';
-  document.querySelector('.hero').style.paddingTop='10rem';
-})();
-
-
-/* PAGE TRANSITIONS */
-document.querySelectorAll('a[href]').forEach(a=>{
-  const href=a.getAttribute('href');
-  if(!href||href.startsWith('#')||href.startsWith('http')||href.startsWith('mailto')||a.target==='_blank')return;
-  a.addEventListener('click',e=>{
-    e.preventDefault();
-    const overlay=document.getElementById('page-transition');
-    overlay.classList.add('fade-out');
-    setTimeout(()=>window.location.href=href,250);
-  });
-});
-window.addEventListener('pageshow',()=>{
-  const overlay=document.getElementById('page-transition');
-  if(overlay)overlay.classList.remove('fade-out');
-});
-
-/* PWA SERVICE WORKER + INSTALL */
-let _deferredPrompt=null;
-if('serviceWorker' in navigator){
-  navigator.serviceWorker.register('sw.js').catch(()=>{});
-}
-window.addEventListener('beforeinstallprompt',e=>{
-  e.preventDefault();_deferredPrompt=e;
-  const btn=document.getElementById('pwa-btn');
-  if(btn)btn.classList.add('visible');
-});
-function installPWA(){
-  if(!_deferredPrompt)return;
-  _deferredPrompt.prompt();
-  _deferredPrompt.userChoice.then(()=>{
-    _deferredPrompt=null;
-    const btn=document.getElementById('pwa-btn');
-    if(btn)btn.classList.remove('visible');
-  });
-}
-window.addEventListener('appinstalled',()=>{
-  const btn=document.getElementById('pwa-btn');if(btn)btn.classList.remove('visible');
-  toast({title:'App installed!',sub:'Conch & Cmdr added to your device',type:'ok',dur:3000});
-});
-
-
-/* ── DOWNLOAD QUEUE ── */
-let _queue=[];
-let _queueRunning=false;
-
-function toggleQueue(){
-  const p=document.getElementById('queue-panel');
-  p.classList.toggle('open');
-  renderQueue();
-}
-
-function addToQueue(url,name,type,itemId){
-  if(_queue.find(q=>q.name===name)){
-    toast({title:'Already in queue',sub:name,type:'i',dur:2000});return;
-  }
-  _queue.push({url,name,type,done:false});
-  updateQueueBadge();
-  renderQueue();
-  // Style the button
-  const btn=document.getElementById('qbtn-'+itemId);
-  if(btn)btn.classList.add('in-queue');
-  toast({title:'Added to queue',sub:name,type:'c',dur:1800});
-}
-
-function removeFromQueue(idx){
-  const item=_queue[idx];
-  _queue.splice(idx,1);
-  // Reset button
-  document.querySelectorAll('.btn-queue.in-queue').forEach(b=>{
-    // find by name match - reset all buttons for this file
-  });
-  updateQueueBadge();renderQueue();
-}
-
-function clearQueue(){
-  _queue=[];
-  document.querySelectorAll('.btn-queue.in-queue').forEach(b=>b.classList.remove('in-queue'));
-  updateQueueBadge();renderQueue();
-}
-
-function updateQueueBadge(){
-  const badge=document.getElementById('queue-badge');
-  const n=_queue.filter(q=>!q.done).length;
-  badge.textContent=_queue.length;
-  badge.classList.toggle('vis',_queue.length>0);
-}
-
-function renderQueue(){
-  const list=document.getElementById('queue-list');
-  const dlBtn=document.getElementById('queue-dl-btn');
-  if(!_queue.length){
-    list.innerHTML='<div class="queue-empty">Queue is empty — add files with 🛒</div>';
-    if(dlBtn)dlBtn.disabled=true;return;
-  }
-  if(dlBtn)dlBtn.disabled=_queueRunning;
-  list.innerHTML=_queue.map((q,i)=>`
-    <div class="queue-item${q.done?' done':''}" id="qitem-${i}">
-      <span class="queue-item-icon">${q.done?'✅':'🧩'}</span>
-      <span class="queue-item-name" title="${eh(q.name)}">${eh(q.name)}</span>
-      <span class="queue-item-type qit-${q.type}">${q.type.toUpperCase()}</span>
-      ${!q.done&&!_queueRunning?`<button class="queue-item-rm" onclick="removeFromQueue(${i})">✕</button>`:''}
-    </div>`).join('');
-}
-
-async function startQueue(){
-  if(_queueRunning||!_queue.length)return;
-  _queueRunning=true;
-  const dlBtn=document.getElementById('queue-dl-btn');
-  if(dlBtn){dlBtn.disabled=true;dlBtn.textContent='Downloading...';}
-  const prog=document.getElementById('queue-progress');
-  const itemsToDownload=_queue.filter(q=>!q.done);
-  const total=itemsToDownload.length;
-  let done=0;
-  
-  toast({title:'Starting '+total+' downloads',sub:'All files will download simultaneously',type:'c',dur:3000});
-  
-  // Alle Items als "downloading" markieren
-  _queue.forEach((q,i)=>{
-    if(!q.done){
-      const item=document.getElementById('qitem-'+i);
-      if(item)item.classList.add('downloading');
-    }
-  });
-  
-  // Alle Downloads SOFORT parallel starten - KEIN await zwischen den Starts
-  const downloadPromises=[];
-  for(let i=0;i<_queue.length;i++){
-    const q=_queue[i];
-    if(q.done)continue;
-    
-    // Download-Promise erstellen und SOFORT zur Liste hinzufügen
-    const downloadPromise=(async()=>{
-      try{
-        // Direkt den Browser-Download triggern ohne zu warten
-        const a=document.createElement('a');
-        a.href=q.url;
-        a.download=q.name;
-        a.target='_blank';
-        a.rel='noopener';
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        
-        // Counter erhöhen und DLC speichern
-        incDLC(q.name);
-        refreshDLC(q.name);
-        
-        // Kurze Verzögerung für UI-Update
-        await new Promise(resolve=>setTimeout(resolve,200));
-      }catch(err){
-        console.error('Download error:',err);
-      }finally{
-        q.done=true;
-        done++;
-        if(prog)prog.style.width=Math.round((done/total)*100)+'%';
-        const item=document.getElementById('qitem-'+i);
-        if(item)item.classList.remove('downloading');
-        renderQueue();
-      }
-    })();
-    
-    downloadPromises.push(downloadPromise);
-  }
-  
-  // Jetzt auf ALLE Downloads gleichzeitig warten
-  await Promise.all(downloadPromises);
-  
-  _queueRunning=false;
-  if(dlBtn){dlBtn.disabled=false;dlBtn.textContent='↓ Download All';}
-  confetti();
-  toast({title:'All downloads complete!',sub:done+' files downloaded',type:'ok',dur:3500});
-  setTimeout(()=>{if(prog)prog.style.width='0%';},1500);
-}
-
-/* ── FEATURED FILE ── */
-async function loadFeatured(){
-  try{
-    const r=await fetch('https://rmdkoauibmzhgnvrwhfd.supabase.co/rest/v1/site_settings?key=in.(featured_file_name,featured_file_url,featured_file_meta,featured_enabled)&select=key,value',
-      {headers:{'apikey':'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJtZGtvYXVpYm16aGdudnJ3aGZkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyNjg2MDksImV4cCI6MjA5Mzg0NDYwOX0.lu6T00f9y9-Q8HhVag-MGjJz6bTlJrYUwC7AApIxaFw','Authorization':'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJtZGtvYXVpYm16aGdudnJ3aGZkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyNjg2MDksImV4cCI6MjA5Mzg0NDYwOX0.lu6T00f9y9-Q8HhVag-MGjJz6bTlJrYUwC7AApIxaFw'}});
-    if(!r.ok)return;
-    const rows=await r.json();const s={};rows.forEach(x=>s[x.key]=x.value);
-    if(s.featured_enabled!=='true'||!s.featured_file_name)return;
-    document.getElementById('featured-name').textContent=s.featured_file_name;
-    document.getElementById('featured-meta').textContent=s.featured_file_meta||'Recommended by the team';
-    const dlBtn=document.getElementById('featured-dl-btn');
-    if(dlBtn&&s.featured_file_url){
-      dlBtn.onclick=()=>dl(s.featured_file_url,s.featured_file_name,'c',dlBtn);
-    }
-    document.getElementById('featured-wrap').style.display='block';
-  }catch(e){}
-}
-
-/* INIT */
-document.getElementById('lang-sel').value=lang;
-loadTheme();
-applyLang();showSkel('conch-list');showSkel('cmdr-list');fetchReleases();loadFeatured();
 </script>
 </body>
 </html>
