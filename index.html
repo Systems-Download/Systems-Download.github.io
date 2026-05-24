@@ -1138,7 +1138,7 @@ async function startQueue(){
 async function loadFeatured(){
   try{
     const r=await fetch('https://rmdkoauibmzhgnvrwhfd.supabase.co/rest/v1/site_settings?key=in.(featured_file_name,featured_file_url,featured_file_meta,featured_enabled)&select=key,value',
-      {headers:{'apikey':'YOUR_ANON_KEY','Authorization':'Bearer YOUR_ANON_KEY'}});
+      {headers:{'apikey':'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJtZGtvYXVpYm16aGdudnJ3aGZkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyNjg2MDksImV4cCI6MjA5Mzg0NDYwOX0.lu6T00f9y9-Q8HhVag-MGjJz6bTlJrYUwC7AApIxaFw','Authorization':'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJtZGtvYXVpYm16aGdudnJ3aGZkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyNjg2MDksImV4cCI6MjA5Mzg0NDYwOX0.lu6T00f9y9-Q8HhVag-MGjJz6bTlJrYUwC7AApIxaFw'}});
     if(!r.ok)return;
     const rows=await r.json();const s={};rows.forEach(x=>s[x.key]=x.value);
     if(s.featured_enabled!=='true'||!s.featured_file_name)return;
