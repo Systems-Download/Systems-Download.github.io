@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Systems Status — Systems-Download</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+    --conch:#0ff4c6; 
+    --cmdr:#ff4f5e;  
+    --warning:#ffd166; 
+    --bg:#050608;
+    --surface:#0f1115;
+    --surface2:#161920;
+    --border:rgba(15,244,198,0.06);
+    --border2:rgba(255,255,255,0.08);
+    --text:#e8eaf0;
+    --muted:#6b7280;
+    --mono:'JetBrains Mono',monospace;
+    --sans:'Syne',sans-serif;
+}
+
+html,body{min-height:100%;overflow-x:hidden;background:var(--bg)}
+body {
+    color:var(--text);
+    font-family:var(--sans);
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:flex-start;
+    padding-top:120px;
+    padding-bottom:80px;
+    position:relative;
+}
+
+.grid-bg{
+    position:fixed;
+    inset:-100px;
+    background-image:
+        linear-gradient(rgba(15,244,198,.02) 1px,transparent 1px),
+        linear-gradient(90deg,rgba(15,244,198,.02) 1px,transparent 1px);
+    background-size:50px 50px;
+    transform: perspective(500px) rotateX(15deg);
+    animation: gridDrive 8s linear infinite;
+    pointer-events:none;
+    z-index:0;
+}
+@keyframes gridDrive{
+    0%{background-position:0 0}
+    100%{background-position:0 50px}
+}
+
+.glow-c{position:fixed;top:-150px;left:-150px;width:700px;height:700px;background:radial-gradient(circle,rgba(15,244,198,.06) 0%,transparent 70%);pointer-events:none;z-index:0;animation:pulseGlow 10s ease-in-out infinite alternate}
+.glow-r{position:fixed;bottom:-150px;right:-150px;width:700px;height:700px;background:radial-gradient(circle,rgba(255,79,94,.05) 0%,transparent 70%);pointer-events:none;z-index:0;animation:pulseGlow 8s ease-in-out infinite alternate-reverse}
+
+@keyframes pulseGlow {
+    0% { transform: scale(1) translate(0, 0); opacity: 0.7; }
+    100% { transform: scale(1.2) translate(30px, 50px); opacity: 1; }
+}
+
+canvas{position:fixed;inset:0;pointer-events:none;z-index:1}
+
+body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.04), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.04));
+    z-index: 999;
+    background-size: 100% 4px, 6px 100%;
+    pointer-events: none;
+}
+
+nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:0 2.5rem;background:rgba(5,6,8,.8);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);height:64px;box-shadow:0 4px 30px rgba(0,0,0,0.5)}
+.nav-logo{font-size:1.1rem;font-weight:800;display:flex;gap:.4em;text-decoration:none;font-family:var(--sans);letter-spacing:-0.5px}
+.nav-logo .c{color:var(--conch);text-shadow:0 0 10px var(--conch)}.nav-logo .sep{color:var(--muted)}.nav-logo .r{color:var(--text)}
+
+.config-trigger {
+    background: none; border: 1px solid var(--border2); color: var(--muted);
+    font-family: var(--mono); font-size: 0.7rem; padding: 0.4rem 0.8rem;
+    border-radius: 4px; cursor: pointer; transition: all 0.2s;
+}
+.config-trigger:hover { color: var(--conch); border-color: var(--conch); }
+.config-panel {
+    background: var(--surface); border: 1px solid rgba(15,244,198,0.15);
+    border-radius: 12px; padding: 1.5rem; margin-bottom: 2rem; width: 100%;
+    max-width: 740px; text-align: left; display: none; position: relative; z-index: 10;
+}
+.config-panel h3 { font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; color: var(--conch); margin-bottom: 1rem; font-family: var(--sans); }
+.config-row { display: grid; grid-template-columns: 100px 100px 1fr; gap: 1rem; align-items: center; margin-bottom: 0.75rem; font-family: var(--mono); font-size: 0.75rem; }
+.config-row label { color: var(--text); font-weight: 600; }
+.config-row input { background: var(--bg); border: 1px solid var(--border2); color: var(--text); padding: 0.25rem; width: 60px; border-radius: 4px; font-family: var(--mono); }
+.config-selects { display: flex; gap: 4px; flex-wrap: wrap; }
+.config-selects select { background: var(--bg); border: 1px solid var(--border2); color: var(--conch); font-size: 0.65rem; padding: 0.15rem; border-radius: 3px; font-family: var(--mono); outline: none; cursor: pointer; }
+.config-selects select.is-offline { color: var(--cmdr); border-color: rgba(255,79,94,0.4); }
+
+.auth-box { display: flex; gap: 10px; align-items: center; font-family: var(--mono); font-size: 0.8rem; margin-bottom: 0.5rem; }
+.auth-box input[type="password"] { background: var(--bg); border: 1px solid var(--border2); color: var(--text); padding: 0.4rem 0.8rem; border-radius: 4px; font-family: var(--mono); outline: none; }
+.auth-box input[type="password"]:focus { border-color: var(--conch); }
+... (368 lines left)
