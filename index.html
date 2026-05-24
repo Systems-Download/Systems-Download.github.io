@@ -855,13 +855,18 @@ function cmpVer(a,b){const va=semver(a),vb=semver(b);for(let i=0;i<Math.max(va.l
 /* CACHE */
 let _cc=[],_cr=[];
 
-/* FETCH */
+/* FETCH - VERBESSERT: Gelöschte Releases werden automatisch entfernt */
 async function fetchReleases(){
   showSkel('conch-list');showSkel('cmdr-list');
   try{
-    const res=await fetch(`https://api.github.com/repos/${CONFIG.GITHUB_REPO}/releases?per_page=${CONFIG.MAX_RELEASES}`);
+    // Cache-Busting: Stelle sicher, dass immer frische Daten von GitHub geladen werden
+    const cacheBuster='&_cb='+Date.now();
+    const res=await fetch(`https://api.github.com/repos/${CONFIG.GITHUB_REPO}/releases?per_page=${CONFIG.MAX_RELEASES}${cacheBuster}`);
     if(!res.ok)throw new Error(res.status===404?'404':res.status===403?'403':res.status+' '+res.statusText);
     const releases=await res.json();
+    
+    // WICHTIG: Listen komplett neu aufbauen - alte/gelöschte Releases werden NICHT übertragen
+    // Nur Releases die AKTUELL auf GitHub existieren werden hier verarbeitet
     const cm={},rm={};
     releases.forEach(rel=>{
       const date=new Date(rel.published_at).toLocaleDateString('en-US',{year:'numeric',month:'short',day:'numeric'});
@@ -879,8 +884,12 @@ async function fetchReleases(){
     const srt=map=>Object.values(map).forEach(arr=>arr.sort((a,b)=>cmpVer(a.version,b.version)||new Date(b.ts)-new Date(a.ts)));
     srt(cm);srt(rm);
     const toG=map=>Object.values(map).sort((a,b)=>cmpVer(a[0].version,b[0].version));
+    
+    // Alte Cache-Daten werden komplett ersetzt - gelöschte Releases verschwinden automatisch
     _cc=toG(cm);_cr=toG(rm);
     render('conch',_cc);render('cmdr',_cr);
+    
+    if(CONFIG.DEBUG)console.log('✅ Releases geladen - Conch:',_cc.length,'Gruppen, Cmdr:',_cr.length,'Gruppen');
   }catch(e){
     const msg=e.message==='404'?t('e404'):e.message==='403'?t('e403'):t('egn')+e.message;
     ['conch-list','cmdr-list'].forEach(id=>document.getElementById(id).innerHTML=`<div class="error-state">❌ ${msg}</div>`);
