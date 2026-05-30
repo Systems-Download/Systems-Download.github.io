@@ -4,6 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Conch & Cmdr — Downloads</title>
+<!-- FIX: inline favicon prevents 404 -->
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📦</text></svg>">
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
   *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -828,7 +830,11 @@ function showSettings() {
 
 function logout() {
   document.getElementById('user-dropdown').classList.remove('active');
+  sessionStorage.removeItem('cc_logged_in');
+  sessionStorage.removeItem('cc_user');
+  document.body.style.overflow = 'hidden';
   document.getElementById('auth-modal').classList.add('active');
+  document.getElementById('user-display').textContent = 'User';
   showToast('🚪', 'Logged out', 'See you next time!', 't-iok');
 }
 
@@ -892,13 +898,20 @@ function handleAuth(e) {
     }
   }
 
-  // Simulate success
+  // Save session
+  const username = email.split('@')[0];
+  sessionStorage.setItem('cc_logged_in', '1');
+  sessionStorage.setItem('cc_user', username);
+  document.getElementById('user-display').textContent = username;
+
   msg.innerHTML = '<div class="auth-success">✓ ' + (authMode === 'login' ? 'Logged in!' : 'Account created!') + '</div>';
-  document.getElementById('user-display').textContent = email.split('@')[0];
+
   setTimeout(() => {
     document.getElementById('auth-modal').classList.remove('active');
+    document.body.style.overflow = '';
     msg.innerHTML = '';
-  }, 1200);
+    loadReleases();
+  }, 900);
   return false;
 }
 
@@ -1097,9 +1110,10 @@ function installPWA() {
 /* ═══════════════════════════════════════════════════════════════
    GITHUB RELEASES LOADER
 ═══════════════════════════════════════════════════════════════ */
+// FIX: correct GitHub repo names — update these if different
 const REPOS = {
-  conch: 'systems-download/conch',
-  cmdr:  'systems-download/cmdr'
+  conch: 'systems-download/Conch',
+  cmdr:  'systems-download/Cmdr'
 };
 
 function renderSkeletons(listId, count) {
@@ -1260,9 +1274,21 @@ document.addEventListener('click', function(e) {
    INIT
 ═══════════════════════════════════════════════════════════════ */
 document.addEventListener('DOMContentLoaded', function() {
-  loadReleases();
   document.getElementById('hero-sub').textContent = 'Always up-to-date · pulled live from GitHub Releases';
   document.getElementById('footer').textContent   = '© Conch & Cmdr — Auto-updated from GitHub Releases';
+
+  // LOGIN GATE: show auth modal if not logged in, block page content
+  const loggedIn = sessionStorage.getItem('cc_logged_in');
+  if (!loggedIn) {
+    // Blur/lock the page behind the modal
+    document.body.style.overflow = 'hidden';
+    document.getElementById('auth-modal').classList.add('active');
+  } else {
+    // Already logged in this session
+    const savedUser = sessionStorage.getItem('cc_user') || 'User';
+    document.getElementById('user-display').textContent = savedUser;
+    loadReleases();
+  }
 });
 </script>
 </body>
