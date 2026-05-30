@@ -489,10 +489,10 @@
         <input type="password" id="auth-password" placeholder="••••••••" required minlength="8">
       </div>
       
-      <!-- FIX 2: required attribute added to confirm password field -->
+      <!-- confirm field: required only added dynamically when visible -->
       <div class="auth-input-group" id="confirm-group" style="display:none">
         <label for="auth-confirm">Confirm Password</label>
-        <input type="password" id="auth-confirm" placeholder="••••••••" minlength="8" required>
+        <input type="password" id="auth-confirm" placeholder="••••••••" minlength="8">
       </div>
       
       <button type="submit" class="auth-btn" id="auth-btn">Login</button>
@@ -878,8 +878,10 @@ function switchAuthMode() {
   document.getElementById('auth-subtitle').textContent = isReg ? 'Join the community' : 'Welcome back';
   document.getElementById('auth-btn').textContent      = isReg ? 'Register' : 'Login';
   document.getElementById('confirm-group').style.display = isReg ? '' : 'none';
-  document.getElementById('auth-message').innerHTML    = '';
-  document.getElementById('auth-toggle').innerHTML     = isReg
+  // Only require confirm field when it's actually visible
+  document.getElementById('auth-confirm').required = isReg;
+  document.getElementById('auth-message').innerHTML = '';
+  document.getElementById('auth-toggle').innerHTML = isReg
     ? 'Already have an account? <a onclick="switchAuthMode()">Login</a>'
     : 'Don\'t have an account? <a onclick="switchAuthMode()">Create one</a>';
 }
@@ -1259,8 +1261,19 @@ async function loadReleases() {
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   CLOSE DROPDOWNS ON OUTSIDE CLICK
+   DEV BYPASS — paste into browser console to skip login:
+   devLogin()
 ═══════════════════════════════════════════════════════════════ */
+window.devLogin = function(user) {
+  user = user || 'dev';
+  sessionStorage.setItem('cc_logged_in', '1');
+  sessionStorage.setItem('cc_user', user);
+  document.getElementById('auth-modal').classList.remove('active');
+  document.body.style.overflow = '';
+  document.getElementById('user-display').textContent = user;
+  loadReleases();
+  console.log('%c✅ Dev login as "' + user + '"', 'color:#0ff4c6;font-weight:bold;font-size:14px');
+};
 document.addEventListener('click', function(e) {
   if (!e.target.closest('#lang-btn') && !e.target.closest('#lang-dropdown')) {
     document.getElementById('lang-dropdown').classList.remove('active');
