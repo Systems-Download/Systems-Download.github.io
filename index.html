@@ -4,30 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Conch & Cmdr — Downloads</title>
-<div class="page-transition" id="page-transition"></div>
-<script>
-/* MAINTENANCE + BANNER — runs before page loads */
-(async function(){
-  const SU='https://rmdkoauibmzhgnvrwhfd.supabase.co';
-  const SA='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJtZGtvYXVpYm16aGdudnJ3aGZkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyNjg2MDksImV4cCI6MjA5Mzg0NDYwOX0.lu6T00f9y9-Q8HhVag-MGjJz6bTlJrYUwC7AApIxaFw';
-  try{
-    const r=await fetch(SU+'/rest/v1/site_settings?key=in.(maintenance_enabled,banner_enabled,banner_text,banner_type)&select=key,value',
-      {headers:{'apikey':SA,'Authorization':'Bearer '+SA}});
-    if(!r.ok)return;
-    const rows=await r.json();const s={};rows.forEach(x=>s[x.key]=x.value);
-    if(s.maintenance_enabled==='true'){window.location.replace('maintenance.html');return;}
-    if(s.banner_enabled==='true'&&s.banner_text){window.__BANNER__={text:s.banner_text,type:s.banner_type||'info'};}
-  }catch(e){}
-})();
-</script>
-
-<!-- PWA -->
-<link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#0ff4c6">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Conch & Cmdr">
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
   *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -36,18 +12,134 @@
     --cmdr:#ff4f5e;--cmdr-dim:#c8333f;
     --bg:#0b0c0f;--surface:#13151a;--surface2:#1a1d24;
     --border:rgba(255,255,255,0.07);--text:#e8eaf0;--muted:#6b7280;
+    --success:#10b981;--error:#ef4444;
     --mono:'JetBrains Mono',monospace;--sans:'Syne',sans-serif;
   }
   
-  /* LIGHT MODE */
   :root.light-mode{
     --bg:#f5f7fa;--surface:#ffffff;--surface2:#f0f2f5;
     --border:rgba(0,0,0,0.08);--text:#1a1d24;--muted:#6b7280;
   }
   
-  body{transition:background-color 0.3s ease,color 0.3s ease}
+  body{transition:background-color 0.3s ease,color 0.3s ease;font-family:var(--sans);background:var(--bg);color:var(--text)}
 
-  /* BANNER */
+  /* ═══════════════════════════════════════════════════════════════════════════════════ */
+  /* BAN SCREEN */
+  /* ═══════════════════════════════════════════════════════════════════════════════════ */
+  
+  .ban-screen{
+    position:fixed;top:0;left:0;width:100%;height:100%;
+    background:var(--bg);z-index:10000;display:flex;
+    align-items:center;justify-content:center;
+  }
+  
+  .ban-screen.hidden{display:none}
+  
+  .ban-container{text-align:center;max-width:500px;padding:2rem}
+  .ban-container h1{font-size:2.5rem;color:var(--error);margin-bottom:1rem}
+  .ban-container p{font-size:1.1rem;color:var(--muted);margin-bottom:2rem;line-height:1.6}
+  .ban-info{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1.5rem;margin:2rem 0;font-family:var(--mono);text-align:left}
+  .ban-info p{text-align:left;margin:0.5rem 0;font-size:0.9rem;color:var(--text)}
+
+  /* ═══════════════════════════════════════════════════════════════════════════════════ */
+  /* AUTH MODAL */
+  /* ═══════════════════════════════════════════════════════════════════════════════════ */
+  
+  .auth-modal{
+    position:fixed;top:0;left:0;width:100%;height:100%;
+    background:rgba(0,0,0,0.8);display:flex;align-items:center;justify-content:center;
+    z-index:9999;opacity:0;visibility:hidden;transition:0.3s ease;
+  }
+  
+  .auth-modal.active{opacity:1;visibility:visible}
+  
+  .auth-container{
+    background:var(--surface);border:1px solid var(--border);border-radius:16px;
+    padding:2.5rem;max-width:420px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,0.3);
+    animation:slideUp 0.3s ease;
+  }
+  
+  @keyframes slideUp{from{transform:translateY(40px);opacity:0}to{transform:translateY(0);opacity:1}}
+  
+  .auth-header{text-align:center;margin-bottom:2rem}
+  .auth-header h1{font-size:1.8rem;margin-bottom:0.5rem}
+  .auth-header p{color:var(--muted);font-size:0.9rem}
+  
+  .auth-form{display:flex;flex-direction:column;gap:1.2rem}
+  
+  .auth-input-group{display:flex;flex-direction:column;gap:0.5rem}
+  .auth-input-group label{font-size:0.85rem;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:0.5px}
+  
+  .auth-input-group input{
+    background:var(--surface2);border:1px solid var(--border);border-radius:8px;
+    padding:0.75rem 1rem;color:var(--text);font-family:var(--mono);font-size:0.95rem;
+    transition:0.2s ease;outline:none;
+  }
+  
+  .auth-input-group input:focus{border-color:var(--conch);box-shadow:0 0 0 3px rgba(15,244,198,0.1)}
+  .auth-input-group input:invalid{border-color:var(--error)}
+  
+  .auth-error{
+    background:rgba(239,68,68,0.1);border:1px solid var(--error);border-radius:8px;
+    padding:0.75rem 1rem;color:var(--error);font-size:0.9rem;text-align:center;
+  }
+  
+  .auth-success{
+    background:rgba(16,185,129,0.1);border:1px solid var(--success);border-radius:8px;
+    padding:0.75rem 1rem;color:var(--success);font-size:0.9rem;text-align:center;
+  }
+  
+  .auth-btn{
+    background:var(--conch);color:#000;border:none;border-radius:8px;padding:0.9rem 1.5rem;
+    font-family:var(--sans);font-size:0.95rem;font-weight:700;cursor:pointer;
+    transition:0.2s ease;text-transform:uppercase;letter-spacing:0.5px;
+  }
+  
+  .auth-btn:hover{background:var(--conch-dim);transform:translateY(-2px);box-shadow:0 5px 15px rgba(15,244,198,0.2)}
+  .auth-btn:disabled{opacity:0.5;cursor:not-allowed;transform:none}
+  
+  .auth-toggle{text-align:center;color:var(--muted);font-size:0.9rem;margin-top:1rem}
+  .auth-toggle a{color:var(--conch);cursor:pointer;font-weight:700;transition:0.2s ease}
+  .auth-toggle a:hover{color:var(--cmdr)}
+
+  /* ═══════════════════════════════════════════════════════════════════════════════════ */
+  /* LANGUAGE MENU */
+  /* ═══════════════════════════════════════════════════════════════════════════════════ */
+  
+  .lang-menu-btn{
+    background:var(--surface);border:1px solid var(--border);border-radius:8px;
+    padding:0.5rem 0.75rem;cursor:pointer;font-size:1.3rem;
+    transition:0.2s ease;position:relative;
+  }
+  
+  .lang-menu-btn:hover{border-color:rgba(255,255,255,0.2)}
+  
+  .lang-dropdown{
+    position:absolute;top:calc(100% + 8px);right:0;
+    background:var(--surface);border:1px solid var(--border);border-radius:12px;
+    min-width:280px;max-height:400px;overflow-y:auto;
+    box-shadow:0 10px 40px rgba(0,0,0,0.3);
+    z-index:1000;opacity:0;visibility:hidden;transition:0.2s ease;
+  }
+  
+  .lang-dropdown.active{opacity:1;visibility:visible}
+  
+  .lang-option{
+    padding:1rem 1.2rem;border-bottom:1px solid var(--border);cursor:pointer;
+    display:flex;align-items:center;gap:0.8rem;transition:0.2s ease;
+    font-size:0.95rem;
+  }
+  
+  .lang-option:last-child{border-bottom:none}
+  .lang-option:hover{background:var(--surface2)}
+  .lang-option.active{color:var(--conch);font-weight:700}
+  
+  .lang-flag{font-size:1.5rem;min-width:1.8rem;text-align:center}
+
+  /* ═══════════════════════════════════════════════════════════════════════════════════ */
+  /* MAIN CONTENT */
+  /* ═══════════════════════════════════════════════════════════════════════════════════ */
+
   .site-banner{width:100%;padding:.6rem 2rem;text-align:center;font-family:var(--mono);font-size:.78rem;position:fixed;top:64px;left:0;right:0;z-index:99;display:none}
   .site-banner.active{display:block}
   .sb-info{background:rgba(100,160,255,.12);color:#64a0ff;border-bottom:1px solid rgba(100,160,255,.2)}
@@ -55,11 +147,9 @@
   .sb-danger{background:rgba(255,79,94,.12);color:#ff4f5e;border-bottom:1px solid rgba(255,79,94,.2)}
   .sb-success{background:rgba(60,200,120,.12);color:#3cc878;border-bottom:1px solid rgba(60,200,120,.2)}
 
-  /* PAGE TRANSITION */
   .page-transition{position:fixed;inset:0;background:var(--bg);z-index:9999;pointer-events:none;opacity:0;transition:opacity .25s ease}
   .page-transition.fade-out{opacity:1;pointer-events:all}
 
-  /* DISCORD BANNER */
   .discord-banner{background:linear-gradient(135deg,rgba(88,101,242,.15),rgba(88,101,242,.05));border:1px solid rgba(88,101,242,.25);border-radius:10px;padding:1rem 1.5rem;display:flex;align-items:center;gap:1rem;margin:0 2.5rem 2rem;max-width:1056px;margin-left:auto;margin-right:auto}
   .discord-icon{width:40px;height:40px;border-radius:10px;background:rgba(88,101,242,.2);display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0}
   .discord-info{flex:1}
@@ -67,7 +157,7 @@
   .discord-sub{font-family:var(--mono);font-size:.72rem;color:var(--muted)}
   .discord-btn{font-family:var(--mono);font-size:.75rem;padding:.5rem 1.1rem;border-radius:6px;background:rgba(88,101,242,.25);color:#8b9cf4;border:1px solid rgba(88,101,242,.35);text-decoration:none;transition:all .2s;white-space:nowrap;flex-shrink:0}
   .discord-btn:hover{background:rgba(88,101,242,.4);color:#fff}
-  /* DOWNLOAD QUEUE (Cart) */
+
   .queue-fab{position:fixed;bottom:2rem;right:2rem;z-index:500;display:flex;flex-direction:column;align-items:flex-end;gap:.5rem}
   .queue-btn{width:52px;height:52px;border-radius:50%;background:var(--surface2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:1.3rem;transition:all .2s;position:relative;box-shadow:0 4px 20px rgba(0,0,0,.4)}
   .queue-btn:hover{border-color:rgba(15,244,198,.4);background:var(--surface)}
@@ -99,12 +189,10 @@
   .queue-empty{font-family:var(--mono);font-size:.75rem;color:var(--muted);text-align:center;padding:1.5rem;opacity:.5}
   .queue-progress{height:2px;background:var(--conch);width:0%;transition:width .3s}
 
-  /* ADD TO QUEUE BTN on file items */
   .btn-queue{font-family:var(--mono);font-size:.72rem;padding:.38rem .55rem;border-radius:6px;border:1px solid var(--border);background:none;color:var(--muted);cursor:pointer;display:inline-flex;align-items:center;transition:all .2s}
   .btn-queue:hover{border-color:rgba(15,244,198,.35);color:var(--conch)}
   .btn-queue.in-queue{border-color:rgba(15,244,198,.4);color:var(--conch);background:rgba(15,244,198,.06)}
 
-  /* FEATURED FILE */
   .featured-wrap{max-width:1100px;margin:0 auto;padding:0 2.5rem 2rem}
   .featured-card{background:linear-gradient(135deg,rgba(15,244,198,.06),rgba(15,244,198,.02));border:1px solid rgba(15,244,198,.2);border-radius:12px;padding:1rem 1.4rem;display:flex;align-items:center;gap:1rem}
   .featured-badge{font-family:var(--mono);font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;padding:.2rem .55rem;border-radius:4px;background:rgba(15,244,198,.12);color:var(--conch);border:1px solid rgba(15,244,198,.2);flex-shrink:0}
@@ -113,27 +201,44 @@
   .featured-name{font-family:var(--mono);font-size:.85rem;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .featured-meta{font-family:var(--mono);font-size:.7rem;color:var(--muted);margin-top:.15rem}
 
-  /* PWA INSTALL BUTTON */
   .pwa-install-btn{display:none;font-family:var(--mono);font-size:.72rem;padding:.38rem .75rem;border-radius:6px;border:1px solid rgba(15,244,198,.25);background:rgba(15,244,198,.08);color:var(--conch);cursor:pointer;align-items:center;gap:.4rem;transition:all .2s}
   .pwa-install-btn:hover{background:rgba(15,244,198,.15)}
   .pwa-install-btn.visible{display:flex}
   html{scroll-behavior:smooth}
   body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:100vh;overflow-x:hidden}
 
-  /* NAV */
   nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:1rem 2.5rem;background:rgba(11,12,15,0.9);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);height:64px}
   .nav-logo{font-size:1.1rem;font-weight:800;letter-spacing:-0.02em;display:flex;gap:0.4em;align-items:center;user-select:none}
   .nav-logo .c{color:var(--conch)}.nav-logo .r{color:var(--cmdr)}.nav-logo .sep{color:var(--muted)}
   .nav-right{display:flex;align-items:center;gap:0.6rem}
-  nav a.nav-link{color:var(--muted);text-decoration:none;font-size:0.8rem;font-family:var(--mono);letter-spacing:0.04em;transition:color 0.2s;padding:0 0.3rem}
-  nav a.nav-link:hover{color:var(--text)}nav a.nav-link.active{color:var(--conch)}
 
-  /* LANG */
-  .lang-select{background:var(--surface);border:1px solid var(--border);border-radius:8px;color:var(--muted);font-family:var(--mono);font-size:0.72rem;padding:0.42rem 0.6rem;cursor:pointer;outline:none;transition:border-color 0.2s,color 0.2s;appearance:none}
-  .lang-select:hover{border-color:rgba(255,255,255,0.18);color:var(--text)}
-  .lang-select option{background:#1a1d24}
+  .user-menu{position:relative}
+  .user-btn{
+    background:var(--surface);border:1px solid var(--border);border-radius:8px;
+    padding:0.6rem 1rem;color:var(--text);cursor:pointer;font-size:0.9rem;
+    transition:0.2s ease;font-weight:600;
+  }
+  
+  .user-btn:hover{border-color:rgba(255,255,255,0.2)}
+  
+  .user-dropdown{
+    position:absolute;top:calc(100% + 8px);right:0;
+    background:var(--surface);border:1px solid var(--border);border-radius:8px;
+    min-width:180px;box-shadow:0 10px 40px rgba(0,0,0,0.3);
+    z-index:1000;opacity:0;visibility:hidden;transition:0.2s ease;
+  }
+  
+  .user-dropdown.active{opacity:1;visibility:visible}
+  
+  .user-dropdown-item{
+    padding:0.8rem 1.2rem;border-bottom:1px solid var(--border);cursor:pointer;
+    transition:0.2s ease;font-size:0.9rem;
+  }
+  
+  .user-dropdown-item:last-child{border-bottom:none}
+  .user-dropdown-item:hover{background:var(--surface2);color:var(--conch)}
+  .user-dropdown-item.logout{color:var(--error)}
 
-  /* ICON BTN */
   .icon-btn{display:flex;align-items:center;justify-content:center;width:36px;height:36px;cursor:pointer;background:var(--surface);border:1px solid var(--border);border-radius:8px;flex-shrink:0;transition:border-color 0.2s,background 0.2s,color 0.2s;color:var(--muted)}
   .icon-btn:hover{border-color:rgba(15,244,198,0.35);background:var(--surface2);color:var(--conch)}
   .icon-btn:disabled{opacity:0.4;cursor:not-allowed;pointer-events:none}
@@ -143,7 +248,6 @@
   .icon-btn .theme-icon{font-size:1rem;transition:transform 0.3s ease}
   .icon-btn:hover .theme-icon{transform:rotate(20deg)}
 
-  /* BURGER */
   .burger{display:flex;flex-direction:column;justify-content:center;gap:5px;width:36px;height:36px;cursor:pointer;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:9px;transition:border-color 0.2s,background 0.2s;flex-shrink:0}
   .burger:hover{border-color:rgba(255,255,255,0.18);background:var(--surface2)}
   .burger span{display:block;height:1.5px;border-radius:2px;background:var(--muted);transition:all 0.3s;transform-origin:center}
@@ -151,7 +255,6 @@
   .burger.open span:nth-child(2){opacity:0;transform:scaleX(0)}
   .burger.open span:nth-child(3){transform:translateY(-6.5px) rotate(-45deg);background:var(--conch)}
 
-  /* DRAWER */
   .drawer-overlay{position:fixed;inset:0;z-index:98;background:rgba(0,0,0,0.5);opacity:0;pointer-events:none;transition:opacity 0.3s}
   .drawer-overlay.open{opacity:1;pointer-events:all}
   .drawer{position:fixed;top:0;right:0;bottom:0;z-index:99;width:280px;background:#0e1014;border-left:1px solid var(--border);transform:translateX(100%);transition:transform 0.35s cubic-bezier(0.4,0,0.2,1);display:flex;flex-direction:column}
@@ -177,7 +280,6 @@
   .drawer-div{height:1px;background:var(--border);margin:0.75rem}
   .drawer-footer{padding:1.2rem 1.5rem;border-top:1px solid var(--border);font-family:var(--mono);font-size:0.7rem;color:var(--muted);opacity:0.5}
 
-  /* HERO */
   .hero{padding:9rem 2.5rem 5rem;text-align:center;position:relative;overflow:hidden}
   .hero::before{content:'';position:absolute;top:-120px;left:50%;transform:translateX(-50%);width:700px;height:700px;border-radius:50%;background:radial-gradient(circle,rgba(0,255,198,0.04) 0%,transparent 70%);pointer-events:none}
   .hero h1{font-size:clamp(2.8rem,7vw,5.5rem);font-weight:800;line-height:1.05;letter-spacing:-0.03em;margin-bottom:1.2rem}
@@ -188,7 +290,6 @@
   .scroll-hint a.c{border:1px solid var(--conch);color:var(--conch)}.scroll-hint a.c:hover{background:rgba(0,255,198,0.08)}
   .scroll-hint a.r{border:1px solid var(--cmdr);color:var(--cmdr)}.scroll-hint a.r:hover{background:rgba(255,79,94,0.08)}
 
-  /* SEARCH */
   .search-wrap{margin-bottom:1.5rem;position:relative}
   .search-icon{position:absolute;left:1rem;top:50%;transform:translateY(-50%);color:var(--muted);font-size:0.85rem;pointer-events:none}
   .search-input{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:var(--mono);font-size:0.82rem;padding:0.75rem 2.4rem;outline:none;transition:border-color 0.2s}
@@ -197,7 +298,6 @@
   .search-clear{position:absolute;right:0.8rem;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--muted);font-size:0.9rem;padding:0.2rem;display:none;transition:color 0.2s}
   .search-clear:hover{color:var(--text)}.search-clear.vis{display:block}
 
-  /* SECTIONS */
   .section{padding:5rem 2.5rem;max-width:1100px;margin:0 auto}
   .section-header{display:flex;align-items:flex-end;gap:1.2rem;margin-bottom:2.5rem;padding-bottom:1.5rem;border-bottom:1px solid var(--border)}
   .sbadge{font-family:var(--mono);font-size:0.7rem;letter-spacing:0.12em;text-transform:uppercase;padding:0.3rem 0.7rem;border-radius:4px}
@@ -207,7 +307,6 @@
   .section-header h2.c{color:var(--conch)}.section-header h2.r{color:var(--cmdr)}
   .section-desc{font-family:var(--mono);font-size:0.85rem;color:var(--muted);line-height:1.8;max-width:600px;margin-bottom:1.5rem}
 
-  /* FILE LIST */
   .file-list{display:flex;flex-direction:column;gap:0.6rem}
   .file-item{background:var(--surface);border:1px solid var(--border);border-radius:8px;overflow:hidden;transition:border-color 0.2s,transform 0.2s;animation:slideIn 0.3s ease}
   @keyframes slideIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
@@ -225,13 +324,11 @@
   .file-meta{font-family:var(--mono);font-size:0.71rem;color:var(--muted);margin-top:0.2rem;display:flex;align-items:center;gap:0.4rem;flex-wrap:wrap}
   .file-actions{display:flex;gap:0.4rem;flex-shrink:0;align-items:center}
 
-  /* DOWNLOAD PROGRESS BAR */
   .dl-progress-wrap{height:3px;background:var(--surface2);overflow:hidden;transition:height 0.2s}
   .dl-progress-wrap.active{height:3px}
   .dl-progress-bar{height:100%;width:0%;transition:width 0.1s linear;border-radius:0 2px 2px 0}
   .dlp-c{background:var(--conch)}.dlp-r{background:var(--cmdr)}
 
-  /* RIPPLE BUTTON */
   .btn-dl{font-family:var(--mono);font-size:0.75rem;letter-spacing:0.04em;padding:0.45rem 1rem;border-radius:6px;border:none;cursor:pointer;display:inline-flex;align-items:center;gap:0.4em;transition:background 0.2s;position:relative;overflow:hidden;user-select:none}
   .btn-dl-c{background:rgba(0,255,198,0.12);color:var(--conch)}.btn-dl-c:hover{background:rgba(0,255,198,0.22)}
   .btn-dl-r{background:rgba(255,79,94,0.12);color:var(--cmdr)}.btn-dl-r:hover{background:rgba(255,79,94,0.22)}
@@ -252,7 +349,6 @@
   .xs-c{background:rgba(0,255,198,0.08);color:var(--conch)}.xs-c:hover{background:rgba(0,255,198,0.18)}
   .xs-r{background:rgba(255,79,94,0.08);color:var(--cmdr)}.xs-r:hover{background:rgba(255,79,94,0.18)}
 
-  /* VERSION HISTORY */
   .ver-history{border-top:1px solid var(--border);background:var(--bg);overflow:hidden;max-height:0;transition:max-height 0.35s cubic-bezier(0.4,0,0.2,1)}
   .ver-history.open{max-height:800px}
   .ver-inner{padding:0.75rem 1.2rem}
@@ -265,7 +361,6 @@
   .ver-name{font-family:var(--mono);font-size:0.78rem;color:var(--muted);flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .ver-date{font-family:var(--mono);font-size:0.7rem;color:var(--muted);opacity:0.5;flex-shrink:0}
 
-  /* SKELETON */
   .skel-item{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:0.9rem 1.2rem;display:flex;align-items:center;gap:1rem}
   .skel{background:linear-gradient(90deg,var(--surface2) 25%,rgba(255,255,255,0.04) 50%,var(--surface2) 75%);background-size:200% 100%;animation:shimmer 1.4s infinite;border-radius:4px}
   @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
@@ -274,10 +369,8 @@
   .skel-l{height:12px}.skel-l.w80{width:80%}.skel-l.w50{width:50%}
   .skel-btn{width:88px;height:32px;border-radius:6px;flex-shrink:0}
 
-  /* CONFETTI */
   #confetti-canvas{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:8000}
 
-  /* TOAST */
   #toast-container{position:fixed;bottom:1.5rem;right:1.5rem;z-index:9999;display:flex;flex-direction:column;gap:0.5rem;pointer-events:none}
   .toast{display:flex;align-items:flex-start;gap:0.75rem;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:0.85rem 1.1rem;min-width:260px;max-width:340px;box-shadow:0 8px 32px rgba(0,0,0,0.4);pointer-events:all;animation:toastIn 0.3s cubic-bezier(0.34,1.56,0.64,1);transition:opacity 0.3s,transform 0.3s;position:relative;overflow:hidden}
   .toast.out{opacity:0;transform:translateX(20px)}
@@ -292,12 +385,10 @@
   .t-bar{position:absolute;bottom:0;left:0;height:2px;border-radius:0 0 10px 10px;animation:tbar linear forwards}
   @keyframes tbar{from{width:100%}to{width:0%}}
 
-  /* STATES */
   .search-empty{font-family:var(--mono);font-size:0.8rem;color:var(--muted);text-align:center;padding:1.5rem;opacity:0.6;display:none}
   .search-empty.vis{display:block}
   .empty-state,.error-state{font-family:var(--mono);font-size:0.8rem;color:var(--muted);text-align:center;padding:2rem 1.5rem;opacity:0.6;line-height:1.7}
 
-  /* EMAIL NOTIFICATION MODAL */
   .email-modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:9998;display:none;align-items:center;justify-content:center;animation:fadeIn 0.2s ease}
   .email-modal-overlay.open{display:flex}
   @keyframes fadeIn{from{opacity:0}to{opacity:1}}
@@ -330,7 +421,6 @@
   .divider{height:1px;background:var(--border);margin:0 2.5rem}
   footer{text-align:center;padding:3rem 2.5rem;font-family:var(--mono);font-size:0.75rem;color:var(--muted);border-top:1px solid var(--border);margin-top:4rem;opacity:0.5}
   
-  /* COUNTDOWN */
   .countdown-wrap{max-width:1100px;margin:0 auto;padding:0 2.5rem;margin-bottom:2rem}
   .countdown-card{background:linear-gradient(135deg,rgba(255,255,255,0.03),rgba(255,255,255,0.01));border:1px solid var(--border);border-radius:12px;padding:1.5rem;overflow:hidden;position:relative}
   .countdown-card.cc{border-color:rgba(15,244,198,0.25);background:linear-gradient(135deg,rgba(15,244,198,0.06),rgba(15,244,198,0.02))}
@@ -352,42 +442,7 @@
   @keyframes countdownPulse{0%,100%{width:0%;opacity:0}50%{width:100%;opacity:1}}
   .countdown-expired{text-align:center;padding:1.5rem;color:var(--muted);font-family:var(--mono);font-size:0.85rem}
   .countdown-expired-icon{font-size:2rem;margin-bottom:0.5rem;display:block}
-  @media(max-width:640px){
-    .countdown-value{font-size:1.6rem;min-width:50px;padding:0.5rem}
-    .countdown-display{gap:0.5rem;margin-bottom:1rem}
-    .countdown-separator{font-size:1rem;margin:0}
-  }
   
-  /* COUNTDOWN */
-  .countdown-wrap{max-width:1100px;margin:0 auto;padding:0 2.5rem;margin-bottom:2rem}
-  .countdown-card{background:linear-gradient(135deg,rgba(255,255,255,0.03),rgba(255,255,255,0.01));border:1px solid var(--border);border-radius:12px;padding:1.5rem;overflow:hidden;position:relative}
-  .countdown-card.cc{border-color:rgba(15,244,198,0.25);background:linear-gradient(135deg,rgba(15,244,198,0.06),rgba(15,244,198,0.02))}
-  .countdown-card.cr{border-color:rgba(255,79,94,0.25);background:linear-gradient(135deg,rgba(255,79,94,0.06),rgba(255,79,94,0.02))}
-  .countdown-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.2rem}
-  .countdown-label{font-family:var(--mono);font-size:0.82rem;font-weight:600;color:var(--text)}
-  .countdown-date{font-family:var(--mono);font-size:0.75rem;color:var(--muted);opacity:0.7}
-  .countdown-display{display:flex;align-items:center;justify-content:center;gap:1rem;margin-bottom:1rem}
-  .countdown-unit{display:flex;flex-direction:column;align-items:center;gap:0.4rem}
-  .countdown-value{font-family:var(--mono);font-size:2.2rem;font-weight:700;letter-spacing:-0.02em;line-height:1;min-width:70px;text-align:center;background:var(--surface);padding:0.75rem;border-radius:8px;border:1px solid var(--border)}
-  .countdown-card.cc .countdown-value{color:var(--conch);border-color:rgba(15,244,198,0.2)}
-  .countdown-card.cr .countdown-value{color:var(--cmdr);border-color:rgba(255,79,94,0.2)}
-  .countdown-label-small{font-family:var(--mono);font-size:0.65rem;letter-spacing:0.05em;text-transform:uppercase;color:var(--muted);opacity:0.6}
-  .countdown-separator{font-family:var(--mono);font-size:1.5rem;color:var(--muted);opacity:0.4;margin:0 0.2rem}
-  .countdown-progress{height:3px;background:var(--surface2);border-radius:2px;overflow:hidden}
-  .countdown-progress::after{content:'';display:block;height:100%;border-radius:2px;animation:countdownPulse 2s ease-in-out infinite}
-  .countdown-card.cc .countdown-progress::after{background:var(--conch);box-shadow:0 0 8px rgba(15,244,198,0.5)}
-  .countdown-card.cr .countdown-progress::after{background:var(--cmdr);box-shadow:0 0 8px rgba(255,79,94,0.5)}
-  @keyframes countdownPulse{0%,100%{width:0%;opacity:0}50%{width:100%;opacity:1}}
-  
-  .countdown-expired{text-align:center;padding:1.5rem;color:var(--muted);font-family:var(--mono);font-size:0.85rem}
-  .countdown-expired-icon{font-size:2rem;margin-bottom:0.5rem;display:block}
-  
-  @media(max-width:640px){
-    .countdown-value{font-size:1.6rem;min-width:50px;padding:0.5rem}
-    .countdown-display{gap:0.5rem;margin-bottom:1rem}
-    .countdown-separator{font-size:1rem;margin:0}
-  }
-
   @media(max-width:640px){
     nav{padding:1rem 1.2rem}.section{padding:3rem 1.2rem}.hero{padding:8rem 1.2rem 3rem}
     .drawer{width:260px}#toast-container{bottom:1rem;right:1rem;left:1rem}.toast{min-width:unset;max-width:100%}
@@ -397,46 +452,59 @@
 </head>
 <body>
 
-<script>
-const CONFIG={GITHUB_REPO:'Systems-Download/Systems-Download.github.io',MAX_RELEASES:20,DEBUG:false,
-  // 🎯 KONFIGURIERE HIER DEINE RELEASE-DATEN
-  NEXT_RELEASE_CONCH:'2026-06-01T15:45:00Z',    // Format: YYYY-MM-DDTHH:mm:ssZ
-  NEXT_RELEASE_CMDR:'2026-07-10T15:45:00Z',     // oder null zum Deaktivieren
-  // ✨ Beispiele:
-  // '2026-12-25T00:00:00Z' = Weihnachten 2026
-  // '2026-01-15T10:30:00Z' = 15. Januar 2026 um 10:30 Uhr
-  // null = Deaktiviert
-};
+<div class="ban-screen hidden" id="ban-screen">
+  <div class="ban-container">
+    <h1>🚫 BANNED</h1>
+    <p>Your IP address has been banned from accessing this website.</p>
+    <div class="ban-info">
+      <p><strong>IP Address:</strong> <span id="ban-ip">Loading...</span></p>
+      <p><strong>Reason:</strong> <span id="ban-reason">Administrative decision</span></p>
+      <p><strong>Banned Date:</strong> <span id="ban-date">Loading...</span></p>
+    </div>
+    <p style="margin-top:2rem;color:var(--muted)">If you believe this is a mistake, contact the administrator.</p>
+  </div>
+</div>
 
-/* ── TRANSLATIONS (14 languages) ── */
-const T={
-  en:{nav_dl:'Downloads',nav_ann:'Announcements',hero_sub:'Files are automatically loaded from GitHub Releases. All .rbxm files are detected and sorted.',desc_c:'All .rbxm files with "Conch" in the name.',desc_r:'All .rbxm files with "Cmdr" in the name.',srch_c:'Search Conch files...',srch_r:'Search Cmdr files...',bdl:'Downloads',bnew:'NEW',hist:'History',hist_lbl:'Previous versions',dl:'↓ Download',vcount:n=>`${n} versions`,dlc:n=>`${n} dl`,t_start:'Download started',t_done:'Download complete',t_prog:'Downloading...',t_ref:'Refreshing...',t_ref2:'Fetching latest releases',t_upd:'Up to date',t_upd2:'Releases reloaded',t_cp:'Link copied!',t_cp2:'Download link in clipboard',empty:s=>`No ${s} files found.`,empty_h:s=>`Make sure .rbxm files contain "${s}" in the filename.`,se:'No files match your search.',e404:'Repo not found or no Releases yet. Create a GitHub Release with .rbxm assets.',e403:'GitHub API rate limit exceeded. Try again later.',egn:'Error: ',footer:'Automatically loaded from GitHub Releases',dfooter:'Auto-updated from GitHub Releases'},
-  de:{nav_dl:'Downloads',nav_ann:'Ankündigungen',hero_sub:'Dateien werden automatisch von GitHub Releases geladen. Alle .rbxm Dateien werden erkannt und sortiert.',desc_c:'Alle .rbxm Dateien mit "Conch" im Namen.',desc_r:'Alle .rbxm Dateien mit "Cmdr" im Namen.',srch_c:'Conch Dateien suchen...',srch_r:'Cmdr Dateien suchen...',bdl:'Downloads',bnew:'NEU',hist:'Verlauf',hist_lbl:'Frühere Versionen',dl:'↓ Herunterladen',vcount:n=>`${n} Versionen`,dlc:n=>`${n} Dl`,t_start:'Download gestartet',t_done:'Download abgeschlossen',t_prog:'Lädt herunter...',t_ref:'Wird aktualisiert...',t_ref2:'Neueste Releases werden geladen',t_upd:'Aktuell',t_upd2:'Releases neu geladen',t_cp:'Link kopiert!',t_cp2:'Link in Zwischenablage',empty:s=>`Keine ${s} Dateien gefunden.`,empty_h:s=>`Stelle sicher, dass .rbxm Dateien "${s}" im Namen haben.`,se:'Keine Dateien gefunden.',e404:'Repo nicht gefunden oder keine Releases. Erstelle einen GitHub Release mit .rbxm Dateien.',e403:'GitHub API Rate-Limit erreicht. Versuche es später.',egn:'Fehler: ',footer:'Automatisch von GitHub Releases geladen',dfooter:'Automatisch von GitHub Releases aktualisiert'},
-  es:{nav_dl:'Descargas',nav_ann:'Anuncios',hero_sub:'Los archivos se cargan automáticamente desde GitHub Releases.',desc_c:'Todos los archivos .rbxm con "Conch" en el nombre.',desc_r:'Todos los archivos .rbxm con "Cmdr" en el nombre.',srch_c:'Buscar Conch...',srch_r:'Buscar Cmdr...',bdl:'Descargas',bnew:'NUEVO',hist:'Historial',hist_lbl:'Versiones anteriores',dl:'↓ Descargar',vcount:n=>`${n} versiones`,dlc:n=>`${n} dl`,t_start:'Descarga iniciada',t_done:'Descarga completa',t_prog:'Descargando...',t_ref:'Actualizando...',t_ref2:'Cargando últimas versiones',t_upd:'Actualizado',t_upd2:'Versiones recargadas',t_cp:'¡Enlace copiado!',t_cp2:'Enlace en portapapeles',empty:s=>`No se encontraron archivos ${s}.`,empty_h:s=>`Asegúrate de que los .rbxm contienen "${s}".`,se:'Ningún archivo coincide.',e404:'Repositorio no encontrado o sin Releases.',e403:'Límite de API alcanzado.',egn:'Error: ',footer:'Cargado desde GitHub Releases',dfooter:'Actualizado desde GitHub Releases'},
-  it:{nav_dl:'Download',nav_ann:'Annunci',hero_sub:'I file vengono caricati automaticamente da GitHub Releases.',desc_c:'Tutti i file .rbxm con "Conch" nel nome.',desc_r:'Tutti i file .rbxm con "Cmdr" nel nome.',srch_c:'Cerca Conch...',srch_r:'Cerca Cmdr...',bdl:'Download',bnew:'NUOVO',hist:'Cronologia',hist_lbl:'Versioni precedenti',dl:'↓ Scarica',vcount:n=>`${n} versioni`,dlc:n=>`${n} dl`,t_start:'Download avviato',t_done:'Download completato',t_prog:'Scaricando...',t_ref:'Aggiornamento...',t_ref2:'Caricamento ultime versioni',t_upd:'Aggiornato',t_upd2:'Release ricaricate',t_cp:'Link copiato!',t_cp2:'Link negli appunti',empty:s=>`Nessun file ${s} trovato.`,empty_h:s=>`Assicurati che i .rbxm contengano "${s}".`,se:'Nessun file corrisponde.',e404:'Repository non trovato o nessuna Release.',e403:'Limite API raggiunto.',egn:'Errore: ',footer:'Caricato da GitHub Releases',dfooter:'Aggiornato da GitHub Releases'},
-  fr:{nav_dl:'Téléchargements',nav_ann:'Annonces',hero_sub:'Les fichiers sont automatiquement chargés depuis GitHub Releases.',desc_c:'Tous les fichiers .rbxm avec "Conch" dans le nom.',desc_r:'Tous les fichiers .rbxm avec "Cmdr" dans le nom.',srch_c:'Rechercher Conch...',srch_r:'Rechercher Cmdr...',bdl:'Téléchargements',bnew:'NOUVEAU',hist:'Historique',hist_lbl:'Versions précédentes',dl:'↓ Télécharger',vcount:n=>`${n} versions`,dlc:n=>`${n} dl`,t_start:'Téléchargement lancé',t_done:'Téléchargement terminé',t_prog:'Téléchargement...',t_ref:'Actualisation...',t_ref2:'Chargement des dernières versions',t_upd:'À jour',t_upd2:'Releases rechargées',t_cp:'Lien copié !',t_cp2:'Lien dans le presse-papiers',empty:s=>`Aucun fichier ${s} trouvé.`,empty_h:s=>`Vérifiez que les .rbxm contiennent "${s}".`,se:'Aucun fichier ne correspond.',e404:'Dépôt introuvable ou sans Releases.',e403:'Limite API atteinte.',egn:'Erreur : ',footer:'Chargé depuis GitHub Releases',dfooter:'Mis à jour depuis GitHub Releases'},
-  pt:{nav_dl:'Downloads',nav_ann:'Anúncios',hero_sub:'Os arquivos são carregados automaticamente do GitHub Releases.',desc_c:'Todos os arquivos .rbxm com "Conch" no nome.',desc_r:'Todos os arquivos .rbxm com "Cmdr" no nome.',srch_c:'Buscar Conch...',srch_r:'Buscar Cmdr...',bdl:'Downloads',bnew:'NOVO',hist:'Histórico',hist_lbl:'Versões anteriores',dl:'↓ Baixar',vcount:n=>`${n} versões`,dlc:n=>`${n} dl`,t_start:'Download iniciado',t_done:'Download concluído',t_prog:'Baixando...',t_ref:'Atualizando...',t_ref2:'Carregando últimas versões',t_upd:'Atualizado',t_upd2:'Releases recarregadas',t_cp:'Link copiado!',t_cp2:'Link na área de transferência',empty:s=>`Nenhum arquivo ${s} encontrado.`,empty_h:s=>`Certifique-se que os .rbxm contêm "${s}".`,se:'Nenhum arquivo encontrado.',e404:'Repositório não encontrado ou sem Releases.',e403:'Limite da API atingido.',egn:'Erro: ',footer:'Carregado do GitHub Releases',dfooter:'Atualizado do GitHub Releases'},
-  ru:{nav_dl:'Загрузки',nav_ann:'Объявления',hero_sub:'Файлы автоматически загружаются из GitHub Releases.',desc_c:'Все файлы .rbxm с "Conch" в названии.',desc_r:'Все файлы .rbxm с "Cmdr" в названии.',srch_c:'Поиск Conch...',srch_r:'Поиск Cmdr...',bdl:'Загрузки',bnew:'НОВОЕ',hist:'История',hist_lbl:'Предыдущие версии',dl:'↓ Скачать',vcount:n=>`${n} версий`,dlc:n=>`${n} зг`,t_start:'Загрузка началась',t_done:'Загрузка завершена',t_prog:'Загрузка...',t_ref:'Обновление...',t_ref2:'Загрузка последних релизов',t_upd:'Актуально',t_upd2:'Релизы обновлены',t_cp:'Ссылка скопирована!',t_cp2:'Ссылка в буфере обмена',empty:s=>`Файлы ${s} не найдены.`,empty_h:s=>`Убедитесь, что .rbxm содержат "${s}" в имени.`,se:'Файлы не найдены.',e404:'Репозиторий не найден или нет Releases.',e403:'Превышен лимит API.',egn:'Ошибка: ',footer:'Автозагрузка из GitHub Releases',dfooter:'Обновляется из GitHub Releases'},
-  ja:{nav_dl:'ダウンロード',nav_ann:'お知らせ',hero_sub:'ファイルはGitHub Releasesから自動的に読み込まれます。',desc_c:'"Conch"を含む.rbxmファイル一覧。',desc_r:'"Cmdr"を含む.rbxmファイル一覧。',srch_c:'Conchを検索...',srch_r:'Cmdrを検索...',bdl:'ダウンロード',bnew:'新着',hist:'履歴',hist_lbl:'旧バージョン',dl:'↓ ダウンロード',vcount:n=>`${n}バージョン`,dlc:n=>`${n}DL`,t_start:'ダウンロード開始',t_done:'ダウンロード完了',t_prog:'ダウンロード中...',t_ref:'更新中...',t_ref2:'最新リリースを取得中',t_upd:'最新',t_upd2:'リリースを再読み込み',t_cp:'リンクをコピー！',t_cp2:'ダウンロードリンクをコピーしました',empty:s=>`${s}ファイルが見つかりません。`,empty_h:s=>`ファイル名に"${s}"が含まれているか確認してください。`,se:'一致するファイルがありません。',e404:'リポジトリが見つからないかリリースがありません。',e403:'APIレート制限を超えました。',egn:'エラー: ',footer:'GitHub Releasesから自動読み込み',dfooter:'GitHub Releasesから自動更新'},
-  zh:{nav_dl:'下载',nav_ann:'公告',hero_sub:'文件自动从 GitHub Releases 加载。',desc_c:'所有文件名含 "Conch" 的 .rbxm 文件。',desc_r:'所有文件名含 "Cmdr" 的 .rbxm 文件。',srch_c:'搜索 Conch...',srch_r:'搜索 Cmdr...',bdl:'下载',bnew:'新',hist:'历史',hist_lbl:'旧版本',dl:'↓ 下载',vcount:n=>`${n} 个版本`,dlc:n=>`${n} 次`,t_start:'开始下载',t_done:'下载完成',t_prog:'下载中...',t_ref:'刷新中...',t_ref2:'正在获取最新发布',t_upd:'已是最新',t_upd2:'发布已重新加载',t_cp:'链接已复制！',t_cp2:'下载链接已复制到剪贴板',empty:s=>`未找到 ${s} 文件。`,empty_h:s=>`请确保 .rbxm 文件名包含 "${s}"。`,se:'没有匹配的文件。',e404:'仓库不存在或尚无发布。',e403:'超出 GitHub API 请求限制。',egn:'错误：',footer:'自动从 GitHub Releases 加载',dfooter:'从 GitHub Releases 自动更新'},
-  ko:{nav_dl:'다운로드',nav_ann:'공지사항',hero_sub:'파일은 GitHub Releases에서 자동으로 불러옵니다.',desc_c:'"Conch"가 포함된 .rbxm 파일 목록.',desc_r:'"Cmdr"가 포함된 .rbxm 파일 목록.',srch_c:'Conch 검색...',srch_r:'Cmdr 검색...',bdl:'다운로드',bnew:'신규',hist:'기록',hist_lbl:'이전 버전',dl:'↓ 다운로드',vcount:n=>`${n}개 버전`,dlc:n=>`${n}회`,t_start:'다운로드 시작',t_done:'다운로드 완료',t_prog:'다운로드 중...',t_ref:'새로고침 중...',t_ref2:'최신 릴리스 가져오는 중',t_upd:'최신 상태',t_upd2:'릴리스 다시 로드됨',t_cp:'링크 복사됨!',t_cp2:'다운로드 링크가 클립보드에 복사되었습니다',empty:s=>`${s} 파일을 찾을 수 없습니다.`,empty_h:s=>`.rbxm 파일명에 "${s}"이 포함되어 있는지 확인하세요.`,se:'검색 결과가 없습니다.',e404:'저장소를 찾을 수 없거나 릴리스가 없습니다.',e403:'GitHub API 요청 한도 초과.',egn:'오류: ',footer:'GitHub Releases에서 자동으로 불러옴',dfooter:'GitHub Releases에서 자동 업데이트'},
-  tr:{nav_dl:'İndirmeler',nav_ann:'Duyurular',hero_sub:'Dosyalar GitHub Releases\'tan otomatik yüklenir.',desc_c:'"Conch" içeren .rbxm dosyaları.',desc_r:'"Cmdr" içeren .rbxm dosyaları.',srch_c:'Conch ara...',srch_r:'Cmdr ara...',bdl:'İndirmeler',bnew:'YENİ',hist:'Geçmiş',hist_lbl:'Önceki sürümler',dl:'↓ İndir',vcount:n=>`${n} sürüm`,dlc:n=>`${n} ind`,t_start:'İndirme başladı',t_done:'İndirme tamamlandı',t_prog:'İndiriliyor...',t_ref:'Yenileniyor...',t_ref2:'Son sürümler yükleniyor',t_upd:'Güncel',t_upd2:'Sürümler yenilendi',t_cp:'Bağlantı kopyalandı!',t_cp2:'İndirme bağlantısı panoya kopyalandı',empty:s=>`${s} dosyası bulunamadı.`,empty_h:s=>`.rbxm dosyalarının "${s}" içerdiğinden emin olun.`,se:'Arama sonucu bulunamadı.',e404:'Depo bulunamadı veya Release yok.',e403:'GitHub API hız limiti aşıldı.',egn:'Hata: ',footer:'GitHub Releases\'tan otomatik yüklendi',dfooter:'GitHub Releases\'tan otomatik güncellendi'},
-  ar:{nav_dl:'تنزيلات',nav_ann:'الإعلانات',hero_sub:'يتم تحميل الملفات تلقائياً من GitHub Releases.',desc_c:'جميع ملفات .rbxm التي تحتوي "Conch".',desc_r:'جميع ملفات .rbxm التي تحتوي "Cmdr".',srch_c:'البحث في Conch...',srch_r:'البحث في Cmdr...',bdl:'تنزيلات',bnew:'جديد',hist:'السجل',hist_lbl:'إصدارات سابقة',dl:'↓ تنزيل',vcount:n=>`${n} إصدار`,dlc:n=>`${n} تنز`,t_start:'بدأ التنزيل',t_done:'اكتمل التنزيل',t_prog:'جارٍ التنزيل...',t_ref:'جارٍ التحديث...',t_ref2:'جلب أحدث الإصدارات',t_upd:'محدّث',t_upd2:'تم إعادة تحميل الإصدارات',t_cp:'تم نسخ الرابط!',t_cp2:'رابط التنزيل في الحافظة',empty:s=>`لم يُعثر على ملفات ${s}.`,empty_h:s=>`تأكد أن ملفات .rbxm تحتوي "${s}".`,se:'لا توجد نتائج.',e404:'المستودع غير موجود أو لا توجد إصدارات.',e403:'تجاوز حد API.',egn:'خطأ: ',footer:'تحميل تلقائي من GitHub Releases',dfooter:'تحديث تلقائي من GitHub Releases'},
-  pl:{nav_dl:'Pobieranie',nav_ann:'Ogłoszenia',hero_sub:'Pliki są automatycznie ładowane z GitHub Releases.',desc_c:'Wszystkie pliki .rbxm z "Conch" w nazwie.',desc_r:'Wszystkie pliki .rbxm z "Cmdr" w nazwie.',srch_c:'Szukaj Conch...',srch_r:'Szukaj Cmdr...',bdl:'Pobieranie',bnew:'NOWE',hist:'Historia',hist_lbl:'Poprzednie wersje',dl:'↓ Pobierz',vcount:n=>`${n} wersji`,dlc:n=>`${n} pob`,t_start:'Pobieranie rozpoczęte',t_done:'Pobieranie zakończone',t_prog:'Pobieranie...',t_ref:'Odświeżanie...',t_ref2:'Ładowanie najnowszych wydań',t_upd:'Aktualny',t_upd2:'Wydania załadowane ponownie',t_cp:'Link skopiowany!',t_cp2:'Link do pobrania w schowku',empty:s=>`Nie znaleziono plików ${s}.`,empty_h:s=>`Upewnij się, że .rbxm zawierają "${s}".`,se:'Brak wyników.',e404:'Repozytorium nie znalezione lub brak wydań.',e403:'Przekroczono limit API.',egn:'Błąd: ',footer:'Automatycznie ładowane z GitHub Releases',dfooter:'Automatycznie aktualizowane z GitHub Releases'},
-  nl:{nav_dl:'Downloads',nav_ann:'Aankondigingen',hero_sub:'Bestanden worden automatisch geladen vanuit GitHub Releases.',desc_c:'Alle .rbxm bestanden met "Conch" in de naam.',desc_r:'Alle .rbxm bestanden met "Cmdr" in de naam.',srch_c:'Zoek Conch...',srch_r:'Zoek Cmdr...',bdl:'Downloads',bnew:'NIEUW',hist:'Geschiedenis',hist_lbl:'Vorige versies',dl:'↓ Downloaden',vcount:n=>`${n} versies`,dlc:n=>`${n} dl`,t_start:'Download gestart',t_done:'Download voltooid',t_prog:'Downloaden...',t_ref:'Verversen...',t_ref2:'Nieuwste releases laden',t_upd:'Up-to-date',t_upd2:'Releases herladen',t_cp:'Link gekopieerd!',t_cp2:'Downloadlink naar klembord',empty:s=>`Geen ${s} bestanden gevonden.`,empty_h:s=>`Zorg dat .rbxm bestanden "${s}" in de naam hebben.`,se:'Geen bestanden gevonden.',e404:'Repository niet gevonden of geen Releases.',e403:'GitHub API-limiet overschreden.',egn:'Fout: ',footer:'Automatisch geladen vanuit GitHub Releases',dfooter:'Automatisch bijgewerkt vanuit GitHub Releases'},
-};
-let lang=(function(){
-  const saved=localStorage.getItem('cc_lang');
-  if(saved&&T[saved])return saved;
-  const bl=navigator.languages||[navigator.language||'en'];
-  for(const l of bl){const short=l.split('-')[0].toLowerCase();if(T[short])return short;}
-  return 'en';
-})();
-function t(k,...a){const v=(T[lang]||T.en)[k];return typeof v==='function'?v(...a):(v||k)}
-</script>
+<!-- AUTH MODAL -->
+<div class="auth-modal" id="auth-modal">
+  <div class="auth-container">
+    <div class="auth-header">
+      <h1 id="auth-title">Login</h1>
+      <p id="auth-subtitle">Welcome back</p>
+    </div>
+    
+    <div id="auth-message"></div>
+    
+    <!-- FIX 1: return false added to prevent page reload on submit -->
+    <form class="auth-form" id="auth-form" onsubmit="handleAuth(event); return false;">
+      <div class="auth-input-group">
+        <label for="auth-email">Email</label>
+        <input type="email" id="auth-email" placeholder="your@email.com" required>
+      </div>
+      
+      <div class="auth-input-group">
+        <label for="auth-password">Password</label>
+        <input type="password" id="auth-password" placeholder="••••••••" required minlength="8">
+      </div>
+      
+      <!-- FIX 2: required attribute added to confirm password field -->
+      <div class="auth-input-group" id="confirm-group" style="display:none">
+        <label for="auth-confirm">Confirm Password</label>
+        <input type="password" id="auth-confirm" placeholder="••••••••" minlength="8" required>
+      </div>
+      
+      <button type="submit" class="auth-btn" id="auth-btn">Login</button>
+    </form>
+    
+    <div class="auth-toggle" id="auth-toggle">
+      Don't have an account? <a onclick="switchAuthMode()">Create one</a>
+    </div>
+  </div>
+</div>
 
+<div class="page-transition" id="page-transition"></div>
 
-<!-- SITE BANNER (controlled from admin panel) -->
+<!-- SITE BANNER -->
 <div class="site-banner" id="site-banner"></div>
 <canvas id="confetti-canvas"></canvas>
 <div id="toast-container"></div>
@@ -446,19 +514,28 @@ function t(k,...a){const v=(T[lang]||T.en)[k];return typeof v==='function'?v(...
   <div class="nav-logo"><span class="c">Conch</span><span class="sep">/</span><span class="r">Cmdr</span></div>
   <div class="nav-right">
     <button class="pwa-install-btn" id="pwa-btn" onclick="installPWA()">⬇ Install App</button>
-    <select class="lang-select" id="lang-sel" onchange="setLang(this.value)">
-      <option value="en">EN</option><option value="de">DE</option><option value="es">ES</option>
-      <option value="it">IT</option><option value="fr">FR</option><option value="pt">PT</option>
-      <option value="ru">RU</option><option value="ja">JA</option><option value="zh">ZH</option>
-      <option value="ko">KO</option><option value="tr">TR</option><option value="ar">AR</option>
-      <option value="pl">PL</option><option value="nl">NL</option>
-    </select>
+    <!-- LANGUAGE MENU mit FLAGGEN -->
+    <div style="position:relative">
+      <button class="lang-menu-btn" id="lang-btn" onclick="toggleLangMenu()">🌍</button>
+      <div class="lang-dropdown" id="lang-dropdown"></div>
+    </div>
     <button class="icon-btn" id="theme-btn" onclick="toggleTheme()" title="Toggle Theme">
       <span class="theme-icon" id="theme-icon">🌙</span>
     </button>
     <button class="icon-btn" id="refresh-btn" onclick="doRefresh()" title="Refresh">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
     </button>
+    <!-- USER MENU -->
+    <div class="user-menu">
+      <button class="user-btn" id="user-btn" onclick="toggleUserMenu()">
+        <span id="user-display">User</span> ▼
+      </button>
+      <div class="user-dropdown" id="user-dropdown">
+        <div class="user-dropdown-item" onclick="showProfile()">👤 Profile</div>
+        <div class="user-dropdown-item" onclick="showSettings()">⚙️ Settings</div>
+        <div class="user-dropdown-item logout" onclick="logout()">🚪 Logout</div>
+      </div>
+    </div>
     <button class="burger" id="burger-btn" onclick="toggleDrawer()"><span></span><span></span><span></span></button>
   </div>
 </nav>
@@ -489,13 +566,13 @@ function t(k,...a){const v=(T[lang]||T.en)[k];return typeof v==='function'?v(...
 <!-- HERO -->
 <div class="hero">
   <h1><em>Conch</em> &amp; <strong>Cmdr</strong><br>Download Hub</h1>
-  <p id="hero-sub"></p>
+  <!-- FIX 5: Fallback text added so hero is never blank if JS fails to load -->
+  <p id="hero-sub">Download the latest releases for Conch &amp; Cmdr.</p>
   <div class="scroll-hint">
     <a href="#conch" class="c">↓ Conch</a>
     <a href="#cmdr"  class="r">↓ Cmdr</a>
   </div>
 </div>
-
 
 <!-- DISCORD BANNER -->
 <div class="discord-banner">
@@ -528,7 +605,7 @@ function t(k,...a){const v=(T[lang]||T.en)[k];return typeof v==='function'?v(...
   </button>
 </div>
 
-<!-- FEATURED FILE (loaded from Supabase settings) -->
+<!-- FEATURED FILE -->
 <div class="featured-wrap" id="featured-wrap" style="display:none">
   <div class="featured-card">
     <span class="featured-badge">⭐ Recommended</span>
@@ -632,8 +709,9 @@ function t(k,...a){const v=(T[lang]||T.en)[k];return typeof v==='function'?v(...
 <footer id="footer"></footer>
 
 <!-- EMAIL NOTIFICATION MODAL -->
-<div class="email-modal-overlay" id="email-modal-overlay" onclick="closeEmailModal(event)">
-  <div class="email-modal" onclick="event.stopPropagation()">
+<!-- FIX 3: Replaced nested onclick/stopPropagation with a single cleaner check on the overlay -->
+<div class="email-modal-overlay" id="email-modal-overlay" onclick="if(event.target===this)closeEmailModal()">
+  <div class="email-modal">
     <div id="email-modal-content">
       <div class="email-modal-header">
         <div class="email-modal-title">📧 Email Notifications</div>
@@ -668,700 +746,524 @@ function t(k,...a){const v=(T[lang]||T.en)[k];return typeof v==='function'?v(...
 </div>
 
 <script>
-/* DRAWER */
-let _dopen=false;
-function toggleDrawer(){_dopen?closeDrawer():openDrawer()}
-function openDrawer(){_dopen=true;['drawer','drawer-overlay','burger-btn'].forEach(id=>document.getElementById(id).classList.add('open'));document.body.style.overflow='hidden'}
-function closeDrawer(){_dopen=false;['drawer','drawer-overlay','burger-btn'].forEach(id=>document.getElementById(id).classList.remove('open'));document.body.style.overflow=''}
-
-/* THEME TOGGLE */
-function toggleTheme(){
-  const root=document.documentElement;
-  const icon=document.getElementById('theme-icon');
-  const isDark=!root.classList.contains('light-mode');
-  
-  if(isDark){
-    root.classList.add('light-mode');
-    icon.textContent='☀️';
-    localStorage.setItem('cc_theme','light');
-  }else{
-    root.classList.remove('light-mode');
-    icon.textContent='🌙';
-    localStorage.setItem('cc_theme','dark');
-  }
+/* ═══════════════════════════════════════════════════════════════
+   THEME
+═══════════════════════════════════════════════════════════════ */
+function toggleTheme() {
+  const isLight = document.documentElement.classList.toggle('light-mode');
+  document.getElementById('theme-icon').textContent = isLight ? '☀️' : '🌙';
+  localStorage.setItem('theme', isLight ? 'light' : 'dark');
 }
 
-function loadTheme(){
-  const savedTheme=localStorage.getItem('cc_theme');
-  const icon=document.getElementById('theme-icon');
-  if(savedTheme==='light'){
+(function initTheme() {
+  if (localStorage.getItem('theme') === 'light') {
     document.documentElement.classList.add('light-mode');
-    if(icon)icon.textContent='☀️';
-  }else{
-    if(icon)icon.textContent='🌙';
+    document.getElementById('theme-icon').textContent = '☀️';
   }
-}
-
-/* EMAIL NOTIFICATION MODAL */
-function openEmailModal(){
-  document.getElementById('email-modal-overlay').classList.add('open');
-  document.body.style.overflow='hidden';
-}
-
-function closeEmailModal(event){
-  if(event&&event.target!==event.currentTarget)return;
-  document.getElementById('email-modal-overlay').classList.remove('open');
-  document.body.style.overflow='';
-  // Reset form after a delay
-  setTimeout(()=>{
-    document.getElementById('email-modal-content').innerHTML=`
-      <div class="email-modal-header">
-        <div class="email-modal-title">📧 Email Notifications</div>
-        <button class="email-modal-close" onclick="closeEmailModal()">✕</button>
-      </div>
-      <div class="email-modal-desc">
-        Get notified when new versions of Conch & Cmdr are released. We'll send you an email with the latest updates.
-      </div>
-      <input 
-        type="email" 
-        class="email-modal-input" 
-        id="email-input" 
-        placeholder="your.email@example.com"
-        required
-      >
-      <div class="email-modal-checkboxes">
-        <div class="email-checkbox-item">
-          <input type="checkbox" id="notify-conch" checked>
-          <label for="notify-conch">Notify me about Conch releases</label>
-        </div>
-        <div class="email-checkbox-item">
-          <input type="checkbox" id="notify-cmdr" checked>
-          <label for="notify-cmdr">Notify me about Cmdr releases</label>
-        </div>
-      </div>
-      <div class="email-modal-buttons">
-        <button class="email-modal-btn secondary" onclick="closeEmailModal()">Cancel</button>
-        <button class="email-modal-btn primary" onclick="subscribeEmail()">Subscribe</button>
-      </div>
-    `;
-  },300);
-}
-
-async function subscribeEmail(){
-  const email=document.getElementById('email-input').value.trim();
-  const notifyConch=document.getElementById('notify-conch').checked;
-  const notifyCmdr=document.getElementById('notify-cmdr').checked;
-  
-  if(!email){
-    toast({title:'Email required',sub:'Please enter your email address',type:'w',dur:3000});
-    return;
-  }
-  
-  // Email validation
-  const emailRegex=/^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if(!emailRegex.test(email)){
-    toast({title:'Invalid email',sub:'Please enter a valid email address',type:'w',dur:3000});
-    return;
-  }
-  
-  if(!notifyConch&&!notifyCmdr){
-    toast({title:'Select at least one',sub:'Choose Conch or Cmdr notifications',type:'w',dur:3000});
-    return;
-  }
-  
-  try{
-    // Check if email already exists
-    const checkResponse=await fetch(
-      `https://rmdkoauibmzhgnvrwhfd.supabase.co/rest/v1/email_subscribers?email=eq.${encodeURIComponent(email)}&select=id,email`,
-      {
-        headers:{
-          'apikey':'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJtZGtvYXVpYm16aGdudnJ3aGZkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyNjg2MDksImV4cCI6MjA5Mzg0NDYwOX0.lu6T00f9y9-Q8HhVag-MGjJz6bTlJrYUwC7AApIxaFw',
-          'Authorization':'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJtZGtvYXVpYm16aGdudnJ3aGZkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyNjg2MDksImV4cCI6MjA5Mzg0NDYwOX0.lu6T00f9y9-Q8HhVag-MGjJz6bTlJrYUwC7AApIxaFw'
-        }
-      }
-    );
-    
-    const existing=await checkResponse.json();
-    
-    let response;
-    if(existing&&existing.length>0){
-      // Update existing subscription
-      response=await fetch(
-        `https://rmdkoauibmzhgnvrwhfd.supabase.co/rest/v1/email_subscribers?email=eq.${encodeURIComponent(email)}`,
-        {
-          method:'PATCH',
-          headers:{
-            'apikey':'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJtZGtvYXVpYm16aGdudnJ3aGZkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyNjg2MDksImV4cCI6MjA5Mzg0NDYwOX0.lu6T00f9y9-Q8HhVag-MGjJz6bTlJrYUwC7AApIxaFw',
-            'Authorization':'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJtZGtvYXVpYm16aGdudnJ3aGZkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyNjg2MDksImV4cCI6MjA5Mzg0NDYwOX0.lu6T00f9y9-Q8HhVag-MGjJz6bTlJrYUwC7AApIxaFw',
-            'Content-Type':'application/json',
-            'Prefer':'return=minimal'
-          },
-          body:JSON.stringify({
-            notify_conch:notifyConch,
-            notify_cmdr:notifyCmdr,
-            updated_at:new Date().toISOString()
-          })
-        }
-      );
-    }else{
-      // Create new subscription
-      response=await fetch('https://rmdkoauibmzhgnvrwhfd.supabase.co/rest/v1/email_subscribers',{
-        method:'POST',
-        headers:{
-          'apikey':'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJtZGtvYXVpYm16aGdudnJ3aGZkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyNjg2MDksImV4cCI6MjA5Mzg0NDYwOX0.lu6T00f9y9-Q8HhVag-MGjJz6bTlJrYUwC7AApIxaFw',
-          'Authorization':'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJtZGtvYXVpYm16aGdudnJ3aGZkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyNjg2MDksImV4cCI6MjA5Mzg0NDYwOX0.lu6T00f9y9-Q8HhVag-MGjJz6bTlJrYUwC7AApIxaFw',
-          'Content-Type':'application/json',
-          'Prefer':'return=minimal'
-        },
-        body:JSON.stringify({
-          email:email,
-          notify_conch:notifyConch,
-          notify_cmdr:notifyCmdr,
-          subscribed_at:new Date().toISOString(),
-          created_at:new Date().toISOString()
-        })
-      });
-    }
-    
-    if(response.ok||response.status===201||response.status===204){
-      // Show success message
-      document.getElementById('email-modal-content').innerHTML=`
-        <div class="email-modal-success">
-          <div class="email-modal-success-icon">✅</div>
-          <div class="email-modal-success-title">Successfully Subscribed!</div>
-          <div class="email-modal-success-desc">
-            You'll receive an email notification when new ${notifyConch&&notifyCmdr?'Conch & Cmdr':notifyConch?'Conch':'Cmdr'} releases are published.
-            <br><br>
-            <strong>Email Message Preview:</strong><br>
-            <em style="color:var(--muted);font-size:0.75rem;display:block;margin-top:0.5rem;padding:0.75rem;background:var(--surface2);border-radius:6px;line-height:1.6;">
-              Hello!<br><br>
-              The website released a new version of ${notifyConch&&notifyCmdr?'Conch/Cmdr':notifyConch?'Conch':'Cmdr'}.<br>
-              Check it out on https://systems-download.github.io!
-            </em>
-          </div>
-          <button class="email-modal-btn primary" onclick="closeEmailModal()" style="margin-top:1.5rem;width:100%">Close</button>
-        </div>
-      `;
-      confetti();
-      toast({title:'Subscribed!',sub:'You will be notified of new releases',type:'ok',dur:4000});
-    }else{
-      throw new Error('Subscription failed');
-    }
-  }catch(error){
-    console.error('Email subscription error:',error);
-    toast({title:'Subscription failed',sub:'Please try again later',type:'w',dur:3000});
-  }
-}
-
-/* LANG */
-function setLang(l){lang=l;localStorage.setItem('cc_lang',l);applyLang();rerender()}
-function applyLang(){
-  const ids={['nl-dl']:'nav_dl',['nl-ann']:'nav_ann',['dl-dl']:'nav_dl',['dl-ann']:'nav_ann',['hero-sub']:'hero_sub',['sb-c']:'bdl',['sb-r']:'bdl',['desc-c']:'desc_c',['desc-r']:'desc_r',['empty-conch']:'se',['empty-cmdr']:'se'};
-  Object.entries(ids).forEach(([id,k])=>{const el=document.getElementById(id);if(el)el.textContent=t(k)});
-  document.getElementById('search-conch').placeholder=t('srch_c');
-  document.getElementById('search-cmdr').placeholder=t('srch_r');
-  document.getElementById('footer').textContent='Conch & Cmdr — '+t('footer');
-  document.getElementById('dl-footer').textContent=t('dfooter');
-  document.getElementById('lang-sel').value=lang;
-}
-
-/* DOWNLOAD COUNTER */
-function getDLC(f){try{return parseInt(localStorage.getItem('dlc_'+f)||'0')}catch{return 0}}
-function incDLC(f){try{localStorage.setItem('dlc_'+f,getDLC(f)+1)}catch{}}
-function refreshDLC(name){
-  document.querySelectorAll(`.dlc[data-f="${CSS.escape(name)}"]`).forEach(el=>{
-    const n=getDLC(name);el.textContent=n>0?t('dlc',n):'';el.style.display=n>0?'':'none'
-  })
-}
-
-/* TOAST */
-function toast({title,sub,type='c',dur=3500}){
-  const c=document.getElementById('toast-container'),el=document.createElement('div');el.className='toast';
-  const ico={c:'↓',r:'↓',ok:'✓',i:'⚑',w:'!'}[type]||'↓';
-  const icls={c:'t-ic',r:'t-ir',ok:'t-iok',i:'t-inf',w:'t-iwarn'}[type]||'t-ic';
-  const bcol={c:'var(--conch)',r:'var(--cmdr)',ok:'#3cc878',i:'#64a0ff',w:'#ffc832'}[type]||'var(--conch)';
-  el.innerHTML=`<div class="t-ico ${icls}">${ico}</div><div class="t-body"><div class="t-title">${eh(title)}</div>${sub?`<div class="t-sub">${eh(sub)}</div>`:''}</div><div class="t-bar" style="animation-duration:${dur}ms;background:${bcol}"></div>`;
-  c.appendChild(el);
-  setTimeout(()=>{el.classList.add('out');setTimeout(()=>el.remove(),320)},dur);
-}
-
-/* CONFETTI */
-function confetti(){
-  const cv=document.getElementById('confetti-canvas'),ctx=cv.getContext('2d');
-  cv.width=window.innerWidth;cv.height=window.innerHeight;
-  const cols=['#0ff4c6','#ff4f5e','#ffc832','#64a0ff','#ff8c42','#a78bfa'];
-  const ps=Array.from({length:70},()=>({x:Math.random()*cv.width,y:-10-Math.random()*60,r:4+Math.random()*5,col:cols[Math.floor(Math.random()*cols.length)],vx:(Math.random()-.5)*3,vy:2+Math.random()*4,rot:Math.random()*Math.PI*2,rv:(Math.random()-.5)*.2,sq:Math.random()>.5}));
-  let af,alpha=1;
-  function draw(){ctx.clearRect(0,0,cv.width,cv.height);ps.forEach(p=>{ctx.save();ctx.globalAlpha=alpha;ctx.translate(p.x,p.y);ctx.rotate(p.rot);ctx.fillStyle=p.col;if(p.sq){ctx.fillRect(-p.r,-p.r/2,p.r*2,p.r)}else{ctx.beginPath();ctx.arc(0,0,p.r/2,0,Math.PI*2);ctx.fill()}ctx.restore();p.x+=p.vx;p.y+=p.vy;p.rot+=p.rv;p.vy+=.06});
-  if(ps.every(p=>p.y>cv.height)){alpha-=.06}if(alpha<=0){ctx.clearRect(0,0,cv.width,cv.height);return}af=requestAnimationFrame(draw)}
-  if(af)cancelAnimationFrame(af);draw()
-}
-
-/* RIPPLE */
-function addRipple(btn,cls){
-  const r=document.createElement('span');r.className='ripple '+cls;
-  const rect=btn.getBoundingClientRect(),size=Math.max(rect.width,rect.height);
-  r.style.cssText=`width:${size}px;height:${size}px;left:${(rect.width-size)/2}px;top:${(rect.height-size)/2}px`;
-  btn.appendChild(r);setTimeout(()=>r.remove(),600)
-}
-
-/* DOWNLOAD with real progress */
-function dl(url,name,type,btn){
-  addRipple(btn,'ripple-'+type);
-  const itemEl=btn.closest('.file-item');
-  const progWrap=itemEl?itemEl.querySelector('.dl-progress-wrap'):null;
-  const progBar=itemEl?itemEl.querySelector('.dl-progress-bar'):null;
-  if(progWrap)progWrap.classList.add('active');
-  toast({title:t('t_start'),sub:name,type,dur:3000});
-
-  fetch(url)
-    .then(res=>{
-      if(!res.ok)throw new Error('HTTP '+res.status);
-      const total=parseInt(res.headers.get('content-length')||'0');
-      const reader=res.body.getReader();
-      const chunks=[];let received=0;
-      function pump(){
-        return reader.read().then(({done,value})=>{
-          if(done){
-            const blob=new Blob(chunks);
-            const u=URL.createObjectURL(blob),a=document.createElement('a');
-            a.href=u;a.download=name;document.body.appendChild(a);a.click();
-            document.body.removeChild(a);URL.revokeObjectURL(u);
-            if(progBar){progBar.style.width='100%';setTimeout(()=>{if(progWrap)progWrap.classList.remove('active');progBar.style.width='0%'},600)}
-            incDLC(name);refreshDLC(name);
-            toast({title:t('t_done'),sub:name,type:'ok',dur:3000});
-            confetti();return;
-          }
-          chunks.push(value);received+=value.length;
-          if(total>0&&progBar){progBar.style.width=Math.round((received/total)*100)+'%'}
-          else if(progBar){const fake=Math.min((progBar.style.width?parseFloat(progBar.style.width):0)+5,90);progBar.style.width=fake+'%'}
-          return pump();
-        })
-      }
-      return pump();
-    })
-    .catch(()=>{
-      if(progWrap)progWrap.classList.remove('active');
-      const a=document.createElement('a');a.href=url;a.download=name;a.target='_blank';a.rel='noopener';
-      document.body.appendChild(a);a.click();document.body.removeChild(a);
-      incDLC(name);refreshDLC(name);confetti();
-    });
-}
-
-/* SHARE */
-function share(url,btn){
-  addRipple(btn,'ripple-c');
-  const copy=()=>{btn.classList.add('copied');btn.textContent='✓';toast({title:t('t_cp'),sub:t('t_cp2'),type:'i',dur:2500});setTimeout(()=>{btn.classList.remove('copied');btn.textContent='⎘'},2000)};
-  if(navigator.clipboard)navigator.clipboard.writeText(url).then(copy).catch(()=>{fb(url);copy()});else{fb(url);copy()}
-}
-function fb(text){const ta=document.createElement('textarea');ta.value=text;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta)}
-
-/* SEARCH */
-function doSearch(sec){
-  const inp=document.getElementById('search-'+sec),clr=document.getElementById('clear-'+sec);
-  const q=inp.value.trim().toLowerCase(),list=document.getElementById(sec+'-list'),em=document.getElementById('empty-'+sec);
-  clr.classList.toggle('vis',q.length>0);
-  const items=list.querySelectorAll('.file-item');let vis=0;
-  items.forEach(it=>{const m=(it.dataset.n||'').includes(q)||(it.dataset.v||'').includes(q);it.classList.toggle('hidden',!m);if(m)vis++});
-  em.classList.toggle('vis',vis===0&&items.length>0&&q.length>0)
-}
-function clearSearch(sec){document.getElementById('search-'+sec).value='';doSearch(sec)}
-
-/* HISTORY */
-let _uid=0;
-function toggleHist(id){const p=document.getElementById('h-'+id),b=document.getElementById('hb-'+id),o=p.classList.contains('open');p.classList.toggle('open',!o);b.classList.toggle('open',!o)}
-
-/* SKELETON */
-function showSkel(id,n=3){document.getElementById(id).innerHTML=Array.from({length:n},()=>`<div class="skel-item"><div class="skel skel-ico"></div><div class="skel-body"><div class="skel skel-l w80"></div><div class="skel skel-l w50"></div></div><div class="skel skel-btn"></div></div>`).join('')}
-
-/* SEMVER SORT */
-function semver(s){const m=String(s).replace(/^v/i,'').match(/\d+/g);return m?m.map(Number):[0]}
-function cmpVer(a,b){const va=semver(a),vb=semver(b);for(let i=0;i<Math.max(va.length,vb.length);i++){const d=(vb[i]||0)-(va[i]||0);if(d)return d}return 0}
-
-/* CACHE */
-let _cc=[],_cr=[];
-
-/* FETCH - VERBESSERT: Gelöschte Releases werden automatisch entfernt */
-async function fetchReleases(){
-  showSkel('conch-list');showSkel('cmdr-list');
-  try{
-    // Cache-Busting: Stelle sicher, dass immer frische Daten von GitHub geladen werden
-    const cacheBuster='&_cb='+Date.now();
-    const res=await fetch(`https://api.github.com/repos/${CONFIG.GITHUB_REPO}/releases?per_page=${CONFIG.MAX_RELEASES}${cacheBuster}`);
-    if(!res.ok)throw new Error(res.status===404?'404':res.status===403?'403':res.status+' '+res.statusText);
-    const releases=await res.json();
-    
-    // WICHTIG: Listen komplett neu aufbauen - alte/gelöschte Releases werden NICHT übertragen
-    // Nur Releases die AKTUELL auf GitHub existieren werden hier verarbeitet
-    const cm={},rm={};
-    releases.forEach(rel=>{
-      const date=new Date(rel.published_at).toLocaleDateString('en-US',{year:'numeric',month:'short',day:'numeric'});
-      const isNew=(Date.now()-new Date(rel.published_at).getTime())<7*24*3600*1000;
-      (rel.assets||[]).forEach(a=>{
-        const nm=a.name,lo=nm.toLowerCase();
-        if(!lo.endsWith('.rbxm'))return;
-        const isC=lo.includes('conch'),isR=lo.includes('cmdr');
-        if(!isC&&!isR)return;
-        const entry={name:nm,size:fmtB(a.size),date,version:rel.tag_name||rel.name||'v?',url:a.browser_download_url,ts:rel.published_at,isNew};
-        const key=nm.replace(/[_\-]v[\d.]+/i,'').replace(/\.rbxm$/i,'').toLowerCase();
-        if(isC){if(!cm[key])cm[key]=[];cm[key].push(entry)}else{if(!rm[key])rm[key]=[];rm[key].push(entry)}
-      })
-    });
-    const srt=map=>Object.values(map).forEach(arr=>arr.sort((a,b)=>cmpVer(a.version,b.version)||new Date(b.ts)-new Date(a.ts)));
-    srt(cm);srt(rm);
-    const toG=map=>Object.values(map).sort((a,b)=>cmpVer(a[0].version,b[0].version));
-    
-    // Alte Cache-Daten werden komplett ersetzt - gelöschte Releases verschwinden automatisch
-    _cc=toG(cm);_cr=toG(rm);
-    render('conch',_cc);render('cmdr',_cr);
-    
-    if(CONFIG.DEBUG)console.log('✅ Releases geladen - Conch:',_cc.length,'Gruppen, Cmdr:',_cr.length,'Gruppen');
-  }catch(e){
-    const msg=e.message==='404'?t('e404'):e.message==='403'?t('e403'):t('egn')+e.message;
-    ['conch-list','cmdr-list'].forEach(id=>document.getElementById(id).innerHTML=`<div class="error-state">❌ ${msg}</div>`);
-  }
-}
-function rerender(){if(_cc.length||_cr.length){render('conch',_cc);render('cmdr',_cr)}}
-
-/* RENDER */
-function render(sec,groups){
-  const list=document.getElementById(sec+'-list'),isC=sec==='conch',cls=isC?'c':'r';
-  if(!groups.length){list.innerHTML=`<div class="empty-state">${t('empty',isC?'Conch':'Cmdr')}<br><small style="margin-top:.5rem;display:block;opacity:.7">${t('empty_h',isC?'Conch':'Cmdr')}</small></div>`;return}
-  list.innerHTML='';
-  groups.forEach(vers=>{
-    const latest=vers[0],hasH=vers.length>1,id=++_uid,dlc=getDLC(latest.name);
-    const el=document.createElement('div');
-    el.className='file-item';el.dataset.n=latest.name.toLowerCase();el.dataset.v=latest.version.toLowerCase();
-    let histHTML='';
-    if(hasH){
-      const rows=vers.slice(1).map(v=>`<div class="ver-row"><span class="ver-tag vt-${cls}">${eh(v.version)}</span><span class="ver-name" title="${eh(v.name)}">${eh(v.name)}</span><span class="ver-date">${v.date}</span><button class="btn-dl-xs xs-${cls}" onclick="dl('${ea(v.url)}','${ea(v.name)}','${cls}',this)">↓</button></div>`).join('');
-      histHTML=`<div class="ver-history" id="h-${id}"><div class="ver-inner"><div class="ver-label">${t('hist_lbl')}</div>${rows}</div></div>`;
-    }
-    el.innerHTML=`
-      <div class="file-main">
-        <div class="file-icon fi-${cls}">🧩</div>
-        <div class="file-info">
-          <div class="file-name-row">
-            <span class="file-name" title="${eh(latest.name)}">${eh(latest.name)}</span>
-            <span class="fver fver-${cls}">${eh(latest.version)}</span>
-            ${latest.isNew?`<span class="badge-new">${t('bnew')}</span>`:''}
-          </div>
-          <div class="file-meta">
-            <span>${latest.size}</span><span>·</span><span>${latest.date}</span><span>·</span><span>.rbxm</span>
-            ${hasH?`<span>·</span><span>${t('vcount',vers.length)}</span>`:''}
-            <span class="dlc" data-f="${eh(latest.name)}" style="${dlc>0?'':'display:none'}">${dlc>0?t('dlc',dlc):''}</span>
-          </div>
-        </div>
-        <div class="file-actions">
-          <button class="btn-sm" onclick="share('${ea(latest.url)}',this)" title="Copy link">⎘</button>
-          <button class="btn-queue" id="qbtn-${id}" onclick="addToQueue('${ea(latest.url)}','${ea(latest.name)}','${cls}','${id}')" title="Add to queue">🛒</button>
-          ${hasH?`<button class="btn-hist" id="hb-${id}" onclick="toggleHist(${id})"><span>${t('hist')}</span><span class="arr">▾</span></button>`:''}
-          <button class="btn-dl btn-dl-${cls}" onclick="dl('${ea(latest.url)}','${ea(latest.name)}','${cls}',this)">${t('dl')}</button>
-        </div>
-      </div>
-      <div class="dl-progress-wrap"><div class="dl-progress-bar dlp-${cls}"></div></div>
-      ${histHTML}`;
-    list.appendChild(el);
-  })
-}
-
-/* REFRESH */
-async function doRefresh(){
-  const btn=document.getElementById('refresh-btn');
-  if(btn.disabled)return;
-  btn.disabled=true;btn.classList.add('spinning');
-  showSkel('conch-list');showSkel('cmdr-list');
-  ['empty-conch','empty-cmdr'].forEach(id=>document.getElementById(id).classList.remove('vis'));
-  clearSearch('conch');clearSearch('cmdr');
-  toast({title:t('t_ref'),sub:t('t_ref2'),type:'c',dur:2000});
-  await fetchReleases();
-  btn.disabled=false;btn.classList.remove('spinning');
-  toast({title:t('t_upd'),sub:t('t_upd2'),type:'ok',dur:2500});
-}
-
-/* UTILS */
-function fmtB(b){if(!b)return'0 B';const k=1024,s=['B','KB','MB','GB'],i=Math.floor(Math.log(b)/Math.log(k));return parseFloat((b/Math.pow(k,i)).toFixed(2))+' '+s[i]}
-function eh(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
-function ea(s){return String(s).replace(/\\/g,'\\\\').replace(/'/g,"\\'")}
-
-/* BANNER */
-(function(){
-  if(!window.__BANNER__)return;
-  const el=document.getElementById('site-banner');
-  if(!el)return;
-  el.textContent=window.__BANNER__.text;
-  el.className='site-banner sb-'+(window.__BANNER__.type||'info')+' active';
-  document.querySelector('.hero').style.paddingTop='10rem';
 })();
 
+/* ═══════════════════════════════════════════════════════════════
+   LANGUAGE MENU
+═══════════════════════════════════════════════════════════════ */
+const LANGUAGES = [
+  { code: 'en', flag: '🇬🇧', label: 'English' },
+  { code: 'de', flag: '🇩🇪', label: 'Deutsch' },
+  { code: 'fr', flag: '🇫🇷', label: 'Français' },
+  { code: 'es', flag: '🇪🇸', label: 'Español' },
+  { code: 'it', flag: '🇮🇹', label: 'Italiano' },
+  { code: 'pt', flag: '🇵🇹', label: 'Português' },
+  { code: 'ru', flag: '🇷🇺', label: 'Русский' },
+  { code: 'zh', flag: '🇨🇳', label: '中文' },
+  { code: 'ja', flag: '🇯🇵', label: '日本語' },
+  { code: 'ko', flag: '🇰🇷', label: '한국어' },
+];
 
-/* PAGE TRANSITIONS */
-document.querySelectorAll('a[href]').forEach(a=>{
-  const href=a.getAttribute('href');
-  if(!href||href.startsWith('#')||href.startsWith('http')||href.startsWith('mailto')||a.target==='_blank')return;
-  a.addEventListener('click',e=>{
-    e.preventDefault();
-    const overlay=document.getElementById('page-transition');
-    overlay.classList.add('fade-out');
-    setTimeout(()=>window.location.href=href,250);
-  });
-});
-window.addEventListener('pageshow',()=>{
-  const overlay=document.getElementById('page-transition');
-  if(overlay)overlay.classList.remove('fade-out');
-});
+let currentLang = localStorage.getItem('lang') || 'en';
 
-/* PWA SERVICE WORKER + INSTALL */
-let _deferredPrompt=null;
-if('serviceWorker' in navigator){
-  navigator.serviceWorker.register('sw.js').catch(()=>{});
-}
-window.addEventListener('beforeinstallprompt',e=>{
-  e.preventDefault();_deferredPrompt=e;
-  const btn=document.getElementById('pwa-btn');
-  if(btn)btn.classList.add('visible');
-});
-function installPWA(){
-  if(!_deferredPrompt)return;
-  _deferredPrompt.prompt();
-  _deferredPrompt.userChoice.then(()=>{
-    _deferredPrompt=null;
-    const btn=document.getElementById('pwa-btn');
-    if(btn)btn.classList.remove('visible');
-  });
-}
-window.addEventListener('appinstalled',()=>{
-  const btn=document.getElementById('pwa-btn');if(btn)btn.classList.remove('visible');
-  toast({title:'App installed!',sub:'Conch & Cmdr added to your device',type:'ok',dur:3000});
-});
-
-
-/* ── DOWNLOAD QUEUE ── */
-let _queue=[];
-let _queueRunning=false;
-
-function toggleQueue(){
-  const p=document.getElementById('queue-panel');
-  p.classList.toggle('open');
-  renderQueue();
-}
-
-function addToQueue(url,name,type,itemId){
-  if(_queue.find(q=>q.name===name)){
-    toast({title:'Already in queue',sub:name,type:'i',dur:2000});return;
-  }
-  _queue.push({url,name,type,done:false});
-  updateQueueBadge();
-  renderQueue();
-  // Style the button
-  const btn=document.getElementById('qbtn-'+itemId);
-  if(btn)btn.classList.add('in-queue');
-  toast({title:'Added to queue',sub:name,type:'c',dur:1800});
-}
-
-function removeFromQueue(idx){
-  const item=_queue[idx];
-  _queue.splice(idx,1);
-  // Reset button
-  document.querySelectorAll('.btn-queue.in-queue').forEach(b=>{
-    // find by name match - reset all buttons for this file
-  });
-  updateQueueBadge();renderQueue();
-}
-
-function clearQueue(){
-  _queue=[];
-  document.querySelectorAll('.btn-queue.in-queue').forEach(b=>b.classList.remove('in-queue'));
-  updateQueueBadge();renderQueue();
-}
-
-function updateQueueBadge(){
-  const badge=document.getElementById('queue-badge');
-  const n=_queue.filter(q=>!q.done).length;
-  badge.textContent=_queue.length;
-  badge.classList.toggle('vis',_queue.length>0);
-}
-
-function renderQueue(){
-  const list=document.getElementById('queue-list');
-  const dlBtn=document.getElementById('queue-dl-btn');
-  if(!_queue.length){
-    list.innerHTML='<div class="queue-empty">Queue is empty — add files with 🛒</div>';
-    if(dlBtn)dlBtn.disabled=true;return;
-  }
-  if(dlBtn)dlBtn.disabled=_queueRunning;
-  list.innerHTML=_queue.map((q,i)=>`
-    <div class="queue-item${q.done?' done':''}" id="qitem-${i}">
-      <span class="queue-item-icon">${q.done?'✅':'🧩'}</span>
-      <span class="queue-item-name" title="${eh(q.name)}">${eh(q.name)}</span>
-      <span class="queue-item-type qit-${q.type}">${q.type.toUpperCase()}</span>
-      ${!q.done&&!_queueRunning?`<button class="queue-item-rm" onclick="removeFromQueue(${i})">✕</button>`:''}
+function buildLangDropdown() {
+  const dd = document.getElementById('lang-dropdown');
+  dd.innerHTML = LANGUAGES.map(l => `
+    <div class="lang-option ${l.code === currentLang ? 'active' : ''}" onclick="selectLang('${l.code}')">
+      <span class="lang-flag">${l.flag}</span>${l.label}
     </div>`).join('');
 }
 
-async function startQueue(){
-  if(_queueRunning||!_queue.length)return;
-  _queueRunning=true;
-  const dlBtn=document.getElementById('queue-dl-btn');
-  if(dlBtn){dlBtn.disabled=true;dlBtn.textContent='Downloading...';}
-  const prog=document.getElementById('queue-progress');
-  const itemsToDownload=_queue.filter(q=>!q.done);
-  const total=itemsToDownload.length;
-  let done=0;
-  
-  toast({title:'Starting '+total+' downloads',sub:'All files will download simultaneously',type:'c',dur:3000});
-  
-  // Alle Items als "downloading" markieren
-  _queue.forEach((q,i)=>{
-    if(!q.done){
-      const item=document.getElementById('qitem-'+i);
-      if(item)item.classList.add('downloading');
+function toggleLangMenu() {
+  const dd = document.getElementById('lang-dropdown');
+  dd.classList.toggle('active');
+  buildLangDropdown();
+}
+
+function selectLang(code) {
+  currentLang = code;
+  localStorage.setItem('lang', code);
+  buildLangDropdown();
+  document.getElementById('lang-dropdown').classList.remove('active');
+  const lang = LANGUAGES.find(l => l.code === code);
+  document.getElementById('lang-btn').textContent = lang ? lang.flag : '🌍';
+  showToast('🌍', 'Language', `Switched to ${lang ? lang.label : code}`, 't-inf');
+}
+
+(function initLang() {
+  const lang = LANGUAGES.find(l => l.code === currentLang);
+  if (lang) document.getElementById('lang-btn').textContent = lang.flag;
+})();
+
+/* ═══════════════════════════════════════════════════════════════
+   USER MENU
+═══════════════════════════════════════════════════════════════ */
+function toggleUserMenu() {
+  document.getElementById('user-dropdown').classList.toggle('active');
+}
+
+function showProfile() {
+  document.getElementById('user-dropdown').classList.remove('active');
+  showToast('👤', 'Profile', 'Profile page coming soon', 't-inf');
+}
+
+function showSettings() {
+  document.getElementById('user-dropdown').classList.remove('active');
+  showToast('⚙️', 'Settings', 'Settings coming soon', 't-inf');
+}
+
+function logout() {
+  document.getElementById('user-dropdown').classList.remove('active');
+  document.getElementById('auth-modal').classList.add('active');
+  showToast('🚪', 'Logged out', 'See you next time!', 't-iok');
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   DRAWER
+═══════════════════════════════════════════════════════════════ */
+function toggleDrawer() {
+  document.getElementById('drawer').classList.toggle('open');
+  document.getElementById('drawer-overlay').classList.toggle('open');
+  document.getElementById('burger-btn').classList.toggle('open');
+}
+
+function closeDrawer() {
+  document.getElementById('drawer').classList.remove('open');
+  document.getElementById('drawer-overlay').classList.remove('open');
+  document.getElementById('burger-btn').classList.remove('open');
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   REFRESH
+═══════════════════════════════════════════════════════════════ */
+function doRefresh() {
+  const btn = document.getElementById('refresh-btn');
+  btn.classList.add('spinning');
+  showToast('🔄', 'Refreshing', 'Fetching latest releases...', 't-inf');
+  setTimeout(() => {
+    btn.classList.remove('spinning');
+    loadReleases();
+  }, 1000);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   AUTH MODAL
+═══════════════════════════════════════════════════════════════ */
+let authMode = 'login';
+
+function switchAuthMode() {
+  authMode = authMode === 'login' ? 'register' : 'login';
+  const isReg = authMode === 'register';
+  document.getElementById('auth-title').textContent    = isReg ? 'Create Account' : 'Login';
+  document.getElementById('auth-subtitle').textContent = isReg ? 'Join the community' : 'Welcome back';
+  document.getElementById('auth-btn').textContent      = isReg ? 'Register' : 'Login';
+  document.getElementById('confirm-group').style.display = isReg ? '' : 'none';
+  document.getElementById('auth-message').innerHTML    = '';
+  document.getElementById('auth-toggle').innerHTML     = isReg
+    ? 'Already have an account? <a onclick="switchAuthMode()">Login</a>'
+    : 'Don\'t have an account? <a onclick="switchAuthMode()">Create one</a>';
+}
+
+function handleAuth(e) {
+  e.preventDefault();
+  const email    = document.getElementById('auth-email').value.trim();
+  const password = document.getElementById('auth-password').value;
+  const msg      = document.getElementById('auth-message');
+
+  if (authMode === 'register') {
+    const confirm = document.getElementById('auth-confirm').value;
+    if (password !== confirm) {
+      msg.innerHTML = '<div class="auth-error">Passwords do not match.</div>';
+      return false;
     }
-  });
-  
-  // Alle Downloads SOFORT parallel starten - KEIN await zwischen den Starts
-  const downloadPromises=[];
-  for(let i=0;i<_queue.length;i++){
-    const q=_queue[i];
-    if(q.done)continue;
-    
-    // Download-Promise erstellen und SOFORT zur Liste hinzufügen
-    const downloadPromise=(async()=>{
-      try{
-        // Direkt den Browser-Download triggern ohne zu warten
-        const a=document.createElement('a');
-        a.href=q.url;
-        a.download=q.name;
-        a.target='_blank';
-        a.rel='noopener';
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        
-        // Counter erhöhen und DLC speichern
-        incDLC(q.name);
-        refreshDLC(q.name);
-        
-        // Kurze Verzögerung für UI-Update
-        await new Promise(resolve=>setTimeout(resolve,200));
-      }catch(err){
-        console.error('Download error:',err);
-      }finally{
-        q.done=true;
-        done++;
-        if(prog)prog.style.width=Math.round((done/total)*100)+'%';
-        const item=document.getElementById('qitem-'+i);
-        if(item)item.classList.remove('downloading');
-        renderQueue();
-      }
-    })();
-    
-    downloadPromises.push(downloadPromise);
   }
-  
-  // Jetzt auf ALLE Downloads gleichzeitig warten
-  await Promise.all(downloadPromises);
-  
-  _queueRunning=false;
-  if(dlBtn){dlBtn.disabled=false;dlBtn.textContent='↓ Download All';}
-  confetti();
-  toast({title:'All downloads complete!',sub:done+' files downloaded',type:'ok',dur:3500});
-  setTimeout(()=>{if(prog)prog.style.width='0%';},1500);
+
+  // Simulate success
+  msg.innerHTML = '<div class="auth-success">✓ ' + (authMode === 'login' ? 'Logged in!' : 'Account created!') + '</div>';
+  document.getElementById('user-display').textContent = email.split('@')[0];
+  setTimeout(() => {
+    document.getElementById('auth-modal').classList.remove('active');
+    msg.innerHTML = '';
+  }, 1200);
+  return false;
 }
 
-/* ── FEATURED FILE ── */
-async function loadFeatured(){
-  try{
-    const r=await fetch('https://rmdkoauibmzhgnvrwhfd.supabase.co/rest/v1/site_settings?key=in.(featured_file_name,featured_file_url,featured_file_meta,featured_enabled)&select=key,value',
-      {headers:{'apikey':'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJtZGtvYXVpYm16aGdudnJ3aGZkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyNjg2MDksImV4cCI6MjA5Mzg0NDYwOX0.lu6T00f9y9-Q8HhVag-MGjJz6bTlJrYUwC7AApIxaFw','Authorization':'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJtZGtvYXVpYm16aGdudnJ3aGZkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyNjg2MDksImV4cCI6MjA5Mzg0NDYwOX0.lu6T00f9y9-Q8HhVag-MGjJz6bTlJrYUwC7AApIxaFw'}});
-    if(!r.ok)return;
-    const rows=await r.json();const s={};rows.forEach(x=>s[x.key]=x.value);
-    if(s.featured_enabled!=='true'||!s.featured_file_name)return;
-    document.getElementById('featured-name').textContent=s.featured_file_name;
-    document.getElementById('featured-meta').textContent=s.featured_file_meta||'Recommended by the team';
-    const dlBtn=document.getElementById('featured-dl-btn');
-    if(dlBtn&&s.featured_file_url){
-      dlBtn.onclick=()=>dl(s.featured_file_url,s.featured_file_name,'c',dlBtn);
-    }
-    document.getElementById('featured-wrap').style.display='block';
-  }catch(e){}
+/* ═══════════════════════════════════════════════════════════════
+   DOWNLOAD QUEUE
+═══════════════════════════════════════════════════════════════ */
+let queue = [];
+
+function toggleQueue() {
+  document.getElementById('queue-panel').classList.toggle('open');
 }
 
-/* ── COUNTDOWN ── */
-let _countdownData={conch:null,cmdr:null};
-let _countdownIntervals={conch:null,cmdr:null};
-
-function loadCountdownDates(){
-  // 🎯 Lade Daten aus CONFIG (oben im Script definiert)
-  if(CONFIG.NEXT_RELEASE_CONCH){
-    _countdownData.conch=new Date(CONFIG.NEXT_RELEASE_CONCH);
-    startCountdown('conch');
+function addToQueue(name, url, type) {
+  if (queue.find(i => i.url === url)) {
+    queue = queue.filter(i => i.url !== url);
+    updateQueueUI();
+    return false;
   }
-  if(CONFIG.NEXT_RELEASE_CMDR){
-    _countdownData.cmdr=new Date(CONFIG.NEXT_RELEASE_CMDR);
-    startCountdown('cmdr');
-  }
+  queue.push({ name, url, type });
+  updateQueueUI();
+  showToast('🛒', 'Added to queue', name, type === 'conch' ? 't-ic' : 't-ir');
+  return true;
 }
 
-function startCountdown(type){
-  const data=_countdownData[type];
-  if(!data||isNaN(data.getTime()))return;
-  
-  if(_countdownIntervals[type])clearInterval(_countdownIntervals[type]);
-  const wrap=document.getElementById(`countdown-${type}-wrap`);
-  if(wrap)wrap.style.display='block';
-  
-  updateCountdown(type);
-  _countdownIntervals[type]=setInterval(()=>updateCountdown(type),1000);
+function removeFromQueue(url) {
+  queue = queue.filter(i => i.url !== url);
+  updateQueueUI();
 }
 
-function updateCountdown(type){
-  const targetDate=_countdownData[type];
-  if(!targetDate||isNaN(targetDate.getTime()))return;
-  
-  const now=new Date().getTime();
-  const distance=targetDate.getTime()-now;
-  
-  const wrap=document.getElementById(`countdown-${type}-wrap`);
-  if(!wrap)return;
-  
-  if(distance<0){
-    wrap.innerHTML=`<div class="countdown-card ${type==='conch'?'cc':'cr'}"><div class="countdown-expired"><span class="countdown-expired-icon">🎉</span><div>Release is here!</div></div></div>`;
-    if(_countdownIntervals[type])clearInterval(_countdownIntervals[type]);
+function clearQueue() {
+  queue = [];
+  updateQueueUI();
+}
+
+function updateQueueUI() {
+  const list  = document.getElementById('queue-list');
+  const badge = document.getElementById('queue-badge');
+  badge.textContent = queue.length;
+  badge.classList.toggle('vis', queue.length > 0);
+
+  if (queue.length === 0) {
+    list.innerHTML = '<div class="queue-empty">Queue is empty — add files with 🛒</div>';
     return;
   }
-  
-  const days=Math.floor(distance/(1000*60*60*24));
-  const hours=Math.floor((distance%(1000*60*60*24))/(1000*60*60));
-  const mins=Math.floor((distance%(1000*60*60))/(1000*60));
-  const secs=Math.floor((distance%(1000*60))/1000);
-  
-  const pad=n=>String(n).padStart(2,'0');
-  document.getElementById(`countdown-${type}-days`).textContent=pad(days);
-  document.getElementById(`countdown-${type}-hours`).textContent=pad(hours);
-  document.getElementById(`countdown-${type}-mins`).textContent=pad(mins);
-  document.getElementById(`countdown-${type}-secs`).textContent=pad(secs);
-  
-  const dateEl=document.getElementById(`countdown-${type}-date`);
-  if(dateEl){
-    const dateStr=targetDate.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric',hour:'2-digit',minute:'2-digit'});
-    dateEl.textContent=dateStr;
+
+  list.innerHTML = queue.map(item => `
+    <div class="queue-item" id="qi-${btoa(item.url).replace(/=/g,'')}">
+      <span class="queue-item-icon">${item.type === 'conch' ? '🟢' : '🔴'}</span>
+      <span class="queue-item-name">${item.name}</span>
+      <span class="queue-item-type ${item.type === 'conch' ? 'qit-c' : 'qit-r'}">${item.type}</span>
+      <button class="queue-item-rm" onclick="removeFromQueue('${item.url}')">✕</button>
+    </div>`).join('');
+}
+
+async function startQueue() {
+  if (queue.length === 0) return;
+  const btn = document.getElementById('queue-dl-btn');
+  btn.disabled = true;
+  for (const item of [...queue]) {
+    triggerDownload(item.url, item.name);
+    await new Promise(r => setTimeout(r, 600));
   }
-  
-  const totalDays=30;
-  const daysRemaining=Math.max(0,Math.ceil(distance/(1000*60*60*24)));
-  const progress=Math.max(0,Math.min(100,((totalDays-daysRemaining)/totalDays)*100));
-  
-  const progressEl=document.getElementById(`countdown-${type}-progress`);
-  if(progressEl){
-    progressEl.style.background=`linear-gradient(to right, ${type==='conch'?'var(--conch)':'var(--cmdr)'} ${progress}%, var(--surface2) ${progress}%)`;
+  btn.disabled = false;
+  showToast('✅', 'Queue done', `${queue.length} file(s) downloaded`, 't-iok');
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   DOWNLOAD HELPER
+═══════════════════════════════════════════════════════════════ */
+function triggerDownload(url, name) {
+  const a = document.createElement('a');
+  a.href = url; a.download = name; a.rel = 'noopener';
+  document.body.appendChild(a); a.click();
+  document.body.removeChild(a);
+  showToast('↓', 'Downloading', name, 't-iok');
+}
+
+function copyLink(url) {
+  navigator.clipboard.writeText(url).then(() => {
+    showToast('📋', 'Copied', 'Link copied to clipboard', 't-iok');
+  });
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   SEARCH
+═══════════════════════════════════════════════════════════════ */
+function doSearch(section) {
+  const input = document.getElementById('search-' + section);
+  const query = input.value.toLowerCase();
+  const items = document.querySelectorAll(`#${section}-list .file-item`);
+  const clear = document.getElementById('clear-' + section);
+  const empty = document.getElementById('empty-' + section);
+
+  clear.classList.toggle('vis', query.length > 0);
+
+  let visible = 0;
+  items.forEach(item => {
+    const match = item.textContent.toLowerCase().includes(query);
+    item.classList.toggle('hidden', !match);
+    if (match) visible++;
+  });
+
+  if (empty) {
+    empty.classList.toggle('vis', visible === 0 && query.length > 0);
+    empty.textContent = `No results for "${input.value}"`;
   }
 }
 
-/* INIT */
-document.getElementById('lang-sel').value=lang;
-loadTheme();
-applyLang();showSkel('conch-list');showSkel('cmdr-list');fetchReleases();loadFeatured();loadCountdownDates();
+function clearSearch(section) {
+  document.getElementById('search-' + section).value = '';
+  doSearch(section);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   VERSION HISTORY TOGGLE
+═══════════════════════════════════════════════════════════════ */
+function toggleHistory(id) {
+  const el  = document.getElementById('hist-' + id);
+  const btn = document.getElementById('hbtn-' + id);
+  if (!el) return;
+  el.classList.toggle('open');
+  if (btn) btn.classList.toggle('open');
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   TOAST NOTIFICATIONS
+═══════════════════════════════════════════════════════════════ */
+function showToast(icon, title, sub, iconClass, duration) {
+  duration = duration || 3500;
+  const c = document.getElementById('toast-container');
+  const t = document.createElement('div');
+  t.className = 'toast';
+  t.innerHTML = `
+    <div class="t-ico ${iconClass}">${icon}</div>
+    <div class="t-body">
+      <div class="t-title">${title}</div>
+      <div class="t-sub">${sub}</div>
+    </div>
+    <div class="t-bar" style="animation-duration:${duration}ms;background:currentColor"></div>`;
+  c.appendChild(t);
+  setTimeout(() => { t.classList.add('out'); setTimeout(() => t.remove(), 350); }, duration);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   EMAIL MODAL
+═══════════════════════════════════════════════════════════════ */
+function openEmailModal() {
+  document.getElementById('email-modal-overlay').classList.add('open');
+}
+
+function closeEmailModal() {
+  document.getElementById('email-modal-overlay').classList.remove('open');
+}
+
+function subscribeEmail() {
+  const email = document.getElementById('email-input').value.trim();
+  if (!email || !email.includes('@')) {
+    showToast('⚠️', 'Invalid email', 'Please enter a valid email address', 't-iwarn');
+    return;
+  }
+  const conch = document.getElementById('notify-conch').checked;
+  const cmdr  = document.getElementById('notify-cmdr').checked;
+  if (!conch && !cmdr) {
+    showToast('⚠️', 'Nothing selected', 'Please select at least one product', 't-iwarn');
+    return;
+  }
+  document.getElementById('email-modal-content').innerHTML = `
+    <div class="email-modal-success">
+      <div class="email-modal-success-icon">✅</div>
+      <div class="email-modal-success-title">Subscribed!</div>
+      <div class="email-modal-success-desc">You'll be notified at ${email}</div>
+    </div>`;
+  setTimeout(closeEmailModal, 2000);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   PWA INSTALL
+═══════════════════════════════════════════════════════════════ */
+let deferredPrompt = null;
+
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  deferredPrompt = e;
+  document.getElementById('pwa-btn').classList.add('visible');
+});
+
+function installPWA() {
+  if (!deferredPrompt) return;
+  deferredPrompt.prompt();
+  deferredPrompt.userChoice.then(() => {
+    deferredPrompt = null;
+    document.getElementById('pwa-btn').classList.remove('visible');
+  });
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   GITHUB RELEASES LOADER
+═══════════════════════════════════════════════════════════════ */
+const REPOS = {
+  conch: 'systems-download/conch',
+  cmdr:  'systems-download/cmdr'
+};
+
+function renderSkeletons(listId, count) {
+  count = count || 3;
+  const list = document.getElementById(listId);
+  list.innerHTML = Array(count).fill(`
+    <div class="skel-item">
+      <div class="skel skel-ico"></div>
+      <div class="skel-body">
+        <div class="skel skel-l w80"></div>
+        <div class="skel skel-l w50"></div>
+      </div>
+      <div class="skel skel-btn"></div>
+    </div>`).join('');
+}
+
+function formatSize(bytes) {
+  if (!bytes) return '';
+  if (bytes < 1024)       return bytes + ' B';
+  if (bytes < 1048576)    return (bytes / 1024).toFixed(1) + ' KB';
+  return (bytes / 1048576).toFixed(1) + ' MB';
+}
+
+function formatDate(iso) {
+  return new Date(iso).toLocaleDateString(undefined, { year:'numeric', month:'short', day:'numeric' });
+}
+
+function isNew(iso) {
+  return (Date.now() - new Date(iso).getTime()) < 7 * 24 * 60 * 60 * 1000;
+}
+
+async function fetchReleases(repo) {
+  const res = await fetch(`https://api.github.com/repos/${repo}/releases?per_page=20`);
+  if (!res.ok) throw new Error('GitHub API error ' + res.status);
+  return res.json();
+}
+
+function buildFileList(releases, section) {
+  const list   = document.getElementById(section + '-list');
+  const isC    = section === 'conch';
+  const color  = isC ? 'c' : 'r';
+
+  if (!releases || releases.length === 0) {
+    list.innerHTML = `<div class="empty-state">No releases found.</div>`;
+    return;
+  }
+
+  // Update badge
+  const badge = document.getElementById('sb-' + color);
+  if (badge) badge.textContent = releases[0].tag_name;
+
+  list.innerHTML = '';
+
+  releases.forEach((rel, idx) => {
+    const assets = rel.assets || [];
+    if (assets.length === 0) return;
+
+    assets.forEach(asset => {
+      const itemId = section + '-' + idx + '-' + asset.id;
+      const item   = document.createElement('div');
+      item.className = 'file-item';
+      item.dataset.name = asset.name.toLowerCase();
+
+      // version history rows (older releases with same name pattern)
+      const histRows = releases.slice(1).map(r => {
+        const a = (r.assets || []).find(x => x.name === asset.name);
+        if (!a) return '';
+        return `<div class="ver-row">
+          <span class="ver-tag vt-${color}">${r.tag_name}</span>
+          <span class="ver-name">${a.name}</span>
+          <span class="ver-date">${formatDate(r.published_at)}</span>
+          <button class="btn-dl-xs xs-${color}" onclick="triggerDownload('${a.browser_download_url}','${a.name}')">↓</button>
+        </div>`;
+      }).join('');
+
+      item.innerHTML = `
+        <div class="file-main">
+          <div class="file-icon fi-${color}">📦</div>
+          <div class="file-info">
+            <div class="file-name-row">
+              <span class="file-name">${asset.name}</span>
+              <span class="fver fver-${color}">${rel.tag_name}</span>
+              ${isNew(rel.published_at) ? '<span class="badge-new">NEW</span>' : ''}
+            </div>
+            <div class="file-meta">
+              ${formatSize(asset.size)}
+              <span>·</span>
+              ${formatDate(rel.published_at)}
+              <span>·</span>
+              ${(asset.download_count || 0).toLocaleString()} downloads
+            </div>
+          </div>
+          <div class="file-actions">
+            <button class="btn-sm" onclick="copyLink('${asset.browser_download_url}')">🔗</button>
+            <button class="btn-hist" id="hbtn-${itemId}" onclick="toggleHistory('${itemId}')">
+              <span>History</span><span class="arr">▾</span>
+            </button>
+            <button class="btn-queue" id="qbtn-${itemId}" onclick="toggleQueueItem('${itemId}','${asset.name}','${asset.browser_download_url}','${section}')">🛒</button>
+            <button class="btn-dl btn-dl-${color}" onclick="triggerDownload('${asset.browser_download_url}','${asset.name}')">↓ Download</button>
+          </div>
+        </div>
+        <div class="dl-progress-wrap"><div class="dl-progress-bar dlp-${color}" id="prog-${itemId}"></div></div>
+        ${histRows ? `<div class="ver-history" id="hist-${itemId}"><div class="ver-inner"><div class="ver-label">Previous versions</div>${histRows}</div></div>` : ''}`;
+
+      list.appendChild(item);
+    });
+
+    // Only show assets from latest release at top level
+    if (idx === 0) return;
+  });
+
+  // If list is empty after filtering
+  if (list.children.length === 0) {
+    list.innerHTML = `<div class="empty-state">No downloadable assets found.</div>`;
+  }
+}
+
+function toggleQueueItem(id, name, url, section) {
+  const inQueue = addToQueue(name, url, section);
+  const btn = document.getElementById('qbtn-' + id);
+  if (btn) btn.classList.toggle('in-queue', inQueue);
+}
+
+async function loadReleases() {
+  renderSkeletons('conch-list');
+  renderSkeletons('cmdr-list');
+
+  try {
+    const conchRels = await fetchReleases(REPOS.conch);
+    buildFileList(conchRels, 'conch');
+  } catch(e) {
+    document.getElementById('conch-list').innerHTML =
+      `<div class="error-state">⚠ Could not load Conch releases.<br>${e.message}</div>`;
+  }
+
+  try {
+    const cmdrRels = await fetchReleases(REPOS.cmdr);
+    buildFileList(cmdrRels, 'cmdr');
+  } catch(e) {
+    document.getElementById('cmdr-list').innerHTML =
+      `<div class="error-state">⚠ Could not load Cmdr releases.<br>${e.message}</div>`;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   CLOSE DROPDOWNS ON OUTSIDE CLICK
+═══════════════════════════════════════════════════════════════ */
+document.addEventListener('click', function(e) {
+  if (!e.target.closest('#lang-btn') && !e.target.closest('#lang-dropdown')) {
+    document.getElementById('lang-dropdown').classList.remove('active');
+  }
+  if (!e.target.closest('#user-btn') && !e.target.closest('#user-dropdown')) {
+    document.getElementById('user-dropdown').classList.remove('active');
+  }
+});
+
+/* ═══════════════════════════════════════════════════════════════
+   INIT
+═══════════════════════════════════════════════════════════════ */
+document.addEventListener('DOMContentLoaded', function() {
+  loadReleases();
+  document.getElementById('hero-sub').textContent = 'Always up-to-date · pulled live from GitHub Releases';
+  document.getElementById('footer').textContent   = '© Conch & Cmdr — Auto-updated from GitHub Releases';
+});
 </script>
 </body>
 </html>
