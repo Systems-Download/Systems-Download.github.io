@@ -4,8 +4,30 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Conch & Cmdr — Downloads</title>
-<!-- FIX: inline favicon prevents 404 -->
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📦</text></svg>">
+<div class="page-transition" id="page-transition"></div>
+<script>
+/* MAINTENANCE + BANNER — runs before page loads */
+(async function(){
+  const SU='https://rmdkoauibmzhgnvrwhfd.supabase.co';
+  const SA='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJtZGtvYXVpYm16aGdudnJ3aGZkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyNjg2MDksImV4cCI6MjA5Mzg0NDYwOX0.lu6T00f9y9-Q8HhVag-MGjJz6bTlJrYUwC7AApIxaFw';
+  try{
+    const r=await fetch(SU+'/rest/v1/site_settings?key=in.(maintenance_enabled,banner_enabled,banner_text,banner_type)&select=key,value',
+      {headers:{'apikey':SA,'Authorization':'Bearer '+SA}});
+    if(!r.ok)return;
+    const rows=await r.json();const s={};rows.forEach(x=>s[x.key]=x.value);
+    if(s.maintenance_enabled==='true'){window.location.replace('maintenance.html');return;}
+    if(s.banner_enabled==='true'&&s.banner_text){window.__BANNER__={text:s.banner_text,type:s.banner_type||'info'};}
+  }catch(e){}
+})();
+</script>
+
+<!-- PWA -->
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0ff4c6">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Conch & Cmdr">
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
   *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -14,134 +36,122 @@
     --cmdr:#ff4f5e;--cmdr-dim:#c8333f;
     --bg:#0b0c0f;--surface:#13151a;--surface2:#1a1d24;
     --border:rgba(255,255,255,0.07);--text:#e8eaf0;--muted:#6b7280;
-    --success:#10b981;--error:#ef4444;
     --mono:'JetBrains Mono',monospace;--sans:'Syne',sans-serif;
   }
-  
   :root.light-mode{
     --bg:#f5f7fa;--surface:#ffffff;--surface2:#f0f2f5;
     --border:rgba(0,0,0,0.08);--text:#1a1d24;--muted:#6b7280;
   }
-  
-  body{transition:background-color 0.3s ease,color 0.3s ease;font-family:var(--sans);background:var(--bg);color:var(--text)}
+  body{transition:background-color 0.3s ease,color 0.3s ease}
 
-  /* ═══════════════════════════════════════════════════════════════════════════════════ */
-  /* BAN SCREEN */
-  /* ═══════════════════════════════════════════════════════════════════════════════════ */
-  
-  .ban-screen{
-    position:fixed;top:0;left:0;width:100%;height:100%;
-    background:var(--bg);z-index:10000;display:flex;
-    align-items:center;justify-content:center;
+  /* ═══════════════════════════════════════════
+     AUTH WALL — covers everything when logged out
+  ═══════════════════════════════════════════ */
+  #auth-wall{
+    position:fixed;inset:0;z-index:10000;
+    background:var(--bg);
+    display:flex;align-items:center;justify-content:center;
+    padding:1rem;
+    transition:opacity .4s ease;
   }
-  
-  .ban-screen.hidden{display:none}
-  
-  .ban-container{text-align:center;max-width:500px;padding:2rem}
-  .ban-container h1{font-size:2.5rem;color:var(--error);margin-bottom:1rem}
-  .ban-container p{font-size:1.1rem;color:var(--muted);margin-bottom:2rem;line-height:1.6}
-  .ban-info{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1.5rem;margin:2rem 0;font-family:var(--mono);text-align:left}
-  .ban-info p{text-align:left;margin:0.5rem 0;font-size:0.9rem;color:var(--text)}
+  #auth-wall.hidden{opacity:0;pointer-events:none}
 
-  /* ═══════════════════════════════════════════════════════════════════════════════════ */
-  /* AUTH MODAL */
-  /* ═══════════════════════════════════════════════════════════════════════════════════ */
-  
-  .auth-modal{
-    position:fixed;top:0;left:0;width:100%;height:100%;
-    background:rgba(0,0,0,0.8);display:flex;align-items:center;justify-content:center;
-    z-index:9999;opacity:0;visibility:hidden;transition:0.3s ease;
+  .auth-box{
+    width:100%;max-width:420px;
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:16px;
+    overflow:hidden;
+    box-shadow:0 32px 80px rgba(0,0,0,.6);
+    animation:authDrop .45s cubic-bezier(.34,1.56,.64,1);
   }
-  
-  .auth-modal.active{opacity:1;visibility:visible}
-  
-  .auth-container{
-    background:var(--surface);border:1px solid var(--border);border-radius:16px;
-    padding:2.5rem;max-width:420px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,0.3);
-    animation:slideUp 0.3s ease;
+  @keyframes authDrop{from{opacity:0;transform:translateY(-30px) scale(.96)}to{opacity:1;transform:none}}
+
+  .auth-tabs{display:flex;border-bottom:1px solid var(--border)}
+  .auth-tab{
+    flex:1;padding:.85rem;text-align:center;
+    font-family:var(--mono);font-size:.78rem;font-weight:600;letter-spacing:.06em;
+    cursor:pointer;border:none;background:none;color:var(--muted);
+    transition:color .2s,background .2s;
   }
-  
-  @keyframes slideUp{from{transform:translateY(40px);opacity:0}to{transform:translateY(0);opacity:1}}
-  
-  .auth-header{text-align:center;margin-bottom:2rem}
-  .auth-header h1{font-size:1.8rem;margin-bottom:0.5rem}
-  .auth-header p{color:var(--muted);font-size:0.9rem}
-  
-  .auth-form{display:flex;flex-direction:column;gap:1.2rem}
-  
-  .auth-input-group{display:flex;flex-direction:column;gap:0.5rem}
-  .auth-input-group label{font-size:0.85rem;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:0.5px}
-  
-  .auth-input-group input{
+  .auth-tab.active{color:var(--conch);background:rgba(15,244,198,.05);border-bottom:2px solid var(--conch)}
+  .auth-tab:hover:not(.active){color:var(--text)}
+
+  .auth-body{padding:2rem}
+  .auth-logo{text-align:center;margin-bottom:1.5rem}
+  .auth-logo-text{font-family:var(--sans);font-size:1.5rem;font-weight:800;letter-spacing:-.02em}
+  .auth-logo-text .c{color:var(--conch)}.auth-logo-text .r{color:var(--cmdr)}.auth-logo-text .s{color:var(--muted)}
+  .auth-sub{font-family:var(--mono);font-size:.72rem;color:var(--muted);margin-top:.3rem}
+
+  .auth-form{display:flex;flex-direction:column;gap:.75rem}
+  .auth-field{display:flex;flex-direction:column;gap:.3rem}
+  .auth-label{font-family:var(--mono);font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+  .auth-input{
     background:var(--surface2);border:1px solid var(--border);border-radius:8px;
-    padding:0.75rem 1rem;color:var(--text);font-family:var(--mono);font-size:0.95rem;
-    transition:0.2s ease;outline:none;
+    color:var(--text);font-family:var(--mono);font-size:.85rem;
+    padding:.7rem 1rem;outline:none;transition:border-color .2s;width:100%;
   }
-  
-  .auth-input-group input:focus{border-color:var(--conch);box-shadow:0 0 0 3px rgba(15,244,198,0.1)}
-  .auth-input-group input:invalid{border-color:var(--error)}
-  
-  .auth-error{
-    background:rgba(239,68,68,0.1);border:1px solid var(--error);border-radius:8px;
-    padding:0.75rem 1rem;color:var(--error);font-size:0.9rem;text-align:center;
-  }
-  
-  .auth-success{
-    background:rgba(16,185,129,0.1);border:1px solid var(--success);border-radius:8px;
-    padding:0.75rem 1rem;color:var(--success);font-size:0.9rem;text-align:center;
-  }
-  
+  .auth-input:focus{border-color:rgba(15,244,198,.4);box-shadow:0 0 0 3px rgba(15,244,198,.07)}
+  .auth-input::placeholder{color:var(--muted);opacity:.5}
+  .auth-input.err{border-color:rgba(255,79,94,.5)}
+
   .auth-btn{
-    background:var(--conch);color:#000;border:none;border-radius:8px;padding:0.9rem 1.5rem;
-    font-family:var(--sans);font-size:0.95rem;font-weight:700;cursor:pointer;
-    transition:0.2s ease;text-transform:uppercase;letter-spacing:0.5px;
+    margin-top:.5rem;padding:.75rem;border-radius:8px;border:none;
+    font-family:var(--mono);font-size:.82rem;font-weight:700;letter-spacing:.06em;
+    cursor:pointer;transition:all .2s;position:relative;overflow:hidden;
   }
-  
-  .auth-btn:hover{background:var(--conch-dim);transform:translateY(-2px);box-shadow:0 5px 15px rgba(15,244,198,0.2)}
-  .auth-btn:disabled{opacity:0.5;cursor:not-allowed;transform:none}
-  
-  .auth-toggle{text-align:center;color:var(--muted);font-size:0.9rem;margin-top:1rem}
-  .auth-toggle a{color:var(--conch);cursor:pointer;font-weight:700;transition:0.2s ease}
-  .auth-toggle a:hover{color:var(--cmdr)}
+  .auth-btn-primary{background:rgba(15,244,198,.15);color:var(--conch);border:1px solid rgba(15,244,198,.3)}
+  .auth-btn-primary:hover{background:rgba(15,244,198,.25)}
+  .auth-btn-primary:disabled{opacity:.4;cursor:not-allowed}
 
-  /* ═══════════════════════════════════════════════════════════════════════════════════ */
-  /* LANGUAGE MENU */
-  /* ═══════════════════════════════════════════════════════════════════════════════════ */
-  
-  .lang-menu-btn{
-    background:var(--surface);border:1px solid var(--border);border-radius:8px;
-    padding:0.5rem 0.75rem;cursor:pointer;font-size:1.3rem;
-    transition:0.2s ease;position:relative;
+  .auth-err{
+    font-family:var(--mono);font-size:.72rem;color:var(--cmdr);
+    background:rgba(255,79,94,.08);border:1px solid rgba(255,79,94,.2);
+    border-radius:6px;padding:.6rem .8rem;display:none;
+    animation:shakeErr .4s ease;
   }
-  
-  .lang-menu-btn:hover{border-color:rgba(255,255,255,0.2)}
-  
-  .lang-dropdown{
-    position:absolute;top:calc(100% + 8px);right:0;
-    background:var(--surface);border:1px solid var(--border);border-radius:12px;
-    min-width:280px;max-height:400px;overflow-y:auto;
-    box-shadow:0 10px 40px rgba(0,0,0,0.3);
-    z-index:1000;opacity:0;visibility:hidden;transition:0.2s ease;
-  }
-  
-  .lang-dropdown.active{opacity:1;visibility:visible}
-  
-  .lang-option{
-    padding:1rem 1.2rem;border-bottom:1px solid var(--border);cursor:pointer;
-    display:flex;align-items:center;gap:0.8rem;transition:0.2s ease;
-    font-size:0.95rem;
-  }
-  
-  .lang-option:last-child{border-bottom:none}
-  .lang-option:hover{background:var(--surface2)}
-  .lang-option.active{color:var(--conch);font-weight:700}
-  
-  .lang-flag{font-size:1.5rem;min-width:1.8rem;text-align:center}
+  .auth-err.vis{display:block}
+  @keyframes shakeErr{0%,100%{transform:none}20%,60%{transform:translateX(-5px)}40%,80%{transform:translateX(5px)}}
 
-  /* ═══════════════════════════════════════════════════════════════════════════════════ */
-  /* MAIN CONTENT */
-  /* ═══════════════════════════════════════════════════════════════════════════════════ */
+  .auth-ok{
+    font-family:var(--mono);font-size:.72rem;color:var(--conch);
+    background:rgba(15,244,198,.08);border:1px solid rgba(15,244,198,.2);
+    border-radius:6px;padding:.6rem .8rem;display:none;
+  }
+  .auth-ok.vis{display:block}
 
+  /* BAN SCREEN */
+  #ban-wall{
+    position:fixed;inset:0;z-index:10001;
+    background:var(--bg);
+    display:none;align-items:center;justify-content:center;
+    padding:1rem;
+  }
+  #ban-wall.show{display:flex}
+  .ban-box{
+    max-width:440px;text-align:center;padding:3rem 2rem;
+    background:var(--surface);border:1px solid rgba(255,79,94,.25);
+    border-radius:16px;box-shadow:0 32px 80px rgba(0,0,0,.6);
+  }
+  .ban-icon{font-size:3.5rem;margin-bottom:1rem;display:block}
+  .ban-title{font-size:1.8rem;font-weight:800;color:var(--cmdr);margin-bottom:.75rem;font-family:var(--sans)}
+  .ban-desc{font-family:var(--mono);font-size:.82rem;color:var(--muted);line-height:1.8}
+  .ban-ip{display:inline-block;margin-top:.75rem;padding:.3rem .7rem;background:rgba(255,79,94,.08);border:1px solid rgba(255,79,94,.2);border-radius:5px;font-family:var(--mono);font-size:.72rem;color:var(--cmdr)}
+
+  /* USER BADGE in nav */
+  .user-badge{
+    display:none;align-items:center;gap:.5rem;
+    background:var(--surface);border:1px solid var(--border);
+    border-radius:8px;padding:.35rem .7rem;
+    font-family:var(--mono);font-size:.72rem;color:var(--text);
+  }
+  .user-badge.vis{display:flex}
+  .user-badge-dot{width:7px;height:7px;border-radius:50%;background:var(--conch);box-shadow:0 0 6px rgba(15,244,198,.6)}
+  .user-badge-name{max-width:100px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .user-badge-logout{background:none;border:none;cursor:pointer;color:var(--muted);font-size:.8rem;padding:.1rem;transition:color .2s;margin-left:.2rem}
+  .user-badge-logout:hover{color:var(--cmdr)}
+
+  /* BANNER */
   .site-banner{width:100%;padding:.6rem 2rem;text-align:center;font-family:var(--mono);font-size:.78rem;position:fixed;top:64px;left:0;right:0;z-index:99;display:none}
   .site-banner.active{display:block}
   .sb-info{background:rgba(100,160,255,.12);color:#64a0ff;border-bottom:1px solid rgba(100,160,255,.2)}
@@ -149,9 +159,11 @@
   .sb-danger{background:rgba(255,79,94,.12);color:#ff4f5e;border-bottom:1px solid rgba(255,79,94,.2)}
   .sb-success{background:rgba(60,200,120,.12);color:#3cc878;border-bottom:1px solid rgba(60,200,120,.2)}
 
+  /* PAGE TRANSITION */
   .page-transition{position:fixed;inset:0;background:var(--bg);z-index:9999;pointer-events:none;opacity:0;transition:opacity .25s ease}
   .page-transition.fade-out{opacity:1;pointer-events:all}
 
+  /* DISCORD BANNER */
   .discord-banner{background:linear-gradient(135deg,rgba(88,101,242,.15),rgba(88,101,242,.05));border:1px solid rgba(88,101,242,.25);border-radius:10px;padding:1rem 1.5rem;display:flex;align-items:center;gap:1rem;margin:0 2.5rem 2rem;max-width:1056px;margin-left:auto;margin-right:auto}
   .discord-icon{width:40px;height:40px;border-radius:10px;background:rgba(88,101,242,.2);display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0}
   .discord-info{flex:1}
@@ -160,6 +172,7 @@
   .discord-btn{font-family:var(--mono);font-size:.75rem;padding:.5rem 1.1rem;border-radius:6px;background:rgba(88,101,242,.25);color:#8b9cf4;border:1px solid rgba(88,101,242,.35);text-decoration:none;transition:all .2s;white-space:nowrap;flex-shrink:0}
   .discord-btn:hover{background:rgba(88,101,242,.4);color:#fff}
 
+  /* DOWNLOAD QUEUE */
   .queue-fab{position:fixed;bottom:2rem;right:2rem;z-index:500;display:flex;flex-direction:column;align-items:flex-end;gap:.5rem}
   .queue-btn{width:52px;height:52px;border-radius:50%;background:var(--surface2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:1.3rem;transition:all .2s;position:relative;box-shadow:0 4px 20px rgba(0,0,0,.4)}
   .queue-btn:hover{border-color:rgba(15,244,198,.4);background:var(--surface)}
@@ -195,6 +208,7 @@
   .btn-queue:hover{border-color:rgba(15,244,198,.35);color:var(--conch)}
   .btn-queue.in-queue{border-color:rgba(15,244,198,.4);color:var(--conch);background:rgba(15,244,198,.06)}
 
+  /* FEATURED FILE */
   .featured-wrap{max-width:1100px;margin:0 auto;padding:0 2.5rem 2rem}
   .featured-card{background:linear-gradient(135deg,rgba(15,244,198,.06),rgba(15,244,198,.02));border:1px solid rgba(15,244,198,.2);border-radius:12px;padding:1rem 1.4rem;display:flex;align-items:center;gap:1rem}
   .featured-badge{font-family:var(--mono);font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;padding:.2rem .55rem;border-radius:4px;background:rgba(15,244,198,.12);color:var(--conch);border:1px solid rgba(15,244,198,.2);flex-shrink:0}
@@ -203,43 +217,25 @@
   .featured-name{font-family:var(--mono);font-size:.85rem;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .featured-meta{font-family:var(--mono);font-size:.7rem;color:var(--muted);margin-top:.15rem}
 
+  /* PWA */
   .pwa-install-btn{display:none;font-family:var(--mono);font-size:.72rem;padding:.38rem .75rem;border-radius:6px;border:1px solid rgba(15,244,198,.25);background:rgba(15,244,198,.08);color:var(--conch);cursor:pointer;align-items:center;gap:.4rem;transition:all .2s}
   .pwa-install-btn:hover{background:rgba(15,244,198,.15)}
   .pwa-install-btn.visible{display:flex}
+
   html{scroll-behavior:smooth}
   body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:100vh;overflow-x:hidden}
 
+  /* NAV */
   nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:1rem 2.5rem;background:rgba(11,12,15,0.9);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);height:64px}
   .nav-logo{font-size:1.1rem;font-weight:800;letter-spacing:-0.02em;display:flex;gap:0.4em;align-items:center;user-select:none}
   .nav-logo .c{color:var(--conch)}.nav-logo .r{color:var(--cmdr)}.nav-logo .sep{color:var(--muted)}
   .nav-right{display:flex;align-items:center;gap:0.6rem}
+  nav a.nav-link{color:var(--muted);text-decoration:none;font-size:0.8rem;font-family:var(--mono);letter-spacing:0.04em;transition:color 0.2s;padding:0 0.3rem}
+  nav a.nav-link:hover{color:var(--text)}nav a.nav-link.active{color:var(--conch)}
 
-  .user-menu{position:relative}
-  .user-btn{
-    background:var(--surface);border:1px solid var(--border);border-radius:8px;
-    padding:0.6rem 1rem;color:var(--text);cursor:pointer;font-size:0.9rem;
-    transition:0.2s ease;font-weight:600;
-  }
-  
-  .user-btn:hover{border-color:rgba(255,255,255,0.2)}
-  
-  .user-dropdown{
-    position:absolute;top:calc(100% + 8px);right:0;
-    background:var(--surface);border:1px solid var(--border);border-radius:8px;
-    min-width:180px;box-shadow:0 10px 40px rgba(0,0,0,0.3);
-    z-index:1000;opacity:0;visibility:hidden;transition:0.2s ease;
-  }
-  
-  .user-dropdown.active{opacity:1;visibility:visible}
-  
-  .user-dropdown-item{
-    padding:0.8rem 1.2rem;border-bottom:1px solid var(--border);cursor:pointer;
-    transition:0.2s ease;font-size:0.9rem;
-  }
-  
-  .user-dropdown-item:last-child{border-bottom:none}
-  .user-dropdown-item:hover{background:var(--surface2);color:var(--conch)}
-  .user-dropdown-item.logout{color:var(--error)}
+  .lang-select{background:var(--surface);border:1px solid var(--border);border-radius:8px;color:var(--muted);font-family:var(--mono);font-size:0.72rem;padding:0.42rem 0.6rem;cursor:pointer;outline:none;transition:border-color 0.2s,color 0.2s;appearance:none}
+  .lang-select:hover{border-color:rgba(255,255,255,0.18);color:var(--text)}
+  .lang-select option{background:#1a1d24}
 
   .icon-btn{display:flex;align-items:center;justify-content:center;width:36px;height:36px;cursor:pointer;background:var(--surface);border:1px solid var(--border);border-radius:8px;flex-shrink:0;transition:border-color 0.2s,background 0.2s,color 0.2s;color:var(--muted)}
   .icon-btn:hover{border-color:rgba(15,244,198,0.35);background:var(--surface2);color:var(--conch)}
@@ -257,6 +253,7 @@
   .burger.open span:nth-child(2){opacity:0;transform:scaleX(0)}
   .burger.open span:nth-child(3){transform:translateY(-6.5px) rotate(-45deg);background:var(--conch)}
 
+  /* DRAWER */
   .drawer-overlay{position:fixed;inset:0;z-index:98;background:rgba(0,0,0,0.5);opacity:0;pointer-events:none;transition:opacity 0.3s}
   .drawer-overlay.open{opacity:1;pointer-events:all}
   .drawer{position:fixed;top:0;right:0;bottom:0;z-index:99;width:280px;background:#0e1014;border-left:1px solid var(--border);transform:translateX(100%);transition:transform 0.35s cubic-bezier(0.4,0,0.2,1);display:flex;flex-direction:column}
@@ -268,13 +265,8 @@
   .drawer-close:hover{color:var(--text)}
   .drawer-slabel{font-family:var(--mono);font-size:0.62rem;letter-spacing:0.14em;text-transform:uppercase;color:var(--muted);padding:1.2rem 1.5rem 0.5rem;opacity:0.6}
   .drawer-nav{flex:1;overflow-y:auto;padding:0.5rem 0.75rem}
-  .drawer-item{display:flex;align-items:center;gap:0.75rem;padding:0.75rem;border-radius:8px;text-decoration:none;color:var(--muted);font-family:var(--mono);font-size:0.82rem;margin-bottom:2px;border:1px solid transparent;transition:background 0.18s;opacity:0;animation:drawerItemFadeIn 0.3s ease forwards}
-  .drawer-item:nth-child(1){animation-delay:0.05s}
-  .drawer-item:nth-child(2){animation-delay:0.1s}
-  .drawer-item:nth-child(3){animation-delay:0.15s}
-  .drawer-item:nth-child(4){animation-delay:0.2s}
-  .drawer-item:nth-child(5){animation-delay:0.25s}
-  .drawer-item:nth-child(6){animation-delay:0.3s}
+  .drawer-item{display:flex;align-items:center;gap:0.75rem;padding:0.75rem;border-radius:8px;text-decoration:none;color:var(--muted);font-family:var(--mono);font-size:0.82rem;margin-bottom:2px;border:1px solid transparent;transition:background 0.18s;opacity:0;animation:drawerItemFadeIn 0.3s ease forwards;cursor:pointer}
+  .drawer-item:nth-child(1){animation-delay:0.05s}.drawer-item:nth-child(2){animation-delay:0.1s}.drawer-item:nth-child(3){animation-delay:0.15s}.drawer-item:nth-child(4){animation-delay:0.2s}.drawer-item:nth-child(5){animation-delay:0.25s}.drawer-item:nth-child(6){animation-delay:0.3s}
   @keyframes drawerItemFadeIn{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:translateX(0)}}
   .drawer-item:hover{background:var(--surface);border-color:var(--border);color:var(--text)}
   .drawer-item.active{background:rgba(15,244,198,0.07);border-color:rgba(15,244,198,0.15);color:var(--conch)}
@@ -282,6 +274,7 @@
   .drawer-div{height:1px;background:var(--border);margin:0.75rem}
   .drawer-footer{padding:1.2rem 1.5rem;border-top:1px solid var(--border);font-family:var(--mono);font-size:0.7rem;color:var(--muted);opacity:0.5}
 
+  /* HERO */
   .hero{padding:9rem 2.5rem 5rem;text-align:center;position:relative;overflow:hidden}
   .hero::before{content:'';position:absolute;top:-120px;left:50%;transform:translateX(-50%);width:700px;height:700px;border-radius:50%;background:radial-gradient(circle,rgba(0,255,198,0.04) 0%,transparent 70%);pointer-events:none}
   .hero h1{font-size:clamp(2.8rem,7vw,5.5rem);font-weight:800;line-height:1.05;letter-spacing:-0.03em;margin-bottom:1.2rem}
@@ -292,6 +285,7 @@
   .scroll-hint a.c{border:1px solid var(--conch);color:var(--conch)}.scroll-hint a.c:hover{background:rgba(0,255,198,0.08)}
   .scroll-hint a.r{border:1px solid var(--cmdr);color:var(--cmdr)}.scroll-hint a.r:hover{background:rgba(255,79,94,0.08)}
 
+  /* SEARCH */
   .search-wrap{margin-bottom:1.5rem;position:relative}
   .search-icon{position:absolute;left:1rem;top:50%;transform:translateY(-50%);color:var(--muted);font-size:0.85rem;pointer-events:none}
   .search-input{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:var(--mono);font-size:0.82rem;padding:0.75rem 2.4rem;outline:none;transition:border-color 0.2s}
@@ -300,6 +294,7 @@
   .search-clear{position:absolute;right:0.8rem;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--muted);font-size:0.9rem;padding:0.2rem;display:none;transition:color 0.2s}
   .search-clear:hover{color:var(--text)}.search-clear.vis{display:block}
 
+  /* SECTIONS */
   .section{padding:5rem 2.5rem;max-width:1100px;margin:0 auto}
   .section-header{display:flex;align-items:flex-end;gap:1.2rem;margin-bottom:2.5rem;padding-bottom:1.5rem;border-bottom:1px solid var(--border)}
   .sbadge{font-family:var(--mono);font-size:0.7rem;letter-spacing:0.12em;text-transform:uppercase;padding:0.3rem 0.7rem;border-radius:4px}
@@ -309,6 +304,7 @@
   .section-header h2.c{color:var(--conch)}.section-header h2.r{color:var(--cmdr)}
   .section-desc{font-family:var(--mono);font-size:0.85rem;color:var(--muted);line-height:1.8;max-width:600px;margin-bottom:1.5rem}
 
+  /* FILE LIST */
   .file-list{display:flex;flex-direction:column;gap:0.6rem}
   .file-item{background:var(--surface);border:1px solid var(--border);border-radius:8px;overflow:hidden;transition:border-color 0.2s,transform 0.2s;animation:slideIn 0.3s ease}
   @keyframes slideIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
@@ -351,6 +347,7 @@
   .xs-c{background:rgba(0,255,198,0.08);color:var(--conch)}.xs-c:hover{background:rgba(0,255,198,0.18)}
   .xs-r{background:rgba(255,79,94,0.08);color:var(--cmdr)}.xs-r:hover{background:rgba(255,79,94,0.18)}
 
+  /* VERSION HISTORY */
   .ver-history{border-top:1px solid var(--border);background:var(--bg);overflow:hidden;max-height:0;transition:max-height 0.35s cubic-bezier(0.4,0,0.2,1)}
   .ver-history.open{max-height:800px}
   .ver-inner{padding:0.75rem 1.2rem}
@@ -363,6 +360,7 @@
   .ver-name{font-family:var(--mono);font-size:0.78rem;color:var(--muted);flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .ver-date{font-family:var(--mono);font-size:0.7rem;color:var(--muted);opacity:0.5;flex-shrink:0}
 
+  /* SKELETON */
   .skel-item{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:0.9rem 1.2rem;display:flex;align-items:center;gap:1rem}
   .skel{background:linear-gradient(90deg,var(--surface2) 25%,rgba(255,255,255,0.04) 50%,var(--surface2) 75%);background-size:200% 100%;animation:shimmer 1.4s infinite;border-radius:4px}
   @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
@@ -373,6 +371,7 @@
 
   #confetti-canvas{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:8000}
 
+  /* TOAST */
   #toast-container{position:fixed;bottom:1.5rem;right:1.5rem;z-index:9999;display:flex;flex-direction:column;gap:0.5rem;pointer-events:none}
   .toast{display:flex;align-items:flex-start;gap:0.75rem;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:0.85rem 1.1rem;min-width:260px;max-width:340px;box-shadow:0 8px 32px rgba(0,0,0,0.4);pointer-events:all;animation:toastIn 0.3s cubic-bezier(0.34,1.56,0.64,1);transition:opacity 0.3s,transform 0.3s;position:relative;overflow:hidden}
   .toast.out{opacity:0;transform:translateX(20px)}
@@ -391,6 +390,7 @@
   .search-empty.vis{display:block}
   .empty-state,.error-state{font-family:var(--mono);font-size:0.8rem;color:var(--muted);text-align:center;padding:2rem 1.5rem;opacity:0.6;line-height:1.7}
 
+  /* EMAIL MODAL */
   .email-modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:9998;display:none;align-items:center;justify-content:center;animation:fadeIn 0.2s ease}
   .email-modal-overlay.open{display:flex}
   @keyframes fadeIn{from{opacity:0}to{opacity:1}}
@@ -422,7 +422,8 @@
 
   .divider{height:1px;background:var(--border);margin:0 2.5rem}
   footer{text-align:center;padding:3rem 2.5rem;font-family:var(--mono);font-size:0.75rem;color:var(--muted);border-top:1px solid var(--border);margin-top:4rem;opacity:0.5}
-  
+
+  /* COUNTDOWN */
   .countdown-wrap{max-width:1100px;margin:0 auto;padding:0 2.5rem;margin-bottom:2rem}
   .countdown-card{background:linear-gradient(135deg,rgba(255,255,255,0.03),rgba(255,255,255,0.01));border:1px solid var(--border);border-radius:12px;padding:1.5rem;overflow:hidden;position:relative}
   .countdown-card.cc{border-color:rgba(15,244,198,0.25);background:linear-gradient(135deg,rgba(15,244,198,0.06),rgba(15,244,198,0.02))}
@@ -444,67 +445,415 @@
   @keyframes countdownPulse{0%,100%{width:0%;opacity:0}50%{width:100%;opacity:1}}
   .countdown-expired{text-align:center;padding:1.5rem;color:var(--muted);font-family:var(--mono);font-size:0.85rem}
   .countdown-expired-icon{font-size:2rem;margin-bottom:0.5rem;display:block}
-  
+
   @media(max-width:640px){
     nav{padding:1rem 1.2rem}.section{padding:3rem 1.2rem}.hero{padding:8rem 1.2rem 3rem}
     .drawer{width:260px}#toast-container{bottom:1rem;right:1rem;left:1rem}.toast{min-width:unset;max-width:100%}
     nav a.nav-link{display:none}.file-actions{gap:0.3rem}.btn-hist span:first-child{display:none}
+    .countdown-value{font-size:1.6rem;min-width:50px;padding:0.5rem}.countdown-display{gap:0.5rem;margin-bottom:1rem}.countdown-separator{font-size:1rem;margin:0}
   }
 </style>
 </head>
 <body>
 
-<div class="ban-screen hidden" id="ban-screen">
-  <div class="ban-container">
-    <h1>🚫 BANNED</h1>
-    <p>Your IP address has been banned from accessing this website.</p>
-    <div class="ban-info">
-      <p><strong>IP Address:</strong> <span id="ban-ip">Loading...</span></p>
-      <p><strong>Reason:</strong> <span id="ban-reason">Administrative decision</span></p>
-      <p><strong>Banned Date:</strong> <span id="ban-date">Loading...</span></p>
+<script>
+/* ═══════════════════════════════════════════════════════════
+   CONFIG
+═══════════════════════════════════════════════════════════ */
+const CONFIG={
+  GITHUB_REPO:'Systems-Download/Systems-Download.github.io',
+  MAX_RELEASES:20,DEBUG:false,
+  NEXT_RELEASE_CONCH:'2026-06-01T15:45:00Z',
+  NEXT_RELEASE_CMDR:'2026-07-10T15:45:00Z',
+  /* ── SUPABASE ── */
+  SB_URL:'https://rmdkoauibmzhgnvrwhfd.supabase.co',
+  SB_KEY:'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJtZGtvYXVpYm16aGdudnJ3aGZkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyNjg2MDksImV4cCI6MjA5Mzg0NDYwOX0.lu6T00f9y9-Q8HhVag-MGjJz6bTlJrYUwC7AApIxaFw'
+};
+
+/* ═══════════════════════════════════════════════════════════
+   ██╗      ██████╗  ██████╗ ██╗███╗   ██╗
+   ██║     ██╔═══██╗██╔════╝ ██║████╗  ██║
+   ██║     ██║   ██║██║  ███╗██║██╔██╗ ██║
+   ██║     ██║   ██║██║   ██║██║██║╚██╗██║
+   ███████╗╚██████╔╝╚██████╔╝██║██║ ╚████║
+═══════════════════════════════════════════════════════════
+   Speichert: username, password_hash, ip, banned_ips
+   Tabellen (Supabase):
+     cc_users  (id, username, password_hash, ip, created_at)
+     cc_bans   (id, ip, reason, banned_at, banned_by)
+═══════════════════════════════════════════════════════════ */
+
+/* ── STATE ── */
+let AUTH={user:null,bypassed:false};
+
+/* ── SIMPLE HASH (SHA-256 via Web Crypto) ── */
+async function hashPass(pw){
+  const buf=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(pw));
+  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+
+/* ── FETCH HELPER ── */
+async function sbFetch(path,opts={}){
+  const r=await fetch(CONFIG.SB_URL+path,{
+    headers:{'apikey':CONFIG.SB_KEY,'Authorization':'Bearer '+CONFIG.SB_KEY,'Content-Type':'application/json',...(opts.headers||{})},
+    ...opts
+  });
+  return r;
+}
+
+/* ── GET USER IP via public API ── */
+async function getIP(){
+  try{const r=await fetch('https://api.ipify.org?format=json');const d=await r.json();return d.ip||'unknown';}
+  catch{return 'unknown';}
+}
+
+/* ══════════════════════════════════════
+   DEV BYPASS — key is stored in Supabase,
+   never exposed in source or console.
+   Silent: no output on success or failure.
+══════════════════════════════════════ */
+window.cc_dev_bypass=async function(key){
+  /* Suppress all console output during and after this call */
+  const _log=console.log,_warn=console.warn,_error=console.error,_info=console.info,_debug=console.debug;
+  console.log=console.warn=console.error=console.info=console.debug=()=>{};
+  try{
+    if(!key||typeof key!=='string'){return;}
+    /* Hash the submitted key before sending — raw key never travels in query string */
+    const buf=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(key));
+    const hashed=Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+    /* Compare against stored hash in Supabase site_settings (key: dev_bypass_hash) */
+    const r=await fetch(CONFIG.SB_URL+'/rest/v1/site_settings?key=eq.dev_bypass_hash&select=value',{
+      headers:{'apikey':CONFIG.SB_KEY,'Authorization':'Bearer '+CONFIG.SB_KEY}
+    });
+    if(!r.ok){return;}
+    const rows=await r.json();
+    if(!rows||!rows.length||rows[0].value!==hashed){return;}
+    /* Correct key — grant access silently */
+    AUTH.user={username:'[DEV]',bypassed:true};
+    AUTH.bypassed=true;
+    try{sessionStorage.setItem('cc_auth',JSON.stringify(AUTH.user));}catch{}
+    hideAuthWall();
+    updateNavUser();
+    toast({title:'Access granted',sub:'',type:'ok',dur:2000});
+  }catch{
+    /* Swallow all errors silently */
+  }finally{
+    /* Restore console after a tick so the call stack itself leaves no trace */
+    setTimeout(()=>{
+      console.log=_log;console.warn=_warn;console.error=_error;
+      console.info=_info;console.debug=_debug;
+    },0);
+  }
+};
+
+/* ══════════════════════════════════════
+   BAN CHECK
+══════════════════════════════════════ */
+async function checkBan(ip){
+  if(ip==='unknown')return false;
+  const r=await sbFetch(`/rest/v1/cc_bans?ip=eq.${encodeURIComponent(ip)}&select=ip,reason`);
+  if(!r.ok)return false;
+  const d=await r.json();
+  return d&&d.length>0?d[0]:false;
+}
+
+/* ══════════════════════════════════════
+   REGISTER
+══════════════════════════════════════ */
+async function doRegister(){
+  const name=document.getElementById('reg-name').value.trim();
+  const pw=document.getElementById('reg-pw').value;
+  const pw2=document.getElementById('reg-pw2').value;
+  const err=document.getElementById('reg-err');
+  const ok=document.getElementById('reg-ok');
+  const btn=document.getElementById('reg-btn');
+  err.classList.remove('vis');ok.classList.remove('vis');
+
+  if(!name||!pw||!pw2){setAuthErr('reg','All fields are required.');return;}
+  if(name.length<3||name.length>20){setAuthErr('reg','Username must be 3–20 characters.');return;}
+  if(/[^a-zA-Z0-9_\-]/.test(name)){setAuthErr('reg','Username: letters, numbers, _ and - only.');return;}
+  if(pw.length<6){setAuthErr('reg','Password must be at least 6 characters.');return;}
+  if(pw!==pw2){setAuthErr('reg','Passwords do not match.');return;}
+
+  btn.disabled=true;btn.textContent='Checking...';
+
+  try{
+    const ip=await getIP();
+
+    /* Check if IP is banned */
+    const banInfo=await checkBan(ip);
+    if(banInfo){showBanWall(ip,banInfo.reason);return;}
+
+    /* Check if username exists */
+    const checkName=await sbFetch(`/rest/v1/cc_users?username=eq.${encodeURIComponent(name.toLowerCase())}&select=id`);
+    const nameData=await checkName.json();
+    if(nameData&&nameData.length>0){setAuthErr('reg','Username already taken.');btn.disabled=false;btn.textContent='Register';return;}
+
+    /* Check if IP already has an account */
+    const checkIP=await sbFetch(`/rest/v1/cc_users?ip=eq.${encodeURIComponent(ip)}&select=id`);
+    const ipData=await checkIP.json();
+    if(ipData&&ipData.length>0){
+      /* Auto-ban IP for trying to create second account */
+      await sbFetch('/rest/v1/cc_bans',{
+        method:'POST',
+        headers:{'Prefer':'return=minimal'},
+        body:JSON.stringify({ip,reason:'Attempted to create second account',banned_by:'system',banned_at:new Date().toISOString()})
+      });
+      showBanWall(ip,'Attempted to create multiple accounts.');
+      return;
+    }
+
+    /* Hash password */
+    const hash=await hashPass(pw);
+
+    /* Create user */
+    btn.textContent='Creating account...';
+    const ins=await sbFetch('/rest/v1/cc_users',{
+      method:'POST',
+      headers:{'Prefer':'return=representation'},
+      body:JSON.stringify({username:name.toLowerCase(),display_name:name,password_hash:hash,ip,created_at:new Date().toISOString()})
+    });
+
+    if(ins.ok||ins.status===201){
+      ok.textContent='Account created! Logging you in...';ok.classList.add('vis');
+      setTimeout(()=>doLoginWithCreds(name,pw),800);
+    } else {
+      const errBody=await ins.json().catch(()=>({}));
+      setAuthErr('reg','Registration failed: '+(errBody.message||ins.status));
+      btn.disabled=false;btn.textContent='Register';
+    }
+  }catch(e){
+    setAuthErr('reg','Network error. Please try again.');
+    btn.disabled=false;btn.textContent='Register';
+  }
+}
+
+/* ══════════════════════════════════════
+   LOGIN
+══════════════════════════════════════ */
+async function doLogin(){
+  const name=document.getElementById('login-name').value.trim();
+  const pw=document.getElementById('login-pw').value;
+  const btn=document.getElementById('login-btn');
+  document.getElementById('login-err').classList.remove('vis');
+
+  if(!name||!pw){setAuthErr('login','Enter username and password.');return;}
+
+  btn.disabled=true;btn.textContent='Logging in...';
+
+  try{
+    const ip=await getIP();
+
+    /* Check ban */
+    const banInfo=await checkBan(ip);
+    if(banInfo){showBanWall(ip,banInfo.reason);return;}
+
+    const hash=await hashPass(pw);
+
+    /* Fetch user */
+    const r=await sbFetch(`/rest/v1/cc_users?username=eq.${encodeURIComponent(name.toLowerCase())}&select=id,username,display_name,password_hash,ip,is_banned`);
+    const users=await r.json();
+
+    if(!users||users.length===0){setAuthErr('login','Username not found.');btn.disabled=false;btn.textContent='Login';return;}
+    const user=users[0];
+
+    if(user.is_banned){
+      showBanWall(ip,'Your account has been banned.');
+      return;
+    }
+
+    if(user.password_hash!==hash){setAuthErr('login','Wrong password.');btn.disabled=false;btn.textContent='Login';return;}
+
+    /* Update IP on login */
+    await sbFetch(`/rest/v1/cc_users?id=eq.${user.id}`,{
+      method:'PATCH',headers:{'Prefer':'return=minimal'},
+      body:JSON.stringify({ip,last_login:new Date().toISOString()})
+    });
+
+    /* Success */
+    AUTH.user={username:user.display_name||user.username,id:user.id};
+    try{sessionStorage.setItem('cc_auth',JSON.stringify(AUTH.user));}catch{}
+    hideAuthWall();
+    updateNavUser();
+    toast({title:'Welcome back, '+AUTH.user.username+'!',sub:'You are now logged in',type:'ok',dur:3500});
+    confetti();
+
+  }catch(e){
+    setAuthErr('login','Network error. Please try again.');
+    btn.disabled=false;btn.textContent='Login';
+  }
+}
+
+async function doLoginWithCreds(name,pw){
+  document.getElementById('login-name').value=name;
+  document.getElementById('login-pw').value=pw;
+  switchTab('login');
+  await doLogin();
+}
+
+/* ══════════════════════════════════════
+   AUTH WALL UI
+══════════════════════════════════════ */
+function setAuthErr(form,msg){
+  const el=document.getElementById(form+'-err');
+  el.textContent=msg;el.classList.add('vis');
+}
+
+function switchTab(tab){
+  document.querySelectorAll('.auth-tab').forEach(t=>t.classList.toggle('active',t.dataset.tab===tab));
+  document.getElementById('form-login').style.display=tab==='login'?'':'none';
+  document.getElementById('form-reg').style.display=tab==='reg'?'':'none';
+}
+
+function hideAuthWall(){
+  const w=document.getElementById('auth-wall');
+  w.classList.add('hidden');
+  setTimeout(()=>w.style.display='none',400);
+}
+
+function showBanWall(ip,reason){
+  document.getElementById('ban-ip-display').textContent=ip||'unknown';
+  document.getElementById('ban-reason-display').textContent=reason||'No reason given.';
+  document.getElementById('ban-wall').classList.add('show');
+  document.getElementById('auth-wall').style.display='none';
+}
+
+function logout(){
+  AUTH.user=null;AUTH.bypassed=false;
+  try{sessionStorage.removeItem('cc_auth');}catch{}
+  document.getElementById('user-badge').classList.remove('vis');
+  document.getElementById('auth-wall').style.display='flex';
+  document.getElementById('auth-wall').classList.remove('hidden');
+  toast({title:'Logged out',sub:'See you next time!',type:'i',dur:2500});
+}
+
+function updateNavUser(){
+  const badge=document.getElementById('user-badge');
+  const nameEl=document.getElementById('user-badge-name');
+  if(AUTH.user){badge.classList.add('vis');nameEl.textContent=AUTH.user.username;}
+  else{badge.classList.remove('vis');}
+}
+
+/* ══════════════════════════════════════
+   SESSION RESTORE
+══════════════════════════════════════ */
+async function initAuth(){
+  /* Try session restore */
+  try{
+    const saved=sessionStorage.getItem('cc_auth');
+    if(saved){
+      const parsed=JSON.parse(saved);
+      if(parsed&&parsed.username){
+        if(parsed.bypassed){
+          AUTH.user=parsed;AUTH.bypassed=true;
+          hideAuthWall();updateNavUser();return;
+        }
+        /* Re-check ban on restore */
+        const ip=await getIP();
+        const banInfo=await checkBan(ip);
+        if(banInfo){showBanWall(ip,banInfo.reason);return;}
+        AUTH.user=parsed;
+        hideAuthWall();updateNavUser();return;
+      }
+    }
+  }catch{}
+  /* Show auth wall */
+  document.getElementById('auth-wall').style.display='flex';
+}
+
+/* ═══════════════════════════════════════════════════════════
+   TRANSLATIONS
+═══════════════════════════════════════════════════════════ */
+const T={
+  en:{nav_dl:'Downloads',nav_ann:'Announcements',hero_sub:'Files are automatically loaded from GitHub Releases. All .rbxm files are detected and sorted.',desc_c:'All .rbxm files with "Conch" in the name.',desc_r:'All .rbxm files with "Cmdr" in the name.',srch_c:'Search Conch files...',srch_r:'Search Cmdr files...',bdl:'Downloads',bnew:'NEW',hist:'History',hist_lbl:'Previous versions',dl:'↓ Download',vcount:n=>`${n} versions`,dlc:n=>`${n} dl`,t_start:'Download started',t_done:'Download complete',t_prog:'Downloading...',t_ref:'Refreshing...',t_ref2:'Fetching latest releases',t_upd:'Up to date',t_upd2:'Releases reloaded',t_cp:'Link copied!',t_cp2:'Download link in clipboard',empty:s=>`No ${s} files found.`,empty_h:s=>`Make sure .rbxm files contain "${s}" in the filename.`,se:'No files match your search.',e404:'Repo not found or no Releases yet.',e403:'GitHub API rate limit exceeded. Try again later.',egn:'Error: ',footer:'Automatically loaded from GitHub Releases',dfooter:'Auto-updated from GitHub Releases'},
+  de:{nav_dl:'Downloads',nav_ann:'Ankündigungen',hero_sub:'Dateien werden automatisch von GitHub Releases geladen.',desc_c:'Alle .rbxm Dateien mit "Conch" im Namen.',desc_r:'Alle .rbxm Dateien mit "Cmdr" im Namen.',srch_c:'Conch Dateien suchen...',srch_r:'Cmdr Dateien suchen...',bdl:'Downloads',bnew:'NEU',hist:'Verlauf',hist_lbl:'Frühere Versionen',dl:'↓ Herunterladen',vcount:n=>`${n} Versionen`,dlc:n=>`${n} Dl`,t_start:'Download gestartet',t_done:'Download abgeschlossen',t_prog:'Lädt herunter...',t_ref:'Wird aktualisiert...',t_ref2:'Neueste Releases werden geladen',t_upd:'Aktuell',t_upd2:'Releases neu geladen',t_cp:'Link kopiert!',t_cp2:'Link in Zwischenablage',empty:s=>`Keine ${s} Dateien gefunden.`,empty_h:s=>`Stelle sicher, dass .rbxm Dateien "${s}" im Namen haben.`,se:'Keine Dateien gefunden.',e404:'Repo nicht gefunden oder keine Releases.',e403:'GitHub API Rate-Limit erreicht.',egn:'Fehler: ',footer:'Automatisch von GitHub Releases geladen',dfooter:'Automatisch von GitHub Releases aktualisiert'},
+  es:{nav_dl:'Descargas',nav_ann:'Anuncios',hero_sub:'Los archivos se cargan automáticamente desde GitHub Releases.',desc_c:'Todos los archivos .rbxm con "Conch".',desc_r:'Todos los archivos .rbxm con "Cmdr".',srch_c:'Buscar Conch...',srch_r:'Buscar Cmdr...',bdl:'Descargas',bnew:'NUEVO',hist:'Historial',hist_lbl:'Versiones anteriores',dl:'↓ Descargar',vcount:n=>`${n} versiones`,dlc:n=>`${n} dl`,t_start:'Descarga iniciada',t_done:'Descarga completa',t_prog:'Descargando...',t_ref:'Actualizando...',t_ref2:'Cargando últimas versiones',t_upd:'Actualizado',t_upd2:'Versiones recargadas',t_cp:'¡Enlace copiado!',t_cp2:'Enlace en portapapeles',empty:s=>`No se encontraron archivos ${s}.`,empty_h:s=>`Asegúrate de que los .rbxm contienen "${s}".`,se:'Ningún archivo coincide.',e404:'Repositorio no encontrado.',e403:'Límite de API alcanzado.',egn:'Error: ',footer:'Cargado desde GitHub Releases',dfooter:'Actualizado desde GitHub Releases'},
+};
+let lang=(function(){
+  const saved=localStorage.getItem('cc_lang');if(saved&&T[saved])return saved;
+  const bl=navigator.languages||[navigator.language||'en'];
+  for(const l of bl){const short=l.split('-')[0].toLowerCase();if(T[short])return short;}
+  return 'en';
+})();
+function t(k,...a){const v=(T[lang]||T.en)[k];return typeof v==='function'?v(...a):(v||k)}
+</script>
+
+<!-- ═══════════════ AUTH WALL ═══════════════ -->
+<div id="auth-wall" style="display:none">
+  <div class="auth-box">
+    <div class="auth-tabs">
+      <button class="auth-tab active" data-tab="login" onclick="switchTab('login')">🔑 Login</button>
+      <button class="auth-tab" data-tab="reg" onclick="switchTab('reg')">📝 Register</button>
     </div>
-    <p style="margin-top:2rem;color:var(--muted)">If you believe this is a mistake, contact the administrator.</p>
+    <div class="auth-body">
+      <div class="auth-logo">
+        <div class="auth-logo-text"><span class="c">Conch</span><span class="s"> / </span><span class="r">Cmdr</span></div>
+        <div class="auth-sub">Sign in to access downloads</div>
+      </div>
+
+      <!-- LOGIN FORM -->
+      <div id="form-login">
+        <div class="auth-form">
+          <div class="auth-err" id="login-err"></div>
+          <div class="auth-field">
+            <label class="auth-label">Username</label>
+            <input class="auth-input" id="login-name" type="text" placeholder="your_username" autocomplete="username"
+              onkeydown="if(event.key==='Enter')doLogin()">
+          </div>
+          <div class="auth-field">
+            <label class="auth-label">Password</label>
+            <input class="auth-input" id="login-pw" type="password" placeholder="••••••••" autocomplete="current-password"
+              onkeydown="if(event.key==='Enter')doLogin()">
+          </div>
+          <button class="auth-btn auth-btn-primary" id="login-btn" onclick="doLogin()">Login →</button>
+        </div>
+      </div>
+
+      <!-- REGISTER FORM -->
+      <div id="form-reg" style="display:none">
+        <div class="auth-form">
+          <div class="auth-err" id="reg-err"></div>
+          <div class="auth-ok" id="reg-ok"></div>
+          <div class="auth-field">
+            <label class="auth-label">Username</label>
+            <input class="auth-input" id="reg-name" type="text" placeholder="choose_a_name" autocomplete="username" maxlength="20"
+              onkeydown="if(event.key==='Enter')doRegister()">
+          </div>
+          <div class="auth-field">
+            <label class="auth-label">Password</label>
+            <input class="auth-input" id="reg-pw" type="password" placeholder="min. 6 characters" autocomplete="new-password"
+              onkeydown="if(event.key==='Enter')doRegister()">
+          </div>
+          <div class="auth-field">
+            <label class="auth-label">Confirm Password</label>
+            <input class="auth-input" id="reg-pw2" type="password" placeholder="repeat password" autocomplete="new-password"
+              onkeydown="if(event.key==='Enter')doRegister()">
+          </div>
+          <button class="auth-btn auth-btn-primary" id="reg-btn" onclick="doRegister()">Create Account →</button>
+          <div style="font-family:var(--mono);font-size:.68rem;color:var(--muted);text-align:center;margin-top:.25rem;line-height:1.5">
+            One account per IP. Duplicate accounts are automatically blocked.
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 
-<!-- AUTH MODAL -->
-<div class="auth-modal" id="auth-modal">
-  <div class="auth-container">
-    <div class="auth-header">
-      <h1 id="auth-title">Login</h1>
-      <p id="auth-subtitle">Welcome back</p>
-    </div>
-    
-    <div id="auth-message"></div>
-    
-    <!-- FIX 1: return false added to prevent page reload on submit -->
-    <form class="auth-form" id="auth-form" onsubmit="handleAuth(event); return false;">
-      <div class="auth-input-group">
-        <label for="auth-email">Email</label>
-        <input type="email" id="auth-email" placeholder="your@email.com" required>
-      </div>
-      
-      <div class="auth-input-group">
-        <label for="auth-password">Password</label>
-        <input type="password" id="auth-password" placeholder="••••••••" required minlength="8">
-      </div>
-      
-      <!-- confirm field: required only added dynamically when visible -->
-      <div class="auth-input-group" id="confirm-group" style="display:none">
-        <label for="auth-confirm">Confirm Password</label>
-        <input type="password" id="auth-confirm" placeholder="••••••••" minlength="8">
-      </div>
-      
-      <button type="submit" class="auth-btn" id="auth-btn">Login</button>
-    </form>
-    
-    <div class="auth-toggle" id="auth-toggle">
-      Don't have an account? <a onclick="switchAuthMode()">Create one</a>
+<!-- ═══════════════ BAN WALL ═══════════════ -->
+<div id="ban-wall">
+  <div class="ban-box">
+    <span class="ban-icon">🚫</span>
+    <div class="ban-title">Access Denied</div>
+    <div class="ban-desc">
+      Your IP address has been banned from Conch &amp; Cmdr Downloads.<br><br>
+      <strong>Reason:</strong> <span id="ban-reason-display"></span>
+      <br>
+      <span class="ban-ip" id="ban-ip-display"></span>
+      <br><br>
+      If you believe this is a mistake, join our Discord server to appeal.
     </div>
   </div>
 </div>
-
-<div class="page-transition" id="page-transition"></div>
 
 <!-- SITE BANNER -->
 <div class="site-banner" id="site-banner"></div>
@@ -516,28 +865,21 @@
   <div class="nav-logo"><span class="c">Conch</span><span class="sep">/</span><span class="r">Cmdr</span></div>
   <div class="nav-right">
     <button class="pwa-install-btn" id="pwa-btn" onclick="installPWA()">⬇ Install App</button>
-    <!-- LANGUAGE MENU mit FLAGGEN -->
-    <div style="position:relative">
-      <button class="lang-menu-btn" id="lang-btn" onclick="toggleLangMenu()">🌍</button>
-      <div class="lang-dropdown" id="lang-dropdown"></div>
+    <!-- USER BADGE -->
+    <div class="user-badge" id="user-badge">
+      <span class="user-badge-dot"></span>
+      <span class="user-badge-name" id="user-badge-name"></span>
+      <button class="user-badge-logout" onclick="logout()" title="Logout">✕</button>
     </div>
+    <select class="lang-select" id="lang-sel" onchange="setLang(this.value)">
+      <option value="en">EN</option><option value="de">DE</option><option value="es">ES</option>
+    </select>
     <button class="icon-btn" id="theme-btn" onclick="toggleTheme()" title="Toggle Theme">
       <span class="theme-icon" id="theme-icon">🌙</span>
     </button>
     <button class="icon-btn" id="refresh-btn" onclick="doRefresh()" title="Refresh">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
     </button>
-    <!-- USER MENU -->
-    <div class="user-menu">
-      <button class="user-btn" id="user-btn" onclick="toggleUserMenu()">
-        <span id="user-display">User</span> ▼
-      </button>
-      <div class="user-dropdown" id="user-dropdown">
-        <div class="user-dropdown-item" onclick="showProfile()">👤 Profile</div>
-        <div class="user-dropdown-item" onclick="showSettings()">⚙️ Settings</div>
-        <div class="user-dropdown-item logout" onclick="logout()">🚪 Logout</div>
-      </div>
-    </div>
     <button class="burger" id="burger-btn" onclick="toggleDrawer()"><span></span><span></span><span></span></button>
   </div>
 </nav>
@@ -561,6 +903,8 @@
     <p class="drawer-slabel">Quick Jump</p>
     <a class="drawer-item" href="#conch" onclick="closeDrawer()"><span class="drawer-icon" style="color:var(--conch)">◈</span>Conch</a>
     <a class="drawer-item" href="#cmdr"  onclick="closeDrawer()"><span class="drawer-icon" style="color:var(--cmdr)">◈</span>Cmdr</a>
+    <div class="drawer-div"></div>
+    <a class="drawer-item" onclick="logout();closeDrawer()" style="color:var(--cmdr)"><span class="drawer-icon">🚪</span><span>Logout</span></a>
   </div>
   <div class="drawer-footer" id="dl-footer">Auto-updated from GitHub Releases</div>
 </div>
@@ -568,8 +912,7 @@
 <!-- HERO -->
 <div class="hero">
   <h1><em>Conch</em> &amp; <strong>Cmdr</strong><br>Download Hub</h1>
-  <!-- FIX 5: Fallback text added so hero is never blank if JS fails to load -->
-  <p id="hero-sub">Download the latest releases for Conch &amp; Cmdr.</p>
+  <p id="hero-sub"></p>
   <div class="scroll-hint">
     <a href="#conch" class="c">↓ Conch</a>
     <a href="#cmdr"  class="r">↓ Cmdr</a>
@@ -630,25 +973,13 @@
         <span class="countdown-date" id="countdown-conch-date"></span>
       </div>
       <div class="countdown-display">
-        <div class="countdown-unit">
-          <div class="countdown-value" id="countdown-conch-days">00</div>
-          <div class="countdown-label-small">Days</div>
-        </div>
+        <div class="countdown-unit"><div class="countdown-value" id="countdown-conch-days">00</div><div class="countdown-label-small">Days</div></div>
         <div class="countdown-separator">:</div>
-        <div class="countdown-unit">
-          <div class="countdown-value" id="countdown-conch-hours">00</div>
-          <div class="countdown-label-small">Hours</div>
-        </div>
+        <div class="countdown-unit"><div class="countdown-value" id="countdown-conch-hours">00</div><div class="countdown-label-small">Hours</div></div>
         <div class="countdown-separator">:</div>
-        <div class="countdown-unit">
-          <div class="countdown-value" id="countdown-conch-mins">00</div>
-          <div class="countdown-label-small">Minutes</div>
-        </div>
+        <div class="countdown-unit"><div class="countdown-value" id="countdown-conch-mins">00</div><div class="countdown-label-small">Minutes</div></div>
         <div class="countdown-separator">:</div>
-        <div class="countdown-unit">
-          <div class="countdown-value" id="countdown-conch-secs">00</div>
-          <div class="countdown-label-small">Seconds</div>
-        </div>
+        <div class="countdown-unit"><div class="countdown-value" id="countdown-conch-secs">00</div><div class="countdown-label-small">Seconds</div></div>
       </div>
       <div class="countdown-progress" id="countdown-conch-progress"></div>
     </div>
@@ -675,25 +1006,13 @@
         <span class="countdown-date" id="countdown-cmdr-date"></span>
       </div>
       <div class="countdown-display">
-        <div class="countdown-unit">
-          <div class="countdown-value" id="countdown-cmdr-days">00</div>
-          <div class="countdown-label-small">Days</div>
-        </div>
+        <div class="countdown-unit"><div class="countdown-value" id="countdown-cmdr-days">00</div><div class="countdown-label-small">Days</div></div>
         <div class="countdown-separator">:</div>
-        <div class="countdown-unit">
-          <div class="countdown-value" id="countdown-cmdr-hours">00</div>
-          <div class="countdown-label-small">Hours</div>
-        </div>
+        <div class="countdown-unit"><div class="countdown-value" id="countdown-cmdr-hours">00</div><div class="countdown-label-small">Hours</div></div>
         <div class="countdown-separator">:</div>
-        <div class="countdown-unit">
-          <div class="countdown-value" id="countdown-cmdr-mins">00</div>
-          <div class="countdown-label-small">Minutes</div>
-        </div>
+        <div class="countdown-unit"><div class="countdown-value" id="countdown-cmdr-mins">00</div><div class="countdown-label-small">Minutes</div></div>
         <div class="countdown-separator">:</div>
-        <div class="countdown-unit">
-          <div class="countdown-value" id="countdown-cmdr-secs">00</div>
-          <div class="countdown-label-small">Seconds</div>
-        </div>
+        <div class="countdown-unit"><div class="countdown-value" id="countdown-cmdr-secs">00</div><div class="countdown-label-small">Seconds</div></div>
       </div>
       <div class="countdown-progress" id="countdown-cmdr-progress"></div>
     </div>
@@ -710,34 +1029,19 @@
 
 <footer id="footer"></footer>
 
-<!-- EMAIL NOTIFICATION MODAL -->
-<!-- FIX 3: Replaced nested onclick/stopPropagation with a single cleaner check on the overlay -->
-<div class="email-modal-overlay" id="email-modal-overlay" onclick="if(event.target===this)closeEmailModal()">
-  <div class="email-modal">
+<!-- EMAIL MODAL -->
+<div class="email-modal-overlay" id="email-modal-overlay" onclick="closeEmailModal(event)">
+  <div class="email-modal" onclick="event.stopPropagation()">
     <div id="email-modal-content">
       <div class="email-modal-header">
         <div class="email-modal-title">📧 Email Notifications</div>
         <button class="email-modal-close" onclick="closeEmailModal()">✕</button>
       </div>
-      <div class="email-modal-desc">
-        Get notified when new versions of Conch & Cmdr are released. We'll send you an email with the latest updates.
-      </div>
-      <input 
-        type="email" 
-        class="email-modal-input" 
-        id="email-input" 
-        placeholder="your.email@example.com"
-        required
-      >
+      <div class="email-modal-desc">Get notified when new versions of Conch & Cmdr are released.</div>
+      <input type="email" class="email-modal-input" id="email-input" placeholder="your.email@example.com" required>
       <div class="email-modal-checkboxes">
-        <div class="email-checkbox-item">
-          <input type="checkbox" id="notify-conch" checked>
-          <label for="notify-conch">Notify me about Conch releases</label>
-        </div>
-        <div class="email-checkbox-item">
-          <input type="checkbox" id="notify-cmdr" checked>
-          <label for="notify-cmdr">Notify me about Cmdr releases</label>
-        </div>
+        <div class="email-checkbox-item"><input type="checkbox" id="notify-conch" checked><label for="notify-conch">Notify me about Conch releases</label></div>
+        <div class="email-checkbox-item"><input type="checkbox" id="notify-cmdr" checked><label for="notify-cmdr">Notify me about Cmdr releases</label></div>
       </div>
       <div class="email-modal-buttons">
         <button class="email-modal-btn secondary" onclick="closeEmailModal()">Cancel</button>
@@ -748,560 +1052,380 @@
 </div>
 
 <script>
-/* ═══════════════════════════════════════════════════════════════
-   THEME
-═══════════════════════════════════════════════════════════════ */
-function toggleTheme() {
-  const isLight = document.documentElement.classList.toggle('light-mode');
-  document.getElementById('theme-icon').textContent = isLight ? '☀️' : '🌙';
-  localStorage.setItem('theme', isLight ? 'light' : 'dark');
+/* ═══════════════════════════════════════════
+   DRAWER + THEME + LANG + UTILS
+═══════════════════════════════════════════ */
+let _dopen=false;
+function toggleDrawer(){_dopen?closeDrawer():openDrawer()}
+function openDrawer(){_dopen=true;['drawer','drawer-overlay','burger-btn'].forEach(id=>document.getElementById(id).classList.add('open'));document.body.style.overflow='hidden'}
+function closeDrawer(){_dopen=false;['drawer','drawer-overlay','burger-btn'].forEach(id=>document.getElementById(id).classList.remove('open'));document.body.style.overflow=''}
+
+function toggleTheme(){
+  const root=document.documentElement,icon=document.getElementById('theme-icon'),isDark=!root.classList.contains('light-mode');
+  if(isDark){root.classList.add('light-mode');icon.textContent='☀️';localStorage.setItem('cc_theme','light');}
+  else{root.classList.remove('light-mode');icon.textContent='🌙';localStorage.setItem('cc_theme','dark');}
+}
+function loadTheme(){
+  const saved=localStorage.getItem('cc_theme'),icon=document.getElementById('theme-icon');
+  if(saved==='light'){document.documentElement.classList.add('light-mode');if(icon)icon.textContent='☀️';}
+  else{if(icon)icon.textContent='🌙';}
 }
 
-(function initTheme() {
-  if (localStorage.getItem('theme') === 'light') {
-    document.documentElement.classList.add('light-mode');
-    document.getElementById('theme-icon').textContent = '☀️';
-  }
-})();
-
-/* ═══════════════════════════════════════════════════════════════
-   LANGUAGE MENU
-═══════════════════════════════════════════════════════════════ */
-const LANGUAGES = [
-  { code: 'en', flag: '🇬🇧', label: 'English' },
-  { code: 'de', flag: '🇩🇪', label: 'Deutsch' },
-  { code: 'fr', flag: '🇫🇷', label: 'Français' },
-  { code: 'es', flag: '🇪🇸', label: 'Español' },
-  { code: 'it', flag: '🇮🇹', label: 'Italiano' },
-  { code: 'pt', flag: '🇵🇹', label: 'Português' },
-  { code: 'ru', flag: '🇷🇺', label: 'Русский' },
-  { code: 'zh', flag: '🇨🇳', label: '中文' },
-  { code: 'ja', flag: '🇯🇵', label: '日本語' },
-  { code: 'ko', flag: '🇰🇷', label: '한국어' },
-];
-
-let currentLang = localStorage.getItem('lang') || 'en';
-
-function buildLangDropdown() {
-  const dd = document.getElementById('lang-dropdown');
-  dd.innerHTML = LANGUAGES.map(l => `
-    <div class="lang-option ${l.code === currentLang ? 'active' : ''}" onclick="selectLang('${l.code}')">
-      <span class="lang-flag">${l.flag}</span>${l.label}
-    </div>`).join('');
+function openEmailModal(){document.getElementById('email-modal-overlay').classList.add('open');document.body.style.overflow='hidden';}
+function closeEmailModal(event){
+  if(event&&event.target!==event.currentTarget)return;
+  document.getElementById('email-modal-overlay').classList.remove('open');document.body.style.overflow='';
 }
-
-function toggleLangMenu() {
-  const dd = document.getElementById('lang-dropdown');
-  dd.classList.toggle('active');
-  buildLangDropdown();
-}
-
-function selectLang(code) {
-  currentLang = code;
-  localStorage.setItem('lang', code);
-  buildLangDropdown();
-  document.getElementById('lang-dropdown').classList.remove('active');
-  const lang = LANGUAGES.find(l => l.code === code);
-  document.getElementById('lang-btn').textContent = lang ? lang.flag : '🌍';
-  showToast('🌍', 'Language', `Switched to ${lang ? lang.label : code}`, 't-inf');
-}
-
-(function initLang() {
-  const lang = LANGUAGES.find(l => l.code === currentLang);
-  if (lang) document.getElementById('lang-btn').textContent = lang.flag;
-})();
-
-/* ═══════════════════════════════════════════════════════════════
-   USER MENU
-═══════════════════════════════════════════════════════════════ */
-function toggleUserMenu() {
-  document.getElementById('user-dropdown').classList.toggle('active');
-}
-
-function showProfile() {
-  document.getElementById('user-dropdown').classList.remove('active');
-  showToast('👤', 'Profile', 'Profile page coming soon', 't-inf');
-}
-
-function showSettings() {
-  document.getElementById('user-dropdown').classList.remove('active');
-  showToast('⚙️', 'Settings', 'Settings coming soon', 't-inf');
-}
-
-function logout() {
-  document.getElementById('user-dropdown').classList.remove('active');
-  sessionStorage.removeItem('cc_logged_in');
-  sessionStorage.removeItem('cc_user');
-  document.body.style.overflow = 'hidden';
-  document.getElementById('auth-modal').classList.add('active');
-  document.getElementById('user-display').textContent = 'User';
-  showToast('🚪', 'Logged out', 'See you next time!', 't-iok');
-}
-
-/* ═══════════════════════════════════════════════════════════════
-   DRAWER
-═══════════════════════════════════════════════════════════════ */
-function toggleDrawer() {
-  document.getElementById('drawer').classList.toggle('open');
-  document.getElementById('drawer-overlay').classList.toggle('open');
-  document.getElementById('burger-btn').classList.toggle('open');
-}
-
-function closeDrawer() {
-  document.getElementById('drawer').classList.remove('open');
-  document.getElementById('drawer-overlay').classList.remove('open');
-  document.getElementById('burger-btn').classList.remove('open');
-}
-
-/* ═══════════════════════════════════════════════════════════════
-   REFRESH
-═══════════════════════════════════════════════════════════════ */
-function doRefresh() {
-  const btn = document.getElementById('refresh-btn');
-  btn.classList.add('spinning');
-  showToast('🔄', 'Refreshing', 'Fetching latest releases...', 't-inf');
-  setTimeout(() => {
-    btn.classList.remove('spinning');
-    loadReleases();
-  }, 1000);
-}
-
-/* ═══════════════════════════════════════════════════════════════
-   AUTH MODAL
-═══════════════════════════════════════════════════════════════ */
-let authMode = 'login';
-
-function switchAuthMode() {
-  authMode = authMode === 'login' ? 'register' : 'login';
-  const isReg = authMode === 'register';
-  document.getElementById('auth-title').textContent    = isReg ? 'Create Account' : 'Login';
-  document.getElementById('auth-subtitle').textContent = isReg ? 'Join the community' : 'Welcome back';
-  document.getElementById('auth-btn').textContent      = isReg ? 'Register' : 'Login';
-  document.getElementById('confirm-group').style.display = isReg ? '' : 'none';
-  // Only require confirm field when it's actually visible
-  document.getElementById('auth-confirm').required = isReg;
-  document.getElementById('auth-message').innerHTML = '';
-  document.getElementById('auth-toggle').innerHTML = isReg
-    ? 'Already have an account? <a onclick="switchAuthMode()">Login</a>'
-    : 'Don\'t have an account? <a onclick="switchAuthMode()">Create one</a>';
-}
-
-function handleAuth(e) {
-  e.preventDefault();
-  const email    = document.getElementById('auth-email').value.trim();
-  const password = document.getElementById('auth-password').value;
-  const msg      = document.getElementById('auth-message');
-
-  if (authMode === 'register') {
-    const confirm = document.getElementById('auth-confirm').value;
-    if (password !== confirm) {
-      msg.innerHTML = '<div class="auth-error">Passwords do not match.</div>';
-      return false;
+async function subscribeEmail(){
+  const email=document.getElementById('email-input').value.trim();
+  const notifyConch=document.getElementById('notify-conch').checked;
+  const notifyCmdr=document.getElementById('notify-cmdr').checked;
+  if(!email){toast({title:'Email required',sub:'Please enter your email address',type:'w',dur:3000});return;}
+  const emailRegex=/^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if(!emailRegex.test(email)){toast({title:'Invalid email',sub:'Please enter a valid email address',type:'w',dur:3000});return;}
+  if(!notifyConch&&!notifyCmdr){toast({title:'Select at least one',sub:'Choose Conch or Cmdr notifications',type:'w',dur:3000});return;}
+  try{
+    const checkResponse=await sbFetch(`/rest/v1/email_subscribers?email=eq.${encodeURIComponent(email)}&select=id`);
+    const existing=await checkResponse.json();
+    let response;
+    if(existing&&existing.length>0){
+      response=await sbFetch(`/rest/v1/email_subscribers?email=eq.${encodeURIComponent(email)}`,{method:'PATCH',headers:{'Prefer':'return=minimal'},body:JSON.stringify({notify_conch:notifyConch,notify_cmdr:notifyCmdr,updated_at:new Date().toISOString()})});
+    }else{
+      response=await sbFetch('/rest/v1/email_subscribers',{method:'POST',headers:{'Prefer':'return=minimal'},body:JSON.stringify({email,notify_conch:notifyConch,notify_cmdr:notifyCmdr,subscribed_at:new Date().toISOString(),created_at:new Date().toISOString()})});
     }
-  }
-
-  // Save session
-  const username = email.split('@')[0];
-  sessionStorage.setItem('cc_logged_in', '1');
-  sessionStorage.setItem('cc_user', username);
-  document.getElementById('user-display').textContent = username;
-
-  msg.innerHTML = '<div class="auth-success">✓ ' + (authMode === 'login' ? 'Logged in!' : 'Account created!') + '</div>';
-
-  setTimeout(() => {
-    document.getElementById('auth-modal').classList.remove('active');
-    document.body.style.overflow = '';
-    msg.innerHTML = '';
-    loadReleases();
-  }, 900);
-  return false;
+    if(response.ok||response.status===201||response.status===204){
+      toast({title:'Subscribed!',sub:'You will be notified of new releases',type:'ok',dur:4000});confetti();closeEmailModal();
+    }else{throw new Error('Failed');}
+  }catch{toast({title:'Subscription failed',sub:'Please try again later',type:'w',dur:3000});}
 }
 
-/* ═══════════════════════════════════════════════════════════════
-   DOWNLOAD QUEUE
-═══════════════════════════════════════════════════════════════ */
-let queue = [];
-
-function toggleQueue() {
-  document.getElementById('queue-panel').classList.toggle('open');
+function setLang(l){lang=l;localStorage.setItem('cc_lang',l);applyLang();rerender()}
+function applyLang(){
+  const ids={['dl-dl']:'nav_dl',['dl-ann']:'nav_ann',['hero-sub']:'hero_sub',['sb-c']:'bdl',['sb-r']:'bdl',['desc-c']:'desc_c',['desc-r']:'desc_r',['empty-conch']:'se',['empty-cmdr']:'se'};
+  Object.entries(ids).forEach(([id,k])=>{const el=document.getElementById(id);if(el)el.textContent=t(k)});
+  document.getElementById('search-conch').placeholder=t('srch_c');
+  document.getElementById('search-cmdr').placeholder=t('srch_r');
+  document.getElementById('footer').textContent='Conch & Cmdr — '+t('footer');
+  document.getElementById('dl-footer').textContent=t('dfooter');
+  document.getElementById('lang-sel').value=lang;
 }
 
-function addToQueue(name, url, type) {
-  if (queue.find(i => i.url === url)) {
-    queue = queue.filter(i => i.url !== url);
-    updateQueueUI();
-    return false;
-  }
-  queue.push({ name, url, type });
-  updateQueueUI();
-  showToast('🛒', 'Added to queue', name, type === 'conch' ? 't-ic' : 't-ir');
-  return true;
+function getDLC(f){try{return parseInt(localStorage.getItem('dlc_'+f)||'0')}catch{return 0}}
+function incDLC(f){try{localStorage.setItem('dlc_'+f,getDLC(f)+1)}catch{}}
+function refreshDLC(name){document.querySelectorAll(`.dlc[data-f="${CSS.escape(name)}"]`).forEach(el=>{const n=getDLC(name);el.textContent=n>0?t('dlc',n):'';el.style.display=n>0?'':'none'})}
+
+function toast({title,sub,type='c',dur=3500}){
+  const c=document.getElementById('toast-container'),el=document.createElement('div');el.className='toast';
+  const ico={c:'↓',r:'↓',ok:'✓',i:'⚑',w:'!'}[type]||'↓';
+  const icls={c:'t-ic',r:'t-ir',ok:'t-iok',i:'t-inf',w:'t-iwarn'}[type]||'t-ic';
+  const bcol={c:'var(--conch)',r:'var(--cmdr)',ok:'#3cc878',i:'#64a0ff',w:'#ffc832'}[type]||'var(--conch)';
+  el.innerHTML=`<div class="t-ico ${icls}">${ico}</div><div class="t-body"><div class="t-title">${eh(title)}</div>${sub?`<div class="t-sub">${eh(sub)}</div>`:''}</div><div class="t-bar" style="animation-duration:${dur}ms;background:${bcol}"></div>`;
+  c.appendChild(el);setTimeout(()=>{el.classList.add('out');setTimeout(()=>el.remove(),320)},dur);
 }
 
-function removeFromQueue(url) {
-  queue = queue.filter(i => i.url !== url);
-  updateQueueUI();
+function confetti(){
+  const cv=document.getElementById('confetti-canvas'),ctx=cv.getContext('2d');
+  cv.width=window.innerWidth;cv.height=window.innerHeight;
+  const cols=['#0ff4c6','#ff4f5e','#ffc832','#64a0ff','#ff8c42','#a78bfa'];
+  const ps=Array.from({length:70},()=>({x:Math.random()*cv.width,y:-10-Math.random()*60,r:4+Math.random()*5,col:cols[Math.floor(Math.random()*cols.length)],vx:(Math.random()-.5)*3,vy:2+Math.random()*4,rot:Math.random()*Math.PI*2,rv:(Math.random()-.5)*.2,sq:Math.random()>.5}));
+  let af,alpha=1;
+  function draw(){ctx.clearRect(0,0,cv.width,cv.height);ps.forEach(p=>{ctx.save();ctx.globalAlpha=alpha;ctx.translate(p.x,p.y);ctx.rotate(p.rot);ctx.fillStyle=p.col;if(p.sq){ctx.fillRect(-p.r,-p.r/2,p.r*2,p.r)}else{ctx.beginPath();ctx.arc(0,0,p.r/2,0,Math.PI*2);ctx.fill()}ctx.restore();p.x+=p.vx;p.y+=p.vy;p.rot+=p.rv;p.vy+=.06});
+  if(ps.every(p=>p.y>cv.height)){alpha-=.06}if(alpha<=0){ctx.clearRect(0,0,cv.width,cv.height);return}af=requestAnimationFrame(draw)}
+  if(af)cancelAnimationFrame(af);draw()
 }
 
-function clearQueue() {
-  queue = [];
-  updateQueueUI();
+function addRipple(btn,cls){
+  const r=document.createElement('span');r.className='ripple '+cls;
+  const rect=btn.getBoundingClientRect(),size=Math.max(rect.width,rect.height);
+  r.style.cssText=`width:${size}px;height:${size}px;left:${(rect.width-size)/2}px;top:${(rect.height-size)/2}px`;
+  btn.appendChild(r);setTimeout(()=>r.remove(),600)
 }
 
-function updateQueueUI() {
-  const list  = document.getElementById('queue-list');
-  const badge = document.getElementById('queue-badge');
-  badge.textContent = queue.length;
-  badge.classList.toggle('vis', queue.length > 0);
-
-  if (queue.length === 0) {
-    list.innerHTML = '<div class="queue-empty">Queue is empty — add files with 🛒</div>';
-    return;
-  }
-
-  list.innerHTML = queue.map(item => `
-    <div class="queue-item" id="qi-${btoa(item.url).replace(/=/g,'')}">
-      <span class="queue-item-icon">${item.type === 'conch' ? '🟢' : '🔴'}</span>
-      <span class="queue-item-name">${item.name}</span>
-      <span class="queue-item-type ${item.type === 'conch' ? 'qit-c' : 'qit-r'}">${item.type}</span>
-      <button class="queue-item-rm" onclick="removeFromQueue('${item.url}')">✕</button>
-    </div>`).join('');
-}
-
-async function startQueue() {
-  if (queue.length === 0) return;
-  const btn = document.getElementById('queue-dl-btn');
-  btn.disabled = true;
-  for (const item of [...queue]) {
-    triggerDownload(item.url, item.name);
-    await new Promise(r => setTimeout(r, 600));
-  }
-  btn.disabled = false;
-  showToast('✅', 'Queue done', `${queue.length} file(s) downloaded`, 't-iok');
-}
-
-/* ═══════════════════════════════════════════════════════════════
-   DOWNLOAD HELPER
-═══════════════════════════════════════════════════════════════ */
-function triggerDownload(url, name) {
-  const a = document.createElement('a');
-  a.href = url; a.download = name; a.rel = 'noopener';
-  document.body.appendChild(a); a.click();
-  document.body.removeChild(a);
-  showToast('↓', 'Downloading', name, 't-iok');
-}
-
-function copyLink(url) {
-  navigator.clipboard.writeText(url).then(() => {
-    showToast('📋', 'Copied', 'Link copied to clipboard', 't-iok');
+/* ── DOWNLOAD (requires auth) ── */
+function dl(url,name,type,btn){
+  if(!AUTH.user){toast({title:'Login required',sub:'Please log in to download files',type:'w',dur:3000});return;}
+  addRipple(btn,'ripple-'+type);
+  const itemEl=btn.closest('.file-item');
+  const progWrap=itemEl?itemEl.querySelector('.dl-progress-wrap'):null;
+  const progBar=itemEl?itemEl.querySelector('.dl-progress-bar'):null;
+  if(progWrap)progWrap.classList.add('active');
+  toast({title:t('t_start'),sub:name,type,dur:3000});
+  fetch(url).then(res=>{
+    if(!res.ok)throw new Error('HTTP '+res.status);
+    const total=parseInt(res.headers.get('content-length')||'0');
+    const reader=res.body.getReader();const chunks=[];let received=0;
+    function pump(){return reader.read().then(({done,value})=>{
+      if(done){
+        const blob=new Blob(chunks);const u=URL.createObjectURL(blob),a=document.createElement('a');
+        a.href=u;a.download=name;document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(u);
+        if(progBar){progBar.style.width='100%';setTimeout(()=>{if(progWrap)progWrap.classList.remove('active');progBar.style.width='0%'},600)}
+        incDLC(name);refreshDLC(name);toast({title:t('t_done'),sub:name,type:'ok',dur:3000});confetti();return;
+      }
+      chunks.push(value);received+=value.length;
+      if(total>0&&progBar){progBar.style.width=Math.round((received/total)*100)+'%'}
+      else if(progBar){const fake=Math.min((progBar.style.width?parseFloat(progBar.style.width):0)+5,90);progBar.style.width=fake+'%'}
+      return pump();
+    })}
+    return pump();
+  }).catch(()=>{
+    if(progWrap)progWrap.classList.remove('active');
+    const a=document.createElement('a');a.href=url;a.download=name;a.target='_blank';a.rel='noopener';
+    document.body.appendChild(a);a.click();document.body.removeChild(a);
+    incDLC(name);refreshDLC(name);confetti();
   });
 }
 
-/* ═══════════════════════════════════════════════════════════════
-   SEARCH
-═══════════════════════════════════════════════════════════════ */
-function doSearch(section) {
-  const input = document.getElementById('search-' + section);
-  const query = input.value.toLowerCase();
-  const items = document.querySelectorAll(`#${section}-list .file-item`);
-  const clear = document.getElementById('clear-' + section);
-  const empty = document.getElementById('empty-' + section);
+function share(url,btn){
+  addRipple(btn,'ripple-c');
+  const copy=()=>{btn.classList.add('copied');btn.textContent='✓';toast({title:t('t_cp'),sub:t('t_cp2'),type:'i',dur:2500});setTimeout(()=>{btn.classList.remove('copied');btn.textContent='⎘'},2000)};
+  if(navigator.clipboard)navigator.clipboard.writeText(url).then(copy).catch(()=>{fb(url);copy()});else{fb(url);copy()}
+}
+function fb(text){const ta=document.createElement('textarea');ta.value=text;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta)}
 
-  clear.classList.toggle('vis', query.length > 0);
+function doSearch(sec){
+  const inp=document.getElementById('search-'+sec),clr=document.getElementById('clear-'+sec);
+  const q=inp.value.trim().toLowerCase(),list=document.getElementById(sec+'-list'),em=document.getElementById('empty-'+sec);
+  clr.classList.toggle('vis',q.length>0);
+  const items=list.querySelectorAll('.file-item');let vis=0;
+  items.forEach(it=>{const m=(it.dataset.n||'').includes(q)||(it.dataset.v||'').includes(q);it.classList.toggle('hidden',!m);if(m)vis++});
+  em.classList.toggle('vis',vis===0&&items.length>0&&q.length>0)
+}
+function clearSearch(sec){document.getElementById('search-'+sec).value='';doSearch(sec)}
 
-  let visible = 0;
-  items.forEach(item => {
-    const match = item.textContent.toLowerCase().includes(query);
-    item.classList.toggle('hidden', !match);
-    if (match) visible++;
-  });
+let _uid=0;
+function toggleHist(id){const p=document.getElementById('h-'+id),b=document.getElementById('hb-'+id),o=p.classList.contains('open');p.classList.toggle('open',!o);b.classList.toggle('open',!o)}
 
-  if (empty) {
-    empty.classList.toggle('vis', visible === 0 && query.length > 0);
-    empty.textContent = `No results for "${input.value}"`;
+function showSkel(id,n=3){document.getElementById(id).innerHTML=Array.from({length:n},()=>`<div class="skel-item"><div class="skel skel-ico"></div><div class="skel-body"><div class="skel skel-l w80"></div><div class="skel skel-l w50"></div></div><div class="skel skel-btn"></div></div>`).join('')}
+
+function semver(s){const m=String(s).replace(/^v/i,'').match(/\d+/g);return m?m.map(Number):[0]}
+function cmpVer(a,b){const va=semver(a),vb=semver(b);for(let i=0;i<Math.max(va.length,vb.length);i++){const d=(vb[i]||0)-(va[i]||0);if(d)return d}return 0}
+
+let _cc=[],_cr=[];
+
+async function fetchReleases(){
+  showSkel('conch-list');showSkel('cmdr-list');
+  try{
+    const cacheBuster='&_cb='+Date.now();
+    const res=await fetch(`https://api.github.com/repos/${CONFIG.GITHUB_REPO}/releases?per_page=${CONFIG.MAX_RELEASES}${cacheBuster}`);
+    if(!res.ok)throw new Error(res.status===404?'404':res.status===403?'403':res.status+' '+res.statusText);
+    const releases=await res.json();
+    const cm={},rm={};
+    releases.forEach(rel=>{
+      const date=new Date(rel.published_at).toLocaleDateString('en-US',{year:'numeric',month:'short',day:'numeric'});
+      const isNew=(Date.now()-new Date(rel.published_at).getTime())<7*24*3600*1000;
+      (rel.assets||[]).forEach(a=>{
+        const nm=a.name,lo=nm.toLowerCase();
+        if(!lo.endsWith('.rbxm'))return;
+        const isC=lo.includes('conch'),isR=lo.includes('cmdr');
+        if(!isC&&!isR)return;
+        const entry={name:nm,size:fmtB(a.size),date,version:rel.tag_name||rel.name||'v?',url:a.browser_download_url,ts:rel.published_at,isNew};
+        const key=nm.replace(/[_\-]v[\d.]+/i,'').replace(/\.rbxm$/i,'').toLowerCase();
+        if(isC){if(!cm[key])cm[key]=[];cm[key].push(entry)}else{if(!rm[key])rm[key]=[];rm[key].push(entry)}
+      })
+    });
+    const srt=map=>Object.values(map).forEach(arr=>arr.sort((a,b)=>cmpVer(a.version,b.version)||new Date(b.ts)-new Date(a.ts)));
+    srt(cm);srt(rm);
+    const toG=map=>Object.values(map).sort((a,b)=>cmpVer(a[0].version,b[0].version));
+    _cc=toG(cm);_cr=toG(rm);
+    render('conch',_cc);render('cmdr',_cr);
+  }catch(e){
+    const msg=e.message==='404'?t('e404'):e.message==='403'?t('e403'):t('egn')+e.message;
+    ['conch-list','cmdr-list'].forEach(id=>document.getElementById(id).innerHTML=`<div class="error-state">❌ ${msg}</div>`);
   }
 }
+function rerender(){if(_cc.length||_cr.length){render('conch',_cc);render('cmdr',_cr)}}
 
-function clearSearch(section) {
-  document.getElementById('search-' + section).value = '';
-  doSearch(section);
-}
-
-/* ═══════════════════════════════════════════════════════════════
-   VERSION HISTORY TOGGLE
-═══════════════════════════════════════════════════════════════ */
-function toggleHistory(id) {
-  const el  = document.getElementById('hist-' + id);
-  const btn = document.getElementById('hbtn-' + id);
-  if (!el) return;
-  el.classList.toggle('open');
-  if (btn) btn.classList.toggle('open');
-}
-
-/* ═══════════════════════════════════════════════════════════════
-   TOAST NOTIFICATIONS
-═══════════════════════════════════════════════════════════════ */
-function showToast(icon, title, sub, iconClass, duration) {
-  duration = duration || 3500;
-  const c = document.getElementById('toast-container');
-  const t = document.createElement('div');
-  t.className = 'toast';
-  t.innerHTML = `
-    <div class="t-ico ${iconClass}">${icon}</div>
-    <div class="t-body">
-      <div class="t-title">${title}</div>
-      <div class="t-sub">${sub}</div>
-    </div>
-    <div class="t-bar" style="animation-duration:${duration}ms;background:currentColor"></div>`;
-  c.appendChild(t);
-  setTimeout(() => { t.classList.add('out'); setTimeout(() => t.remove(), 350); }, duration);
-}
-
-/* ═══════════════════════════════════════════════════════════════
-   EMAIL MODAL
-═══════════════════════════════════════════════════════════════ */
-function openEmailModal() {
-  document.getElementById('email-modal-overlay').classList.add('open');
-}
-
-function closeEmailModal() {
-  document.getElementById('email-modal-overlay').classList.remove('open');
-}
-
-function subscribeEmail() {
-  const email = document.getElementById('email-input').value.trim();
-  if (!email || !email.includes('@')) {
-    showToast('⚠️', 'Invalid email', 'Please enter a valid email address', 't-iwarn');
-    return;
-  }
-  const conch = document.getElementById('notify-conch').checked;
-  const cmdr  = document.getElementById('notify-cmdr').checked;
-  if (!conch && !cmdr) {
-    showToast('⚠️', 'Nothing selected', 'Please select at least one product', 't-iwarn');
-    return;
-  }
-  document.getElementById('email-modal-content').innerHTML = `
-    <div class="email-modal-success">
-      <div class="email-modal-success-icon">✅</div>
-      <div class="email-modal-success-title">Subscribed!</div>
-      <div class="email-modal-success-desc">You'll be notified at ${email}</div>
-    </div>`;
-  setTimeout(closeEmailModal, 2000);
-}
-
-/* ═══════════════════════════════════════════════════════════════
-   PWA INSTALL
-═══════════════════════════════════════════════════════════════ */
-let deferredPrompt = null;
-
-window.addEventListener('beforeinstallprompt', e => {
-  e.preventDefault();
-  deferredPrompt = e;
-  document.getElementById('pwa-btn').classList.add('visible');
-});
-
-function installPWA() {
-  if (!deferredPrompt) return;
-  deferredPrompt.prompt();
-  deferredPrompt.userChoice.then(() => {
-    deferredPrompt = null;
-    document.getElementById('pwa-btn').classList.remove('visible');
-  });
-}
-
-/* ═══════════════════════════════════════════════════════════════
-   GITHUB RELEASES LOADER
-═══════════════════════════════════════════════════════════════ */
-// FIX: correct GitHub repo names — update these if different
-const REPOS = {
-  conch: 'systems-download/Conch',
-  cmdr:  'systems-download/Cmdr'
-};
-
-function renderSkeletons(listId, count) {
-  count = count || 3;
-  const list = document.getElementById(listId);
-  list.innerHTML = Array(count).fill(`
-    <div class="skel-item">
-      <div class="skel skel-ico"></div>
-      <div class="skel-body">
-        <div class="skel skel-l w80"></div>
-        <div class="skel skel-l w50"></div>
-      </div>
-      <div class="skel skel-btn"></div>
-    </div>`).join('');
-}
-
-function formatSize(bytes) {
-  if (!bytes) return '';
-  if (bytes < 1024)       return bytes + ' B';
-  if (bytes < 1048576)    return (bytes / 1024).toFixed(1) + ' KB';
-  return (bytes / 1048576).toFixed(1) + ' MB';
-}
-
-function formatDate(iso) {
-  return new Date(iso).toLocaleDateString(undefined, { year:'numeric', month:'short', day:'numeric' });
-}
-
-function isNew(iso) {
-  return (Date.now() - new Date(iso).getTime()) < 7 * 24 * 60 * 60 * 1000;
-}
-
-async function fetchReleases(repo) {
-  const res = await fetch(`https://api.github.com/repos/${repo}/releases?per_page=20`);
-  if (!res.ok) throw new Error('GitHub API error ' + res.status);
-  return res.json();
-}
-
-function buildFileList(releases, section) {
-  const list   = document.getElementById(section + '-list');
-  const isC    = section === 'conch';
-  const color  = isC ? 'c' : 'r';
-
-  if (!releases || releases.length === 0) {
-    list.innerHTML = `<div class="empty-state">No releases found.</div>`;
-    return;
-  }
-
-  // Update badge
-  const badge = document.getElementById('sb-' + color);
-  if (badge) badge.textContent = releases[0].tag_name;
-
-  list.innerHTML = '';
-
-  releases.forEach((rel, idx) => {
-    const assets = rel.assets || [];
-    if (assets.length === 0) return;
-
-    assets.forEach(asset => {
-      const itemId = section + '-' + idx + '-' + asset.id;
-      const item   = document.createElement('div');
-      item.className = 'file-item';
-      item.dataset.name = asset.name.toLowerCase();
-
-      // version history rows (older releases with same name pattern)
-      const histRows = releases.slice(1).map(r => {
-        const a = (r.assets || []).find(x => x.name === asset.name);
-        if (!a) return '';
-        return `<div class="ver-row">
-          <span class="ver-tag vt-${color}">${r.tag_name}</span>
-          <span class="ver-name">${a.name}</span>
-          <span class="ver-date">${formatDate(r.published_at)}</span>
-          <button class="btn-dl-xs xs-${color}" onclick="triggerDownload('${a.browser_download_url}','${a.name}')">↓</button>
-        </div>`;
-      }).join('');
-
-      item.innerHTML = `
-        <div class="file-main">
-          <div class="file-icon fi-${color}">📦</div>
-          <div class="file-info">
-            <div class="file-name-row">
-              <span class="file-name">${asset.name}</span>
-              <span class="fver fver-${color}">${rel.tag_name}</span>
-              ${isNew(rel.published_at) ? '<span class="badge-new">NEW</span>' : ''}
-            </div>
-            <div class="file-meta">
-              ${formatSize(asset.size)}
-              <span>·</span>
-              ${formatDate(rel.published_at)}
-              <span>·</span>
-              ${(asset.download_count || 0).toLocaleString()} downloads
-            </div>
+function render(sec,groups){
+  const list=document.getElementById(sec+'-list'),isC=sec==='conch',cls=isC?'c':'r';
+  if(!groups.length){list.innerHTML=`<div class="empty-state">${t('empty',isC?'Conch':'Cmdr')}<br><small style="margin-top:.5rem;display:block;opacity:.7">${t('empty_h',isC?'Conch':'Cmdr')}</small></div>`;return}
+  list.innerHTML='';
+  groups.forEach(vers=>{
+    const latest=vers[0],hasH=vers.length>1,id=++_uid,dlc=getDLC(latest.name);
+    const el=document.createElement('div');
+    el.className='file-item';el.dataset.n=latest.name.toLowerCase();el.dataset.v=latest.version.toLowerCase();
+    let histHTML='';
+    if(hasH){
+      const rows=vers.slice(1).map(v=>`<div class="ver-row"><span class="ver-tag vt-${cls}">${eh(v.version)}</span><span class="ver-name" title="${eh(v.name)}">${eh(v.name)}</span><span class="ver-date">${v.date}</span><button class="btn-dl-xs xs-${cls}" onclick="dl('${ea(v.url)}','${ea(v.name)}','${cls}',this)">↓</button></div>`).join('');
+      histHTML=`<div class="ver-history" id="h-${id}"><div class="ver-inner"><div class="ver-label">${t('hist_lbl')}</div>${rows}</div></div>`;
+    }
+    el.innerHTML=`
+      <div class="file-main">
+        <div class="file-icon fi-${cls}">🧩</div>
+        <div class="file-info">
+          <div class="file-name-row">
+            <span class="file-name" title="${eh(latest.name)}">${eh(latest.name)}</span>
+            <span class="fver fver-${cls}">${eh(latest.version)}</span>
+            ${latest.isNew?`<span class="badge-new">${t('bnew')}</span>`:''}
           </div>
-          <div class="file-actions">
-            <button class="btn-sm" onclick="copyLink('${asset.browser_download_url}')">🔗</button>
-            <button class="btn-hist" id="hbtn-${itemId}" onclick="toggleHistory('${itemId}')">
-              <span>History</span><span class="arr">▾</span>
-            </button>
-            <button class="btn-queue" id="qbtn-${itemId}" onclick="toggleQueueItem('${itemId}','${asset.name}','${asset.browser_download_url}','${section}')">🛒</button>
-            <button class="btn-dl btn-dl-${color}" onclick="triggerDownload('${asset.browser_download_url}','${asset.name}')">↓ Download</button>
+          <div class="file-meta">
+            <span>${latest.size}</span><span>·</span><span>${latest.date}</span><span>·</span><span>.rbxm</span>
+            ${hasH?`<span>·</span><span>${t('vcount',vers.length)}</span>`:''}
+            <span class="dlc" data-f="${eh(latest.name)}" style="${dlc>0?'':'display:none'}">${dlc>0?t('dlc',dlc):''}</span>
           </div>
         </div>
-        <div class="dl-progress-wrap"><div class="dl-progress-bar dlp-${color}" id="prog-${itemId}"></div></div>
-        ${histRows ? `<div class="ver-history" id="hist-${itemId}"><div class="ver-inner"><div class="ver-label">Previous versions</div>${histRows}</div></div>` : ''}`;
+        <div class="file-actions">
+          <button class="btn-sm" onclick="share('${ea(latest.url)}',this)" title="Copy link">⎘</button>
+          <button class="btn-queue" id="qbtn-${id}" onclick="addToQueue('${ea(latest.url)}','${ea(latest.name)}','${cls}','${id}')" title="Add to queue">🛒</button>
+          ${hasH?`<button class="btn-hist" id="hb-${id}" onclick="toggleHist(${id})"><span>${t('hist')}</span><span class="arr">▾</span></button>`:''}
+          <button class="btn-dl btn-dl-${cls}" onclick="dl('${ea(latest.url)}','${ea(latest.name)}','${cls}',this)">${t('dl')}</button>
+        </div>
+      </div>
+      <div class="dl-progress-wrap"><div class="dl-progress-bar dlp-${cls}"></div></div>
+      ${histHTML}`;
+    list.appendChild(el);
+  })
+}
 
-      list.appendChild(item);
-    });
+async function doRefresh(){
+  const btn=document.getElementById('refresh-btn');
+  if(btn.disabled)return;
+  btn.disabled=true;btn.classList.add('spinning');
+  showSkel('conch-list');showSkel('cmdr-list');
+  ['empty-conch','empty-cmdr'].forEach(id=>document.getElementById(id).classList.remove('vis'));
+  clearSearch('conch');clearSearch('cmdr');
+  toast({title:t('t_ref'),sub:t('t_ref2'),type:'c',dur:2000});
+  await fetchReleases();
+  btn.disabled=false;btn.classList.remove('spinning');
+  toast({title:t('t_upd'),sub:t('t_upd2'),type:'ok',dur:2500});
+}
 
-    // Only show assets from latest release at top level
-    if (idx === 0) return;
+function fmtB(b){if(!b)return'0 B';const k=1024,s=['B','KB','MB','GB'],i=Math.floor(Math.log(b)/Math.log(k));return parseFloat((b/Math.pow(k,i)).toFixed(2))+' '+s[i]}
+function eh(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+function ea(s){return String(s).replace(/\\/g,'\\\\').replace(/'/g,"\\'")}
+
+/* BANNER */
+(function(){
+  if(!window.__BANNER__)return;
+  const el=document.getElementById('site-banner');if(!el)return;
+  el.textContent=window.__BANNER__.text;
+  el.className='site-banner sb-'+(window.__BANNER__.type||'info')+' active';
+  document.querySelector('.hero').style.paddingTop='10rem';
+})();
+
+/* PAGE TRANSITIONS */
+document.querySelectorAll('a[href]').forEach(a=>{
+  const href=a.getAttribute('href');
+  if(!href||href.startsWith('#')||href.startsWith('http')||href.startsWith('mailto')||a.target==='_blank')return;
+  a.addEventListener('click',e=>{
+    e.preventDefault();const overlay=document.getElementById('page-transition');
+    overlay.classList.add('fade-out');setTimeout(()=>window.location.href=href,250);
   });
-
-  // If list is empty after filtering
-  if (list.children.length === 0) {
-    list.innerHTML = `<div class="empty-state">No downloadable assets found.</div>`;
-  }
-}
-
-function toggleQueueItem(id, name, url, section) {
-  const inQueue = addToQueue(name, url, section);
-  const btn = document.getElementById('qbtn-' + id);
-  if (btn) btn.classList.toggle('in-queue', inQueue);
-}
-
-async function loadReleases() {
-  renderSkeletons('conch-list');
-  renderSkeletons('cmdr-list');
-
-  try {
-    const conchRels = await fetchReleases(REPOS.conch);
-    buildFileList(conchRels, 'conch');
-  } catch(e) {
-    document.getElementById('conch-list').innerHTML =
-      `<div class="error-state">⚠ Could not load Conch releases.<br>${e.message}</div>`;
-  }
-
-  try {
-    const cmdrRels = await fetchReleases(REPOS.cmdr);
-    buildFileList(cmdrRels, 'cmdr');
-  } catch(e) {
-    document.getElementById('cmdr-list').innerHTML =
-      `<div class="error-state">⚠ Could not load Cmdr releases.<br>${e.message}</div>`;
-  }
-}
-
-/* ═══════════════════════════════════════════════════════════════
-   DEV BYPASS — paste into browser console to skip login:
-   devLogin()
-═══════════════════════════════════════════════════════════════ */
-window.devLogin = function(user) {
-  user = user || 'dev';
-  sessionStorage.setItem('cc_logged_in', '1');
-  sessionStorage.setItem('cc_user', user);
-  document.getElementById('auth-modal').classList.remove('active');
-  document.body.style.overflow = '';
-  document.getElementById('user-display').textContent = user;
-  loadReleases();
-  console.log('%c✅ Dev login as "' + user + '"', 'color:#0ff4c6;font-weight:bold;font-size:14px');
-};
-document.addEventListener('click', function(e) {
-  if (!e.target.closest('#lang-btn') && !e.target.closest('#lang-dropdown')) {
-    document.getElementById('lang-dropdown').classList.remove('active');
-  }
-  if (!e.target.closest('#user-btn') && !e.target.closest('#user-dropdown')) {
-    document.getElementById('user-dropdown').classList.remove('active');
-  }
 });
+window.addEventListener('pageshow',()=>{const overlay=document.getElementById('page-transition');if(overlay)overlay.classList.remove('fade-out');});
 
-/* ═══════════════════════════════════════════════════════════════
-   INIT
-═══════════════════════════════════════════════════════════════ */
-document.addEventListener('DOMContentLoaded', function() {
-  document.getElementById('hero-sub').textContent = 'Always up-to-date · pulled live from GitHub Releases';
-  document.getElementById('footer').textContent   = '© Conch & Cmdr — Auto-updated from GitHub Releases';
+/* PWA */
+let _deferredPrompt=null;
+if('serviceWorker'in navigator){navigator.serviceWorker.register('sw.js').catch(()=>{});}
+window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();_deferredPrompt=e;const btn=document.getElementById('pwa-btn');if(btn)btn.classList.add('visible');});
+function installPWA(){if(!_deferredPrompt)return;_deferredPrompt.prompt();_deferredPrompt.userChoice.then(()=>{_deferredPrompt=null;const btn=document.getElementById('pwa-btn');if(btn)btn.classList.remove('visible');});}
+window.addEventListener('appinstalled',()=>{const btn=document.getElementById('pwa-btn');if(btn)btn.classList.remove('visible');toast({title:'App installed!',sub:'Conch & Cmdr added to your device',type:'ok',dur:3000});});
 
-  // LOGIN GATE: show auth modal if not logged in, block page content
-  const loggedIn = sessionStorage.getItem('cc_logged_in');
-  if (!loggedIn) {
-    // Blur/lock the page behind the modal
-    document.body.style.overflow = 'hidden';
-    document.getElementById('auth-modal').classList.add('active');
-  } else {
-    // Already logged in this session
-    const savedUser = sessionStorage.getItem('cc_user') || 'User';
-    document.getElementById('user-display').textContent = savedUser;
-    loadReleases();
+/* ── DOWNLOAD QUEUE ── */
+let _queue=[],_queueRunning=false;
+function toggleQueue(){const p=document.getElementById('queue-panel');p.classList.toggle('open');renderQueue();}
+function addToQueue(url,name,type,itemId){
+  if(!AUTH.user){toast({title:'Login required',sub:'Please log in to use the queue',type:'w',dur:3000});return;}
+  if(_queue.find(q=>q.name===name)){toast({title:'Already in queue',sub:name,type:'i',dur:2000});return;}
+  _queue.push({url,name,type,done:false});updateQueueBadge();renderQueue();
+  const btn=document.getElementById('qbtn-'+itemId);if(btn)btn.classList.add('in-queue');
+  toast({title:'Added to queue',sub:name,type:'c',dur:1800});
+}
+function removeFromQueue(idx){_queue.splice(idx,1);updateQueueBadge();renderQueue();}
+function clearQueue(){_queue=[];document.querySelectorAll('.btn-queue.in-queue').forEach(b=>b.classList.remove('in-queue'));updateQueueBadge();renderQueue();}
+function updateQueueBadge(){const badge=document.getElementById('queue-badge');badge.textContent=_queue.length;badge.classList.toggle('vis',_queue.length>0);}
+function renderQueue(){
+  const list=document.getElementById('queue-list'),dlBtn=document.getElementById('queue-dl-btn');
+  if(!_queue.length){list.innerHTML='<div class="queue-empty">Queue is empty — add files with 🛒</div>';if(dlBtn)dlBtn.disabled=true;return;}
+  if(dlBtn)dlBtn.disabled=_queueRunning;
+  list.innerHTML=_queue.map((q,i)=>`<div class="queue-item${q.done?' done':''}" id="qitem-${i}"><span class="queue-item-icon">${q.done?'✅':'🧩'}</span><span class="queue-item-name" title="${eh(q.name)}">${eh(q.name)}</span><span class="queue-item-type qit-${q.type}">${q.type.toUpperCase()}</span>${!q.done&&!_queueRunning?`<button class="queue-item-rm" onclick="removeFromQueue(${i})">✕</button>`:''}</div>`).join('');
+}
+async function startQueue(){
+  if(_queueRunning||!_queue.length)return;
+  if(!AUTH.user){toast({title:'Login required',sub:'Please log in to download files',type:'w',dur:3000});return;}
+  _queueRunning=true;
+  const dlBtn=document.getElementById('queue-dl-btn');if(dlBtn){dlBtn.disabled=true;dlBtn.textContent='Downloading...';}
+  const prog=document.getElementById('queue-progress');
+  const itemsToDownload=_queue.filter(q=>!q.done);const total=itemsToDownload.length;let done=0;
+  toast({title:'Starting '+total+' downloads',sub:'All files will download simultaneously',type:'c',dur:3000});
+  _queue.forEach((q,i)=>{if(!q.done){const item=document.getElementById('qitem-'+i);if(item)item.classList.add('downloading');}});
+  const downloadPromises=[];
+  for(let i=0;i<_queue.length;i++){
+    const q=_queue[i];if(q.done)continue;
+    const downloadPromise=(async()=>{
+      try{
+        const a=document.createElement('a');a.href=q.url;a.download=q.name;a.target='_blank';a.rel='noopener';
+        document.body.appendChild(a);a.click();document.body.removeChild(a);
+        incDLC(q.name);refreshDLC(q.name);await new Promise(resolve=>setTimeout(resolve,200));
+      }catch(err){console.error('Download error:',err);}
+      finally{q.done=true;done++;if(prog)prog.style.width=Math.round((done/total)*100)+'%';const item=document.getElementById('qitem-'+i);if(item)item.classList.remove('downloading');renderQueue();}
+    })();
+    downloadPromises.push(downloadPromise);
   }
+  await Promise.all(downloadPromises);
+  _queueRunning=false;if(dlBtn){dlBtn.disabled=false;dlBtn.textContent='↓ Download All';}
+  confetti();toast({title:'All downloads complete!',sub:done+' files downloaded',type:'ok',dur:3500});
+  setTimeout(()=>{if(prog)prog.style.width='0%';},1500);
+}
+
+/* FEATURED */
+async function loadFeatured(){
+  try{
+    const r=await sbFetch('/rest/v1/site_settings?key=in.(featured_file_name,featured_file_url,featured_file_meta,featured_enabled)&select=key,value');
+    if(!r.ok)return;
+    const rows=await r.json();const s={};rows.forEach(x=>s[x.key]=x.value);
+    if(s.featured_enabled!=='true'||!s.featured_file_name)return;
+    document.getElementById('featured-name').textContent=s.featured_file_name;
+    document.getElementById('featured-meta').textContent=s.featured_file_meta||'Recommended by the team';
+    const dlBtn=document.getElementById('featured-dl-btn');
+    if(dlBtn&&s.featured_file_url){dlBtn.onclick=()=>dl(s.featured_file_url,s.featured_file_name,'c',dlBtn);}
+    document.getElementById('featured-wrap').style.display='block';
+  }catch(e){}
+}
+
+/* COUNTDOWN */
+let _countdownData={conch:null,cmdr:null},_countdownIntervals={conch:null,cmdr:null};
+function loadCountdownDates(){
+  if(CONFIG.NEXT_RELEASE_CONCH){_countdownData.conch=new Date(CONFIG.NEXT_RELEASE_CONCH);startCountdown('conch');}
+  if(CONFIG.NEXT_RELEASE_CMDR){_countdownData.cmdr=new Date(CONFIG.NEXT_RELEASE_CMDR);startCountdown('cmdr');}
+}
+function startCountdown(type){
+  const data=_countdownData[type];if(!data||isNaN(data.getTime()))return;
+  if(_countdownIntervals[type])clearInterval(_countdownIntervals[type]);
+  const wrap=document.getElementById(`countdown-${type}-wrap`);if(wrap)wrap.style.display='block';
+  updateCountdown(type);_countdownIntervals[type]=setInterval(()=>updateCountdown(type),1000);
+}
+function updateCountdown(type){
+  const targetDate=_countdownData[type];if(!targetDate||isNaN(targetDate.getTime()))return;
+  const now=new Date().getTime(),distance=targetDate.getTime()-now;
+  const wrap=document.getElementById(`countdown-${type}-wrap`);if(!wrap)return;
+  if(distance<0){
+    wrap.innerHTML=`<div class="countdown-card ${type==='conch'?'cc':'cr'}"><div class="countdown-expired"><span class="countdown-expired-icon">🎉</span><div>Release is here!</div></div></div>`;
+    if(_countdownIntervals[type])clearInterval(_countdownIntervals[type]);return;
+  }
+  const days=Math.floor(distance/(1000*60*60*24)),hours=Math.floor((distance%(1000*60*60*24))/(1000*60*60)),mins=Math.floor((distance%(1000*60*60))/(1000*60)),secs=Math.floor((distance%(1000*60))/1000);
+  const pad=n=>String(n).padStart(2,'0');
+  document.getElementById(`countdown-${type}-days`).textContent=pad(days);
+  document.getElementById(`countdown-${type}-hours`).textContent=pad(hours);
+  document.getElementById(`countdown-${type}-mins`).textContent=pad(mins);
+  document.getElementById(`countdown-${type}-secs`).textContent=pad(secs);
+  const dateEl=document.getElementById(`countdown-${type}-date`);
+  if(dateEl)dateEl.textContent=targetDate.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric',hour:'2-digit',minute:'2-digit'});
+}
+
+/* ══════════════════════════════════════
+   INIT
+══════════════════════════════════════ */
+document.getElementById('lang-sel').value=lang;
+loadTheme();
+applyLang();
+showSkel('conch-list');
+showSkel('cmdr-list');
+
+/* Auth first, then load content */
+initAuth().then(()=>{
+  fetchReleases();
+  loadFeatured();
+  loadCountdownDates();
 });
 </script>
 </body>
