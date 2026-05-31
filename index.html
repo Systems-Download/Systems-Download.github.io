@@ -21,13 +21,6 @@
 })();
 </script>
 
-<!-- PWA -->
-<link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#0ff4c6">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Conch & Cmdr">
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
   *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -217,10 +210,7 @@
   .featured-name{font-family:var(--mono);font-size:.85rem;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .featured-meta{font-family:var(--mono);font-size:.7rem;color:var(--muted);margin-top:.15rem}
 
-  /* PWA */
-  .pwa-install-btn{display:none;font-family:var(--mono);font-size:.72rem;padding:.38rem .75rem;border-radius:6px;border:1px solid rgba(15,244,198,.25);background:rgba(15,244,198,.08);color:var(--conch);cursor:pointer;align-items:center;gap:.4rem;transition:all .2s}
-  .pwa-install-btn:hover{background:rgba(15,244,198,.15)}
-  .pwa-install-btn.visible{display:flex}
+
 
   html{scroll-behavior:smooth}
   body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:100vh;overflow-x:hidden}
@@ -864,8 +854,7 @@ function t(k,...a){const v=(T[lang]||T.en)[k];return typeof v==='function'?v(...
 <nav>
   <div class="nav-logo"><span class="c">Conch</span><span class="sep">/</span><span class="r">Cmdr</span></div>
   <div class="nav-right">
-    <button class="pwa-install-btn" id="pwa-btn" onclick="installPWA()">⬇ Install App</button>
-    <!-- USER BADGE -->
+<!-- USER BADGE -->
     <div class="user-badge" id="user-badge">
       <span class="user-badge-dot"></span>
       <span class="user-badge-name" id="user-badge-name"></span>
@@ -1313,12 +1302,7 @@ document.querySelectorAll('a[href]').forEach(a=>{
 });
 window.addEventListener('pageshow',()=>{const overlay=document.getElementById('page-transition');if(overlay)overlay.classList.remove('fade-out');});
 
-/* PWA */
-let _deferredPrompt=null;
-if('serviceWorker'in navigator){navigator.serviceWorker.register('sw.js').catch(()=>{});}
-window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();_deferredPrompt=e;const btn=document.getElementById('pwa-btn');if(btn)btn.classList.add('visible');});
-function installPWA(){if(!_deferredPrompt)return;_deferredPrompt.prompt();_deferredPrompt.userChoice.then(()=>{_deferredPrompt=null;const btn=document.getElementById('pwa-btn');if(btn)btn.classList.remove('visible');});}
-window.addEventListener('appinstalled',()=>{const btn=document.getElementById('pwa-btn');if(btn)btn.classList.remove('visible');toast({title:'App installed!',sub:'Conch & Cmdr added to your device',type:'ok',dur:3000});});
+
 
 /* ── DOWNLOAD QUEUE ── */
 let _queue=[],_queueRunning=false;
