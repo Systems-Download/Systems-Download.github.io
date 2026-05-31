@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Conch & Cmdr — Admin Panel</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --conch:#0ff4c6;--cmdr:#ff4f5e;--gold:#ffc832;
+  --bg:#0b0c0f;--surface:#13151a;--surface2:#1a1d24;--surface3:#20232b;
+  --border:rgba(255,255,255,0.07);--text:#e8eaf0;--muted:#6b7280;
+  --mono:'JetBrains Mono',monospace;--sans:'Syne',sans-serif;
+}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:100vh;overflow-x:hidden}
+
+/* ACCESS WALL */
+#access-wall{position:fixed;inset:0;z-index:9999;background:var(--bg);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:1rem;text-align:center;padding:2rem}
+#access-wall.hidden{display:none}
+.access-icon{font-size:4rem;margin-bottom:.5rem}
+.access-title{font-size:2rem;font-weight:800;color:var(--cmdr)}
+.access-desc{font-family:var(--mono);font-size:.82rem;color:var(--muted);line-height:1.7}
+.access-btn{margin-top:1rem;font-family:var(--mono);font-size:.82rem;padding:.7rem 1.5rem;border-radius:8px;border:1px solid rgba(15,244,198,.3);background:rgba(15,244,198,.1);color:var(--conch);cursor:pointer;text-decoration:none;transition:all .2s}
+.access-btn:hover{background:rgba(15,244,198,.2)}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:1rem 2.5rem;background:rgba(11,12,15,.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);height:64px}
+.nav-logo{font-size:1rem;font-weight:800;display:flex;gap:.3em;align-items:center;text-decoration:none}
+.nav-logo .c{color:var(--conch)}.nav-logo .r{color:var(--cmdr)}.nav-logo .s{color:var(--muted)}
+.nav-badge{font-family:var(--mono);font-size:.65rem;padding:.2rem .55rem;border-radius:4px;background:rgba(255,200,50,.12);color:var(--gold);border:1px solid rgba(255,200,50,.25);margin-left:.5rem}
+.nav-right{display:flex;align-items:center;gap:.6rem}
+.nav-back{font-family:var(--mono);font-size:.75rem;padding:.4rem .9rem;border-radius:6px;border:1px solid var(--border);background:none;color:var(--muted);text-decoration:none;transition:all .2s}
+.nav-back:hover{color:var(--text);border-color:rgba(255,255,255,.2)}
+.nav-user{font-family:var(--mono);font-size:.72rem;color:var(--gold);display:flex;align-items:center;gap:.4rem}
+
+/* LAYOUT */
+.layout{display:grid;grid-template-columns:220px 1fr;min-height:100vh;padding-top:64px}
+.sidebar{background:var(--surface);border-right:1px solid var(--border);padding:1.5rem 1rem;position:sticky;top:64px;height:calc(100vh - 64px);overflow-y:auto}
+.main{padding:2rem 2.5rem;max-width:1100px}
+
+/* SIDEBAR */
+.sidebar-label{font-family:var(--mono);font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);padding:.75rem .5rem .4rem;opacity:.6}
+.sidebar-item{display:flex;align-items:center;gap:.65rem;padding:.65rem .75rem;border-radius:8px;cursor:pointer;font-family:var(--mono);font-size:.78rem;color:var(--muted);border:1px solid transparent;transition:all .18s;margin-bottom:2px;user-select:none}
+.sidebar-item:hover{background:var(--surface2);color:var(--text);border-color:var(--border)}
+.sidebar-item.active{background:rgba(255,200,50,.07);border-color:rgba(255,200,50,.2);color:var(--gold)}
+.sidebar-icon{font-size:.9rem;flex-shrink:0;width:20px;text-align:center}
+.sidebar-count{margin-left:auto;font-family:var(--mono);font-size:.62rem;padding:.1rem .4rem;border-radius:10px;background:var(--surface2);color:var(--muted)}
+
+/* STAT CARDS */
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1rem;margin-bottom:2rem}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1.2rem 1.4rem}
+.stat-card.sc{border-color:rgba(15,244,198,.15)}
+.stat-card.sr{border-color:rgba(255,79,94,.15)}
+.stat-card.sg{border-color:rgba(255,200,50,.15)}
+.stat-card.sb{border-color:rgba(100,160,255,.15)}
+.stat-value{font-size:2rem;font-weight:800;font-family:var(--mono);line-height:1}
+.stat-card.sc .stat-value{color:var(--conch)}
+.stat-card.sr .stat-value{color:var(--cmdr)}
+.stat-card.sg .stat-value{color:var(--gold)}
+.stat-card.sb .stat-value{color:#64a0ff}
+.stat-label{font-family:var(--mono);font-size:.7rem;color:var(--muted);margin-top:.4rem}
+
+/* TABLE */
+.panel{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:1.5rem}
+.panel-header{display:flex;align-items:center;justify-content:space-between;padding:1rem 1.4rem;border-bottom:1px solid var(--border)}
+.panel-title{font-family:var(--mono);font-size:.82rem;font-weight:600;color:var(--text);display:flex;align-items:center;gap:.5rem}
+.panel-actions{display:flex;gap:.5rem}
+.panel-search{background:var(--surface2);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:var(--mono);font-size:.75rem;padding:.4rem .75rem;outline:none;transition:border-color .2s;width:200px}
+.panel-search:focus{border-color:rgba(255,200,50,.3)}
+.panel-search::placeholder{color:var(--muted);opacity:.5}
+table{width:100%;border-collapse:collapse}
+th{font-family:var(--mono);font-size:.65rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);padding:.75rem 1rem;text-align:left;border-bottom:1px solid var(--border);background:var(--surface2)}
+td{font-family:var(--mono);font-size:.75rem;color:var(--text);padding:.75rem 1rem;border-bottom:1px solid var(--border);vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:rgba(255,255,255,.02)}
+.td-muted{color:var(--muted)}
+.td-truncate{max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* BADGES */
+.badge{font-family:var(--mono);font-size:.63rem;padding:.15rem .45rem;border-radius:3px;display:inline-block}
+.badge-green{background:rgba(60,200,120,.1);color:#3cc878;border:1px solid rgba(60,200,120,.2)}
+.badge-red{background:rgba(255,79,94,.1);color:var(--cmdr);border:1px solid rgba(255,79,94,.2)}
+.badge-gold{background:rgba(255,200,50,.1);color:var(--gold);border:1px solid rgba(255,200,50,.2)}
+.badge-blue{background:rgba(100,160,255,.1);color:#64a0ff;border:1px solid rgba(100,160,255,.2)}
+
+/* ACTION BUTTONS */
+.btn-action{font-family:var(--mono);font-size:.68rem;padding:.28rem .6rem;border-radius:5px;border:none;cursor:pointer;transition:all .2s;white-space:nowrap}
+.btn-ban{background:rgba(255,79,94,.1);color:var(--cmdr);border:1px solid rgba(255,79,94,.2)}
+.btn-ban:hover{background:rgba(255,79,94,.22)}
+.btn-unban{background:rgba(60,200,120,.1);color:#3cc878;border:1px solid rgba(60,200,120,.2)}
+.btn-unban:hover{background:rgba(60,200,120,.22)}
+.btn-delete{background:rgba(255,79,94,.06);color:var(--cmdr);border:1px solid rgba(255,79,94,.15)}
+.btn-delete:hover{background:rgba(255,79,94,.18)}
+.btn-primary{background:rgba(15,244,198,.1);color:var(--conch);border:1px solid rgba(15,244,198,.2)}
+.btn-primary:hover{background:rgba(15,244,198,.2)}
+.btn-gold{background:rgba(255,200,50,.1);color:var(--gold);border:1px solid rgba(255,200,50,.2)}
+.btn-gold:hover{background:rgba(255,200,50,.2)}
+
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:9000;display:none;align-items:center;justify-content:center}
+.modal-overlay.open{display:flex}
+.modal{background:var(--surface);border:1px solid var(--border);border-radius:14px;width:90%;max-width:440px;padding:1.75rem;box-shadow:0 20px 60px rgba(0,0,0,.5);animation:mIn .3s cubic-bezier(.34,1.56,.64,1)}
+@keyframes mIn{from{opacity:0;transform:translateY(-20px) scale(.96)}to{opacity:1;transform:none}}
+.modal-title{font-size:1.1rem;font-weight:800;margin-bottom:1rem;display:flex;align-items:center;gap:.5rem}
+.modal-field{display:flex;flex-direction:column;gap:.3rem;margin-bottom:.85rem}
+.modal-label{font-family:var(--mono);font-size:.67rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.modal-input{background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:var(--mono);font-size:.82rem;padding:.65rem 1rem;outline:none;transition:border-color .2s;width:100%}
+.modal-input:focus{border-color:rgba(255,200,50,.4)}
+.modal-btns{display:flex;gap:.75rem;margin-top:1.2rem}
+.modal-btn{flex:1;font-family:var(--mono);font-size:.8rem;padding:.65rem;border-radius:8px;border:none;cursor:pointer;transition:all .2s;font-weight:600}
+.modal-btn-confirm{background:rgba(255,79,94,.15);color:var(--cmdr);border:1px solid rgba(255,79,94,.3)}
+.modal-btn-confirm:hover{background:rgba(255,79,94,.25)}
+.modal-btn-cancel{background:var(--surface2);color:var(--muted);border:1px solid var(--border)}
+.modal-btn-cancel:hover{color:var(--text)}
+
+/* SETTINGS FORM */
+.settings-grid{display:grid;gap:1rem}
+.setting-row{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:1rem 1.2rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap}
+.setting-info{flex:1}
+.setting-name{font-family:var(--mono);font-size:.82rem;font-weight:600;color:var(--text);margin-bottom:.2rem}
+.setting-desc{font-family:var(--mono);font-size:.7rem;color:var(--muted)}
+.toggle{position:relative;width:44px;height:24px;flex-shrink:0}
+.toggle input{opacity:0;width:0;height:0}
+.toggle-slider{position:absolute;inset:0;background:var(--surface2);border:1px solid var(--border);border-radius:12px;cursor:pointer;transition:all .3s}
+.toggle-slider:before{content:'';position:absolute;height:16px;width:16px;left:3px;bottom:3px;background:var(--muted);border-radius:50%;transition:all .3s}
+.toggle input:checked+.toggle-slider{background:rgba(15,244,198,.2);border-color:rgba(15,244,198,.4)}
+.toggle input:checked+.toggle-slider:before{transform:translateX(20px);background:var(--conch)}
+.setting-input{background:var(--surface2);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:var(--mono);font-size:.78rem;padding:.45rem .8rem;outline:none;transition:border-color .2s;min-width:200px}
+.setting-input:focus{border-color:rgba(255,200,50,.4)}
+.save-btn{font-family:var(--mono);font-size:.75rem;padding:.45rem 1rem;border-radius:6px;border:1px solid rgba(255,200,50,.3);background:rgba(255,200,50,.1);color:var(--gold);cursor:pointer;transition:all .2s;white-space:nowrap}
+.save-btn:hover{background:rgba(255,200,50,.2)}
+
+/* EMPTY + LOADING */
+.tbl-empty{text-align:center;padding:2rem;font-family:var(--mono);font-size:.78rem;color:var(--muted);opacity:.6}
+.loading-row td{text-align:center;padding:1.5rem;font-family:var(--mono);font-size:.75rem;color:var(--muted)}
+.skeleton{background:linear-gradient(90deg,var(--surface2) 25%,rgba(255,255,255,.04) 50%,var(--surface2) 75%);background-size:200% 100%;animation:shimmer 1.4s infinite;border-radius:4px;height:12px;display:inline-block}
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+
+/* PAGE SECTIONS */
+.section-wrap{display:none}.section-wrap.active{display:block}
+.page-title{font-size:1.6rem;font-weight:800;margin-bottom:.3rem}
+.page-sub{font-family:var(--mono);font-size:.78rem;color:var(--muted);margin-bottom:1.5rem}
+
+/* TOAST */
+#toast-c{position:fixed;bottom:1.5rem;right:1.5rem;z-index:9999;display:flex;flex-direction:column;gap:.5rem;pointer-events:none}
+.toast{display:flex;align-items:center;gap:.6rem;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:.7rem 1rem;font-family:var(--mono);font-size:.74rem;color:var(--text);box-shadow:0 8px 24px rgba(0,0,0,.4);pointer-events:all;animation:tIn .25s ease;min-width:200px;position:relative;overflow:hidden}
+.toast.out{opacity:0;transform:translateX(10px);transition:all .25s}
+@keyframes tIn{from{opacity:0;transform:translateX(10px)}to{opacity:1;transform:none}}
+.tbar{position:absolute;bottom:0;left:0;height:2px;animation:tb linear forwards}
+@keyframes tb{from{width:100%}to{width:0%}}
+
+@media(max-width:768px){
+  .layout{grid-template-columns:1fr}
+  .sidebar{display:none}
+  .main{padding:1.5rem 1rem}
+  .stats-grid{grid-template-columns:1fr 1fr}
+}
+</style>
+</head>
+<body>
+
+<div id="toast-c"></div>
+
+<!-- ACCESS WALL -->
+<div id="access-wall">
+  <div class="access-icon">🔐</div>
+  <div class="access-title">Access Denied</div>
+  <div class="access-desc">This page is only accessible to administrators.<br>Log in as Max to access the admin panel.</div>
+  <a class="access-btn" href="index.html">← Back to Downloads</a>
+</div>
+
+<!-- BAN MODAL -->
+<div class="modal-overlay" id="ban-modal">
+  <div class="modal">
+    <div class="modal-title">🚫 Ban User</div>
+    <div class="modal-field">
+      <label class="modal-label">Username</label>
+      <div class="modal-input" id="ban-modal-user" style="opacity:.6;cursor:default"></div>
+    </div>
+    <div class="modal-field">
+      <label class="modal-label">IP Address</label>
+      <div class="modal-input" id="ban-modal-ip" style="opacity:.6;cursor:default"></div>
+    </div>
+    <div class="modal-field">
+      <label class="modal-label">Reason</label>
+      <input class="modal-input" id="ban-reason-input" type="text" placeholder="e.g. Spam, abuse, multiple accounts...">
+    </div>
+    <div class="modal-btns">
+      <button class="modal-btn modal-btn-cancel" onclick="closeBanModal()">Cancel</button>
+      <button class="modal-btn modal-btn-confirm" onclick="confirmBan()">🚫 Ban</button>
+    </div>
+  </div>
+</div>
+
+<!-- DELETE MODAL -->
+<div class="modal-overlay" id="delete-modal">
+  <div class="modal">
+    <div class="modal-title">🗑️ Delete User</div>
+    <div style="font-family:var(--mono);font-size:.8rem;color:var(--muted);margin-bottom:1.2rem;line-height:1.6">Are you sure you want to permanently delete <strong id="delete-modal-user" style="color:var(--text)"></strong>? This cannot be undone.</div>
+    <div class="modal-btns">
+      <button class="modal-btn modal-btn-cancel" onclick="closeDeleteModal()">Cancel</button>
+      <button class="modal-btn modal-btn-confirm" onclick="confirmDelete()">🗑️ Delete</button>
+    </div>
+  </div>
+</div>
+
+<!-- NAV -->
+<nav>
+  <div style="display:flex;align-items:center;gap:.75rem">
+    <a class="nav-logo" href="index.html"><span class="c">Conch</span><span class="s">/</span><span class="r">Cmdr</span></a>
+    <span class="nav-badge">⚙️ Admin Panel</span>
+  </div>
+  <div class="nav-right">
+    <span class="nav-user">👑 <span id="nav-username">Max</span></span>
+    <a class="nav-back" href="index.html">← Downloads</a>
+  </div>
+</nav>
+
+<!-- LAYOUT -->
+<div class="layout" id="main-layout" style="display:none">
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="sidebar-label">Overview</div>
+    <div class="sidebar-item active" onclick="showSection('dashboard')" id="nav-dashboard">
+      <span class="sidebar-icon">📊</span>Dashboard
+    </div>
+    <div class="sidebar-label">Management</div>
+    <div class="sidebar-item" onclick="showSection('users')" id="nav-users">
+      <span class="sidebar-icon">👥</span>Users<span class="sidebar-count" id="count-users">—</span>
+    </div>
+    <div class="sidebar-item" onclick="showSection('bans')" id="nav-bans">
+      <span class="sidebar-icon">🚫</span>Bans<span class="sidebar-count" id="count-bans">—</span>
+    </div>
+    <div class="sidebar-item" onclick="showSection('bugs')" id="nav-bugs">
+      <span class="sidebar-icon">🐛</span>Bug Reports<span class="sidebar-count" id="count-bugs">—</span>
+    </div>
+    <div class="sidebar-label">Site</div>
+    <div class="sidebar-item" onclick="showSection('settings')" id="nav-settings">
+      <span class="sidebar-icon">⚙️</span>Site Settings
+    </div>
+    <div class="sidebar-item" onclick="showSection('banner')" id="nav-banner">
+      <span class="sidebar-icon">📢</span>Banner
+    </div>
+  </div>
+
+  <!-- MAIN -->
+  <div class="main">
+
+    <!-- DASHBOARD -->
+    <div class="section-wrap active" id="section-dashboard">
+      <div class="page-title">📊 Dashboard</div>
+      <div class="page-sub">Overview of Conch & Cmdr Downloads</div>
+      <div class="stats-grid">
+        <div class="stat-card sc"><div class="stat-value" id="stat-users">—</div><div class="stat-label">Total Users</div></div>
+        <div class="stat-card sr"><div class="stat-value" id="stat-bans">—</div><div class="stat-label">Banned IPs</div></div>
+        <div class="stat-card sg"><div class="stat-value" id="stat-bugs">—</div><div class="stat-label">Bug Reports</div></div>
+        <div class="stat-card sb"><div class="stat-value" id="stat-today">—</div><div class="stat-label">Registered Today</div></div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title">👥 Recent Users</div>
+          <button class="btn-action btn-primary" onclick="showSection('users')">View All →</button>
+        </div>
+        <table>
+          <thead><tr><th>Username</th><th>IP</th><th>Registered</th><th>Status</th></tr></thead>
+          <tbody id="recent-users-tbody"><tr class="loading-row"><td colspan="4">Loading...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- USERS -->
+    <div class="section-wrap" id="section-users">
+      <div class="page-title">👥 Users</div>
+      <div class="page-sub">All registered accounts</div>
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title">👥 All Users <span id="users-count-badge" class="sidebar-count"></span></div>
+          <div class="panel-actions">
+            <input class="panel-search" id="users-search" placeholder="Search username or IP..." oninput="filterUsers()">
+            <button class="btn-action btn-primary" onclick="loadUsers()">↺ Refresh</button>
+          </div>
+        </div>
+        <table>
+          <thead><tr><th>Username</th><th>IP</th><th>Last Login</th><th>Registered</th><th>Status</th><th>Actions</th></tr></thead>
+          <tbody id="users-tbody"><tr class="loading-row"><td colspan="6">Loading...</td></tr></tbody>
+        </table>
+        <div class="tbl-empty" id="users-empty" style="display:none">No users found.</div>
+      </div>
+    </div>
+
+    <!-- BANS -->
+    <div class="section-wrap" id="section-bans">
+      <div class="page-title">🚫 IP Bans</div>
+      <div class="page-sub">Manage banned IP addresses</div>
+
+      <!-- Manual ban form -->
+      <div class="panel" style="margin-bottom:1.5rem">
+        <div class="panel-header"><div class="panel-title">➕ Add Manual Ban</div></div>
+        <div style="padding:1.2rem;display:flex;gap:.75rem;flex-wrap:wrap;align-items:flex-end">
+          <div style="flex:1;min-width:160px">
+            <div class="modal-label" style="margin-bottom:.3rem">IP Address</div>
+            <input class="modal-input" id="manual-ban-ip" type="text" placeholder="0.0.0.0">
+          </div>
+          <div style="flex:2;min-width:200px">
+            <div class="modal-label" style="margin-bottom:.3rem">Reason</div>
+            <input class="modal-input" id="manual-ban-reason" type="text" placeholder="Reason for ban...">
+          </div>
+          <button class="btn-action btn-ban" style="padding:.6rem 1.2rem;font-size:.78rem" onclick="addManualBan()">🚫 Ban IP</button>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title">🚫 Banned IPs <span id="bans-count-badge" class="sidebar-count"></span></div>
+          <button class="btn-action btn-primary" onclick="loadBans()">↺ Refresh</button>
+        </div>
+        <table>
+          <thead><tr><th>IP Address</th><th>Reason</th><th>Banned By</th><th>Date</th><th>Actions</th></tr></thead>
+          <tbody id="bans-tbody"><tr class="loading-row"><td colspan="5">Loading...</td></tr></tbody>
+        </table>
+        <div class="tbl-empty" id="bans-empty" style="display:none">No bans found.</div>
+      </div>
+    </div>
+
+    <!-- BUG REPORTS -->
+    <div class="section-wrap" id="section-bugs">
+      <div class="page-title">🐛 Bug Reports</div>
+      <div class="page-sub">Reports submitted via the bug report page</div>
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title">🐛 Reports <span id="bugs-count-badge" class="sidebar-count"></span></div>
+          <div class="panel-actions">
+            <input class="panel-search" id="bugs-search" placeholder="Search..." oninput="filterBugs()">
+            <button class="btn-action btn-primary" onclick="loadBugs()">↺ Refresh</button>
+          </div>
+        </div>
+        <table>
+          <thead><tr><th>Title</th><th>Reporter</th><th>Category</th><th>Severity</th><th>Date</th><th>Actions</th></tr></thead>
+          <tbody id="bugs-tbody"><tr class="loading-row"><td colspan="6">Loading...</td></tr></tbody>
+        </table>
+        <div class="tbl-empty" id="bugs-empty" style="display:none">No bug reports found.</div>
+      </div>
+    </div>
+
+    <!-- SETTINGS -->
+    <div class="section-wrap" id="section-settings">
+      <div class="page-title">⚙️ Site Settings</div>
+      <div class="page-sub">Control site-wide features</div>
+      <div class="settings-grid">
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-name">🔧 Maintenance Mode</div>
+            <div class="setting-desc">Redirects all visitors to maintenance.html</div>
+          </div>
+          <label class="toggle"><input type="checkbox" id="toggle-maintenance" onchange="saveSetting('maintenance_enabled',this.checked)"><span class="toggle-slider"></span></label>
+        </div>
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-name">⭐ Featured File</div>
+            <div class="setting-desc">Show a recommended file at the top of the page</div>
+          </div>
+          <label class="toggle"><input type="checkbox" id="toggle-featured" onchange="saveSetting('featured_enabled',this.checked)"><span class="toggle-slider"></span></label>
+        </div>
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-name">⭐ Featured File Name</div>
+            <div class="setting-desc">Display name shown in the featured card</div>
+          </div>
+          <div style="display:flex;gap:.5rem">
+            <input class="setting-input" id="input-featured-name" placeholder="e.g. Conch_v2.rbxm">
+            <button class="save-btn" onclick="saveSetting('featured_file_name',document.getElementById('input-featured-name').value)">Save</button>
+          </div>
+        </div>
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-name">🔗 Featured File URL</div>
+            <div class="setting-desc">Direct download URL for the featured file</div>
+          </div>
+          <div style="display:flex;gap:.5rem">
+            <input class="setting-input" id="input-featured-url" placeholder="https://github.com/...">
+            <button class="save-btn" onclick="saveSetting('featured_file_url',document.getElementById('input-featured-url').value)">Save</button>
+          </div>
+        </div>
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-name">📝 Featured File Description</div>
+            <div class="setting-desc">Short description shown below the file name</div>
+          </div>
+          <div style="display:flex;gap:.5rem">
+            <input class="setting-input" id="input-featured-meta" placeholder="e.g. Latest stable release">
+            <button class="save-btn" onclick="saveSetting('featured_file_meta',document.getElementById('input-featured-meta').value)">Save</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- BANNER -->
+    <div class="section-wrap" id="section-banner">
+      <div class="page-title">📢 Site Banner</div>
+      <div class="page-sub">Show an announcement banner at the top of the page</div>
+      <div class="settings-grid">
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-name">📢 Banner Enabled</div>
+            <div class="setting-desc">Show the banner on the main page</div>
+          </div>
+          <label class="toggle"><input type="checkbox" id="toggle-banner" onchange="saveSetting('banner_enabled',this.checked)"><span class="toggle-slider"></span></label>
+        </div>
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-name">📝 Banner Text</div>
+            <div class="setting-desc">The message displayed in the banner</div>
+          </div>
+          <div style="display:flex;gap:.5rem;flex:1">
+            <input class="setting-input" id="input-banner-text" placeholder="e.g. New update available!" style="flex:1">
+            <button class="save-btn" onclick="saveSetting('banner_text',document.getElementById('input-banner-text').value)">Save</button>
+          </div>
+        </div>
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-name">🎨 Banner Type</div>
+            <div class="setting-desc">Color style of the banner</div>
+          </div>
+          <div style="display:flex;gap:.5rem">
+            <select class="setting-input" id="select-banner-type" style="min-width:140px">
+              <option value="info">ℹ️ Info (blue)</option>
+              <option value="success">✅ Success (green)</option>
+              <option value="warning">⚠️ Warning (yellow)</option>
+              <option value="danger">🔴 Danger (red)</option>
+            </select>
+            <button class="save-btn" onclick="saveSetting('banner_type',document.getElementById('select-banner-type').value)">Save</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- end .main -->
+</div><!-- end .layout -->
+
+<script>
+/* ── CONFIG ── */
+const SB_URL='https://rmdkoauibmzhgnvrwhfd.supabase.co';
+const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJtZGtvYXVpYm16aGdudnJ3aGZkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyNjg2MDksImV4cCI6MjA5Mzg0NDYwOX0.lu6T00f9y9-Q8HhVag-MGjJz6bTlJrYUwC7AApIxaFw';
+const ADMIN_USERNAME='max';
+
+/* ── FETCH ── */
+async function sb(path,opts={}){
+  const method=(opts.method||'GET').toUpperCase();
+  const base={'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY};
+  if(method!=='GET'&&method!=='HEAD')base['Content-Type']='application/json';
+  const {headers:_,...rest}=opts;
+  const r=await fetch(SB_URL+path,{headers:{...base,...(opts.headers||{})},...rest});
+  return r;
+}
+
+/* ── STATE ── */
+let allUsers=[],allBans=[],allBugs=[];
+let pendingBanUser=null,pendingDeleteUser=null;
+
+/* ── AUTH CHECK ── */
+async function checkAccess(){
+  try{
+    const saved=sessionStorage.getItem('cc_auth');
+    if(!saved)throw new Error('not logged in');
+    const parsed=JSON.parse(saved);
+    if(!parsed||parsed.username.toLowerCase()!==ADMIN_USERNAME)throw new Error('not admin');
+    document.getElementById('nav-username').textContent=parsed.username;
+    document.getElementById('access-wall').classList.add('hidden');
+    document.getElementById('main-layout').style.display='grid';
+    loadAll();
+  }catch{
+    document.getElementById('access-wall').classList.remove('hidden');
+    document.getElementById('main-layout').style.display='none';
+  }
+}
+
+/* ── LOAD ALL ── */
+async function loadAll(){
+  await Promise.all([loadUsers(),loadBans(),loadBugs(),loadSettings()]);
+  updateStats();
+}
+
+/* ── USERS ── */
+async function loadUsers(){
+  document.getElementById('users-tbody').innerHTML='<tr class="loading-row"><td colspan="6">Loading...</td></tr>';
+  try{
+    const r=await sb('/rest/v1/cc_users?select=id,username,display_name,ip,is_banned,last_login,created_at&order=created_at.desc');
+    allUsers=await r.json();
+    renderUsers(allUsers);
+    renderRecentUsers(allUsers.slice(0,5));
+    const c=allUsers.length;
+    document.getElementById('count-users').textContent=c;
+    document.getElementById('users-count-badge').textContent=c;
+    document.getElementById('stat-users').textContent=c;
+    const today=new Date().toDateString();
+    const todayCount=allUsers.filter(u=>new Date(u.created_at).toDateString()===today).length;
+    document.getElementById('stat-today').textContent=todayCount;
+  }catch(e){document.getElementById('users-tbody').innerHTML=`<tr class="loading-row"><td colspan="6">Error: ${e.message}</td></tr>`;}
+}
+
+function renderUsers(users){
+  const tb=document.getElementById('users-tbody');
+  const em=document.getElementById('users-empty');
+  if(!users.length){tb.innerHTML='';em.style.display='block';return;}
+  em.style.display='none';
+  tb.innerHTML=users.map(u=>`
+    <tr>
+      <td><strong>${eh(u.display_name||u.username)}</strong>${u.username===ADMIN_USERNAME?'<span class="badge badge-gold" style="margin-left:.4rem">Owner</span>':''}</td>
+      <td class="td-muted">${u.ip||'—'}</td>
+      <td class="td-muted">${u.last_login?fmtDate(u.last_login):'Never'}</td>
+      <td class="td-muted">${fmtDate(u.created_at)}</td>
+      <td>${u.is_banned?'<span class="badge badge-red">Banned</span>':'<span class="badge badge-green">Active</span>'}</td>
+      <td>
+        <div style="display:flex;gap:.3rem;flex-wrap:wrap">
+          ${u.username!==ADMIN_USERNAME?`
+            ${!u.is_banned?`<button class="btn-action btn-ban" onclick="openBanModal('${eh(u.id)}','${eh(u.username)}','${eh(u.ip||'')}')">🚫 Ban</button>`
+            :`<button class="btn-action btn-unban" onclick="unbanUser('${eh(u.id)}','${eh(u.ip||'')}')">✅ Unban</button>`}
+            <button class="btn-action btn-delete" onclick="openDeleteModal('${eh(u.id)}','${eh(u.username)}')">🗑️</button>
+          `:'<span class="td-muted" style="font-size:.65rem">Protected</span>'}
+        </div>
+      </td>
+    </tr>`).join('');
+}
+
+function renderRecentUsers(users){
+  document.getElementById('recent-users-tbody').innerHTML=users.map(u=>`
+    <tr>
+      <td><strong>${eh(u.display_name||u.username)}</strong></td>
+      <td class="td-muted">${u.ip||'—'}</td>
+      <td class="td-muted">${fmtDate(u.created_at)}</td>
+      <td>${u.is_banned?'<span class="badge badge-red">Banned</span>':'<span class="badge badge-green">Active</span>'}</td>
+    </tr>`).join('');
+}
+
+function filterUsers(){
+  const q=document.getElementById('users-search').value.toLowerCase();
+  renderUsers(allUsers.filter(u=>(u.username||'').includes(q)||(u.ip||'').includes(q)));
+}
+
+/* ── BAN MODAL ── */
+function openBanModal(id,username,ip){
+  pendingBanUser={id,username,ip};
+  document.getElementById('ban-modal-user').textContent=username;
+  document.getElementById('ban-modal-ip').textContent=ip||'unknown';
+  document.getElementById('ban-reason-input').value='';
+  document.getElementById('ban-modal').classList.add('open');
+}
+function closeBanModal(){document.getElementById('ban-modal').classList.remove('open');pendingBanUser=null;}
+
+async function confirmBan(){
+  if(!pendingBanUser)return;
+  const reason=document.getElementById('ban-reason-input').value.trim()||'Banned by admin';
+  try{
+    /* Mark user as banned */
+    await sb(`/rest/v1/cc_users?id=eq.${pendingBanUser.id}`,{method:'PATCH',headers:{'Prefer':'return=minimal'},body:JSON.stringify({is_banned:true})});
+    /* Add IP ban if IP exists */
+    if(pendingBanUser.ip&&pendingBanUser.ip!=='unknown'){
+      await sb('/rest/v1/cc_bans',{method:'POST',headers:{'Prefer':'return=minimal'},body:JSON.stringify({ip:pendingBanUser.ip,reason,banned_by:ADMIN_USERNAME,banned_at:new Date().toISOString()})});
+    }
+    closeBanModal();toast('User '+pendingBanUser.username+' banned','ok');
+    loadUsers();loadBans();
+  }catch(e){toast('Ban failed: '+e.message,'err');}
+}
+
+async function unbanUser(id,ip){
+  try{
+    await sb(`/rest/v1/cc_users?id=eq.${id}`,{method:'PATCH',headers:{'Prefer':'return=minimal'},body:JSON.stringify({is_banned:false})});
+    if(ip&&ip!=='unknown'){
+      await sb(`/rest/v1/cc_bans?ip=eq.${encodeURIComponent(ip)}`,{method:'DELETE'});
+    }
+    toast('User unbanned','ok');loadUsers();loadBans();
+  }catch(e){toast('Unban failed: '+e.message,'err');}
+}
+
+/* ── DELETE MODAL ── */
+function openDeleteModal(id,username){
+  pendingDeleteUser={id,username};
+  document.getElementById('delete-modal-user').textContent=username;
+  document.getElementById('delete-modal').classList.add('open');
+}
+function closeDeleteModal(){document.getElementById('delete-modal').classList.remove('open');pendingDeleteUser=null;}
+
+async function confirmDelete(){
+  if(!pendingDeleteUser)return;
+  try{
+    await sb(`/rest/v1/cc_users?id=eq.${pendingDeleteUser.id}`,{method:'DELETE'});
+    closeDeleteModal();toast('User deleted','ok');loadUsers();
+  }catch(e){toast('Delete failed: '+e.message,'err');}
+}
+
+/* ── BANS ── */
+async function loadBans(){
+  document.getElementById('bans-tbody').innerHTML='<tr class="loading-row"><td colspan="5">Loading...</td></tr>';
+  try{
+    const r=await sb('/rest/v1/cc_bans?select=*&order=banned_at.desc');
+    allBans=await r.json();
+    renderBans(allBans);
+    const c=allBans.length;
+    document.getElementById('count-bans').textContent=c;
+    document.getElementById('bans-count-badge').textContent=c;
+    document.getElementById('stat-bans').textContent=c;
+  }catch(e){document.getElementById('bans-tbody').innerHTML=`<tr class="loading-row"><td colspan="5">Error: ${e.message}</td></tr>`;}
+}
+
+function renderBans(bans){
+  const tb=document.getElementById('bans-tbody');
+  const em=document.getElementById('bans-empty');
+  if(!bans.length){tb.innerHTML='';em.style.display='block';return;}
+  em.style.display='none';
+  tb.innerHTML=bans.map(b=>`
+    <tr>
+      <td><span class="badge badge-red">${eh(b.ip)}</span></td>
+      <td class="td-truncate td-muted">${eh(b.reason||'—')}</td>
+      <td class="td-muted">${eh(b.banned_by||'system')}</td>
+      <td class="td-muted">${fmtDate(b.banned_at)}</td>
+      <td><button class="btn-action btn-unban" onclick="removeBan('${eh(b.id)}','${eh(b.ip)}')">✅ Remove</button></td>
+    </tr>`).join('');
+}
+
+async function addManualBan(){
+  const ip=document.getElementById('manual-ban-ip').value.trim();
+  const reason=document.getElementById('manual-ban-reason').value.trim();
+  if(!ip){toast('Enter an IP address','err');return;}
+  try{
+    await sb('/rest/v1/cc_bans',{method:'POST',headers:{'Prefer':'return=minimal'},body:JSON.stringify({ip,reason:reason||'Manual ban',banned_by:ADMIN_USERNAME,banned_at:new Date().toISOString()})});
+    document.getElementById('manual-ban-ip').value='';
+    document.getElementById('manual-ban-reason').value='';
+    toast('IP '+ip+' banned','ok');loadBans();
+  }catch(e){toast('Failed: '+e.message,'err');}
+}
+
+async function removeBan(id,ip){
+  try{
+    await sb(`/rest/v1/cc_bans?id=eq.${id}`,{method:'DELETE'});
+    /* Also unban user with this IP */
+    await sb(`/rest/v1/cc_users?ip=eq.${encodeURIComponent(ip)}`,{method:'PATCH',headers:{'Prefer':'return=minimal'},body:JSON.stringify({is_banned:false})}).catch(()=>{});
+    toast('Ban removed for '+ip,'ok');loadBans();loadUsers();
+  }catch(e){toast('Failed: '+e.message,'err');}
+}
+
+/* ── BUG REPORTS ── */
+async function loadBugs(){
+  document.getElementById('bugs-tbody').innerHTML='<tr class="loading-row"><td colspan="6">Loading...</td></tr>';
+  try{
+    const r=await sb('/rest/v1/cc_bug_reports?select=*&order=created_at.desc');
+    if(!r.ok){
+      if(r.status===404||r.status===400){
+        document.getElementById('bugs-tbody').innerHTML='';
+        document.getElementById('bugs-empty').textContent='Table cc_bug_reports not created yet. Submit a bug report first.';
+        document.getElementById('bugs-empty').style.display='block';
+        return;
+      }
+    }
+    allBugs=await r.json();
+    renderBugs(allBugs);
+    const c=allBugs.length;
+    document.getElementById('count-bugs').textContent=c;
+    document.getElementById('bugs-count-badge').textContent=c;
+    document.getElementById('stat-bugs').textContent=c;
+  }catch(e){document.getElementById('bugs-tbody').innerHTML=`<tr class="loading-row"><td colspan="6">Error: ${e.message}</td></tr>`;}
+}
+
+function renderBugs(bugs){
+  const tb=document.getElementById('bugs-tbody');
+  const em=document.getElementById('bugs-empty');
+  if(!bugs.length){tb.innerHTML='';em.style.display='block';return;}
+  em.style.display='none';
+  const sevBadge={low:'badge-green',medium:'badge-gold',high:'badge-blue',critical:'badge-red'};
+  tb.innerHTML=bugs.map(b=>`
+    <tr>
+      <td class="td-truncate"><strong>${eh(b.title||'—')}</strong></td>
+      <td class="td-muted">${eh(b.username||'anonymous')}</td>
+      <td><span class="badge badge-blue">${eh(b.category||'—')}</span></td>
+      <td><span class="badge ${sevBadge[b.severity]||'badge-blue'}">${eh(b.severity||'—')}</span></td>
+      <td class="td-muted">${fmtDate(b.created_at)}</td>
+      <td>
+        <div style="display:flex;gap:.3rem">
+          ${b.screenshot_url?`<a href="${eh(b.screenshot_url)}" target="_blank" class="btn-action btn-primary">📸</a>`:''}
+          <button class="btn-action btn-delete" onclick="deleteBug('${eh(b.id)}')">🗑️</button>
+        </div>
+      </td>
+    </tr>`).join('');
+}
+
+function filterBugs(){
+  const q=document.getElementById('bugs-search').value.toLowerCase();
+  renderBugs(allBugs.filter(b=>(b.title||'').toLowerCase().includes(q)||(b.username||'').toLowerCase().includes(q)));
+}
+
+async function deleteBug(id){
+  try{
+    await sb(`/rest/v1/cc_bug_reports?id=eq.${id}`,{method:'DELETE'});
+    toast('Bug report deleted','ok');loadBugs();
+  }catch(e){toast('Delete failed','err');}
+}
+
+/* ── SETTINGS ── */
+async function loadSettings(){
+  try{
+    const r=await sb('/rest/v1/site_settings?select=key,value');
+    if(!r.ok)return;
+    const rows=await r.json();
+    const s={};rows.forEach(x=>s[x.key]=x.value);
+    if(document.getElementById('toggle-maintenance'))document.getElementById('toggle-maintenance').checked=s.maintenance_enabled==='true';
+    if(document.getElementById('toggle-featured'))document.getElementById('toggle-featured').checked=s.featured_enabled==='true';
+    if(document.getElementById('toggle-banner'))document.getElementById('toggle-banner').checked=s.banner_enabled==='true';
+    if(s.featured_file_name)document.getElementById('input-featured-name').value=s.featured_file_name;
+    if(s.featured_file_url)document.getElementById('input-featured-url').value=s.featured_file_url;
+    if(s.featured_file_meta)document.getElementById('input-featured-meta').value=s.featured_file_meta;
+    if(s.banner_text)document.getElementById('input-banner-text').value=s.banner_text;
+    if(s.banner_type)document.getElementById('select-banner-type').value=s.banner_type;
+  }catch{}
+}
+
+async function saveSetting(key,value){
+  try{
+    const v=typeof value==='boolean'?String(value):value;
+    /* Try update first */
+    const upd=await sb(`/rest/v1/site_settings?key=eq.${key}`,{method:'PATCH',headers:{'Prefer':'return=minimal'},body:JSON.stringify({value:v})});
+    if(upd.status===404||upd.status===406){
+      /* Insert if not exists */
+      await sb('/rest/v1/site_settings',{method:'POST',headers:{'Prefer':'return=minimal'},body:JSON.stringify({key,value:v})});
+    }
+    toast('Saved: '+key,'ok');
+  }catch(e){toast('Save failed: '+e.message,'err');}
+}
+
+/* ── STATS ── */
+function updateStats(){/* Already done in loadUsers/loadBans/loadBugs */}
+
+/* ── SECTION NAV ── */
+function showSection(name){
+  document.querySelectorAll('.section-wrap').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.sidebar-item').forEach(s=>s.classList.remove('active'));
+  document.getElementById('section-'+name).classList.add('active');
+  document.getElementById('nav-'+name).classList.add('active');
+}
+
+/* ── UTILS ── */
+function fmtDate(s){if(!s)return'—';const d=new Date(s);return d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});}
+function eh(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
+function toast(msg,type='ok',dur=3000){
+  const c=document.getElementById('toast-c');
+  const el=document.createElement('div');el.className='toast';
+  const col={ok:'#3cc878',err:'#ff4f5e',warn:'#ffc832'}[type]||'#0ff4c6';
+  el.innerHTML=`<span>${{ok:'✓',err:'✕',warn:'!'}[type]||'⚑'}</span><span style="flex:1">${msg}</span><div class="tbar" style="background:${col};animation-duration:${dur}ms"></div>`;
+  c.appendChild(el);setTimeout(()=>{el.classList.add('out');setTimeout(()=>el.remove(),300)},dur);
+}
+
+/* ── INIT ── */
+checkAccess();
+</script>
+</body>
+</html>
