@@ -497,6 +497,25 @@
     nav a.nav-link{display:none}.file-actions{gap:0.3rem}.btn-hist span:first-child{display:none}
     .countdown-value{font-size:1.6rem;min-width:50px;padding:0.5rem}.countdown-display{gap:0.5rem;margin-bottom:1rem}.countdown-separator{font-size:1rem;margin:0}
   }
+
+  /* ── BETA SECTIONS ── */
+  .sbadge-beta-c{background:rgba(52,211,153,.1);color:#34d399;border:1px solid rgba(52,211,153,.25)}
+  .sbadge-beta-r{background:rgba(167,139,250,.1);color:#a78bfa;border:1px solid rgba(167,139,250,.25)}
+  .section-header h2.beta-c{color:#34d399}
+  .section-header h2.beta-r{color:#a78bfa}
+  .fi-beta-c{background:rgba(52,211,153,.1);color:#34d399}
+  .fi-beta-r{background:rgba(167,139,250,.1);color:#a78bfa}
+  .fver-beta-c{background:rgba(52,211,153,.12);color:#34d399}
+  .fver-beta-r{background:rgba(167,139,250,.12);color:#a78bfa}
+  .btn-dl-beta-c{background:rgba(52,211,153,.12);color:#34d399}.btn-dl-beta-c:hover{background:rgba(52,211,153,.22)}
+  .btn-dl-beta-r{background:rgba(167,139,250,.12);color:#a78bfa}.btn-dl-beta-r:hover{background:rgba(167,139,250,.22)}
+  .xs-beta-c{background:rgba(52,211,153,.08);color:#34d399}.xs-beta-c:hover{background:rgba(52,211,153,.18)}
+  .xs-beta-r{background:rgba(167,139,250,.08);color:#a78bfa}.xs-beta-r:hover{background:rgba(167,139,250,.18)}
+  .dlp-beta-c{background:#34d399}.dlp-beta-r{background:#a78bfa}
+  .vt-beta-c{background:rgba(52,211,153,.08);color:#34d399;border:1px solid rgba(52,211,153,.2)}
+  .vt-beta-r{background:rgba(167,139,250,.08);color:#a78bfa;border:1px solid rgba(167,139,250,.2)}
+  .badge-beta{font-family:var(--mono);font-size:.6rem;padding:.1rem .4rem;border-radius:3px;background:rgba(167,139,250,.15);color:#a78bfa;border:1px solid rgba(167,139,250,.3);flex-shrink:0}
+  .ripple-beta-c{background:rgba(52,211,153,.35)}.ripple-beta-r{background:rgba(167,139,250,.35)}
 </style>
 </head>
 <body>
@@ -508,7 +527,7 @@
 const CONFIG={
   GITHUB_REPO:'Systems-Download/Systems-Download.github.io',
   MAX_RELEASES:20,DEBUG:false,
-  NEXT_RELEASE_CONCH:'NON',
+  NEXT_RELEASE_CONCH:'2026-06-01T15:45:00Z',
   NEXT_RELEASE_CMDR:'2026-07-10T15:45:00Z',
   /* ── SUPABASE ── */
   SB_URL:'https://rmdkoauibmzhgnvrwhfd.supabase.co',
@@ -978,6 +997,8 @@ function t(k,...a){const v=(T[lang]||T.en)[k];return typeof v==='function'?v(...
     <p class="drawer-slabel">Quick Jump</p>
     <a class="drawer-item" href="#conch" onclick="closeDrawer()"><span class="drawer-icon" style="color:var(--conch)">◈</span>Conch</a>
     <a class="drawer-item" href="#cmdr"  onclick="closeDrawer()"><span class="drawer-icon" style="color:var(--cmdr)">◈</span>Cmdr</a>
+    <a class="drawer-item" href="#conch-beta" onclick="closeDrawer()"><span class="drawer-icon" style="color:#34d399">◈</span>Conch Beta</a>
+    <a class="drawer-item" href="#cmdr-beta" onclick="closeDrawer()"><span class="drawer-icon" style="color:#a78bfa">◈</span>Cmdr Beta</a>
     <div class="drawer-div"></div>
     <a class="drawer-item" onclick="logout();closeDrawer()" style="color:var(--cmdr)"><span class="drawer-icon">🚪</span><span>Logout</span></a>
   </div>
@@ -991,6 +1012,7 @@ function t(k,...a){const v=(T[lang]||T.en)[k];return typeof v==='function'?v(...
   <div class="scroll-hint">
     <a href="#conch" class="c">↓ Conch</a>
     <a href="#cmdr"  class="r">↓ Cmdr</a>
+    <a href="#conch-beta" style="border:1px solid #34d399;color:#34d399;padding:.6rem 1.4rem;border-radius:6px;font-family:var(--mono);font-size:.8rem;letter-spacing:.05em;text-decoration:none;transition:all .2s" onmouseover="this.style.background='rgba(52,211,153,.08)'" onmouseout="this.style.background=''">↓ Beta</a>
   </div>
 </div>
 
@@ -1100,6 +1122,36 @@ function t(k,...a){const v=(T[lang]||T.en)[k];return typeof v==='function'?v(...
   </div>
   <div class="file-list" id="cmdr-list"></div>
   <div class="search-empty" id="empty-cmdr"></div>
+</div>
+
+<div class="divider"></div>
+
+<!-- CONCH BETA -->
+<div class="section" id="conch-beta">
+  <div class="section-header"><h2 class="beta-c">Conch Beta</h2><span class="sbadge sbadge-beta-c" id="sb-beta-c">Beta</span></div>
+  <p class="section-desc" id="desc-beta-c" style="color:var(--muted);font-family:var(--mono);font-size:.85rem;line-height:1.8;max-width:600px;margin-bottom:1.5rem">All .rbxm beta files with "Conch" and "Beta" in the name. May be unstable.</p>
+  <div class="search-wrap">
+    <span class="search-icon">🔍</span>
+    <input class="search-input" style="outline:none;transition:border-color .2s" id="search-conch-beta" type="text" placeholder="Search Conch Beta..." oninput="doSearch('conch-beta')" onfocus="this.style.borderColor='rgba(52,211,153,.4)'" onblur="this.style.borderColor=''">
+    <button class="search-clear" id="clear-conch-beta" onclick="clearSearch('conch-beta')">✕</button>
+  </div>
+  <div class="file-list" id="conch-beta-list"></div>
+  <div class="search-empty" id="empty-conch-beta"></div>
+</div>
+
+<div class="divider"></div>
+
+<!-- CMDR BETA -->
+<div class="section" id="cmdr-beta">
+  <div class="section-header"><h2 class="beta-r">Cmdr Beta</h2><span class="sbadge sbadge-beta-r" id="sb-beta-r">Beta</span></div>
+  <p class="section-desc" id="desc-beta-r" style="color:var(--muted);font-family:var(--mono);font-size:.85rem;line-height:1.8;max-width:600px;margin-bottom:1.5rem">All .rbxm beta files with "Cmdr" and "Beta" in the name. May be unstable.</p>
+  <div class="search-wrap">
+    <span class="search-icon">🔍</span>
+    <input class="search-input" style="outline:none;transition:border-color .2s" id="search-cmdr-beta" type="text" placeholder="Search Cmdr Beta..." oninput="doSearch('cmdr-beta')" onfocus="this.style.borderColor='rgba(167,139,250,.4)'" onblur="this.style.borderColor=''">
+    <button class="search-clear" id="clear-cmdr-beta" onclick="clearSearch('cmdr-beta')">✕</button>
+  </div>
+  <div class="file-list" id="cmdr-beta-list"></div>
+  <div class="search-empty" id="empty-cmdr-beta"></div>
 </div>
 
 <footer id="footer"></footer>
@@ -1275,16 +1327,16 @@ function showSkel(id,n=3){document.getElementById(id).innerHTML=Array.from({leng
 function semver(s){const m=String(s).replace(/^v/i,'').match(/\d+/g);return m?m.map(Number):[0]}
 function cmpVer(a,b){const va=semver(a),vb=semver(b);for(let i=0;i<Math.max(va.length,vb.length);i++){const d=(vb[i]||0)-(va[i]||0);if(d)return d}return 0}
 
-let _cc=[],_cr=[];
+let _cc=[],_cr=[],_ccb=[],_crb=[];
 
 async function fetchReleases(){
-  showSkel('conch-list');showSkel('cmdr-list');
+  showSkel('conch-list');showSkel('cmdr-list');showSkel('conch-beta-list');showSkel('cmdr-beta-list');
   try{
     const cacheBuster='&_cb='+Date.now();
     const res=await fetch(`https://api.github.com/repos/${CONFIG.GITHUB_REPO}/releases?per_page=${CONFIG.MAX_RELEASES}${cacheBuster}`);
     if(!res.ok)throw new Error(res.status===404?'404':res.status===403?'403':res.status+' '+res.statusText);
     const releases=await res.json();
-    const cm={},rm={};
+    const cm={},rm={},cbm={},rbm={};
     releases.forEach(rel=>{
       const date=new Date(rel.published_at).toLocaleDateString('en-US',{year:'numeric',month:'short',day:'numeric'});
       const isNew=(Date.now()-new Date(rel.published_at).getTime())<7*24*3600*1000;
@@ -1293,26 +1345,31 @@ async function fetchReleases(){
         if(!lo.endsWith('.rbxm'))return;
         const isC=lo.includes('conch'),isR=lo.includes('cmdr');
         if(!isC&&!isR)return;
-        const entry={name:nm,size:fmtB(a.size),date,version:rel.tag_name||rel.name||'v?',url:a.browser_download_url,ts:rel.published_at,isNew};
-        const key=nm.replace(/[_\-]v[\d.]+/i,'').replace(/\.rbxm$/i,'').toLowerCase();
-        if(isC){if(!cm[key])cm[key]=[];cm[key].push(entry)}else{if(!rm[key])rm[key]=[];rm[key].push(entry)}
+        const isBeta=lo.includes('beta');
+        const entry={name:nm,size:fmtB(a.size),date,version:rel.tag_name||rel.name||'v?',url:a.browser_download_url,ts:rel.published_at,isNew,isBeta};
+        const key=nm.replace(/[_\-]?v?[\d]+[\d.]*[\d]*/i,'').replace(/beta/i,'').replace(/\.rbxm$/i,'').replace(/[_\-]+$/,'').toLowerCase();
+        if(isC&&isBeta){if(!cbm[key])cbm[key]=[];cbm[key].push(entry);}
+        else if(isR&&isBeta){if(!rbm[key])rbm[key]=[];rbm[key].push(entry);}
+        else if(isC){if(!cm[key])cm[key]=[];cm[key].push(entry);}
+        else{if(!rm[key])rm[key]=[];rm[key].push(entry);}
       })
     });
     const srt=map=>Object.values(map).forEach(arr=>arr.sort((a,b)=>cmpVer(a.version,b.version)||new Date(b.ts)-new Date(a.ts)));
-    srt(cm);srt(rm);
+    srt(cm);srt(rm);srt(cbm);srt(rbm);
     const toG=map=>Object.values(map).sort((a,b)=>cmpVer(a[0].version,b[0].version));
-    _cc=toG(cm);_cr=toG(rm);
-    render('conch',_cc);render('cmdr',_cr);
+    _cc=toG(cm);_cr=toG(rm);_ccb=toG(cbm);_crb=toG(rbm);
+    render('conch',_cc,'c');render('cmdr',_cr,'r');
+    renderBeta('conch-beta',_ccb,'c');renderBeta('cmdr-beta',_crb,'r');
     checkAndNotifyRelease(releases);
   }catch(e){
     const msg=e.message==='404'?t('e404'):e.message==='403'?t('e403'):t('egn')+e.message;
     ['conch-list','cmdr-list'].forEach(id=>document.getElementById(id).innerHTML=`<div class="error-state">❌ ${msg}</div>`);
   }
 }
-function rerender(){if(_cc.length||_cr.length){render('conch',_cc);render('cmdr',_cr)}}
+function rerender(){if(_cc.length||_cr.length){render('conch',_cc,'c');render('cmdr',_cr,'r');renderBeta('conch-beta',_ccb,'c');renderBeta('cmdr-beta',_crb,'r');}}
 
-function render(sec,groups){
-  const list=document.getElementById(sec+'-list'),isC=sec==='conch',cls=isC?'c':'r';
+function render(sec,groups,cls){
+  const list=document.getElementById(sec+'-list'),isC=sec==='conch';
   if(!groups.length){list.innerHTML=`<div class="empty-state">${t('empty',isC?'Conch':'Cmdr')}<br><small style="margin-top:.5rem;display:block;opacity:.7">${t('empty_h',isC?'Conch':'Cmdr')}</small></div>`;return}
   list.innerHTML='';
   groups.forEach(vers=>{
@@ -1352,11 +1409,59 @@ function render(sec,groups){
   })
 }
 
+function renderBeta(sec,groups,cls){
+  const list=document.getElementById(sec+'-list');
+  if(!list)return;
+  const isBetaC=cls==='c';
+  const betaCls='beta-'+cls;
+  if(!groups.length){
+    list.innerHTML=`<div class="empty-state" style="opacity:.5">No beta files found.</div>`;
+    return;
+  }
+  list.innerHTML='';
+  groups.forEach(vers=>{
+    const latest=vers[0],hasH=vers.length>1,id=++_uid,dlc=getDLC(latest.name);
+    const el=document.createElement('div');
+    el.className='file-item';
+    el.style.borderColor=isBetaC?'rgba(52,211,153,.15)':'rgba(167,139,250,.15)';
+    el.dataset.n=latest.name.toLowerCase();el.dataset.v=latest.version.toLowerCase();
+    let histHTML='';
+    if(hasH){
+      const rows=vers.slice(1).map(v=>`<div class="ver-row"><span class="ver-tag vt-${betaCls}">${eh(v.version)}</span><span class="ver-name" title="${eh(v.name)}">${eh(v.name)}</span><span class="ver-date">${v.date}</span><button class="btn-dl-xs xs-${betaCls}" onclick="dl('${ea(v.url)}','${ea(v.name)}','${betaCls}',this)">↓</button></div>`).join('');
+      histHTML=`<div class="ver-history" id="h-${id}"><div class="ver-inner"><div class="ver-label">Previous beta versions</div>${rows}</div></div>`;
+    }
+    el.innerHTML=`
+      <div class="file-main">
+        <div class="file-icon fi-${betaCls}">${isBetaC?'🧪':'🔬'}</div>
+        <div class="file-info">
+          <div class="file-name-row">
+            <span class="file-name" title="${eh(latest.name)}">${eh(latest.name)}</span>
+            <span class="fver fver-${betaCls}">${eh(latest.version)}</span>
+            <span class="badge-beta">BETA</span>
+            ${latest.isNew?`<span class="badge-new">NEW</span>`:''}
+          </div>
+          <div class="file-meta">
+            <span>${latest.size}</span><span>·</span><span>${latest.date}</span><span>·</span><span>.rbxm</span>
+            ${hasH?`<span>·</span><span>${vers.length} versions</span>`:''}
+          </div>
+        </div>
+        <div class="file-actions">
+          <button class="btn-sm" onclick="share('${ea(latest.url)}',this)" title="Copy link">⎘</button>
+          ${hasH?`<button class="btn-hist" id="hb-${id}" onclick="toggleHist(${id})"><span>History</span><span class="arr">▾</span></button>`:''}
+          <button class="btn-dl btn-dl-${betaCls}" onclick="dl('${ea(latest.url)}','${ea(latest.name)}','${betaCls}',this)">↓ Download</button>
+        </div>
+      </div>
+      <div class="dl-progress-wrap"><div class="dl-progress-bar dlp-${betaCls}"></div></div>
+      ${histHTML}`;
+    list.appendChild(el);
+  });
+}
+
 async function doRefresh(){
   const btn=document.getElementById('refresh-btn');
   if(btn.disabled)return;
   btn.disabled=true;btn.classList.add('spinning');
-  showSkel('conch-list');showSkel('cmdr-list');
+  showSkel('conch-list');showSkel('cmdr-list');showSkel('conch-beta-list');showSkel('cmdr-beta-list');
   ['empty-conch','empty-cmdr'].forEach(id=>document.getElementById(id).classList.remove('vis'));
   clearSearch('conch');clearSearch('cmdr');
   toast({title:t('t_ref'),sub:t('t_ref2'),type:'c',dur:2000});
@@ -1480,7 +1585,7 @@ function updateCountdown(type){
   document.getElementById(`countdown-${type}-mins`).textContent=pad(mins);
   document.getElementById(`countdown-${type}-secs`).textContent=pad(secs);
   const dateEl=document.getElementById(`countdown-${type}-date`);
-  if(dateEl)dateEl.textContent=targetDate.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric',hour:'2-digit',minute:'2-digit'});
+  if(dateEl){const opts={month:'short',day:'numeric',year:'numeric',hour:'2-digit',minute:'2-digit',timeZone:'Europe/Berlin',timeZoneName:'short'};dateEl.textContent=targetDate.toLocaleString('de-DE',opts);}
 }
 
 
