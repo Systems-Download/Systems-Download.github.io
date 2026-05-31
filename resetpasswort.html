@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Conch & Cmdr — Reset Password</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --conch:#0ff4c6;--cmdr:#ff4f5e;
+  --bg:#0b0c0f;--surface:#13151a;--surface2:#1a1d24;
+  --border:rgba(255,255,255,0.07);--text:#e8eaf0;--muted:#6b7280;
+  --mono:'JetBrains Mono',monospace;--sans:'Syne',sans-serif;
+}
+:root.light-mode{--bg:#f5f7fa;--surface:#fff;--surface2:#f0f2f5;--border:rgba(0,0,0,0.08);--text:#1a1d24;--muted:#6b7280}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:100vh;display:flex;flex-direction:column;transition:background .3s,color .3s}
+
+nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:1rem 2.5rem;background:rgba(11,12,15,.9);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);height:64px}
+.nav-logo{font-size:1.1rem;font-weight:800;text-decoration:none;display:flex;gap:.4em}
+.nav-logo .c{color:var(--conch)}.nav-logo .r{color:var(--cmdr)}.nav-logo .s{color:var(--muted)}
+.nav-back{font-family:var(--mono);font-size:.75rem;padding:.4rem .9rem;border-radius:6px;border:1px solid var(--border);background:none;color:var(--muted);text-decoration:none;transition:all .2s}
+.nav-back:hover{color:var(--text);border-color:rgba(255,255,255,.2)}
+
+.page{flex:1;display:flex;align-items:center;justify-content:center;padding:6rem 1.5rem 3rem}
+.box{width:100%;max-width:420px;background:var(--surface);border:1px solid var(--border);border-radius:16px;overflow:hidden;box-shadow:0 32px 80px rgba(0,0,0,.5);animation:drop .4s cubic-bezier(.34,1.56,.64,1)}
+@keyframes drop{from{opacity:0;transform:translateY(-24px) scale(.97)}to{opacity:1;transform:none}}
+
+.box-head{padding:2rem 2rem 1.5rem;text-align:center;border-bottom:1px solid var(--border);background:linear-gradient(135deg,rgba(15,244,198,.05),transparent)}
+.box-icon{font-size:2.5rem;margin-bottom:.75rem;display:block;animation:bounce .5s cubic-bezier(.34,1.56,.64,1)}
+@keyframes bounce{from{transform:scale(.6)}to{transform:scale(1)}}
+.box-title{font-size:1.5rem;font-weight:800;margin-bottom:.4rem}
+.box-sub{font-family:var(--mono);font-size:.75rem;color:var(--muted);line-height:1.6}
+
+.box-body{padding:1.75rem}
+
+/* LOADING STATE */
+.loading-state{text-align:center;padding:2rem 1rem}
+.loading-spinner{width:36px;height:36px;border:3px solid rgba(15,244,198,.2);border-top-color:var(--conch);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 1rem}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-text{font-family:var(--mono);font-size:.78rem;color:var(--muted)}
+
+/* INVALID STATE */
+.invalid-state{text-align:center;padding:1rem}
+.invalid-icon{font-size:2.5rem;margin-bottom:.75rem;display:block}
+.invalid-title{font-size:1.2rem;font-weight:800;color:var(--cmdr);margin-bottom:.5rem}
+.invalid-desc{font-family:var(--mono);font-size:.76rem;color:var(--muted);line-height:1.7;margin-bottom:1.5rem}
+
+/* FORM */
+.field{display:flex;flex-direction:column;gap:.35rem;margin-bottom:1rem}
+.field-label{font-family:var(--mono);font-size:.67rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);display:flex;align-items:center;justify-content:space-between}
+.field-input{background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:var(--mono);font-size:.83rem;padding:.7rem 1rem;outline:none;transition:border-color .2s,box-shadow .2s;width:100%}
+.field-input:focus{border-color:rgba(15,244,198,.4);box-shadow:0 0 0 3px rgba(15,244,198,.07)}
+.field-input::placeholder{color:var(--muted);opacity:.45}
+.field-input.err{border-color:rgba(255,79,94,.5)}
+.field-input.ok{border-color:rgba(52,211,153,.4)}
+
+/* PASSWORD STRENGTH */
+.pw-strength{margin-top:.4rem}
+.pw-bar-wrap{height:3px;background:var(--surface2);border-radius:2px;overflow:hidden;margin-bottom:.3rem}
+.pw-bar{height:100%;border-radius:2px;transition:width .3s,background .3s;width:0%}
+.pw-label{font-family:var(--mono);font-size:.65rem;color:var(--muted)}
+
+/* REQUIREMENTS */
+.pw-reqs{display:flex;flex-direction:column;gap:.2rem;margin-top:.5rem}
+.pw-req{font-family:var(--mono);font-size:.68rem;color:var(--muted);display:flex;align-items:center;gap:.4rem;transition:color .2s}
+.pw-req.met{color:#34d399}
+.pw-req::before{content:'○';font-size:.7rem;transition:content .2s}
+.pw-req.met::before{content:'●'}
+
+.err-box{font-family:var(--mono);font-size:.72rem;color:var(--cmdr);background:rgba(255,79,94,.07);border:1px solid rgba(255,79,94,.2);border-radius:7px;padding:.65rem .9rem;margin-bottom:1rem;display:none}
+.err-box.vis{display:block}
+
+.submit-btn{width:100%;font-family:var(--mono);font-size:.82rem;font-weight:700;padding:.75rem;border-radius:8px;border:none;cursor:pointer;background:rgba(15,244,198,.15);color:var(--conch);border:1px solid rgba(15,244,198,.3);transition:all .2s;display:flex;align-items:center;justify-content:center;gap:.5rem;margin-top:.5rem}
+.submit-btn:hover{background:rgba(15,244,198,.25)}
+.submit-btn:disabled{opacity:.4;cursor:not-allowed}
+
+/* SUCCESS */
+.success-state{text-align:center;padding:1.5rem 1rem}
+.success-icon{font-size:3rem;margin-bottom:.75rem;display:block;animation:bounce .5s cubic-bezier(.34,1.56,.64,1)}
+.success-title{font-size:1.3rem;font-weight:800;color:var(--conch);margin-bottom:.5rem}
+.success-desc{font-family:var(--mono);font-size:.76rem;color:var(--muted);line-height:1.7;margin-bottom:1.5rem}
+.success-btn{display:inline-block;font-family:var(--mono);font-size:.8rem;padding:.65rem 1.5rem;border-radius:8px;background:rgba(15,244,198,.12);color:var(--conch);border:1px solid rgba(15,244,198,.25);text-decoration:none;transition:all .2s}
+.success-btn:hover{background:rgba(15,244,198,.22)}
+
+/* EXPIRY TIMER */
+.expiry-badge{display:inline-flex;align-items:center;gap:.4rem;font-family:var(--mono);font-size:.7rem;padding:.3rem .75rem;border-radius:5px;background:rgba(255,200,50,.07);border:1px solid rgba(255,200,50,.2);color:#ffc832;margin-bottom:1.2rem}
+
+.spinner-sm{display:inline-block;width:13px;height:13px;border:2px solid rgba(15,244,198,.3);border-top-color:var(--conch);border-radius:50%;animation:spin .7s linear infinite}
+
+footer{text-align:center;padding:2rem;font-family:var(--mono);font-size:.7rem;color:var(--muted);opacity:.4}
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="index.html"><span class="c">Conch</span><span class="s">/</span><span class="r">Cmdr</span></a>
+  <a class="nav-back" href="index.html">← Back</a>
+</nav>
+
+<div class="page">
+  <div class="box">
+    <div class="box-head">
+      <span class="box-icon" id="box-icon">🔑</span>
+      <div class="box-title">Reset Password</div>
+      <div class="box-sub">Choose a new secure password for your account.</div>
+    </div>
+    <div class="box-body">
+
+      <!-- LOADING -->
+      <div id="state-loading">
+        <div class="loading-state">
+          <div class="loading-spinner"></div>
+          <div class="loading-text">Verifying reset link...</div>
+        </div>
+      </div>
+
+      <!-- INVALID / EXPIRED -->
+      <div id="state-invalid" style="display:none">
+        <div class="invalid-state">
+          <span class="invalid-icon">❌</span>
+          <div class="invalid-title" id="invalid-title">Link Expired</div>
+          <div class="invalid-desc" id="invalid-desc">This password reset link has expired or already been used. Reset links are valid for 15 minutes.</div>
+          <a href="forgot-password.html" style="display:inline-block;font-family:var(--mono);font-size:.8rem;padding:.65rem 1.4rem;border-radius:8px;background:rgba(15,244,198,.1);color:var(--conch);border:1px solid rgba(15,244,198,.25);text-decoration:none;transition:all .2s">→ Request New Link</a>
+        </div>
+      </div>
+
+      <!-- RESET FORM -->
+      <div id="state-form" style="display:none">
+        <div class="expiry-badge" id="expiry-badge">
+          ⏱ Link expires in <span id="expiry-timer">--:--</span>
+        </div>
+
+        <div class="err-box" id="err-box"></div>
+
+        <div class="field">
+          <label class="field-label">New Password</label>
+          <input class="field-input" id="f-pw" type="password" placeholder="min. 6 characters" autocomplete="new-password" oninput="checkStrength()" onkeydown="if(event.key==='Enter')submit()">
+          <div class="pw-strength">
+            <div class="pw-bar-wrap"><div class="pw-bar" id="pw-bar"></div></div>
+            <div class="pw-label" id="pw-label">Enter a password</div>
+          </div>
+          <div class="pw-reqs">
+            <div class="pw-req" id="req-len">At least 6 characters</div>
+            <div class="pw-req" id="req-num">Contains a number</div>
+            <div class="pw-req" id="req-upper">Contains uppercase letter</div>
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="field-label">
+            Confirm Password
+            <span id="match-indicator" style="font-size:.65rem"></span>
+          </label>
+          <input class="field-input" id="f-pw2" type="password" placeholder="repeat password" autocomplete="new-password" oninput="checkMatch()" onkeydown="if(event.key==='Enter')submit()">
+        </div>
+
+        <button class="submit-btn" id="submit-btn" onclick="submit()">
+          🔑 Set New Password
+        </button>
+      </div>
+
+      <!-- SUCCESS -->
+      <div id="state-success" style="display:none">
+        <div class="success-state">
+          <span class="success-icon">✅</span>
+          <div class="success-title">Password Changed!</div>
+          <div class="success-desc">Your password has been updated successfully.<br>You can now log in with your new password.</div>
+          <a class="success-btn" href="index.html">→ Go to Login</a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<footer>Conch & Cmdr — Password Reset</footer>
+
+<script>
+const SB_URL='https://rmdkoauibmzhgnvrwhfd.supabase.co';
+const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJtZGtvYXVpYm16aGdudnJ3aGZkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyNjg2MDksImV4cCI6MjA5Mzg0NDYwOX0.lu6T00f9y9-Q8HhVag-MGjJz6bTlJrYUwC7AApIxaFw';
+
+let resetToken=null;
+let resetRecord=null;
+let expiryInterval=null;
+
+/* ── SUPABASE ── */
+async function sb(path,opts={}){
+  const method=(opts.method||'GET').toUpperCase();
+  const base={'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY};
+  if(method!=='GET'&&method!=='HEAD')base['Content-Type']='application/json';
+  const {headers:_,...rest}=opts;
+  return fetch(SB_URL+path,{headers:{...base,...(opts.headers||{})},...rest});
+}
+
+/* ── HASH ── */
+async function hashPass(pw){
+  const buf=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(pw));
+  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+
+/* ── SHOW STATE ── */
+function showState(name){
+  ['loading','invalid','form','success'].forEach(s=>{
+    document.getElementById('state-'+s).style.display=s===name?'block':'none';
+  });
+}
+
+/* ── VERIFY TOKEN ── */
+async function verifyToken(){
+  const params=new URLSearchParams(window.location.search);
+  resetToken=params.get('token');
+
+  if(!resetToken){
+    document.getElementById('invalid-title').textContent='Invalid Link';
+    document.getElementById('invalid-desc').textContent='This reset link is invalid or malformed. Please request a new one.';
+    showState('invalid');return;
+  }
+
+  try{
+    const r=await sb(`/rest/v1/cc_password_resets?token=eq.${resetToken}&select=*`);
+    const rows=await r.json();
+
+    if(!rows||!rows.length){
+      document.getElementById('invalid-title').textContent='Link Not Found';
+      document.getElementById('invalid-desc').textContent='This reset link does not exist or has already been used.';
+      showState('invalid');return;
+    }
+
+    const record=rows[0];
+
+    if(record.used){
+      document.getElementById('invalid-title').textContent='Link Already Used';
+      document.getElementById('invalid-desc').textContent='This reset link has already been used. Please request a new one.';
+      showState('invalid');return;
+    }
+
+    if(new Date(record.expires_at)<new Date()){
+      document.getElementById('invalid-title').textContent='Link Expired';
+      document.getElementById('invalid-desc').textContent='This reset link expired. Reset links are valid for 15 minutes only.';
+      showState('invalid');return;
+    }
+
+    resetRecord=record;
+    showState('form');
+    startExpiryTimer(new Date(record.expires_at));
+
+  }catch(e){
+    document.getElementById('invalid-title').textContent='Error';
+    document.getElementById('invalid-desc').textContent='Could not verify reset link. Please try again.';
+    showState('invalid');
+  }
+}
+
+/* ── EXPIRY TIMER ── */
+function startExpiryTimer(expiresAt){
+  function tick(){
+    const diff=expiresAt-new Date();
+    if(diff<=0){
+      clearInterval(expiryInterval);
+      document.getElementById('expiry-badge').style.background='rgba(255,79,94,.07)';
+      document.getElementById('expiry-badge').style.borderColor='rgba(255,79,94,.2)';
+      document.getElementById('expiry-badge').style.color='var(--cmdr)';
+      document.getElementById('expiry-timer').textContent='EXPIRED';
+      document.getElementById('submit-btn').disabled=true;
+      return;
+    }
+    const m=Math.floor(diff/60000);
+    const s=Math.floor((diff%60000)/1000);
+    document.getElementById('expiry-timer').textContent=`${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+    /* Turn red when < 2 min */
+    if(diff<120000){
+      document.getElementById('expiry-badge').style.borderColor='rgba(255,79,94,.3)';
+      document.getElementById('expiry-badge').style.color='var(--cmdr)';
+    }
+  }
+  tick();
+  expiryInterval=setInterval(tick,1000);
+}
+
+/* ── PASSWORD STRENGTH ── */
+function checkStrength(){
+  const pw=document.getElementById('f-pw').value;
+  const bar=document.getElementById('pw-bar');
+  const label=document.getElementById('pw-label');
+
+  /* Requirements */
+  const len=pw.length>=6;
+  const num=/\d/.test(pw);
+  const upper=/[A-Z]/.test(pw);
+  document.getElementById('req-len').classList.toggle('met',len);
+  document.getElementById('req-num').classList.toggle('met',num);
+  document.getElementById('req-upper').classList.toggle('met',upper);
+
+  /* Score */
+  let score=0;
+  if(pw.length>=6)score++;
+  if(pw.length>=10)score++;
+  if(num)score++;
+  if(upper)score++;
+  if(/[^a-zA-Z0-9]/.test(pw))score++;
+
+  const configs=[
+    {w:'0%',bg:'transparent',t:''},
+    {w:'25%',bg:'#ff4f5e',t:'Weak'},
+    {w:'50%',bg:'#ffc832',t:'Fair'},
+    {w:'75%',bg:'#64a0ff',t:'Good'},
+    {w:'90%',bg:'#34d399',t:'Strong'},
+    {w:'100%',bg:'#0ff4c6',t:'Very Strong'},
+  ];
+  const cfg=configs[Math.min(score,5)];
+  bar.style.width=cfg.w;bar.style.background=cfg.bg;
+  label.textContent=cfg.t;label.style.color=cfg.bg||'var(--muted)';
+
+  checkMatch();
+}
+
+function checkMatch(){
+  const pw=document.getElementById('f-pw').value;
+  const pw2=document.getElementById('f-pw2').value;
+  const ind=document.getElementById('match-indicator');
+  const inp=document.getElementById('f-pw2');
+  if(!pw2){ind.textContent='';inp.classList.remove('ok','err');return;}
+  if(pw===pw2){
+    ind.textContent='✓ Match';ind.style.color='#34d399';
+    inp.classList.add('ok');inp.classList.remove('err');
+  }else{
+    ind.textContent='✗ No match';ind.style.color='var(--cmdr)';
+    inp.classList.add('err');inp.classList.remove('ok');
+  }
+}
+
+/* ── SUBMIT ── */
+async function submit(){
+  const pw=document.getElementById('f-pw').value;
+  const pw2=document.getElementById('f-pw2').value;
+  const errEl=document.getElementById('err-box');
+  const btn=document.getElementById('submit-btn');
+  errEl.classList.remove('vis');
+
+  if(!pw||pw.length<6){errEl.textContent='Password must be at least 6 characters.';errEl.classList.add('vis');return;}
+  if(pw!==pw2){errEl.textContent='Passwords do not match.';errEl.classList.add('vis');return;}
+  if(!resetRecord){errEl.textContent='Invalid session. Please request a new link.';errEl.classList.add('vis');return;}
+
+  /* Check not expired */
+  if(new Date(resetRecord.expires_at)<new Date()){
+    errEl.textContent='This link has expired. Please request a new one.';errEl.classList.add('vis');return;
+  }
+
+  btn.disabled=true;
+  btn.innerHTML='<span class="spinner-sm"></span> Saving...';
+
+  try{
+    const hash=await hashPass(pw);
+
+    /* Update password */
+    const upd=await sb(`/rest/v1/cc_users?id=eq.${resetRecord.user_id}`,{
+      method:'PATCH',
+      headers:{'Prefer':'return=minimal'},
+      body:JSON.stringify({password_hash:hash})
+    });
+
+    if(!upd.ok&&upd.status!==204){throw new Error('Failed to update password.');}
+
+    /* Mark token as used */
+    await sb(`/rest/v1/cc_password_resets?token=eq.${resetToken}`,{
+      method:'PATCH',
+      headers:{'Prefer':'return=minimal'},
+      body:JSON.stringify({used:true,used_at:new Date().toISOString()})
+    });
+
+    clearInterval(expiryInterval);
+    document.getElementById('box-icon').textContent='✅';
+    showState('success');
+
+  }catch(e){
+    errEl.textContent='Failed to reset password: '+e.message;errEl.classList.add('vis');
+    btn.disabled=false;
+    btn.innerHTML='🔑 Set New Password';
+  }
+}
+
+/* ── INIT ── */
+(function(){const s=localStorage.getItem('cc_theme');if(s==='light')document.documentElement.classList.add('light-mode');})();
+verifyToken();
+</script>
+</body>
+</html>
