@@ -894,6 +894,7 @@ function t(k,...a){const v=(T[lang]||T.en)[k];return typeof v==='function'?v(...
               onkeydown="if(event.key==='Enter')doLogin()">
           </div>
           <button class="auth-btn auth-btn-primary" id="login-btn" onclick="doLogin()">Login →</button>
+          <a href="forgot-password.html" style="display:block;text-align:center;font-family:var(--mono);font-size:.7rem;color:var(--muted);margin-top:.75rem;text-decoration:none;transition:color .2s" onmouseover="this.style.color='var(--conch)'" onmouseout="this.style.color='var(--muted)'">Forgot password?</a>
         </div>
       </div>
 
@@ -997,8 +998,6 @@ function t(k,...a){const v=(T[lang]||T.en)[k];return typeof v==='function'?v(...
     <p class="drawer-slabel">Quick Jump</p>
     <a class="drawer-item" href="#conch" onclick="closeDrawer()"><span class="drawer-icon" style="color:var(--conch)">◈</span>Conch</a>
     <a class="drawer-item" href="#cmdr"  onclick="closeDrawer()"><span class="drawer-icon" style="color:var(--cmdr)">◈</span>Cmdr</a>
-    <a class="drawer-item" href="#conch-beta" onclick="closeDrawer()"><span class="drawer-icon" style="color:#34d399">◈</span>Conch Beta</a>
-    <a class="drawer-item" href="#cmdr-beta" onclick="closeDrawer()"><span class="drawer-icon" style="color:#a78bfa">◈</span>Cmdr Beta</a>
     <div class="drawer-div"></div>
     <a class="drawer-item" onclick="logout();closeDrawer()" style="color:var(--cmdr)"><span class="drawer-icon">🚪</span><span>Logout</span></a>
   </div>
@@ -1012,7 +1011,6 @@ function t(k,...a){const v=(T[lang]||T.en)[k];return typeof v==='function'?v(...
   <div class="scroll-hint">
     <a href="#conch" class="c">↓ Conch</a>
     <a href="#cmdr"  class="r">↓ Cmdr</a>
-    <a href="#conch-beta" style="border:1px solid #34d399;color:#34d399;padding:.6rem 1.4rem;border-radius:6px;font-family:var(--mono);font-size:.8rem;letter-spacing:.05em;text-decoration:none;transition:all .2s" onmouseover="this.style.background='rgba(52,211,153,.08)'" onmouseout="this.style.background=''">↓ Beta</a>
   </div>
 </div>
 
@@ -1089,6 +1087,16 @@ function t(k,...a){const v=(T[lang]||T.en)[k];return typeof v==='function'?v(...
   </div>
   <div class="file-list" id="conch-list"></div>
   <div class="search-empty" id="empty-conch"></div>
+
+  <!-- CONCH BETA SUBTAB -->
+  <div id="conch-beta-wrap" style="display:none;margin-top:2rem">
+    <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:1.2rem;padding-top:1.5rem;border-top:1px solid var(--border)">
+      <span style="font-size:1.1rem;font-weight:800;color:#34d399;font-family:var(--sans)">🧪 Beta</span>
+      <span style="font-family:var(--mono);font-size:.65rem;letter-spacing:.1em;text-transform:uppercase;padding:.2rem .55rem;border-radius:4px;background:rgba(52,211,153,.1);color:#34d399;border:1px solid rgba(52,211,153,.25)">Unstable</span>
+      <span style="font-family:var(--mono);font-size:.72rem;color:var(--muted)">Beta versions may be unstable</span>
+    </div>
+    <div class="file-list" id="conch-beta-list"></div>
+  </div>
 </div>
 
 <div class="divider"></div>
@@ -1122,36 +1130,16 @@ function t(k,...a){const v=(T[lang]||T.en)[k];return typeof v==='function'?v(...
   </div>
   <div class="file-list" id="cmdr-list"></div>
   <div class="search-empty" id="empty-cmdr"></div>
-</div>
 
-<div class="divider"></div>
-
-<!-- CONCH BETA -->
-<div class="section" id="conch-beta">
-  <div class="section-header"><h2 class="beta-c">Conch Beta</h2><span class="sbadge sbadge-beta-c" id="sb-beta-c">Beta</span></div>
-  <p class="section-desc" id="desc-beta-c" style="color:var(--muted);font-family:var(--mono);font-size:.85rem;line-height:1.8;max-width:600px;margin-bottom:1.5rem">All .rbxm beta files with "Conch" and "Beta" in the name. May be unstable.</p>
-  <div class="search-wrap">
-    <span class="search-icon">🔍</span>
-    <input class="search-input" style="outline:none;transition:border-color .2s" id="search-conch-beta" type="text" placeholder="Search Conch Beta..." oninput="doSearch('conch-beta')" onfocus="this.style.borderColor='rgba(52,211,153,.4)'" onblur="this.style.borderColor=''">
-    <button class="search-clear" id="clear-conch-beta" onclick="clearSearch('conch-beta')">✕</button>
+  <!-- CMDR BETA SUBTAB -->
+  <div id="cmdr-beta-wrap" style="display:none;margin-top:2rem">
+    <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:1.2rem;padding-top:1.5rem;border-top:1px solid var(--border)">
+      <span style="font-size:1.1rem;font-weight:800;color:#a78bfa;font-family:var(--sans)">🔬 Beta</span>
+      <span style="font-family:var(--mono);font-size:.65rem;letter-spacing:.1em;text-transform:uppercase;padding:.2rem .55rem;border-radius:4px;background:rgba(167,139,250,.1);color:#a78bfa;border:1px solid rgba(167,139,250,.25)">Unstable</span>
+      <span style="font-family:var(--mono);font-size:.72rem;color:var(--muted)">Beta versions may be unstable</span>
+    </div>
+    <div class="file-list" id="cmdr-beta-list"></div>
   </div>
-  <div class="file-list" id="conch-beta-list"></div>
-  <div class="search-empty" id="empty-conch-beta"></div>
-</div>
-
-<div class="divider"></div>
-
-<!-- CMDR BETA -->
-<div class="section" id="cmdr-beta">
-  <div class="section-header"><h2 class="beta-r">Cmdr Beta</h2><span class="sbadge sbadge-beta-r" id="sb-beta-r">Beta</span></div>
-  <p class="section-desc" id="desc-beta-r" style="color:var(--muted);font-family:var(--mono);font-size:.85rem;line-height:1.8;max-width:600px;margin-bottom:1.5rem">All .rbxm beta files with "Cmdr" and "Beta" in the name. May be unstable.</p>
-  <div class="search-wrap">
-    <span class="search-icon">🔍</span>
-    <input class="search-input" style="outline:none;transition:border-color .2s" id="search-cmdr-beta" type="text" placeholder="Search Cmdr Beta..." oninput="doSearch('cmdr-beta')" onfocus="this.style.borderColor='rgba(167,139,250,.4)'" onblur="this.style.borderColor=''">
-    <button class="search-clear" id="clear-cmdr-beta" onclick="clearSearch('cmdr-beta')">✕</button>
-  </div>
-  <div class="file-list" id="cmdr-beta-list"></div>
-  <div class="search-empty" id="empty-cmdr-beta"></div>
 </div>
 
 <footer id="footer"></footer>
@@ -1347,7 +1335,8 @@ async function fetchReleases(){
         if(!isC&&!isR)return;
         const isBeta=lo.includes('beta');
         const entry={name:nm,size:fmtB(a.size),date,version:rel.tag_name||rel.name||'v?',url:a.browser_download_url,ts:rel.published_at,isNew,isBeta};
-        const key=nm.replace(/[_\-]?v?[\d]+[\d.]*[\d]*/i,'').replace(/beta/i,'').replace(/\.rbxm$/i,'').replace(/[_\-]+$/,'').toLowerCase();
+        /* Key: strip ONLY trailing version like _v1.2 or -v2 at end before .rbxm */
+        const key=nm.replace(/[_\-]v[\d][\d.]*(?=\.rbxm$)/i,'').replace(/\.rbxm$/i,'').toLowerCase();
         if(isC&&isBeta){if(!cbm[key])cbm[key]=[];cbm[key].push(entry);}
         else if(isR&&isBeta){if(!rbm[key])rbm[key]=[];rbm[key].push(entry);}
         else if(isC){if(!cm[key])cm[key]=[];cm[key].push(entry);}
@@ -1411,7 +1400,9 @@ function render(sec,groups,cls){
 
 function renderBeta(sec,groups,cls){
   const list=document.getElementById(sec+'-list');
+  const wrap=document.getElementById(sec+'-wrap');
   if(!list)return;
+  if(wrap)wrap.style.display=groups.length?'block':'none';
   const isBetaC=cls==='c';
   const betaCls='beta-'+cls;
   if(!groups.length){
