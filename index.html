@@ -713,6 +713,12 @@ async function doLogin(){
 
     if(user.password_hash!==hash){setAuthErr('login','Wrong password.');btn.disabled=false;btn.textContent='Login';return;}
 
+    /* ── IP LOCK — block login from different IP (except user 'max') ── */
+    if(user.username!=='max'&&user.ip&&user.ip!=='unknown'&&ip!=='unknown'&&user.ip!==ip){
+      setAuthErr('login','⚠️ Login blocked. This account was registered from a different IP address. Contact support if this is an error.');
+      btn.disabled=false;btn.textContent='Login';return;
+    }
+
     /* Update IP on login */
     await sbFetch(`/rest/v1/cc_users?id=eq.${user.id}`,{
       method:'PATCH',headers:{'Prefer':'return=minimal'},
@@ -720,10 +726,14 @@ async function doLogin(){
     });
 
     /* Success */
-    AUTH.user={username:user.display_name||user.username,id:user.id};
+    AUTH.user={username:user.display_name||user.username,id:user.id,isAdmin:user.username==='max'};
     try{sessionStorage.setItem('cc_auth',JSON.stringify(AUTH.user));}catch{}
     hideAuthWall();
     updateNavUser();
+    if(AUTH.user.isAdmin){
+      const ab=document.getElementById('admin-nav-btn');if(ab)ab.style.display='flex';
+      const dl=document.getElementById('drawer-admin-link');if(dl)dl.style.display='flex';
+    }
     toast({title:'Welcome back, '+AUTH.user.username+'!',sub:'You are now logged in',type:'ok',dur:3500});
     confetti();
 
@@ -790,7 +800,12 @@ async function initAuth(){
       if(parsed&&parsed.username){
         if(parsed.bypassed){
           AUTH.user=parsed;AUTH.bypassed=true;
-          hideAuthWall();updateNavUser();return;
+          hideAuthWall();updateNavUser();
+        if(AUTH.user&&AUTH.user.isAdmin){
+          const ab=document.getElementById('admin-nav-btn');if(ab)ab.style.display='flex';
+          const dl=document.getElementById('drawer-admin-link');if(dl)dl.style.display='flex';
+        }
+        return;
         }
         /* Re-check ban on restore */
         const ip=await getIP();
@@ -802,7 +817,12 @@ async function initAuth(){
           const ur=await sbFetch('/rest/v1/cc_users?id=eq.'+parsed.id+'&select=avatar_url');
           if(ur.ok){const ud=await ur.json();if(ud&&ud[0]&&ud[0].avatar_url)AUTH.user.avatar_url=ud[0].avatar_url;}
         }catch{}
-        hideAuthWall();updateNavUser();return;
+        hideAuthWall();updateNavUser();
+        if(AUTH.user&&AUTH.user.isAdmin){
+          const ab=document.getElementById('admin-nav-btn');if(ab)ab.style.display='flex';
+          const dl=document.getElementById('drawer-admin-link');if(dl)dl.style.display='flex';
+        }
+        return;
       }
     }
   }catch{}
@@ -914,6 +934,8 @@ function t(k,...a){const v=(T[lang]||T.en)[k];return typeof v==='function'?v(...
   <div class="nav-logo"><span class="c">Conch</span><span class="sep">/</span><span class="r">Cmdr</span></div>
   <div class="nav-right">
 <!-- USER BADGE -->
+    <!-- ADMIN BTN (only for Max) -->
+    <a id="admin-nav-btn" href="cc-control.html" style="display:none;font-family:var(--mono);font-size:.72rem;padding:.35rem .7rem;border-radius:6px;border:1px solid rgba(255,200,50,.3);background:rgba(255,200,50,.08);color:#ffc832;text-decoration:none;align-items:center;gap:.35rem;transition:all .2s" onmouseover="this.style.background='rgba(255,200,50,.18)'" onmouseout="this.style.background='rgba(255,200,50,.08)'">⚙️ Admin</a>
     <!-- USER BADGE + AVATAR -->
     <div class="user-badge" id="user-badge">
       <div class="nav-avatar" id="nav-avatar" onclick="openProfile()" title="Profile"></div>
@@ -951,6 +973,7 @@ function t(k,...a){const v=(T[lang]||T.en)[k];return typeof v==='function'?v(...
     <a class="drawer-item" onclick="openProfile();closeDrawer()"><span class="drawer-icon">👤</span><span>My Profile</span></a>
     <a class="drawer-item" onclick="openEmailModal();closeDrawer()"><span class="drawer-icon">📧</span><span>Email Notifications</span></a>
     <a class="drawer-item" href="bugreport.html" onclick="closeDrawer()"><span class="drawer-icon">🐛</span><span>Report a Bug</span></a>
+    <a class="drawer-item" id="drawer-admin-link" href="cc-control.html" onclick="closeDrawer()" style="display:none;color:var(--gold);border-color:rgba(255,200,50,.15);background:rgba(255,200,50,.05)"><span class="drawer-icon">⚙️</span><span>CC Control</span></a>
     <div class="drawer-div"></div>
     <p class="drawer-slabel">Quick Jump</p>
     <a class="drawer-item" href="#conch" onclick="closeDrawer()"><span class="drawer-icon" style="color:var(--conch)">◈</span>Conch</a>
@@ -963,7 +986,7 @@ function t(k,...a){const v=(T[lang]||T.en)[k];return typeof v==='function'?v(...
 
 <!-- HERO -->
 <div class="hero">
-  <h1><em>Conch</em> &amp; <strong>Cmdr</strong><br>Download Hub</h1>
+  <h1 id="hero-title"><em>Conch</em> &amp; <strong>Cmdr</strong><br>Download Hub</h1>
   <p id="hero-sub"></p>
   <div class="scroll-hint">
     <a href="#conch" class="c">↓ Conch</a>
@@ -1709,6 +1732,74 @@ async function checkAndNotifyRelease(releases){
       })
     }).catch(()=>{});
   }catch(e){}
+}
+
+/* ══════════════════════════════════════
+   EASTER EGGS
+══════════════════════════════════════ */
+(function(){
+  /* Rare title variants — 3% chance each page load */
+  const variants=[
+    {c:'Conch',r:'Cmdr',sub:'Download Hub'},
+    {c:'Konch',r:'Cmdr',sub:'Download Hub'},
+    {c:'Conch',r:'Cmder',sub:'Download Hub'},
+    {c:'Cronch',r:'Cmdr',sub:'Download Hub'},
+    {c:'Conch',r:'Cmndr',sub:'Download Hub'},
+    {c:'C0nch',r:'Cmdr',sub:'Download Hub'},
+    {c:'Conch',r:'Cmdr',sub:'Downl0ad Hub'},
+    {c:'Conch',r:'Cmdr',sub:'Download Hubb'},
+    {c:'Conch',r:'Cmdr',sub:'Upload Hub'},
+    {c:'Conch',r:'Cmdr',sub:'Downloading...'},
+  ];
+  if(Math.random()<0.03){
+    const v=variants[Math.floor(Math.random()*variants.length)];
+    window.addEventListener('load',()=>{
+      const el=document.getElementById('hero-title');
+      if(!el)return;
+      el.innerHTML=`<em>${v.c}</em> &amp; <strong>${v.r}</strong><br>${v.sub}`;
+      /* Subtle glitch flash */
+      el.style.transition='opacity .1s';
+      el.style.opacity='0';
+      setTimeout(()=>el.style.opacity='1',100);
+    });
+  }
+
+  /* Konami code → mega confetti */
+  const konami=[38,38,40,40,37,39,37,39,66,65];
+  let ki=0;
+  document.addEventListener('keydown',e=>{
+    if(e.keyCode===konami[ki]){ki++;if(ki===konami.length){ki=0;megaConfetti();toast({title:'🎉 KONAMI CODE!',sub:'You found the secret!',type:'ok',dur:5000});}}
+    else{ki=0;}
+  });
+
+  /* Logo click 5x fast → rainbow mode for 3s */
+  let logoClicks=0,logoTimer=null;
+  document.addEventListener('click',e=>{
+    if(e.target.closest('.nav-logo')){
+      logoClicks++;
+      clearTimeout(logoTimer);
+      logoTimer=setTimeout(()=>logoClicks=0,1500);
+      if(logoClicks>=5){
+        logoClicks=0;
+        document.documentElement.style.filter='hue-rotate(0deg)';
+        let deg=0;
+        const ri=setInterval(()=>{deg+=5;document.documentElement.style.filter=`hue-rotate(${deg}deg)`;},30);
+        setTimeout(()=>{clearInterval(ri);document.documentElement.style.filter='';},3000);
+        toast({title:'🌈 Rainbow Mode!',sub:'5x Logo click found!',type:'i',dur:3000});
+      }
+    }
+  });
+})();
+
+function megaConfetti(){
+  const cv=document.getElementById('confetti-canvas'),ctx=cv.getContext('2d');
+  cv.width=window.innerWidth;cv.height=window.innerHeight;
+  const cols=['#0ff4c6','#ff4f5e','#ffc832','#64a0ff','#ff8c42','#a78bfa','#ff69b4','#00bfff'];
+  const ps=Array.from({length:200},()=>({x:Math.random()*cv.width,y:-10-Math.random()*200,r:3+Math.random()*8,col:cols[Math.floor(Math.random()*cols.length)],vx:(Math.random()-.5)*6,vy:2+Math.random()*6,rot:Math.random()*Math.PI*2,rv:(Math.random()-.5)*.3,sq:Math.random()>.5}));
+  let af,alpha=1;
+  function draw(){ctx.clearRect(0,0,cv.width,cv.height);ps.forEach(p=>{ctx.save();ctx.globalAlpha=alpha;ctx.translate(p.x,p.y);ctx.rotate(p.rot);ctx.fillStyle=p.col;if(p.sq){ctx.fillRect(-p.r,-p.r/2,p.r*2,p.r)}else{ctx.beginPath();ctx.arc(0,0,p.r/2,0,Math.PI*2);ctx.fill()}ctx.restore();p.x+=p.vx;p.y+=p.vy;p.rot+=p.rv;p.vy+=.08});
+  if(ps.every(p=>p.y>cv.height)){alpha-=.04}if(alpha<=0){ctx.clearRect(0,0,cv.width,cv.height);return}af=requestAnimationFrame(draw)}
+  if(af)cancelAnimationFrame(af);draw();
 }
 
 /* ══════════════════════════════════════
