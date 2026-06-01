@@ -599,7 +599,7 @@ window.cc_dev_bypass=async function(key){
     /* Correct key — grant access silently */
     AUTH.user={username:'[DEV]',bypassed:true};
     AUTH.bypassed=true;
-    try{sessionStorage.setItem('cc_auth',JSON.stringify(AUTH.user));}catch{}
+    try{localStorage.setItem('cc_auth',JSON.stringify(AUTH.user));}catch{}
     hideAuthWall();
     updateNavUser();
     toast({title:'Access granted',sub:'',type:'ok',dur:2000});
@@ -746,7 +746,7 @@ async function doLogin(){
 
     /* Success */
     AUTH.user={username:user.display_name||user.username,id:user.id,isAdmin:user.username==='max'};
-    try{sessionStorage.setItem('cc_auth',JSON.stringify(AUTH.user));}catch{}
+    try{localStorage.setItem('cc_auth',JSON.stringify(AUTH.user));}catch{}
     hideAuthWall();
     updateNavUser();
     if(AUTH.user.isAdmin){
@@ -798,7 +798,7 @@ function showBanWall(ip,reason){
 
 function logout(){
   AUTH.user=null;AUTH.bypassed=false;
-  try{sessionStorage.removeItem('cc_auth');}catch{}
+  try{localStorage.removeItem('cc_auth');}catch{}
   document.getElementById('user-badge').classList.remove('vis');
   document.getElementById('auth-wall').style.display='flex';
   document.getElementById('auth-wall').classList.remove('hidden');
@@ -813,7 +813,7 @@ function logout(){
 async function initAuth(){
   /* Try session restore */
   try{
-    const saved=sessionStorage.getItem('cc_auth');
+    const saved=localStorage.getItem('cc_auth');
     if(saved){
       const parsed=JSON.parse(saved);
       if(parsed&&parsed.username){
@@ -1642,8 +1642,8 @@ async function uploadAvatar(input){
     const path=`${AUTH.user.id}/avatar.${ext}`;
     bar.style.width='50%';
 
-    /* Upload to Supabase Storage */
-    const upRes=await fetch(`${CONFIG.SB_URL}/storage/v1/object/${CONFIG.AVATAR_BUCKET}/${path}`,{
+    /* Upload to Supabase Storage — try POST first, fallback to PUT */
+    let upRes=await fetch(`${CONFIG.SB_URL}/storage/v1/object/${CONFIG.AVATAR_BUCKET}/${path}`,{
       method:'POST',
       headers:{
         'apikey':CONFIG.SB_KEY,
@@ -1653,6 +1653,19 @@ async function uploadAvatar(input){
       },
       body:file
     });
+    /* If file exists already, use PUT to overwrite */
+    if(!upRes.ok&&upRes.status===400){
+      upRes=await fetch(`${CONFIG.SB_URL}/storage/v1/object/${CONFIG.AVATAR_BUCKET}/${path}`,{
+        method:'PUT',
+        headers:{
+          'apikey':CONFIG.SB_KEY,
+          'Authorization':'Bearer '+CONFIG.SB_KEY,
+          'Content-Type':file.type,
+          'x-upsert':'true'
+        },
+        body:file
+      });
+    }
     bar.style.width='80%';
     if(!upRes.ok){const e=await upRes.json().catch(()=>({}));throw new Error(e.error||'Upload failed');}
 
@@ -1665,7 +1678,7 @@ async function uploadAvatar(input){
     });
 
     AUTH.user.avatar_url=url;
-    try{sessionStorage.setItem('cc_auth',JSON.stringify(AUTH.user));}catch{}
+    try{localStorage.setItem('cc_auth',JSON.stringify(AUTH.user));}catch{}
     bar.style.width='100%';
     setTimeout(()=>{prog.classList.remove('vis');bar.style.width='0%';},600);
     renderProfileModal();
