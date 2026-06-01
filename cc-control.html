@@ -308,7 +308,7 @@ tr:hover td{background:rgba(255,255,255,.02)}
             <div class="modal-label" style="margin-bottom:.3rem">Reason</div>
             <input class="modal-input" id="manual-ban-reason" type="text" placeholder="Reason for ban...">
           </div>
-          <button class="btn-action btn-ban" style="padding:.6rem 1.2rem;font-size:.78rem" onclick="addManualBan()">🚫 Ban IP</button>
+          <button class="btn-action btn-ban" style="padding:.6rem 1.2rem;font-size:.78rem" onclick="addManualBan()">🚫 Ban IP Address</button>
         </div>
       </div>
 
@@ -516,9 +516,9 @@ function renderUsers(users){
       <td>
         <div style="display:flex;gap:.3rem;flex-wrap:wrap">
           ${u.username!==ADMIN_USERNAME?`
-            ${!u.is_banned?`<button class="btn-action btn-ban" onclick="openBanModal('${eh(u.id)}','${eh(u.username)}','${eh(u.ip||'')}')">🚫 Ban</button>`
-            :`<button class="btn-action btn-unban" onclick="unbanUser('${eh(u.id)}','${eh(u.ip||'')}')">✅ Unban</button>`}
-            <button class="btn-action btn-delete" onclick="openDeleteModal('${eh(u.id)}','${eh(u.username)}')">🗑️</button>
+            ${!u.is_banned?`<button class="btn-action btn-ban" onclick="openBanModal('${eh(u.id)}','${eh(u.username)}','${eh(u.ip||'')}')">🚫 Ban User</button>`
+            :`<button class="btn-action btn-unban" onclick="unbanUser('${eh(u.id)}','${eh(u.ip||'')}')">✅ Unban User</button>`}
+            <button class="btn-action btn-delete" onclick="openDeleteModal('${eh(u.id)}','${eh(u.username)}')">🗑️ Delete</button>
           `:'<span class="td-muted" style="font-size:.65rem">Protected</span>'}
         </div>
       </td>
@@ -616,7 +616,7 @@ function renderBans(bans){
       <td class="td-truncate td-muted">${eh(b.reason||'—')}</td>
       <td class="td-muted">${eh(b.banned_by||'system')}</td>
       <td class="td-muted">${fmtDate(b.banned_at)}</td>
-      <td><button class="btn-action btn-unban" onclick="removeBan('${eh(b.id)}','${eh(b.ip)}')">✅ Remove</button></td>
+      <td><button class="btn-action btn-unban" onclick="removeBan('${eh(b.id)}','${eh(b.ip)}')">✅ Remove Ban</button></td>
     </tr>`).join('');
 }
 
@@ -644,23 +644,37 @@ async function removeBan(id,ip){
 /* ── BUG REPORTS ── */
 async function loadBugs(){
   document.getElementById('bugs-tbody').innerHTML='<tr class="loading-row"><td colspan="6">Loading...</td></tr>';
+  document.getElementById('bugs-empty').style.display='none';
   try{
-    const r=await sb('/rest/v1/cc_bug_reports?select=*&order=created_at.desc');
+    const r=await sb('/rest/v1/cc_bug_reports?select=*&order=created_at.desc&limit=200');
     if(!r.ok){
-      if(r.status===404||r.status===400){
+      const errBody=await r.json().catch(()=>({}));
+      if(r.status===401||r.status===403){
         document.getElementById('bugs-tbody').innerHTML='';
-        document.getElementById('bugs-empty').textContent='Table cc_bug_reports not created yet. Submit a bug report first.';
+        document.getElementById('bugs-empty').textContent='⚠️ Missing RLS policy. Run: CREATE POLICY "anon_select_bugs" ON cc_bug_reports FOR SELECT TO anon USING (true);';
         document.getElementById('bugs-empty').style.display='block';
         return;
       }
+      if(r.status===404||r.status===400||(errBody.message&&errBody.message.includes('does not exist'))){
+        document.getElementById('bugs-tbody').innerHTML='';
+        document.getElementById('bugs-empty').textContent='Table cc_bug_reports not created yet. Submit a bug report first or run the SQL setup.';
+        document.getElementById('bugs-empty').style.display='block';
+        return;
+      }
+      throw new Error('HTTP '+r.status+': '+(errBody.message||'unknown'));
     }
-    allBugs=await r.json();
+    const data=await r.json();
+    allBugs=Array.isArray(data)?data:[];
     renderBugs(allBugs);
     const c=allBugs.length;
     document.getElementById('count-bugs').textContent=c;
     document.getElementById('bugs-count-badge').textContent=c;
     document.getElementById('stat-bugs').textContent=c;
-  }catch(e){document.getElementById('bugs-tbody').innerHTML=`<tr class="loading-row"><td colspan="6">Error: ${e.message}</td></tr>`;}
+  }catch(e){
+    document.getElementById('bugs-tbody').innerHTML='';
+    document.getElementById('bugs-empty').textContent='Error loading bug reports: '+e.message;
+    document.getElementById('bugs-empty').style.display='block';
+  }
 }
 
 function renderBugs(bugs){
@@ -678,8 +692,8 @@ function renderBugs(bugs){
       <td class="td-muted">${fmtDate(b.created_at)}</td>
       <td>
         <div style="display:flex;gap:.3rem">
-          ${b.screenshot_url?`<a href="${eh(b.screenshot_url)}" target="_blank" class="btn-action btn-primary">📸</a>`:''}
-          <button class="btn-action btn-delete" onclick="deleteBug('${eh(b.id)}')">🗑️</button>
+          ${b.screenshot_url?`<a href="${eh(b.screenshot_url)}" target="_blank" class="btn-action btn-primary">📸 Screenshot</a>`:''}
+          <button class="btn-action btn-delete" onclick="deleteBug('${eh(b.id)}')">🗑️ Delete</button>
         </div>
       </td>
     </tr>`).join('');
