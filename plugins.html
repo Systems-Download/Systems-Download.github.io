@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Conch & Cmdr — Plugins</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --conch:#0ff4c6;--cmdr:#ff4f5e;--gold:#ffc832;--purple:#a78bfa;
+  --bg:#0b0c0f;--surface:#13151a;--surface2:#1a1d24;
+  --border:rgba(255,255,255,0.07);--text:#e8eaf0;--muted:#6b7280;
+  --mono:'JetBrains Mono',monospace;--sans:'Syne',sans-serif;
+}
+:root.light-mode{--bg:#f5f7fa;--surface:#fff;--surface2:#f0f2f5;--border:rgba(0,0,0,0.08);--text:#1a1d24;--muted:#6b7280}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:100vh;overflow-x:hidden;transition:background .3s,color .3s}
+
+/* ACCESS WALL */
+#access-wall{position:fixed;inset:0;z-index:9999;background:var(--bg);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:1rem;text-align:center;padding:2rem}
+#access-wall.hidden{display:none}
+.aw-icon{font-size:4rem;margin-bottom:.5rem;animation:pulse 2s ease-in-out infinite}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
+.aw-title{font-size:2.2rem;font-weight:800;color:var(--cmdr);letter-spacing:-.02em}
+.aw-desc{font-family:var(--mono);font-size:.82rem;color:var(--muted);line-height:1.8;max-width:380px}
+.aw-btn{margin-top:1rem;font-family:var(--mono);font-size:.8rem;padding:.65rem 1.5rem;border-radius:8px;border:1px solid rgba(15,244,198,.3);background:rgba(15,244,198,.08);color:var(--conch);text-decoration:none;transition:all .2s}
+.aw-btn:hover{background:rgba(15,244,198,.18)}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:1rem 2.5rem;background:rgba(11,12,15,.92);backdrop-filter:blur(14px);border-bottom:1px solid var(--border);height:64px}
+.nav-logo{font-size:1.1rem;font-weight:800;text-decoration:none;display:flex;gap:.4em;align-items:center}
+.nav-logo .c{color:var(--conch)}.nav-logo .r{color:var(--cmdr)}.nav-logo .s{color:var(--muted)}
+.nav-private{font-family:var(--mono);font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;padding:.2rem .55rem;border-radius:4px;background:rgba(167,139,250,.1);color:var(--purple);border:1px solid rgba(167,139,250,.25);margin-left:.5rem}
+.nav-right{display:flex;align-items:center;gap:.6rem}
+.nav-back{font-family:var(--mono);font-size:.75rem;padding:.4rem .9rem;border-radius:6px;border:1px solid var(--border);background:none;color:var(--muted);text-decoration:none;transition:all .2s}
+.nav-back:hover{color:var(--text);border-color:rgba(255,255,255,.2)}
+.icon-btn{display:flex;align-items:center;justify-content:center;width:36px;height:36px;cursor:pointer;background:var(--surface);border:1px solid var(--border);border-radius:8px;transition:all .2s;color:var(--muted);font-size:1rem}
+.icon-btn:hover{border-color:rgba(167,139,250,.4);color:var(--purple)}
+.user-badge{font-family:var(--mono);font-size:.72rem;padding:.3rem .7rem;border-radius:6px;background:rgba(167,139,250,.08);border:1px solid rgba(167,139,250,.2);color:var(--purple);display:flex;align-items:center;gap:.4rem}
+.user-dot{width:6px;height:6px;border-radius:50%;background:var(--purple);box-shadow:0 0 6px rgba(167,139,250,.6)}
+
+/* HERO */
+.hero{padding:7rem 2.5rem 4rem;text-align:center;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;top:-100px;left:50%;transform:translateX(-50%);width:600px;height:600px;border-radius:50%;background:radial-gradient(circle,rgba(167,139,250,.06) 0%,transparent 70%);pointer-events:none}
+.hero-tag{display:inline-flex;align-items:center;gap:.5rem;font-family:var(--mono);font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;padding:.35rem .85rem;border-radius:20px;background:rgba(167,139,250,.08);border:1px solid rgba(167,139,250,.2);color:var(--purple);margin-bottom:1.2rem}
+.hero h1{font-size:clamp(2.5rem,6vw,4.5rem);font-weight:800;line-height:1.05;letter-spacing:-.03em;margin-bottom:.85rem}
+.hero h1 em{font-style:normal;color:var(--purple)}
+.hero-sub{font-family:var(--mono);font-size:.85rem;color:var(--muted);line-height:1.8;max-width:480px;margin:0 auto}
+
+/* SEARCH & FILTER */
+.controls{max-width:1100px;margin:0 auto 2rem;padding:0 2.5rem;display:flex;gap:.75rem;flex-wrap:wrap;align-items:center}
+.search-wrap{position:relative;flex:1;min-width:200px}
+.search-icon{position:absolute;left:.85rem;top:50%;transform:translateY(-50%);color:var(--muted);font-size:.8rem;pointer-events:none}
+.search-input{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:var(--mono);font-size:.8rem;padding:.65rem .85rem .65rem 2.2rem;outline:none;transition:border-color .2s}
+.search-input:focus{border-color:rgba(167,139,250,.4)}
+.search-input::placeholder{color:var(--muted);opacity:.5}
+.filter-btn{font-family:var(--mono);font-size:.72rem;padding:.4rem .9rem;border-radius:20px;border:1px solid var(--border);background:none;color:var(--muted);cursor:pointer;transition:all .2s;white-space:nowrap}
+.filter-btn:hover{color:var(--text);border-color:rgba(255,255,255,.2)}
+.filter-btn.active{background:rgba(167,139,250,.08);border-color:rgba(167,139,250,.3);color:var(--purple)}
+
+/* GRID */
+.plugin-grid{max-width:1100px;margin:0 auto;padding:0 2.5rem 5rem;display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:1rem}
+
+/* PLUGIN CARD */
+.plugin-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden;transition:border-color .2s,transform .2s;animation:fadeUp .35s ease both}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.plugin-card:hover{border-color:rgba(167,139,250,.3);transform:translateY(-2px)}
+.plugin-card.hidden{display:none}
+.plugin-card-top{padding:1.2rem 1.2rem .85rem;display:flex;gap:.9rem;align-items:flex-start}
+.plugin-icon{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0;background:rgba(167,139,250,.1);border:1px solid rgba(167,139,250,.2)}
+.plugin-info{flex:1;min-width:0}
+.plugin-name-row{display:flex;align-items:center;gap:.4rem;flex-wrap:wrap;margin-bottom:.25rem}
+.plugin-name{font-family:var(--mono);font-size:.88rem;font-weight:700;color:var(--text)}
+.plugin-version{font-family:var(--mono);font-size:.65rem;padding:.1rem .4rem;border-radius:3px;background:rgba(167,139,250,.1);color:var(--purple);border:1px solid rgba(167,139,250,.2)}
+.plugin-new{font-family:var(--mono);font-size:.58rem;padding:.1rem .38rem;border-radius:3px;background:rgba(255,200,50,.12);color:var(--gold);border:1px solid rgba(255,200,50,.25)}
+.plugin-desc{font-family:var(--mono);font-size:.74rem;color:var(--muted);line-height:1.6}
+.plugin-tags{padding:0 1.2rem .85rem;display:flex;gap:.35rem;flex-wrap:wrap}
+.plugin-tag{font-family:var(--mono);font-size:.62rem;padding:.15rem .45rem;border-radius:4px;background:var(--surface2);border:1px solid var(--border);color:var(--muted)}
+.plugin-footer{padding:.85rem 1.2rem;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:.5rem;flex-wrap:wrap}
+.plugin-meta{font-family:var(--mono);font-size:.68rem;color:var(--muted);display:flex;align-items:center;gap:.4rem}
+.plugin-actions{display:flex;gap:.4rem}
+.btn-dl{font-family:var(--mono);font-size:.73rem;padding:.4rem .9rem;border-radius:6px;border:none;cursor:pointer;background:rgba(167,139,250,.12);color:var(--purple);transition:all .2s;display:flex;align-items:center;gap:.3rem;position:relative;overflow:hidden}
+.btn-dl:hover{background:rgba(167,139,250,.22)}
+.btn-copy{font-family:var(--mono);font-size:.73rem;padding:.4rem .65rem;border-radius:6px;border:1px solid var(--border);background:none;color:var(--muted);cursor:pointer;transition:all .2s}
+.btn-copy:hover{border-color:rgba(255,255,255,.2);color:var(--text)}
+.btn-copy.copied{border-color:rgba(167,139,250,.4);color:var(--purple)}
+
+/* PROGRESS BAR */
+.dl-progress-wrap{height:2px;background:var(--surface2);overflow:hidden}
+.dl-progress-wrap.active{height:2px}
+.dl-progress-bar{height:100%;width:0%;background:var(--purple);transition:width .15s linear}
+
+/* EMPTY */
+.empty-state{text-align:center;padding:4rem 2rem;font-family:var(--mono);font-size:.82rem;color:var(--muted);opacity:.6;grid-column:1/-1}
+.empty-icon{font-size:2.5rem;margin-bottom:.75rem;display:block}
+
+/* SKELETON */
+.skel-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:1.2rem;height:180px}
+.skel{background:linear-gradient(90deg,var(--surface2) 25%,rgba(255,255,255,.04) 50%,var(--surface2) 75%);background-size:200% 100%;animation:shimmer 1.4s infinite;border-radius:5px}
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+
+/* TOAST */
+#toast-c{position:fixed;bottom:1.5rem;right:1.5rem;z-index:9999;display:flex;flex-direction:column;gap:.5rem;pointer-events:none}
+.toast{display:flex;align-items:center;gap:.6rem;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:.7rem 1rem;font-family:var(--mono);font-size:.74rem;color:var(--text);box-shadow:0 8px 24px rgba(0,0,0,.4);pointer-events:all;animation:tIn .25s ease;position:relative;overflow:hidden;min-width:220px}
+.toast.out{opacity:0;transform:translateX(10px);transition:all .25s}
+@keyframes tIn{from{opacity:0;transform:translateX(10px)}to{opacity:1;transform:none}}
+.tbar{position:absolute;bottom:0;left:0;height:2px;animation:tb linear forwards}
+@keyframes tb{from{width:100%}to{width:0%}}
+
+/* RIPPLE */
+.ripple{position:absolute;border-radius:50%;transform:scale(0);animation:rpl .5s linear;pointer-events:none;background:rgba(167,139,250,.35)}
+@keyframes rpl{to{transform:scale(4);opacity:0}}
+
+footer{text-align:center;padding:3rem 2.5rem;font-family:var(--mono);font-size:.72rem;color:var(--muted);border-top:1px solid var(--border);opacity:.5}
+
+@media(max-width:640px){
+  nav{padding:1rem 1.2rem}
+  .hero{padding:6rem 1.2rem 3rem}
+  .controls{padding:0 1.2rem}
+  .plugin-grid{padding:0 1.2rem 4rem;grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<div id="toast-c"></div>
+
+<!-- ACCESS WALL -->
+<div id="access-wall">
+  <div class="aw-icon">🔒</div>
+  <div class="aw-title">Private Area</div>
+  <div class="aw-desc">This page is restricted to authorized accounts only. Please log in with an authorized account to continue.</div>
+  <a class="aw-btn" href="index.html">← Back to Downloads</a>
+</div>
+
+<!-- NAV -->
+<nav>
+  <div style="display:flex;align-items:center;gap:.5rem">
+    <a class="nav-logo" href="index.html"><span class="c">Conch</span><span class="s">/</span><span class="r">Cmdr</span></a>
+    <span class="nav-private">🔒 Private</span>
+  </div>
+  <div class="nav-right">
+    <div class="user-badge" id="user-badge" style="display:none">
+      <span class="user-dot"></span>
+      <span id="user-badge-name"></span>
+    </div>
+    <a class="nav-back" href="index.html">← Downloads</a>
+    <button class="icon-btn" onclick="toggleTheme()" id="theme-btn" title="Toggle Theme">🌙</button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero" id="main-content" style="display:none">
+  <div class="hero-tag">🔒 Private · Authorized Only</div>
+  <h1>Plugin <em>Library</em></h1>
+  <p class="hero-sub">Private plugins and tools. Not publicly available. Handle with care.</p>
+</div>
+
+<!-- CONTROLS -->
+<div class="controls" id="controls" style="display:none">
+  <div class="search-wrap">
+    <span class="search-icon">🔍</span>
+    <input class="search-input" id="search-input" type="text" placeholder="Search plugins..." oninput="doSearch(this.value)">
+  </div>
+  <button class="filter-btn active" data-filter="all" onclick="setFilter('all',this)">All</button>
+  <button class="filter-btn" data-filter="utility" onclick="setFilter('utility',this)">🔧 Utility</button>
+  <button class="filter-btn" data-filter="ui" onclick="setFilter('ui',this)">🎨 UI</button>
+  <button class="filter-btn" data-filter="gameplay" onclick="setFilter('gameplay',this)">🎮 Gameplay</button>
+  <button class="filter-btn" data-filter="system" onclick="setFilter('system',this)">⚙️ System</button>
+  <button class="filter-btn" data-filter="other" onclick="setFilter('other',this)">📦 Other</button>
+</div>
+
+<!-- PLUGIN GRID -->
+<div class="plugin-grid" id="plugin-grid" style="display:none">
+  <!-- Skeletons -->
+  <div class="skel-card" id="sk1"><div class="skel" style="height:40px;margin-bottom:12px"></div><div class="skel" style="height:12px;width:60%;margin-bottom:8px"></div><div class="skel" style="height:12px;width:80%"></div></div>
+  <div class="skel-card" id="sk2"><div class="skel" style="height:40px;margin-bottom:12px"></div><div class="skel" style="height:12px;width:70%;margin-bottom:8px"></div><div class="skel" style="height:12px;width:55%"></div></div>
+  <div class="skel-card" id="sk3"><div class="skel" style="height:40px;margin-bottom:12px"></div><div class="skel" style="height:12px;width:65%;margin-bottom:8px"></div><div class="skel" style="height:12px;width:75%"></div></div>
+</div>
+
+<footer id="main-footer" style="display:none">Conch & Cmdr — Plugin Library · Private · Authorized Access Only</footer>
+
+<script>
+/* ── AUTHORIZED ACCOUNTS ── */
+/* Add more usernames here to grant access */
+const AUTHORIZED=['max','[DEV]'];
+
+const SB_URL='https://rmdkoauibmzhgnvrwhfd.supabase.co';
+const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJtZGtvYXVpYm16aGdudnJ3aGZkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyNjg2MDksImV4cCI6MjA5Mzg0NDYwOX0.lu6T00f9y9-Q8HhVag-MGjJz6bTlJrYUwC7AApIxaFw';
+const GITHUB_REPO='Systems-Download/Systems-Download.github.io';
+
+let currentUser=null;
+let allPlugins=[];
+let currentFilter='all';
+
+/* ── THEME ── */
+function toggleTheme(){
+  const root=document.documentElement,btn=document.getElementById('theme-btn');
+  const isDark=!root.classList.contains('light-mode');
+  if(isDark){root.classList.add('light-mode');btn.textContent='☀️';localStorage.setItem('cc_theme','light');}
+  else{root.classList.remove('light-mode');btn.textContent='🌙';localStorage.setItem('cc_theme','dark');}
+}
+(function(){
+  const s=localStorage.getItem('cc_theme'),btn=document.getElementById('theme-btn');
+  if(s==='light'){document.documentElement.classList.add('light-mode');if(btn)btn.textContent='☀️';}
+})();
+
+/* ── TOAST ── */
+function toast(msg,type='ok',dur=3000){
+  const c=document.getElementById('toast-c'),el=document.createElement('div');
+  el.className='toast';
+  const col={ok:'#3cc878',err:'#ff4f5e',info:'#a78bfa',warn:'#ffc832'}[type]||'#a78bfa';
+  el.innerHTML=`<span style="color:${col}">${{ok:'✓',err:'✕',info:'⚑',warn:'!'}[type]||'⚑'}</span><span style="flex:1">${msg}</span><div class="tbar" style="background:${col};animation-duration:${dur}ms"></div>`;
+  c.appendChild(el);setTimeout(()=>{el.classList.add('out');setTimeout(()=>el.remove(),280)},dur);
+}
+
+/* ── RIPPLE ── */
+function addRipple(btn){
+  const r=document.createElement('span');r.className='ripple';
+  const rect=btn.getBoundingClientRect(),size=Math.max(rect.width,rect.height);
+  r.style.cssText=`width:${size}px;height:${size}px;left:${(rect.width-size)/2}px;top:${(rect.height-size)/2}px`;
+  btn.appendChild(r);setTimeout(()=>r.remove(),550);
+}
+
+/* ── UTILS ── */
+function fmtB(b){if(!b)return'0 B';const k=1024,s=['B','KB','MB'],i=Math.floor(Math.log(b)/Math.log(k));return parseFloat((b/Math.pow(k,i)).toFixed(1))+' '+s[i]}
+function fmtDate(s){if(!s)return'—';return new Date(s).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}
+function timeAgo(s){const d=(Date.now()-new Date(s))/1000;if(d<86400)return'today';if(d<604800)return Math.floor(d/86400)+'d ago';return fmtDate(s)}
+function eh(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+
+/* ── ACCESS CHECK ── */
+function checkAccess(){
+  try{
+    const saved=localStorage.getItem('cc_auth');
+    if(!saved)return false;
+    const parsed=JSON.parse(saved);
+    if(!parsed||!parsed.username)return false;
+    if(!AUTHORIZED.includes(parsed.username.toLowerCase())&&!AUTHORIZED.includes(parsed.username))return false;
+    currentUser=parsed;
+    return true;
+  }catch{return false;}
+}
+
+/* ── FETCH PLUGINS from Supabase ── */
+async function fetchPlugins(){
+  try{
+    const r=await fetch(SB_URL+'/rest/v1/cc_plugins?select=*&order=created_at.desc',{
+      headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}
+    });
+    if(!r.ok){
+      /* Table might not exist yet — show placeholder cards */
+      showPlaceholders();return;
+    }
+    const data=await r.json();
+    if(!data||!data.length){showPlaceholders();return;}
+    allPlugins=data;
+    renderPlugins(allPlugins);
+  }catch{
+    showPlaceholders();
+  }
+}
+
+/* ── PLACEHOLDER CARDS (shown when no DB table yet) ── */
+function showPlaceholders(){
+  /* Remove skeletons */
+  ['sk1','sk2','sk3'].forEach(id=>{const el=document.getElementById(id);if(el)el.remove();});
+  allPlugins=[
+    {id:'p1',name:'Example Plugin',version:'v1.0.0',description:'This is an example plugin. Add your real plugins via Supabase (cc_plugins table) or cc-control.',icon:'🧩',category:'utility',tags:['example','placeholder'],size_bytes:0,download_url:'#',created_at:new Date().toISOString(),is_new:false},
+    {id:'p2',name:'Another Plugin',version:'v2.1.0',description:'Another example entry. Once you add the cc_plugins table in Supabase, real plugins will appear here.',icon:'⚙️',category:'system',tags:['example'],size_bytes:0,download_url:'#',created_at:new Date().toISOString(),is_new:true},
+  ];
+  renderPlugins(allPlugins);
+  toast('Showing placeholder plugins — add cc_plugins table in Supabase','info',5000);
+}
+
+/* ── RENDER ── */
+function renderPlugins(plugins){
+  ['sk1','sk2','sk3'].forEach(id=>{const el=document.getElementById(id);if(el)el.remove();});
+  const grid=document.getElementById('plugin-grid');
+  /* Remove old cards */
+  grid.querySelectorAll('.plugin-card').forEach(c=>c.remove());
+
+  if(!plugins.length){
+    if(!grid.querySelector('.empty-state')){
+      const em=document.createElement('div');em.className='empty-state';
+      em.innerHTML='<span class="empty-icon">🔍</span>No plugins match your search.';
+      grid.appendChild(em);
+    }
+    return;
+  }
+  grid.querySelector('.empty-state')?.remove();
+
+  const q=document.getElementById('search-input').value.toLowerCase();
+
+  plugins.forEach((p,idx)=>{
+    if(currentFilter!=='all'&&p.category!==currentFilter)return;
+    if(q&&!p.name.toLowerCase().includes(q)&&!(p.description||'').toLowerCase().includes(q))return;
+
+    const isNew=(Date.now()-new Date(p.created_at))<7*24*3600*1000||p.is_new;
+    const el=document.createElement('div');
+    el.className='plugin-card';
+    el.dataset.category=p.category||'other';
+    el.dataset.name=(p.name||'').toLowerCase();
+    el.style.animationDelay=(idx*.06)+'s';
+
+    const tagsHTML=(p.tags||[]).map(t=>`<span class="plugin-tag">${eh(t)}</span>`).join('');
+
+    el.innerHTML=`
+      <div class="plugin-card-top">
+        <div class="plugin-icon">${eh(p.icon||'🧩')}</div>
+        <div class="plugin-info">
+          <div class="plugin-name-row">
+            <span class="plugin-name">${eh(p.name)}</span>
+            <span class="plugin-version">${eh(p.version||'v?')}</span>
+            ${isNew?'<span class="plugin-new">NEW</span>':''}
+          </div>
+          <div class="plugin-desc">${eh(p.description||'No description provided.')}</div>
+        </div>
+      </div>
+      ${tagsHTML?`<div class="plugin-tags">${tagsHTML}</div>`:''}
+      <div class="dl-progress-wrap" id="prog-wrap-${eh(p.id)}"><div class="dl-progress-bar" id="prog-bar-${eh(p.id)}"></div></div>
+      <div class="plugin-footer">
+        <div class="plugin-meta">
+          ${p.size_bytes?`<span>📦 ${fmtB(p.size_bytes)}</span><span style="opacity:.4">·</span>`:''}
+          <span>📅 ${timeAgo(p.created_at)}</span>
+        </div>
+        <div class="plugin-actions">
+          <button class="btn-copy" id="copy-${eh(p.id)}" onclick="copyLink('${eh(p.download_url||'')}','${eh(p.id)}',this)" title="Copy link">⎘</button>
+          ${p.download_url&&p.download_url!=='#'
+            ?`<button class="btn-dl" onclick="dlPlugin('${eh(p.download_url)}','${eh(p.name)}','${eh(p.id)}',this)">↓ Download</button>`
+            :`<button class="btn-dl" style="opacity:.4;cursor:not-allowed" disabled>↓ No file</button>`}
+        </div>
+      </div>`;
+    grid.appendChild(el);
+  });
+}
+
+/* ── DOWNLOAD ── */
+function dlPlugin(url,name,id,btn){
+  if(url==='#'||!url){toast('No download file attached','err');return;}
+  addRipple(btn);
+  const wrap=document.getElementById('prog-wrap-'+id);
+  const bar=document.getElementById('prog-bar-'+id);
+  if(wrap)wrap.classList.add('active');
+  toast('↓ Downloading '+name,'info',2500);
+
+  fetch(url).then(res=>{
+    if(!res.ok)throw new Error('HTTP '+res.status);
+    const total=parseInt(res.headers.get('content-length')||'0');
+    const reader=res.body.getReader();const chunks=[];let received=0;
+    function pump(){return reader.read().then(({done,value})=>{
+      if(done){
+        const blob=new Blob(chunks);const u=URL.createObjectURL(blob);
+        const a=document.createElement('a');a.href=u;a.download=name;
+        document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(u);
+        if(bar){bar.style.width='100%';setTimeout(()=>{if(wrap)wrap.classList.remove('active');bar.style.width='0%';},600)}
+        toast('✓ '+name+' downloaded','ok',3000);return;
+      }
+      chunks.push(value);received+=value.length;
+      if(total>0&&bar){bar.style.width=Math.round((received/total)*100)+'%';}
+      else if(bar){const f=Math.min((parseFloat(bar.style.width)||0)+5,90);bar.style.width=f+'%';}
+      return pump();
+    })}
+    return pump();
+  }).catch(()=>{
+    if(wrap)wrap.classList.remove('active');
+    const a=document.createElement('a');a.href=url;a.download=name;a.target='_blank';
+    document.body.appendChild(a);a.click();document.body.removeChild(a);
+    toast('✓ '+name,'ok',2500);
+  });
+}
+
+/* ── COPY LINK ── */
+function copyLink(url,id,btn){
+  if(!url||url==='#'){toast('No link available','err');return;}
+  const copy=()=>{
+    btn.classList.add('copied');btn.textContent='✓';
+    toast('Link copied!','info',2000);
+    setTimeout(()=>{btn.classList.remove('copied');btn.textContent='⎘';},2000);
+  };
+  if(navigator.clipboard)navigator.clipboard.writeText(url).then(copy).catch(()=>{fbCopy(url);copy();});
+  else{fbCopy(url);copy();}
+}
+function fbCopy(t){const ta=document.createElement('textarea');ta.value=t;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);}
+
+/* ── SEARCH & FILTER ── */
+function doSearch(val){renderPlugins(allPlugins);}
+function setFilter(f,btn){
+  currentFilter=f;
+  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderPlugins(allPlugins);
+}
+
+/* ── SHOW MAIN CONTENT ── */
+function showContent(){
+  document.getElementById('access-wall').classList.add('hidden');
+  document.getElementById('main-content').style.display='block';
+  document.getElementById('controls').style.display='flex';
+  document.getElementById('plugin-grid').style.display='grid';
+  document.getElementById('main-footer').style.display='block';
+  const badge=document.getElementById('user-badge');
+  const name=document.getElementById('user-badge-name');
+  if(badge&&currentUser){badge.style.display='flex';name.textContent=currentUser.username;}
+}
+
+/* ── INIT ── */
+if(checkAccess()){
+  showContent();
+  fetchPlugins();
+}
+</script>
+</body>
+</html>
