@@ -245,13 +245,10 @@ function checkAccess(){
 /* ── FETCH PLUGINS from Supabase ── */
 async function fetchPlugins(){
   try{
-    const r=await fetch(SB_URL+'/rest/v1/cc_plugins?select=*&order=created_at.desc',{
+    const r=await fetch(SB_URL+'/rest/v1/cc_plugins?select=*&active=eq.true&order=created_at.desc',{
       headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}
     });
-    if(!r.ok){
-      /* Table might not exist yet — show placeholder cards */
-      showPlaceholders();return;
-    }
+    if(!r.ok){showPlaceholders();return;}
     const data=await r.json();
     if(!data||!data.length){showPlaceholders();return;}
     allPlugins=data;
@@ -261,16 +258,12 @@ async function fetchPlugins(){
   }
 }
 
-/* ── PLACEHOLDER CARDS (shown when no DB table yet) ── */
+/* ── NO PLUGINS YET ── */
 function showPlaceholders(){
-  /* Remove skeletons */
   ['sk1','sk2','sk3'].forEach(id=>{const el=document.getElementById(id);if(el)el.remove();});
-  allPlugins=[
-    {id:'p1',name:'Example Plugin',version:'v1.0.0',description:'This is an example plugin. Add your real plugins via Supabase (cc_plugins table) or cc-control.',icon:'🧩',category:'utility',tags:['example','placeholder'],size_bytes:0,download_url:'#',created_at:new Date().toISOString(),is_new:false},
-    {id:'p2',name:'Another Plugin',version:'v2.1.0',description:'Another example entry. Once you add the cc_plugins table in Supabase, real plugins will appear here.',icon:'⚙️',category:'system',tags:['example'],size_bytes:0,download_url:'#',created_at:new Date().toISOString(),is_new:true},
-  ];
-  renderPlugins(allPlugins);
-  toast('Showing placeholder plugins — add cc_plugins table in Supabase','info',5000);
+  allPlugins=[];
+  const grid=document.getElementById('plugin-grid');
+  grid.innerHTML=`<div class="empty-state"><span class="empty-icon">🔌</span>No plugins available yet.<br><span style="font-size:.72rem;opacity:.6">Plugins will appear here once added.</span></div>`;
 }
 
 /* ── RENDER ── */
