@@ -753,6 +753,11 @@ async function doLogin(){
       const ab=document.getElementById('admin-nav-btn');if(ab)ab.style.display='flex';
       const dl=document.getElementById('drawer-admin-link');if(dl)dl.style.display='flex';
     }
+    /* Show plugins link for authorized accounts (max + dev bypass) */
+    const PLUGIN_AUTH=['max','[dev]'];
+    if(PLUGIN_AUTH.includes((AUTH.user.username||'').toLowerCase())||AUTH.user.bypassed){
+      const pl=document.getElementById('drawer-plugins-link');if(pl)pl.style.display='flex';
+    }
     toast({title:'Welcome back, '+AUTH.user.username+'!',sub:'You are now logged in',type:'ok',dur:3500});
     confetti();
 
@@ -824,6 +829,10 @@ async function initAuth(){
           const ab=document.getElementById('admin-nav-btn');if(ab)ab.style.display='flex';
           const dl=document.getElementById('drawer-admin-link');if(dl)dl.style.display='flex';
         }
+        const PLUGIN_AUTH2=['max','[dev]'];
+        if(AUTH.user&&(PLUGIN_AUTH2.includes((AUTH.user.username||'').toLowerCase())||AUTH.user.bypassed)){
+          const pl=document.getElementById('drawer-plugins-link');if(pl)pl.style.display='flex';
+        }
         return;
         }
         /* Re-check ban on restore */
@@ -840,6 +849,10 @@ async function initAuth(){
         if(AUTH.user&&AUTH.user.isAdmin){
           const ab=document.getElementById('admin-nav-btn');if(ab)ab.style.display='flex';
           const dl=document.getElementById('drawer-admin-link');if(dl)dl.style.display='flex';
+        }
+        const PLUGIN_AUTH2=['max','[dev]'];
+        if(AUTH.user&&(PLUGIN_AUTH2.includes((AUTH.user.username||'').toLowerCase())||AUTH.user.bypassed)){
+          const pl=document.getElementById('drawer-plugins-link');if(pl)pl.style.display='flex';
         }
         return;
       }
@@ -992,8 +1005,10 @@ function t(k,...a){const v=(T[lang]||T.en)[k];return typeof v==='function'?v(...
     <p class="drawer-slabel">Settings</p>
     <a class="drawer-item" onclick="openProfile();closeDrawer()"><span class="drawer-icon">👤</span><span>My Profile</span></a>
     <a class="drawer-item" onclick="openEmailModal();closeDrawer()"><span class="drawer-icon">📧</span><span>Email Notifications</span></a>
+    <a class="drawer-item" href="changelog.html" onclick="closeDrawer()"><span class="drawer-icon">📋</span><span>Changelog</span></a>
     <a class="drawer-item" href="bugreport.html" onclick="closeDrawer()"><span class="drawer-icon">🐛</span><span>Report a Bug</span></a>
     <a class="drawer-item" id="drawer-admin-link" href="cc-control.html" onclick="closeDrawer()" style="display:none;color:var(--gold);border-color:rgba(255,200,50,.15);background:rgba(255,200,50,.05)"><span class="drawer-icon">⚙️</span><span>CC Control</span></a>
+    <a class="drawer-item" id="drawer-plugins-link" href="plugins.html" onclick="closeDrawer()" style="display:none;color:#a78bfa;border-color:rgba(167,139,250,.15);background:rgba(167,139,250,.05)"><span class="drawer-icon">🔒</span><span>Plugins</span></a>
     <div class="drawer-div"></div>
     <p class="drawer-slabel">Quick Jump</p>
     <a class="drawer-item" href="#conch" onclick="closeDrawer()"><span class="drawer-icon" style="color:var(--conch)">◈</span>Conch</a>
