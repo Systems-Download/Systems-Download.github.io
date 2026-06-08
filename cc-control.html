@@ -243,6 +243,9 @@ tr:hover td{background:rgba(255,255,255,.02)}
     <div class="sidebar-item" onclick="showSection('banner')" id="nav-banner">
       <span class="sidebar-icon">📢</span>Banner
     </div>
+    <div class="sidebar-item" onclick="showSection('announcements')" id="nav-announcements">
+      <span class="sidebar-icon">📋</span>Announcements<span class="sidebar-count" id="count-ann">—</span>
+    </div>
   </div>
 
   <!-- MAIN -->
@@ -284,7 +287,7 @@ tr:hover td{background:rgba(255,255,255,.02)}
           </div>
         </div>
         <table>
-          <thead><tr><th>Username</th><th>IP</th><th>Last Login</th><th>Registered</th><th>Status</th><th>Actions</th></tr></thead>
+          <thead><tr><th>Username</th><th>IP</th><th>Role</th><th>Last Login</th><th>Registered</th><th>Status</th><th>Actions</th></tr></thead>
           <tbody id="users-tbody"><tr class="loading-row"><td colspan="6">Loading...</td></tr></tbody>
         </table>
         <div class="tbl-empty" id="users-empty" style="display:none">No users found.</div>
@@ -437,6 +440,54 @@ tr:hover td{background:rgba(255,255,255,.02)}
       </div>
     </div>
 
+
+    <!-- ANNOUNCEMENTS -->
+    <div class="section-wrap" id="section-announcements">
+      <div class="page-title">📋 Changelog Announcements</div>
+      <div class="page-sub">Post messages that appear in the Changelog under the title</div>
+
+      <!-- POST FORM -->
+      <div class="panel" style="margin-bottom:1.5rem">
+        <div class="panel-header"><div class="panel-title">✏️ New Announcement</div></div>
+        <div style="padding:1.2rem;display:flex;flex-direction:column;gap:.85rem">
+          <div>
+            <div class="modal-label" style="margin-bottom:.3rem">Title</div>
+            <input class="modal-input" id="ann-title-input" type="text" placeholder="e.g. Server maintenance on Friday" maxlength="100">
+          </div>
+          <div>
+            <div class="modal-label" style="margin-bottom:.3rem">Type</div>
+            <div style="display:flex;gap:.5rem;flex-wrap:wrap">
+              <button class="btn-action" id="ann-type-info" onclick="selectAnnType('info')" style="background:rgba(100,160,255,.15);color:#64a0ff;border-color:rgba(100,160,255,.3)">ℹ️ Info</button>
+              <button class="btn-action" id="ann-type-update" onclick="selectAnnType('update')" style="background:none;color:var(--muted);border-color:var(--border)">🚀 Update</button>
+              <button class="btn-action" id="ann-type-hotfix" onclick="selectAnnType('hotfix')" style="background:none;color:var(--muted);border-color:var(--border)">🔧 Hotfix</button>
+              <button class="btn-action" id="ann-type-warning" onclick="selectAnnType('warning')" style="background:none;color:var(--muted);border-color:var(--border)">⚠️ Warning</button>
+            </div>
+          </div>
+          <div>
+            <div class="modal-label" style="margin-bottom:.3rem">Message</div>
+            <textarea class="modal-input" id="ann-message-input" placeholder="Write your announcement here..." style="min-height:100px;resize:vertical;line-height:1.6;font-family:var(--mono);font-size:.8rem" maxlength="1000"></textarea>
+          </div>
+          <div style="display:flex;gap:.75rem;align-items:center">
+            <button class="btn-gold" style="font-family:var(--mono);font-size:.8rem;padding:.6rem 1.4rem;border-radius:8px;cursor:pointer;font-weight:600" onclick="postAnnouncement()">📋 Post to Changelog</button>
+            <span style="font-family:var(--mono);font-size:.7rem;color:var(--muted)">Appears immediately in the changelog</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- LIST -->
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title">📋 All Announcements <span id="ann-count-badge" class="sidebar-count"></span></div>
+          <button class="btn-action btn-primary" onclick="loadAnnouncements()">↺ Refresh</button>
+        </div>
+        <table>
+          <thead><tr><th>Title</th><th>Type</th><th>Posted</th><th>Status</th><th>Actions</th></tr></thead>
+          <tbody id="ann-tbody"><tr class="loading-row"><td colspan="5">Loading...</td></tr></tbody>
+        </table>
+        <div class="tbl-empty" id="ann-empty" style="display:none">No announcements yet.</div>
+      </div>
+    </div>
+
   </div><!-- end .main -->
 </div><!-- end .layout -->
 
@@ -479,7 +530,7 @@ async function checkAccess(){
 
 /* ── LOAD ALL ── */
 async function loadAll(){
-  await Promise.all([loadUsers(),loadBans(),loadBugs(),loadSettings()]);
+  await Promise.all([loadUsers(),loadBans(),loadBugs(),loadSettings(),loadAnnouncements()]);
   updateStats();
 }
 
@@ -487,7 +538,7 @@ async function loadAll(){
 async function loadUsers(){
   document.getElementById('users-tbody').innerHTML='<tr class="loading-row"><td colspan="6">Loading...</td></tr>';
   try{
-    const r=await sb('/rest/v1/cc_users?select=id,username,display_name,ip,is_banned,last_login,created_at&order=created_at.desc');
+    const r=await sb('/rest/v1/cc_users?select=id,username,display_name,ip,is_banned,last_login,created_at,role,failed_attempts,locked_until&order=created_at.desc');
     allUsers=await r.json();
     renderUsers(allUsers);
     renderRecentUsers(allUsers.slice(0,5));
@@ -510,7 +561,8 @@ function renderUsers(users){
     <tr>
       <td><strong>${eh(u.display_name||u.username)}</strong>${u.username===ADMIN_USERNAME?'<span class="badge badge-gold" style="margin-left:.4rem">Owner</span>':''}</td>
       <td class="td-muted">${u.ip||'—'}</td>
-      <td class="td-muted">${u.last_login?fmtDate(u.last_login):'Never'}</td>
+      <td>${u.role==='beta'?'<span class="badge" style="background:rgba(52,211,153,.1);color:#34d399;border:1px solid rgba(52,211,153,.2)">🧪 Beta</span>':u.role==='admin'?'<span class="badge badge-gold">Admin</span>':'<span class="badge" style="background:rgba(255,255,255,.04);color:var(--muted)">User</span>'}</td>
+      <td class="td-muted">${u.last_login?fmtDate(u.last_login):'Never'}${u.locked_until&&new Date(u.locked_until)>new Date()?'<span class="badge badge-red" style="margin-left:.3rem">🔒 Locked</span>':''}</td>
       <td class="td-muted">${fmtDate(u.created_at)}</td>
       <td>${u.is_banned?'<span class="badge badge-red">Banned</span>':'<span class="badge badge-green">Active</span>'}</td>
       <td>
@@ -518,6 +570,8 @@ function renderUsers(users){
           ${u.username!==ADMIN_USERNAME?`
             ${!u.is_banned?`<button class="btn-action btn-ban" onclick="openBanModal('${eh(u.id)}','${eh(u.username)}','${eh(u.ip||'')}')">🚫 Ban User</button>`
             :`<button class="btn-action btn-unban" onclick="unbanUser('${eh(u.id)}','${eh(u.ip||'')}')">✅ Unban User</button>`}
+            <button class="btn-action ${u.role==='beta'?'btn-unban':'btn-gold'}" onclick="toggleBeta('${eh(u.id)}','${u.role==='beta'?'user':'beta'}')">${u.role==='beta'?'👤 Remove Beta':'🧪 Set Beta'}</button>
+            ${u.locked_until&&new Date(u.locked_until)>new Date()?`<button class="btn-action btn-unban" onclick="unlockUser('${eh(u.id)}')">🔓 Unlock</button>`:''}
             <button class="btn-action btn-delete" onclick="openDeleteModal('${eh(u.id)}','${eh(u.username)}')">🗑️ Delete</button>
           `:'<span class="td-muted" style="font-size:.65rem">Protected</span>'}
         </div>
@@ -763,6 +817,117 @@ function toast(msg,type='ok',dur=3000){
   const col={ok:'#3cc878',err:'#ff4f5e',warn:'#ffc832'}[type]||'#0ff4c6';
   el.innerHTML=`<span>${{ok:'✓',err:'✕',warn:'!'}[type]||'⚑'}</span><span style="flex:1">${msg}</span><div class="tbar" style="background:${col};animation-duration:${dur}ms"></div>`;
   c.appendChild(el);setTimeout(()=>{el.classList.add('out');setTimeout(()=>el.remove(),300)},dur);
+}
+
+/* ── ANNOUNCEMENTS ── */
+let selectedAnnType='info';
+let allAnn=[];
+
+function selectAnnType(type){
+  selectedAnnType=type;
+  const types=['info','update','hotfix','warning'];
+  const colors={info:'rgba(100,160,255,.15)',update:'rgba(15,244,198,.15)',hotfix:'rgba(255,79,94,.15)',warning:'rgba(255,200,50,.15)'};
+  const textColors={info:'#64a0ff',update:'var(--conch)',hotfix:'var(--cmdr)',warning:'#ffc832'};
+  const borderColors={info:'rgba(100,160,255,.3)',update:'rgba(15,244,198,.3)',hotfix:'rgba(255,79,94,.3)',warning:'rgba(255,200,50,.3)'};
+  types.forEach(t=>{
+    const btn=document.getElementById('ann-type-'+t);
+    if(!btn)return;
+    if(t===type){
+      btn.style.background=colors[t];btn.style.color=textColors[t];btn.style.borderColor=borderColors[t];
+    }else{
+      btn.style.background='none';btn.style.color='var(--muted)';btn.style.borderColor='var(--border)';
+    }
+  });
+}
+
+async function postAnnouncement(){
+  const title=document.getElementById('ann-title-input').value.trim();
+  const message=document.getElementById('ann-message-input').value.trim();
+  if(!title){toast('Please enter a title','err');return;}
+  if(!message){toast('Please write a message','err');return;}
+  try{
+    const r=await sb('/rest/v1/cc_announcements',{
+      method:'POST',
+      headers:{'Prefer':'return=minimal'},
+      body:JSON.stringify({title,message,type:selectedAnnType,author:ADMIN_USERNAME,active:true,created_at:new Date().toISOString()})
+    });
+    if(r.ok||r.status===201){
+      document.getElementById('ann-title-input').value='';
+      document.getElementById('ann-message-input').value='';
+      toast('Announcement posted to changelog!','ok');
+      loadAnnouncements();
+    }else{throw new Error('HTTP '+r.status);}
+  }catch(e){toast('Failed: '+e.message,'err');}
+}
+
+async function loadAnnouncements(){
+  document.getElementById('ann-tbody').innerHTML='<tr class="loading-row"><td colspan="5">Loading...</td></tr>';
+  document.getElementById('ann-empty').style.display='none';
+  try{
+    const r=await sb('/rest/v1/cc_announcements?select=*&order=created_at.desc');
+    if(!r.ok){
+      if(r.status===401||r.status===404){
+        document.getElementById('ann-tbody').innerHTML='';
+        document.getElementById('ann-empty').textContent='Table not found. Run the SQL setup first.';
+        document.getElementById('ann-empty').style.display='block';
+        return;
+      }
+    }
+    allAnn=await r.json();
+    const c=allAnn.length;
+    document.getElementById('count-ann').textContent=c;
+    document.getElementById('ann-count-badge').textContent=c;
+    const typeIcon={info:'ℹ️',update:'🚀',hotfix:'🔧',warning:'⚠️'};
+    const tb=document.getElementById('ann-tbody');
+    const em=document.getElementById('ann-empty');
+    if(!allAnn.length){tb.innerHTML='';em.style.display='block';return;}
+    em.style.display='none';
+    tb.innerHTML=allAnn.map(a=>`
+      <tr>
+        <td><strong>${eh(a.title)}</strong></td>
+        <td><span class="badge ${a.type==='info'?'badge-blue':a.type==='update'?'badge-green':a.type==='hotfix'?'badge-red':''}">  ${typeIcon[a.type]||'📢'} ${eh(a.type||'info')}</span></td>
+        <td class="td-muted">${fmtDate(a.created_at)}</td>
+        <td>${a.active?'<span class="badge badge-green">Active</span>':'<span class="badge" style="background:rgba(255,255,255,.05);color:var(--muted)">Hidden</span>'}</td>
+        <td>
+          <div style="display:flex;gap:.3rem">
+            <button class="btn-action ${a.active?'btn-delete':'btn-unban'}" onclick="toggleAnn('${eh(a.id)}',${!a.active})">${a.active?'👁️ Hide':'👁️ Show'}</button>
+            <button class="btn-action btn-delete" onclick="deleteAnn('${eh(a.id)}')">🗑️ Delete</button>
+          </div>
+        </td>
+      </tr>`).join('');
+  }catch(e){toast('Error: '+e.message,'err');}
+}
+
+async function toggleAnn(id,active){
+  try{
+    await sb(`/rest/v1/cc_announcements?id=eq.${id}`,{method:'PATCH',headers:{'Prefer':'return=minimal'},body:JSON.stringify({active})});
+    toast(active?'Announcement shown':'Announcement hidden','ok');
+    loadAnnouncements();
+  }catch(e){toast('Failed','err');}
+}
+
+async function deleteAnn(id){
+  try{
+    await sb(`/rest/v1/cc_announcements?id=eq.${id}`,{method:'DELETE'});
+    toast('Announcement deleted','ok');
+    loadAnnouncements();
+  }catch(e){toast('Failed','err');}
+}
+
+/* ── BETA TESTER & UNLOCK ── */
+async function toggleBeta(id,role){
+  try{
+    await sb(`/rest/v1/cc_users?id=eq.${id}`,{method:'PATCH',headers:{'Prefer':'return=minimal'},body:JSON.stringify({role})});
+    toast(role==='beta'?'🧪 Beta Tester role assigned':'👤 Reverted to User','ok');
+    loadUsers();
+  }catch(e){toast('Failed: '+e.message,'err');}
+}
+
+async function unlockUser(id){
+  try{
+    await sb(`/rest/v1/cc_users?id=eq.${id}`,{method:'PATCH',headers:{'Prefer':'return=minimal'},body:JSON.stringify({failed_attempts:0,locked_until:null})});
+    toast('🔓 Account unlocked','ok');loadUsers();
+  }catch(e){toast('Failed: '+e.message,'err');}
 }
 
 /* ── INIT ── */
