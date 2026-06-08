@@ -397,11 +397,38 @@ function showContent(){
   if(badge&&currentUser){badge.style.display='flex';name.textContent=currentUser.username;}
 }
 
+const VPNAPI_KEY='8f961fd03d784466b46546b5aba9ebdb';
+
+async function getIP(){
+  try{const r=await fetch('https://api.ipify.org?format=json');const d=await r.json();return d.ip||'unknown';}
+  catch{return 'unknown';}
+}
+
+async function checkVPN(ip){
+  if(!ip||ip==='unknown')return false;
+  try{
+    const r=await fetch(`https://vpnapi.io/api/${ip}?key=${VPNAPI_KEY}`);
+    if(!r.ok)return false;
+    const d=await r.json();
+    return d.security&&(d.security.vpn||d.security.proxy||d.security.tor||d.security.relay);
+  }catch{return false;}
+}
+
 /* ── INIT ── */
-if(checkAccess()){
+(async()=>{
+  if(!checkAccess()){return;}
+  /* VPN check */
+  const ip=await getIP();
+  const isVPN=await checkVPN(ip);
+  if(isVPN){
+    document.getElementById('access-wall').classList.remove('hidden');
+    document.querySelector('.aw-title').textContent='VPN Detected';
+    document.querySelector('.aw-desc').textContent='VPN and proxy connections are not allowed. Please disable your VPN and try again.';
+    return;
+  }
   showContent();
   fetchPlugins();
-}
+})();
 </script>
 </body>
 </html>
