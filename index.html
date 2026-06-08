@@ -533,7 +533,8 @@ const CONFIG={
   SB_URL:'https://rmdkoauibmzhgnvrwhfd.supabase.co',
   SB_KEY:'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJtZGtvYXVpYm16aGdudnJ3aGZkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyNjg2MDksImV4cCI6MjA5Mzg0NDYwOX0.lu6T00f9y9-Q8HhVag-MGjJz6bTlJrYUwC7AApIxaFw',
   DISCORD_WEBHOOK:'https://discord.com/api/webhooks/1510446146458353747/pnX8TWoZRQsPb9zK5UY5XK1jET80JB9r-DvafMdDVAauLRKCCvGPUha_SvkmtLcoG31p',
-  AVATAR_BUCKET:'avatars'
+  AVATAR_BUCKET:'avatars',
+  VPNAPI_KEY:'8f961fd03d784466b46546b5aba9ebdb'
 };
 
 /* ═══════════════════════════════════════════════════════════
@@ -573,6 +574,18 @@ async function sbFetch(path,opts={}){
 async function getIP(){
   try{const r=await fetch('https://api.ipify.org?format=json');const d=await r.json();return d.ip||'unknown';}
   catch{return 'unknown';}
+}
+
+/* ── VPN / PROXY DETECTION ── */
+async function checkVPN(ip){
+  if(!ip||ip==='unknown')return false;
+  try{
+    const r=await fetch(`https://vpnapi.io/api/${ip}?key=${CONFIG.VPNAPI_KEY}`);
+    if(!r.ok)return false;
+    const d=await r.json();
+    /* Block if VPN, proxy, or Tor detected */
+    return d.security&&(d.security.vpn||d.security.proxy||d.security.tor||d.security.relay);
+  }catch{return false;}
 }
 
 /* ══════════════════════════════════════
@@ -648,6 +661,14 @@ async function doRegister(){
   try{
     const ip=await getIP();
 
+    /* Check VPN/Proxy */
+    const isVPN=await checkVPN(ip);
+    if(isVPN){
+      await sbFetch('/rest/v1/cc_bans',{method:'POST',headers:{'Prefer':'return=minimal'},body:JSON.stringify({ip,reason:'VPN/Proxy detected during registration',banned_by:'system',banned_at:new Date().toISOString()})}).catch(()=>{});
+      setAuthErr('reg','🚫 VPN/Proxy detected. Please disable your VPN and try again.');
+      btn.disabled=false;btn.textContent='Register';return;
+    }
+
     /* Check if IP is banned */
     const banInfo=await checkBan(ip);
     if(banInfo){showBanWall(ip,banInfo.reason);return;}
@@ -712,6 +733,15 @@ async function doLogin(){
   try{
     const ip=await getIP();
 
+    /* Check VPN/Proxy */
+    const isVPN=await checkVPN(ip);
+    if(isVPN){
+      /* Auto-ban VPN IP */
+      await sbFetch('/rest/v1/cc_bans',{method:'POST',headers:{'Prefer':'return=minimal'},body:JSON.stringify({ip,reason:'VPN/Proxy detected',banned_by:'system',banned_at:new Date().toISOString()})}).catch(()=>{});
+      setAuthErr('login','🚫 VPN/Proxy detected. Please disable your VPN and try again.');
+      btn.disabled=false;btn.textContent='Login';return;
+    }
+
     /* Check ban */
     const banInfo=await checkBan(ip);
     if(banInfo){showBanWall(ip,banInfo.reason);return;}
@@ -719,7 +749,7 @@ async function doLogin(){
     const hash=await hashPass(pw);
 
     /* Fetch user */
-    const r=await sbFetch(`/rest/v1/cc_users?username=eq.${encodeURIComponent(name.toLowerCase())}&select=id,username,display_name,password_hash,ip,is_banned`);
+    const r=await sbFetch(`/rest/v1/cc_users?username=eq.${encodeURIComponent(name.toLowerCase())}&select=id,username,display_name,password_hash,ip,is_banned,failed_attempts,locked_until,role`);
     const users=await r.json();
 
     if(!users||users.length===0){setAuthErr('login','Username not found.');btn.disabled=false;btn.textContent='Login';return;}
@@ -730,7 +760,33 @@ async function doLogin(){
       return;
     }
 
-    if(user.password_hash!==hash){setAuthErr('login','Wrong password.');btn.disabled=false;btn.textContent='Login';return;}
+    /* Brute-Force lock check */
+    if(user.locked_until&&new Date(user.locked_until)>new Date()){
+      const remaining=Math.ceil((new Date(user.locked_until)-Date.now())/60000);
+      setAuthErr('login',`🔒 Account locked. Try again in ${remaining} minute${remaining!==1?'s':''}.`);
+      btn.disabled=false;btn.textContent='Login';return;
+    }
+
+    if(user.password_hash!==hash){
+      /* Brute-Force: increment failed attempts */
+      const fails=(user.failed_attempts||0)+1;
+      const lockUntil=fails>=5?new Date(Date.now()+15*60*1000).toISOString():null;
+      await sbFetch(`/rest/v1/cc_users?id=eq.${user.id}`,{
+        method:'PATCH',headers:{'Prefer':'return=minimal'},
+        body:JSON.stringify({failed_attempts:fails,...(lockUntil?{locked_until:lockUntil}:{})})
+      }).catch(()=>{});
+      if(fails>=5){
+        setAuthErr('login','🔒 Too many failed attempts. Account locked for 15 minutes.');
+      }else{
+        setAuthErr('login',`Wrong password. ${5-fails} attempt${5-fails!==1?'s':''} remaining.`);
+      }
+      btn.disabled=false;btn.textContent='Login';return;
+    }
+    /* Reset failed attempts on success */
+    await sbFetch(`/rest/v1/cc_users?id=eq.${user.id}`,{
+      method:'PATCH',headers:{'Prefer':'return=minimal'},
+      body:JSON.stringify({failed_attempts:0,locked_until:null})
+    }).catch(()=>{});
 
     /* ── IP LOCK — block login from different IP (except user 'max') ── */
     if(user.username!=='max'&&user.ip&&user.ip!=='unknown'&&ip!=='unknown'&&user.ip!==ip){
@@ -745,7 +801,7 @@ async function doLogin(){
     });
 
     /* Success */
-    AUTH.user={username:user.display_name||user.username,id:user.id,isAdmin:user.username==='max'};
+    AUTH.user={username:user.display_name||user.username,id:user.id,isAdmin:user.username==='max',role:user.role||'user',isBetaTester:user.role==='beta'||user.role==='admin'};
     try{localStorage.setItem('cc_auth',JSON.stringify(AUTH.user));}catch{}
     hideAuthWall();
     updateNavUser();
@@ -795,7 +851,6 @@ function hideAuthWall(){
 }
 
 function showBanWall(ip,reason){
-  document.getElementById('ban-ip-display').textContent=ip||'unknown';
   document.getElementById('ban-reason-display').textContent=reason||'No reason given.';
   document.getElementById('ban-wall').classList.add('show');
   document.getElementById('auth-wall').style.display='none';
@@ -829,6 +884,7 @@ async function initAuth(){
           const ab=document.getElementById('admin-nav-btn');if(ab)ab.style.display='flex';
           const dl=document.getElementById('drawer-admin-link');if(dl)dl.style.display='flex';
         }
+        if(AUTH.user&&AUTH.user.isBetaTester){const bb=document.getElementById('beta-tester-badge');if(bb)bb.style.display='inline-flex';}
         const PLUGIN_AUTH2=['max','[dev]'];
         if(AUTH.user&&(PLUGIN_AUTH2.includes((AUTH.user.username||'').toLowerCase())||AUTH.user.bypassed)){
           const pl=document.getElementById('drawer-plugins-link');if(pl)pl.style.display='flex';
@@ -850,6 +906,7 @@ async function initAuth(){
           const ab=document.getElementById('admin-nav-btn');if(ab)ab.style.display='flex';
           const dl=document.getElementById('drawer-admin-link');if(dl)dl.style.display='flex';
         }
+        if(AUTH.user&&AUTH.user.isBetaTester){const bb=document.getElementById('beta-tester-badge');if(bb)bb.style.display='inline-flex';}
         const PLUGIN_AUTH2=['max','[dev]'];
         if(AUTH.user&&(PLUGIN_AUTH2.includes((AUTH.user.username||'').toLowerCase())||AUTH.user.bypassed)){
           const pl=document.getElementById('drawer-plugins-link');if(pl)pl.style.display='flex';
@@ -947,10 +1004,8 @@ function t(k,...a){const v=(T[lang]||T.en)[k];return typeof v==='function'?v(...
     <span class="ban-icon">🚫</span>
     <div class="ban-title">Access Denied</div>
     <div class="ban-desc">
-      Your IP address has been banned from Conch &amp; Cmdr Downloads.<br><br>
+      You have been banned from Conch &amp; Cmdr Downloads.<br><br>
       <strong>Reason:</strong> <span id="ban-reason-display"></span>
-      <br>
-      <span class="ban-ip" id="ban-ip-display"></span>
       <br><br>
       If you believe this is a mistake, join our Discord server to appeal.
     </div>
@@ -969,6 +1024,8 @@ function t(k,...a){const v=(T[lang]||T.en)[k];return typeof v==='function'?v(...
 <!-- USER BADGE -->
     <!-- ADMIN BTN (only for Max) -->
     <a id="admin-nav-btn" href="cc-control.html" style="display:none;font-family:var(--mono);font-size:.72rem;padding:.35rem .7rem;border-radius:6px;border:1px solid rgba(255,200,50,.3);background:rgba(255,200,50,.08);color:#ffc832;text-decoration:none;align-items:center;gap:.35rem;transition:all .2s" onmouseover="this.style.background='rgba(255,200,50,.18)'" onmouseout="this.style.background='rgba(255,200,50,.08)'">⚙️ Admin</a>
+    <!-- BETA TESTER BADGE -->
+    <span id="beta-tester-badge" style="display:none;font-family:var(--mono);font-size:.62rem;padding:.2rem .55rem;border-radius:4px;background:rgba(52,211,153,.1);color:#34d399;border:1px solid rgba(52,211,153,.25)">🧪 Beta</span>
     <!-- USER BADGE + AVATAR -->
     <div class="user-badge" id="user-badge">
       <div class="nav-avatar" id="nav-avatar" onclick="openProfile()" title="Profile"></div>
