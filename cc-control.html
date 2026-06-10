@@ -514,11 +514,25 @@ let pendingBanUser=null,pendingDeleteUser=null;
 /* ── AUTH CHECK ── */
 async function checkAccess(){
   try{
-    const saved=sessionStorage.getItem('cc_auth');
+    /* Check localStorage (normal sessions) */
+    const saved=localStorage.getItem('cc_auth');
     if(!saved)throw new Error('not logged in');
     const parsed=JSON.parse(saved);
-    if(!parsed||parsed.username.toLowerCase()!==ADMIN_USERNAME)throw new Error('not admin');
-    document.getElementById('nav-username').textContent=parsed.username;
+    if(!parsed||!parsed.username)throw new Error('no user');
+
+    /* Check both username and rawUsername for case-insensitive match */
+    const uname=(parsed.rawUsername||parsed.username||'').toLowerCase();
+
+    /* Accept if: normal max login OR _ownerTemp flag set by ownerlogin() */
+    const isOwner=uname===ADMIN_USERNAME.toLowerCase();
+    const isOwnerTemp=parsed._ownerTemp===true;
+    const isAdminFlag=parsed.isAdmin===true;
+
+    if(!isOwner&&!isOwnerTemp&&!isAdminFlag)throw new Error('not admin');
+
+    /* If ownerTemp — use 'Max' as display name */
+    const displayName=isOwnerTemp?'Max (temp)':parsed.username;
+    document.getElementById('nav-username').textContent=displayName;
     document.getElementById('access-wall').classList.add('hidden');
     document.getElementById('main-layout').style.display='grid';
     loadAll();
