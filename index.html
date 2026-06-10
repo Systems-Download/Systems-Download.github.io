@@ -676,23 +676,32 @@ window.ownerlogin=async function(){
       _ownerTemp:true,
       _originalUser:parsed.username
     };
-    /* Override AUTH in memory only */
+    /* Override AUTH in memory */
     AUTH.user=ownerSession;
     AUTH.bypassed=false;
 
-    /* 5. Show owner UI without writing to localStorage */
+    /* 5. Write temp session to localStorage so cc-control can read it */
+    /* Store original Max2 session to restore later */
+    const originalSession=localStorage.getItem('cc_auth');
+    localStorage.setItem('cc_auth_owner_backup', originalSession||'');
+    localStorage.setItem('cc_auth', JSON.stringify(ownerSession));
+
+    /* 6. On tab close — restore Max2 session, remove owner session */
+    window.addEventListener('beforeunload',()=>{
+      const backup=localStorage.getItem('cc_auth_owner_backup');
+      if(backup){localStorage.setItem('cc_auth',backup);}
+      else{localStorage.removeItem('cc_auth');}
+      localStorage.removeItem('cc_auth_owner_backup');
+    });
+
+    /* Show owner UI */
     hideAuthWall();
     updateNavUser();
     const ab=document.getElementById('admin-nav-btn');if(ab)ab.style.display='flex';
     const dl=document.getElementById('drawer-admin-link');if(dl)dl.style.display='flex';
     const pl=document.getElementById('drawer-plugins-link');if(pl)pl.style.display='flex';
 
-    /* 6. On tab close/unload — restore original user from localStorage */
-    window.addEventListener('beforeunload',()=>{
-      /* localStorage still has max2 session — nothing to restore */
-    });
-
-    toast({title:'Owner session active',sub:'Memory only — resets on tab close',type:'ok',dur:4000});
+    toast({title:'Owner session active',sub:'Resets automatically on tab close',type:'ok',dur:4000});
 
   }catch{/* Silent */}
   finally{
@@ -877,7 +886,7 @@ async function doLogin(){
     });
 
     /* Success */
-    AUTH.user={username:user.display_name||user.username,id:user.id,isAdmin:user.username==='max',role:user.role||'user',isBetaTester:user.role==='beta'||user.role==='admin'};
+    AUTH.user={username:user.display_name||user.username,rawUsername:user.username.toLowerCase(),id:user.id,isAdmin:user.username.toLowerCase()==='max',role:user.role||'user',isBetaTester:user.role==='beta'||user.role==='admin'};
     try{localStorage.setItem('cc_auth',JSON.stringify(AUTH.user));}catch{}
     hideAuthWall();
     updateNavUser();
