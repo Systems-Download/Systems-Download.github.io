@@ -267,7 +267,7 @@ footer{text-align:center;padding:3rem 2rem;font-family:var(--mono);font-size:.72
         </div>
         <div class="info-pill">
           <div class="info-pill-label">IP Address</div>
-          <div class="info-pill-value" id="info-ip">Loading...</div>
+          <div class="info-pill-value" id="info-ip" style="filter:blur(4px);user-select:none">Hidden</div>
         </div>
         <div class="info-pill">
           <div class="info-pill-label">Page</div>
@@ -381,10 +381,10 @@ async function loadAutoInfo(){
     const r=await fetch('https://api.ipify.org?format=json');
     const d=await r.json();
     userIP=d.ip||'unknown';
-    document.getElementById('info-ip').textContent=userIP;
+    document.getElementById('info-ip').textContent='Hidden';
   }catch{
     userIP='unknown';
-    document.getElementById('info-ip').textContent='unknown';
+    document.getElementById('info-ip').textContent='Hidden';
   }
 }
 
@@ -454,7 +454,7 @@ async function submitReport(){
       {name:'👤 Reporter',value:currentUser?'`'+currentUser.username+'`':'`Anonymous`',inline:true},
       {name:'📂 Category',value:catLabel,inline:true},
       {name:'⚠️ Severity',value:sevLabel,inline:true},
-      {name:'🌐 IP Address',value:'`'+userIP+'`',inline:true},
+      {name:'🌐 IP Address',value:'`Unknown`',inline:true},
       {name:'🆔 Report ID',value:'`'+reportId+'`',inline:true},
       {name:'📅 Time',value:'`'+new Date().toLocaleString('en-US')+'`',inline:true},
       {name:'📝 Description',value:desc.length>1024?desc.slice(0,1021)+'…':desc,inline:false},
