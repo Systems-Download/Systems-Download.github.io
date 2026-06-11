@@ -131,6 +131,11 @@ tr:hover td{background:rgba(255,255,255,.02)}
 .save-btn{font-family:var(--mono);font-size:.75rem;padding:.45rem 1rem;border-radius:6px;border:1px solid rgba(255,200,50,.3);background:rgba(255,200,50,.1);color:var(--gold);cursor:pointer;transition:all .2s;white-space:nowrap}
 .save-btn:hover{background:rgba(255,200,50,.2)}
 
+/* FREEZE BADGE */
+.badge-frozen{background:rgba(100,160,255,.1);color:#64a0ff;border:1px solid rgba(100,160,255,.2)}
+.badge-temp-ban{background:rgba(255,140,0,.1);color:#ff8c00;border:1px solid rgba(255,140,0,.2)}
+.badge-range{background:rgba(167,139,250,.1);color:#a78bfa;border:1px solid rgba(167,139,250,.2)}
+
 /* EMPTY + LOADING */
 .tbl-empty{text-align:center;padding:2rem;font-family:var(--mono);font-size:.78rem;color:var(--muted);opacity:.6}
 .loading-row td{text-align:center;padding:1.5rem;font-family:var(--mono);font-size:.75rem;color:var(--muted)}
@@ -205,6 +210,80 @@ tr:hover td{background:rgba(255,255,255,.02)}
   </div>
 </div>
 
+<!-- FREEZE MODAL -->
+<div class="modal-overlay" id="freeze-modal">
+  <div class="modal">
+    <div class="modal-title">🧊 Freeze Account</div>
+    <div class="modal-field">
+      <label class="modal-label">Username</label>
+      <div class="modal-input" id="freeze-modal-user" style="opacity:.6;cursor:default"></div>
+    </div>
+    <div class="modal-field">
+      <label class="modal-label">Reason for freeze</label>
+      <input class="modal-input" id="freeze-reason-input" type="text" placeholder="e.g. Under investigation, suspicious activity...">
+    </div>
+    <div style="font-family:var(--mono);font-size:.72rem;color:var(--muted);margin-bottom:1rem;line-height:1.6;padding:.6rem .8rem;background:rgba(100,160,255,.05);border:1px solid rgba(100,160,255,.15);border-radius:7px">
+      ℹ️ Frozen accounts cannot login but are not permanently banned. You can unfreeze at any time.
+    </div>
+    <div class="modal-btns">
+      <button class="modal-btn modal-btn-cancel" onclick="closeFreezeModal()">Cancel</button>
+      <button class="modal-btn" style="background:rgba(100,160,255,.15);color:#64a0ff;border:1px solid rgba(100,160,255,.3)" onclick="confirmFreeze()">🧊 Freeze</button>
+    </div>
+  </div>
+</div>
+
+<!-- TEMP BAN MODAL -->
+<div class="modal-overlay" id="tempban-modal">
+  <div class="modal">
+    <div class="modal-title">⏱ Temporary Ban</div>
+    <div class="modal-field">
+      <label class="modal-label">Username</label>
+      <div class="modal-input" id="tempban-modal-user" style="opacity:.6;cursor:default"></div>
+    </div>
+    <div class="modal-field">
+      <label class="modal-label">Duration</label>
+      <div style="display:flex;gap:.5rem;flex-wrap:wrap">
+        <button class="btn-action" id="dur-1h" onclick="selectDuration('1h')" style="background:rgba(255,200,50,.1);color:#ffc832;border-color:rgba(255,200,50,.3)">1 Hour</button>
+        <button class="btn-action" id="dur-6h" onclick="selectDuration('6h')" style="background:none;color:var(--muted);border-color:var(--border)">6 Hours</button>
+        <button class="btn-action" id="dur-24h" onclick="selectDuration('24h')" style="background:none;color:var(--muted);border-color:var(--border)">24 Hours</button>
+        <button class="btn-action" id="dur-7d" onclick="selectDuration('7d')" style="background:none;color:var(--muted);border-color:var(--border)">7 Days</button>
+        <button class="btn-action" id="dur-30d" onclick="selectDuration('30d')" style="background:none;color:var(--muted);border-color:var(--border)">30 Days</button>
+      </div>
+    </div>
+    <div class="modal-field">
+      <label class="modal-label">Reason</label>
+      <input class="modal-input" id="tempban-reason-input" type="text" placeholder="Reason for temporary ban...">
+    </div>
+    <div class="modal-field" style="font-family:var(--mono);font-size:.72rem;color:var(--muted)">
+      Expires: <span id="tempban-expires-display" style="color:#ffc832">—</span>
+    </div>
+    <div class="modal-btns">
+      <button class="modal-btn modal-btn-cancel" onclick="closeTempBanModal()">Cancel</button>
+      <button class="modal-btn" style="background:rgba(255,140,0,.15);color:#ff8c00;border:1px solid rgba(255,140,0,.3)" onclick="confirmTempBan()">⏱ Temp Ban</button>
+    </div>
+  </div>
+</div>
+
+<!-- IP RANGE BAN MODAL -->
+<div class="modal-overlay" id="rangeban-modal">
+  <div class="modal">
+    <div class="modal-title">🌐 IP Range Ban</div>
+    <div class="modal-field">
+      <label class="modal-label">IP Range (CIDR notation)</label>
+      <input class="modal-input" id="rangeban-ip-input" type="text" placeholder="e.g. 192.168.1.0/24">
+      <div style="font-family:var(--mono);font-size:.68rem;color:var(--muted);margin-top:.3rem">Examples: 192.168.1.0/24 (whole subnet) · 10.0.0.0/8 (large range)</div>
+    </div>
+    <div class="modal-field">
+      <label class="modal-label">Reason</label>
+      <input class="modal-input" id="rangeban-reason-input" type="text" placeholder="Reason for range ban...">
+    </div>
+    <div class="modal-btns">
+      <button class="modal-btn modal-btn-cancel" onclick="closeRangeBanModal()">Cancel</button>
+      <button class="modal-btn modal-btn-confirm" onclick="confirmRangeBan()">🌐 Ban Range</button>
+    </div>
+  </div>
+</div>
+
 <!-- NAV -->
 <nav>
   <div style="display:flex;align-items:center;gap:.75rem">
@@ -242,6 +321,9 @@ tr:hover td{background:rgba(255,255,255,.02)}
     </div>
     <div class="sidebar-item" onclick="showSection('banner')" id="nav-banner">
       <span class="sidebar-icon">📢</span>Banner
+    </div>
+    <div class="sidebar-item" onclick="showSection('frozen')" id="nav-frozen">
+      <span class="sidebar-icon">🧊</span>Frozen<span class="sidebar-count" id="count-frozen">—</span>
     </div>
     <div class="sidebar-item" onclick="showSection('announcements')" id="nav-announcements">
       <span class="sidebar-icon">📋</span>Announcements<span class="sidebar-count" id="count-ann">—</span>
@@ -299,19 +381,23 @@ tr:hover td{background:rgba(255,255,255,.02)}
       <div class="page-title">🚫 IP Bans</div>
       <div class="page-sub">Manage banned IP addresses</div>
 
-      <!-- Manual ban form -->
-      <div class="panel" style="margin-bottom:1.5rem">
-        <div class="panel-header"><div class="panel-title">➕ Add Manual Ban</div></div>
-        <div style="padding:1.2rem;display:flex;gap:.75rem;flex-wrap:wrap;align-items:flex-end">
-          <div style="flex:1;min-width:160px">
-            <div class="modal-label" style="margin-bottom:.3rem">IP Address</div>
+      <!-- Manual ban forms -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.5rem">
+        <div class="panel">
+          <div class="panel-header"><div class="panel-title">➕ Ban Single IP</div></div>
+          <div style="padding:1rem;display:flex;flex-direction:column;gap:.6rem">
             <input class="modal-input" id="manual-ban-ip" type="text" placeholder="0.0.0.0">
+            <input class="modal-input" id="manual-ban-reason" type="text" placeholder="Reason...">
+            <button class="btn-action btn-ban" style="padding:.55rem;font-size:.76rem;width:100%" onclick="addManualBan()">🚫 Ban IP</button>
           </div>
-          <div style="flex:2;min-width:200px">
-            <div class="modal-label" style="margin-bottom:.3rem">Reason</div>
-            <input class="modal-input" id="manual-ban-reason" type="text" placeholder="Reason for ban...">
+        </div>
+        <div class="panel" style="border-color:rgba(167,139,250,.2)">
+          <div class="panel-header"><div class="panel-title" style="color:#a78bfa">🌐 Ban IP Range</div></div>
+          <div style="padding:1rem;display:flex;flex-direction:column;gap:.6rem">
+            <input class="modal-input" id="range-ban-ip" type="text" placeholder="192.168.1.0/24">
+            <input class="modal-input" id="range-ban-reason" type="text" placeholder="Reason...">
+            <button class="btn-action" style="padding:.55rem;font-size:.76rem;width:100%;background:rgba(167,139,250,.1);color:#a78bfa;border-color:rgba(167,139,250,.3)" onclick="openRangeBanModal()">🌐 Ban Range</button>
           </div>
-          <button class="btn-action btn-ban" style="padding:.6rem 1.2rem;font-size:.78rem" onclick="addManualBan()">🚫 Ban IP Address</button>
         </div>
       </div>
 
@@ -321,7 +407,7 @@ tr:hover td{background:rgba(255,255,255,.02)}
           <button class="btn-action btn-primary" onclick="loadBans()">↺ Refresh</button>
         </div>
         <table>
-          <thead><tr><th>IP Address</th><th>Reason</th><th>Banned By</th><th>Date</th><th>Actions</th></tr></thead>
+          <thead><tr><th>IP / Range</th><th>Type</th><th>Reason</th><th>Banned By</th><th>Expires</th><th>Date</th><th>Actions</th></tr></thead>
           <tbody id="bans-tbody"><tr class="loading-row"><td colspan="5">Loading...</td></tr></tbody>
         </table>
         <div class="tbl-empty" id="bans-empty" style="display:none">No bans found.</div>
@@ -441,6 +527,23 @@ tr:hover td{background:rgba(255,255,255,.02)}
     </div>
 
 
+    <!-- FROZEN ACCOUNTS -->
+    <div class="section-wrap" id="section-frozen">
+      <div class="page-title">🧊 Frozen Accounts</div>
+      <div class="page-sub">Accounts that are temporarily frozen — cannot login but not permanently banned</div>
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title">🧊 Frozen Users <span id="frozen-count-badge" class="sidebar-count"></span></div>
+          <button class="btn-action btn-primary" onclick="loadFrozen()">↺ Refresh</button>
+        </div>
+        <table>
+          <thead><tr><th>Username</th><th>Frozen By</th><th>Reason</th><th>Since</th><th>Actions</th></tr></thead>
+          <tbody id="frozen-tbody"><tr class="loading-row"><td colspan="5">Loading...</td></tr></tbody>
+        </table>
+        <div class="tbl-empty" id="frozen-empty" style="display:none">No frozen accounts.</div>
+      </div>
+    </div>
+
     <!-- ANNOUNCEMENTS -->
     <div class="section-wrap" id="section-announcements">
       <div class="page-title">📋 Changelog Announcements</div>
@@ -544,7 +647,7 @@ async function checkAccess(){
 
 /* ── LOAD ALL ── */
 async function loadAll(){
-  await Promise.all([loadUsers(),loadBans(),loadBugs(),loadSettings(),loadAnnouncements()]);
+  await Promise.all([loadUsers(),loadBans(),loadBugs(),loadSettings(),loadAnnouncements(),loadFrozen()]);
   updateStats();
 }
 
@@ -552,7 +655,7 @@ async function loadAll(){
 async function loadUsers(){
   document.getElementById('users-tbody').innerHTML='<tr class="loading-row"><td colspan="6">Loading...</td></tr>';
   try{
-    const r=await sb('/rest/v1/cc_users?select=id,username,display_name,ip,is_banned,last_login,created_at,role,failed_attempts,locked_until&order=created_at.desc');
+    const r=await sb('/rest/v1/cc_users?select=id,username,display_name,ip,is_banned,is_frozen,freeze_reason,frozen_by,frozen_at,temp_ban_until,temp_ban_reason,last_login,created_at,role,failed_attempts,locked_until&order=created_at.desc');
     allUsers=await r.json();
     renderUsers(allUsers);
     renderRecentUsers(allUsers.slice(0,5));
@@ -578,12 +681,15 @@ function renderUsers(users){
       <td>${u.role==='beta'?'<span class="badge" style="background:rgba(52,211,153,.1);color:#34d399;border:1px solid rgba(52,211,153,.2)">🧪 Beta</span>':u.role==='admin'?'<span class="badge badge-gold">Admin</span>':'<span class="badge" style="background:rgba(255,255,255,.04);color:var(--muted)">User</span>'}</td>
       <td class="td-muted">${u.last_login?fmtDate(u.last_login):'Never'}${u.locked_until&&new Date(u.locked_until)>new Date()?'<span class="badge badge-red" style="margin-left:.3rem">🔒 Locked</span>':''}</td>
       <td class="td-muted">${fmtDate(u.created_at)}</td>
-      <td>${u.is_banned?'<span class="badge badge-red">Banned</span>':'<span class="badge badge-green">Active</span>'}</td>
+      <td>${u.is_frozen?'<span class="badge badge-frozen">🧊 Frozen</span>':u.is_banned?'<span class="badge badge-red">Banned</span>':u.temp_ban_until&&new Date(u.temp_ban_until)>new Date()?'<span class="badge badge-temp-ban">⏱ Temp Ban</span>':'<span class="badge badge-green">Active</span>'}</td>
       <td>
         <div style="display:flex;gap:.3rem;flex-wrap:wrap">
           ${u.username!==ADMIN_USERNAME?`
-            ${!u.is_banned?`<button class="btn-action btn-ban" onclick="openBanModal('${eh(u.id)}','${eh(u.username)}','${eh(u.ip||'')}')">🚫 Ban User</button>`
-            :`<button class="btn-action btn-unban" onclick="unbanUser('${eh(u.id)}','${eh(u.ip||'')}')">✅ Unban User</button>`}
+            ${u.is_frozen?`<button class="btn-action" style="background:rgba(100,160,255,.1);color:#64a0ff;border-color:rgba(100,160,255,.2)" onclick="unfreezeUser('${eh(u.id)}')">🧊 Unfreeze</button>`:
+              !u.is_banned?`<button class="btn-action btn-ban" onclick="openBanModal('${eh(u.id)}','${eh(u.username)}','${eh(u.ip||'')}')">🚫 Ban User</button>`
+              :`<button class="btn-action btn-unban" onclick="unbanUser('${eh(u.id)}','${eh(u.ip||'')}')">✅ Unban User</button>`}
+            ${!u.is_frozen&&!u.is_banned?`<button class="btn-action" style="background:rgba(255,140,0,.08);color:#ff8c00;border-color:rgba(255,140,0,.2)" onclick="openTempBanModal('${eh(u.id)}','${eh(u.username)}','${eh(u.ip||'')}')">⏱ Temp Ban</button>`:''}
+            ${!u.is_frozen&&!u.is_banned?`<button class="btn-action" style="background:rgba(100,160,255,.08);color:#64a0ff;border-color:rgba(100,160,255,.15)" onclick="openFreezeModal('${eh(u.id)}','${eh(u.username)}')">🧊 Freeze</button>`:''}
             <button class="btn-action ${u.role==='beta'?'btn-unban':'btn-gold'}" onclick="toggleBeta('${eh(u.id)}','${u.role==='beta'?'user':'beta'}')">${u.role==='beta'?'👤 Remove Beta':'🧪 Set Beta'}</button>
             ${u.locked_until&&new Date(u.locked_until)>new Date()?`<button class="btn-action btn-unban" onclick="unlockUser('${eh(u.id)}')">🔓 Unlock</button>`:''}
             <button class="btn-action btn-delete" onclick="openDeleteModal('${eh(u.id)}','${eh(u.username)}')">🗑️ Delete</button>
@@ -599,7 +705,7 @@ function renderRecentUsers(users){
       <td><strong>${eh(u.display_name||u.username)}</strong></td>
       <td class="td-muted">${u.ip||'—'}</td>
       <td class="td-muted">${fmtDate(u.created_at)}</td>
-      <td>${u.is_banned?'<span class="badge badge-red">Banned</span>':'<span class="badge badge-green">Active</span>'}</td>
+      <td>${u.is_frozen?'<span class="badge badge-frozen">🧊 Frozen</span>':u.is_banned?'<span class="badge badge-red">Banned</span>':u.temp_ban_until&&new Date(u.temp_ban_until)>new Date()?'<span class="badge badge-temp-ban">⏱ Temp Ban</span>':'<span class="badge badge-green">Active</span>'}</td>
     </tr>`).join('');
 }
 
@@ -680,9 +786,11 @@ function renderBans(bans){
   em.style.display='none';
   tb.innerHTML=bans.map(b=>`
     <tr>
-      <td><span class="badge badge-red">${eh(b.ip)}</span></td>
+      <td><span class="badge ${b.is_range?'badge-range':'badge-red'}">${b.is_range?'🌐 ':''}${eh(b.ip)}</span></td>
+      <td>${b.is_temp?'<span class="badge badge-temp-ban">⏱ Temp</span>':b.is_range?'<span class="badge badge-range">🌐 Range</span>':'<span class="badge badge-red">Permanent</span>'}</td>
       <td class="td-truncate td-muted">${eh(b.reason||'—')}</td>
       <td class="td-muted">${eh(b.banned_by||'system')}</td>
+      <td class="td-muted">${b.expires_at?'<span style="color:#ffc832">'+fmtDate(b.expires_at)+'</span>':'—'}</td>
       <td class="td-muted">${fmtDate(b.banned_at)}</td>
       <td><button class="btn-action btn-unban" onclick="removeBan('${eh(b.id)}','${eh(b.ip)}')">✅ Remove Ban</button></td>
     </tr>`).join('');
@@ -926,6 +1034,116 @@ async function deleteAnn(id){
     toast('Announcement deleted','ok');
     loadAnnouncements();
   }catch(e){toast('Failed','err');}
+}
+
+/* ── FREEZE ── */
+let pendingFreezeUser=null;
+function openFreezeModal(id,username){
+  pendingFreezeUser={id,username};
+  document.getElementById('freeze-modal-user').textContent=username;
+  document.getElementById('freeze-reason-input').value='';
+  document.getElementById('freeze-modal').classList.add('open');
+}
+function closeFreezeModal(){document.getElementById('freeze-modal').classList.remove('open');pendingFreezeUser=null;}
+async function confirmFreeze(){
+  if(!pendingFreezeUser)return;
+  const reason=document.getElementById('freeze-reason-input').value.trim()||'Account under review';
+  try{
+    await sb(`/rest/v1/cc_users?id=eq.${pendingFreezeUser.id}`,{method:'PATCH',headers:{'Prefer':'return=minimal'},
+      body:JSON.stringify({is_frozen:true,freeze_reason:reason,frozen_by:ADMIN_USERNAME,frozen_at:new Date().toISOString()})});
+    closeFreezeModal();toast('🧊 Account frozen: '+pendingFreezeUser.username,'ok');
+    loadUsers();loadFrozen();
+  }catch(e){toast('Failed: '+e.message,'err');}
+}
+async function unfreezeUser(id){
+  try{
+    await sb(`/rest/v1/cc_users?id=eq.${id}`,{method:'PATCH',headers:{'Prefer':'return=minimal'},
+      body:JSON.stringify({is_frozen:false,freeze_reason:null,frozen_by:null,frozen_at:null})});
+    toast('Account unfrozen','ok');loadUsers();loadFrozen();
+  }catch(e){toast('Failed: '+e.message,'err');}
+}
+async function loadFrozen(){
+  document.getElementById('frozen-tbody').innerHTML='<tr class="loading-row"><td colspan="5">Loading...</td></tr>';
+  document.getElementById('frozen-empty').style.display='none';
+  try{
+    const r=await sb('/rest/v1/cc_users?is_frozen=eq.true&select=id,username,display_name,freeze_reason,frozen_by,frozen_at&order=frozen_at.desc');
+    const data=await r.json();
+    const c=data.length;
+    document.getElementById('count-frozen').textContent=c;
+    document.getElementById('frozen-count-badge').textContent=c;
+    if(!data.length){document.getElementById('frozen-tbody').innerHTML='';document.getElementById('frozen-empty').style.display='block';return;}
+    document.getElementById('frozen-tbody').innerHTML=data.map(u=>`
+      <tr>
+        <td><strong>${eh(u.display_name||u.username)}</strong></td>
+        <td class="td-muted">${eh(u.frozen_by||'admin')}</td>
+        <td class="td-truncate td-muted">${eh(u.freeze_reason||'—')}</td>
+        <td class="td-muted">${fmtDate(u.frozen_at)}</td>
+        <td><button class="btn-action btn-unban" onclick="unfreezeUser('${eh(u.id)}')">🧊 Unfreeze</button></td>
+      </tr>`).join('');
+  }catch(e){document.getElementById('frozen-tbody').innerHTML=`<tr class="loading-row"><td colspan="5">Error: ${e.message}</td></tr>`;}
+}
+
+/* ── TEMP BAN ── */
+let pendingTempBanUser=null;
+let selectedDuration='1h';
+function selectDuration(d){
+  selectedDuration=d;
+  ['1h','6h','24h','7d','30d'].forEach(dur=>{
+    const btn=document.getElementById('dur-'+dur);if(!btn)return;
+    if(dur===d){btn.style.background='rgba(255,200,50,.15)';btn.style.color='#ffc832';btn.style.borderColor='rgba(255,200,50,.35)';}
+    else{btn.style.background='none';btn.style.color='var(--muted)';btn.style.borderColor='var(--border)';}
+  });
+  const ms={'1h':3600000,'6h':21600000,'24h':86400000,'7d':604800000,'30d':2592000000}[d]||3600000;
+  const exp=new Date(Date.now()+ms);
+  document.getElementById('tempban-expires-display').textContent=exp.toLocaleString('en-US',{month:'short',day:'numeric',year:'numeric',hour:'2-digit',minute:'2-digit'});
+}
+function openTempBanModal(id,username,ip){
+  pendingTempBanUser={id,username,ip};
+  document.getElementById('tempban-modal-user').textContent=username;
+  document.getElementById('tempban-reason-input').value='';
+  selectedDuration='1h';selectDuration('1h');
+  document.getElementById('tempban-modal').classList.add('open');
+}
+function closeTempBanModal(){document.getElementById('tempban-modal').classList.remove('open');pendingTempBanUser=null;}
+async function confirmTempBan(){
+  if(!pendingTempBanUser)return;
+  const reason=document.getElementById('tempban-reason-input').value.trim()||'Temporary ban';
+  const ms={'1h':3600000,'6h':21600000,'24h':86400000,'7d':604800000,'30d':2592000000}[selectedDuration]||3600000;
+  const expiresAt=new Date(Date.now()+ms).toISOString();
+  try{
+    await sb(`/rest/v1/cc_users?id=eq.${pendingTempBanUser.id}`,{method:'PATCH',headers:{'Prefer':'return=minimal'},
+      body:JSON.stringify({temp_ban_until:expiresAt,temp_ban_reason:reason,is_banned:false})});
+    if(pendingTempBanUser.ip&&pendingTempBanUser.ip!=='unknown'){
+      await sb('/rest/v1/cc_bans',{method:'POST',headers:{'Prefer':'return=minimal'},
+        body:JSON.stringify({ip:pendingTempBanUser.ip,reason:`TEMP (${selectedDuration}): ${reason}`,banned_by:ADMIN_USERNAME,expires_at:expiresAt,is_temp:true,banned_at:new Date().toISOString()})});
+    }
+    closeTempBanModal();toast('⏱ Temp banned: '+pendingTempBanUser.username+' for '+selectedDuration,'ok');
+    loadUsers();loadBans();
+  }catch(e){toast('Failed: '+e.message,'err');}
+}
+
+/* ── IP RANGE BAN ── */
+function openRangeBanModal(){
+  const ip=document.getElementById('range-ban-ip').value.trim();
+  const reason=document.getElementById('range-ban-reason').value.trim();
+  if(ip){document.getElementById('rangeban-ip-input').value=ip;}
+  if(reason){document.getElementById('rangeban-reason-input').value=reason;}
+  document.getElementById('rangeban-modal').classList.add('open');
+}
+function closeRangeBanModal(){document.getElementById('rangeban-modal').classList.remove('open');}
+async function confirmRangeBan(){
+  const range=document.getElementById('rangeban-ip-input').value.trim();
+  const reason=document.getElementById('rangeban-reason-input').value.trim()||'IP range ban';
+  if(!range){toast('Enter an IP range','err');return;}
+  if(!/^[\d.:/]+$/.test(range)){toast('Invalid IP range format','err');return;}
+  try{
+    await sb('/rest/v1/cc_bans',{method:'POST',headers:{'Prefer':'return=minimal'},
+      body:JSON.stringify({ip:range,reason,banned_by:ADMIN_USERNAME,is_range:true,banned_at:new Date().toISOString()})});
+    document.getElementById('range-ban-ip').value='';
+    document.getElementById('range-ban-reason').value='';
+    closeRangeBanModal();
+    toast('🌐 Range banned: '+range,'ok');loadBans();
+  }catch(e){toast('Failed: '+e.message,'err');}
 }
 
 /* ── BETA TESTER & UNLOCK ── */
