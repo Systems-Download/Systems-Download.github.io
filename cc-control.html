@@ -686,10 +686,10 @@ function renderUsers(users){
         <div style="display:flex;gap:.3rem;flex-wrap:wrap">
           ${u.username!==ADMIN_USERNAME?`
             ${u.is_frozen?`<button class="btn-action" style="background:rgba(100,160,255,.1);color:#64a0ff;border-color:rgba(100,160,255,.2)" onclick="unfreezeUser('${eh(u.id)}')">🧊 Unfreeze</button>`:
-              !u.is_banned?`<button class="btn-action btn-ban" onclick="openBanModal('${eh(u.id)}','${eh(u.username)}','${eh(u.ip||'')}')">🚫 Ban User</button>`
+              !u.is_banned?`<button class="btn-action btn-ban" onclick="openBanModal('${eh(u.id)}','${eh(u.display_name||u.username||'unknown')}','${eh(u.ip||'')}')">🚫 Ban User</button>`
               :`<button class="btn-action btn-unban" onclick="unbanUser('${eh(u.id)}','${eh(u.ip||'')}')">✅ Unban User</button>`}
-            ${!u.is_frozen&&!u.is_banned?`<button class="btn-action" style="background:rgba(255,140,0,.08);color:#ff8c00;border-color:rgba(255,140,0,.2)" onclick="openTempBanModal('${eh(u.id)}','${eh(u.username)}','${eh(u.ip||'')}')">⏱ Temp Ban</button>`:''}
-            ${!u.is_frozen&&!u.is_banned?`<button class="btn-action" style="background:rgba(100,160,255,.08);color:#64a0ff;border-color:rgba(100,160,255,.15)" onclick="openFreezeModal('${eh(u.id)}','${eh(u.username)}')">🧊 Freeze</button>`:''}
+            ${!u.is_frozen&&!u.is_banned?`<button class="btn-action" style="background:rgba(255,140,0,.08);color:#ff8c00;border-color:rgba(255,140,0,.2)" onclick="openTempBanModal('${eh(u.id)}','${eh(u.display_name||u.username||'unknown')}','${eh(u.ip||'')}')">⏱ Temp Ban</button>`:''}
+            ${!u.is_frozen&&!u.is_banned?`<button class="btn-action" style="background:rgba(100,160,255,.08);color:#64a0ff;border-color:rgba(100,160,255,.15)" onclick="openFreezeModal('${eh(u.id)}','${eh(u.display_name||u.username||'unknown')}')">🧊 Freeze</button>`:''}
             <button class="btn-action ${u.role==='beta'?'btn-unban':'btn-gold'}" onclick="toggleBeta('${eh(u.id)}','${u.role==='beta'?'user':'beta'}')">${u.role==='beta'?'👤 Remove Beta':'🧪 Set Beta'}</button>
             ${u.locked_until&&new Date(u.locked_until)>new Date()?`<button class="btn-action btn-unban" onclick="unlockUser('${eh(u.id)}')">🔓 Unlock</button>`:''}
             <button class="btn-action btn-delete" onclick="openDeleteModal('${eh(u.id)}','${eh(u.username)}')">🗑️ Delete</button>
@@ -1048,10 +1048,14 @@ function closeFreezeModal(){document.getElementById('freeze-modal').classList.re
 async function confirmFreeze(){
   if(!pendingFreezeUser)return;
   const reason=document.getElementById('freeze-reason-input').value.trim()||'Account under review';
+  /* Save user data before closing modal */
+  const userId=pendingFreezeUser.id;
+  const userName=pendingFreezeUser.username;
   try{
-    await sb(`/rest/v1/cc_users?id=eq.${pendingFreezeUser.id}`,{method:'PATCH',headers:{'Prefer':'return=minimal'},
+    await sb(`/rest/v1/cc_users?id=eq.${userId}`,{method:'PATCH',headers:{'Prefer':'return=minimal'},
       body:JSON.stringify({is_frozen:true,freeze_reason:reason,frozen_by:ADMIN_USERNAME,frozen_at:new Date().toISOString()})});
-    closeFreezeModal();toast('🧊 Account frozen: '+pendingFreezeUser.username,'ok');
+    closeFreezeModal();
+    toast('🧊 Account frozen: '+userName,'ok');
     loadUsers();loadFrozen();
   }catch(e){toast('Failed: '+e.message,'err');}
 }
