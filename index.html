@@ -86,6 +86,11 @@
   }
   .auth-input:focus{border-color:rgba(15,244,198,.4);box-shadow:0 0 0 3px rgba(15,244,198,.07)}
   .auth-input::placeholder{color:var(--muted);opacity:.5}
+  .name-type-row{display:flex;gap:.5rem;margin-top:.4rem}
+  .name-type-btn{flex:1;font-family:var(--mono);font-size:.7rem;padding:.45rem .6rem;border-radius:6px;border:1px solid var(--border);background:var(--surface2);color:var(--muted);cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:.35rem}
+  .name-type-btn:hover{border-color:rgba(255,255,255,.18);color:var(--text)}
+  .name-type-btn.active-discord{background:rgba(88,101,242,.1);border-color:rgba(88,101,242,.35);color:#8b9cf4}
+  .name-type-btn.active-roblox{background:rgba(15,244,198,.1);border-color:rgba(15,244,198,.35);color:var(--conch)}
   .auth-input.err{border-color:rgba(255,79,94,.5)}
 
   .auth-btn{
@@ -753,6 +758,13 @@ async function checkBan(ip){
 /* ══════════════════════════════════════
    REGISTER
 ══════════════════════════════════════ */
+let regNameType='discord';
+function setNameType(type){
+  regNameType=type;
+  document.getElementById('nametype-discord').classList.toggle('active-discord',type==='discord');
+  document.getElementById('nametype-roblox').classList.toggle('active-roblox',type==='roblox');
+}
+
 async function doRegister(){
   const name=document.getElementById('reg-name').value.trim();
   const pw=document.getElementById('reg-pw').value;
@@ -812,7 +824,7 @@ async function doRegister(){
     const ins=await sbFetch('/rest/v1/cc_users',{
       method:'POST',
       headers:{'Prefer':'return=minimal'},
-      body:JSON.stringify({username:name.toLowerCase(),display_name:name,password_hash:hash,ip,created_at:new Date().toISOString()})
+      body:JSON.stringify({username:name.toLowerCase(),display_name:name,name_type:regNameType,password_hash:hash,ip,created_at:new Date().toISOString()})
     });
 
     if(ins.ok||ins.status===201||ins.status===204){
@@ -1118,6 +1130,10 @@ function t(k,...a){const v=(T[lang]||T.en)[k];return typeof v==='function'?v(...
             <label class="auth-label">Username</label>
             <input class="auth-input" id="reg-name" type="text" placeholder="choose_a_name" autocomplete="username" maxlength="20"
               onkeydown="if(event.key==='Enter')doRegister()">
+            <div class="name-type-row">
+              <button type="button" class="name-type-btn active-discord" id="nametype-discord" onclick="setNameType('discord')">💬 Discord Name</button>
+              <button type="button" class="name-type-btn" id="nametype-roblox" onclick="setNameType('roblox')">🎮 Roblox Name</button>
+            </div>
           </div>
           <div class="auth-field">
             <label class="auth-label">Password</label>
