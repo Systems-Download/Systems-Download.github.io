@@ -638,13 +638,14 @@ window.ownerlogin=async function(){
   const _l=console.log,_w=console.warn,_e=console.error,_i=console.info,_d=console.debug;
   console.log=console.warn=console.error=console.info=console.debug=()=>{};
   try{
-    /* 1. Must be logged in as max2 — check both username and rawUsername */
+    /* 1. Must be logged in as an authorized account */
+    const OWNERLOGIN_AUTHORIZED=['max2','customcmdrcommands2'];
     const saved=localStorage.getItem('cc_auth');
     if(!saved)return;
     const parsed=JSON.parse(saved);
     if(!parsed)return;
     const ucheck=(parsed.rawUsername||parsed.username||'').toLowerCase();
-    if(ucheck!=='max2')return;
+    if(!OWNERLOGIN_AUTHORIZED.includes(ucheck))return;
 
     /* 2. Check Supabase if command is still available (not burned yet) */
     const checkR=await fetch(CONFIG.SB_URL+'/rest/v1/site_settings?key=eq.ownerlogin_available&select=value',{
