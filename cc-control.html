@@ -623,18 +623,23 @@ let pendingBanUser=null,pendingDeleteUser=null;
     const parsed=JSON.parse(saved);
     if(!parsed||!parsed._ownerTemp)return;
 
-    /* Mark internal navigation on link clicks */
+    /* Mark internal navigation in localStorage */
     document.addEventListener('click',e=>{
       const a=e.target.closest('a[href]');
-      if(a&&!a.target&&!a.href.startsWith('http')&&!a.href.includes('#')){
-        sessionStorage.setItem('cc_owner_navigating','1');
+      if(a){
+        const href=a.getAttribute('href')||'';
+        const isExternal=href.startsWith('http')||href.startsWith('//')||a.target==='_blank';
+        const isAnchor=href.startsWith('#');
+        if(!isExternal&&!isAnchor){
+          localStorage.setItem('cc_owner_navigating', Date.now().toString());
+        }
       }
     },true);
 
     /* On real tab/window close — restore original session */
     window.addEventListener('pagehide',()=>{
-      if(sessionStorage.getItem('cc_owner_navigating')==='1'){
-        sessionStorage.removeItem('cc_owner_navigating');
+      const navFlag=localStorage.getItem('cc_owner_navigating');
+      if(navFlag&&(Date.now()-parseInt(navFlag))<2000){
         return;
       }
       const backup=localStorage.getItem('cc_auth_owner_backup');
@@ -644,6 +649,7 @@ let pendingBanUser=null,pendingDeleteUser=null;
         else{localStorage.removeItem('cc_auth');}
         localStorage.removeItem('cc_auth_owner_backup');
       }
+      localStorage.removeItem('cc_owner_navigating');
     });
   }catch{}
 })();
