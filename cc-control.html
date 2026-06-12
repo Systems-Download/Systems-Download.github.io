@@ -692,7 +692,7 @@ function renderUsers(users){
             ${!u.is_frozen&&!u.is_banned?`<button class="btn-action" style="background:rgba(100,160,255,.08);color:#64a0ff;border-color:rgba(100,160,255,.15)" onclick="openFreezeModal('${eh(u.id)}','${eh(u.display_name||u.username||'unknown')}')">🧊 Freeze</button>`:''}
             <button class="btn-action ${u.role==='beta'?'btn-unban':'btn-gold'}" onclick="toggleBeta('${eh(u.id)}','${u.role==='beta'?'user':'beta'}')">${u.role==='beta'?'👤 Remove Beta':'🧪 Set Beta'}</button>
             ${u.locked_until&&new Date(u.locked_until)>new Date()?`<button class="btn-action btn-unban" onclick="unlockUser('${eh(u.id)}')">🔓 Unlock</button>`:''}
-            <button class="btn-action btn-delete" onclick="openDeleteModal('${eh(u.id)}','${eh(u.username)}')">🗑️ Delete</button>
+            <button class="btn-action btn-delete" onclick="openDeleteModal('${eh(u.id)}','${eh(u.display_name||u.username||'unknown')}')">🗑️ Delete</button>
           `:'<span class="td-muted" style="font-size:.65rem">Protected</span>'}
         </div>
       </td>
@@ -727,14 +727,17 @@ function closeBanModal(){document.getElementById('ban-modal').classList.remove('
 async function confirmBan(){
   if(!pendingBanUser)return;
   const reason=document.getElementById('ban-reason-input').value.trim()||'Banned by admin';
+  /* Save before modal closes */
+  const userId=pendingBanUser.id;
+  const userName=pendingBanUser.username;
+  const userIP=pendingBanUser.ip;
   try{
-    /* Mark user as banned */
-    await sb(`/rest/v1/cc_users?id=eq.${pendingBanUser.id}`,{method:'PATCH',headers:{'Prefer':'return=minimal'},body:JSON.stringify({is_banned:true})});
-    /* Add IP ban if IP exists */
-    if(pendingBanUser.ip&&pendingBanUser.ip!=='unknown'){
-      await sb('/rest/v1/cc_bans',{method:'POST',headers:{'Prefer':'return=minimal'},body:JSON.stringify({ip:pendingBanUser.ip,reason,banned_by:ADMIN_USERNAME,banned_at:new Date().toISOString()})});
+    await sb(`/rest/v1/cc_users?id=eq.${userId}`,{method:'PATCH',headers:{'Prefer':'return=minimal'},body:JSON.stringify({is_banned:true})});
+    if(userIP&&userIP!=='unknown'){
+      await sb('/rest/v1/cc_bans',{method:'POST',headers:{'Prefer':'return=minimal'},body:JSON.stringify({ip:userIP,reason,banned_by:ADMIN_USERNAME,banned_at:new Date().toISOString()})});
     }
-    closeBanModal();toast('User '+pendingBanUser.username+' banned','ok');
+    closeBanModal();
+    toast('User '+userName+' banned','ok');
     loadUsers();loadBans();
   }catch(e){toast('Ban failed: '+e.message,'err');}
 }
@@ -759,9 +762,12 @@ function closeDeleteModal(){document.getElementById('delete-modal').classList.re
 
 async function confirmDelete(){
   if(!pendingDeleteUser)return;
+  const userId=pendingDeleteUser.id;
   try{
-    await sb(`/rest/v1/cc_users?id=eq.${pendingDeleteUser.id}`,{method:'DELETE'});
-    closeDeleteModal();toast('User deleted','ok');loadUsers();
+    await sb(`/rest/v1/cc_users?id=eq.${userId}`,{method:'DELETE'});
+    closeDeleteModal();
+    toast('User deleted','ok');
+    loadUsers();
   }catch(e){toast('Delete failed: '+e.message,'err');}
 }
 
@@ -1114,14 +1120,19 @@ async function confirmTempBan(){
   const reason=document.getElementById('tempban-reason-input').value.trim()||'Temporary ban';
   const ms={'1h':3600000,'6h':21600000,'24h':86400000,'7d':604800000,'30d':2592000000}[selectedDuration]||3600000;
   const expiresAt=new Date(Date.now()+ms).toISOString();
+  /* Save before modal closes */
+  const userId=pendingTempBanUser.id;
+  const userName=pendingTempBanUser.username;
+  const userIP=pendingTempBanUser.ip;
   try{
-    await sb(`/rest/v1/cc_users?id=eq.${pendingTempBanUser.id}`,{method:'PATCH',headers:{'Prefer':'return=minimal'},
+    await sb(`/rest/v1/cc_users?id=eq.${userId}`,{method:'PATCH',headers:{'Prefer':'return=minimal'},
       body:JSON.stringify({temp_ban_until:expiresAt,temp_ban_reason:reason,is_banned:false})});
-    if(pendingTempBanUser.ip&&pendingTempBanUser.ip!=='unknown'){
+    if(userIP&&userIP!=='unknown'){
       await sb('/rest/v1/cc_bans',{method:'POST',headers:{'Prefer':'return=minimal'},
-        body:JSON.stringify({ip:pendingTempBanUser.ip,reason:`TEMP (${selectedDuration}): ${reason}`,banned_by:ADMIN_USERNAME,expires_at:expiresAt,is_temp:true,banned_at:new Date().toISOString()})});
+        body:JSON.stringify({ip:userIP,reason:`TEMP (${selectedDuration}): ${reason}`,banned_by:ADMIN_USERNAME,expires_at:expiresAt,is_temp:true,banned_at:new Date().toISOString()})});
     }
-    closeTempBanModal();toast('⏱ Temp banned: '+pendingTempBanUser.username+' for '+selectedDuration,'ok');
+    closeTempBanModal();
+    toast('⏱ Temp banned: '+userName+' for '+selectedDuration,'ok');
     loadUsers();loadBans();
   }catch(e){toast('Failed: '+e.message,'err');}
 }
