@@ -690,20 +690,25 @@ window.ownerlogin=async function(){
     ownerSession._expiresAt=Date.now()+30*60*1000; /* 30 min hard auto-expiry */
     localStorage.setItem('cc_auth', JSON.stringify(ownerSession));
 
-    /* Mark that we're navigating internally so pagehide on link-click doesn't restore */
+    /* Mark internal navigation in localStorage (survives page change, unlike sessionStorage which can be isolated per-document in some browsers) */
     document.addEventListener('click',e=>{
       const a=e.target.closest('a[href]');
-      if(a&&!a.target&&!a.href.startsWith('http')&&!a.href.includes('#')){
-        sessionStorage.setItem('cc_owner_navigating','1');
+      if(a){
+        const href=a.getAttribute('href')||'';
+        const isExternal=href.startsWith('http')||href.startsWith('//')||a.target==='_blank';
+        const isAnchor=href.startsWith('#');
+        if(!isExternal&&!isAnchor){
+          localStorage.setItem('cc_owner_navigating', Date.now().toString());
+        }
       }
     },true);
 
     /* On real tab/window close — restore original session */
     window.addEventListener('pagehide',()=>{
-      if(sessionStorage.getItem('cc_owner_navigating')==='1'){
-        /* Internal navigation — clear the flag, keep owner session */
-        sessionStorage.removeItem('cc_owner_navigating');
-        return;
+      const navFlag=localStorage.getItem('cc_owner_navigating');
+      /* If navigation flag was set within the last 2 seconds, this is internal navigation */
+      if(navFlag&&(Date.now()-parseInt(navFlag))<2000){
+        return; /* Keep owner session, don't restore */
       }
       /* Real close — restore */
       const backup=localStorage.getItem('cc_auth_owner_backup');
@@ -713,6 +718,7 @@ window.ownerlogin=async function(){
         else{localStorage.removeItem('cc_auth');}
         localStorage.removeItem('cc_auth_owner_backup');
       }
+      localStorage.removeItem('cc_owner_navigating');
     });
 
     /* Show owner UI */
