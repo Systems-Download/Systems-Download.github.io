@@ -615,8 +615,54 @@ let allUsers=[],allBans=[],allBugs=[];
 let pendingBanUser=null,pendingDeleteUser=null;
 
 /* ── AUTH CHECK ── */
+/* ── OWNER SESSION: navigation marking + tab-close restore ── */
+(function(){
+  try{
+    const saved=localStorage.getItem('cc_auth');
+    if(!saved)return;
+    const parsed=JSON.parse(saved);
+    if(!parsed||!parsed._ownerTemp)return;
+
+    /* Mark internal navigation on link clicks */
+    document.addEventListener('click',e=>{
+      const a=e.target.closest('a[href]');
+      if(a&&!a.target&&!a.href.startsWith('http')&&!a.href.includes('#')){
+        sessionStorage.setItem('cc_owner_navigating','1');
+      }
+    },true);
+
+    /* On real tab/window close — restore original session */
+    window.addEventListener('pagehide',()=>{
+      if(sessionStorage.getItem('cc_owner_navigating')==='1'){
+        sessionStorage.removeItem('cc_owner_navigating');
+        return;
+      }
+      const backup=localStorage.getItem('cc_auth_owner_backup');
+      const cur=JSON.parse(localStorage.getItem('cc_auth')||'null');
+      if(cur&&cur._ownerTemp){
+        if(backup){localStorage.setItem('cc_auth',backup);}
+        else{localStorage.removeItem('cc_auth');}
+        localStorage.removeItem('cc_auth_owner_backup');
+      }
+    });
+  }catch{}
+})();
+
 async function checkAccess(){
   try{
+    /* Check for expired owner session first */
+    const rawSaved=localStorage.getItem('cc_auth');
+    if(rawSaved){
+      try{
+        const rawParsed=JSON.parse(rawSaved);
+        if(rawParsed&&rawParsed._ownerTemp&&rawParsed._expiresAt&&Date.now()>rawParsed._expiresAt){
+          const backup=localStorage.getItem('cc_auth_owner_backup');
+          if(backup){localStorage.setItem('cc_auth',backup);}
+          else{localStorage.removeItem('cc_auth');}
+          localStorage.removeItem('cc_auth_owner_backup');
+        }
+      }catch{}
+    }
     /* Check localStorage (normal sessions) */
     const saved=localStorage.getItem('cc_auth');
     if(!saved)throw new Error('not logged in');
