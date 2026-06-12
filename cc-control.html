@@ -369,7 +369,7 @@ tr:hover td{background:rgba(255,255,255,.02)}
           </div>
         </div>
         <table>
-          <thead><tr><th>Username</th><th>IP</th><th>Role</th><th>Last Login</th><th>Registered</th><th>Status</th><th>Actions</th></tr></thead>
+          <thead><tr><th>Username</th><th>Type</th><th>IP</th><th>Role</th><th>Last Login</th><th>Registered</th><th>Status</th><th>Actions</th></tr></thead>
           <tbody id="users-tbody"><tr class="loading-row"><td colspan="6">Loading...</td></tr></tbody>
         </table>
         <div class="tbl-empty" id="users-empty" style="display:none">No users found.</div>
@@ -765,7 +765,7 @@ async function loadAll(){
 async function loadUsers(){
   document.getElementById('users-tbody').innerHTML='<tr class="loading-row"><td colspan="6">Loading...</td></tr>';
   try{
-    const r=await sb('/rest/v1/cc_users?select=id,username,display_name,ip,is_banned,is_frozen,freeze_reason,frozen_by,frozen_at,temp_ban_until,temp_ban_reason,last_login,created_at,role,failed_attempts,locked_until&order=created_at.desc');
+    const r=await sb('/rest/v1/cc_users?select=id,username,display_name,name_type,ip,is_banned,is_frozen,freeze_reason,frozen_by,frozen_at,temp_ban_until,temp_ban_reason,last_login,created_at,role,failed_attempts,locked_until&order=created_at.desc');
     allUsers=await r.json();
     renderUsers(allUsers);
     renderRecentUsers(allUsers.slice(0,5));
@@ -787,6 +787,7 @@ function renderUsers(users){
   tb.innerHTML=users.map(u=>`
     <tr>
       <td><strong>${eh(u.display_name||u.username)}</strong>${u.username===ADMIN_USERNAME?'<span class="badge badge-gold" style="margin-left:.4rem">Owner</span>':''}</td>
+      <td>${u.name_type==='roblox'?'<span class="badge" style="background:rgba(15,244,198,.1);color:var(--conch);border:1px solid rgba(15,244,198,.2)">🎮 Roblox</span>':u.name_type==='discord'?'<span class="badge" style="background:rgba(88,101,242,.1);color:#8b9cf4;border:1px solid rgba(88,101,242,.2)">💬 Discord</span>':'<span class="badge" style="background:rgba(255,255,255,.04);color:var(--muted)">—</span>'}</td>
       <td class="td-muted">${u.ip||'—'}</td>
       <td>${u.role==='beta'?'<span class="badge" style="background:rgba(52,211,153,.1);color:#34d399;border:1px solid rgba(52,211,153,.2)">🧪 Beta</span>':u.role==='admin'?'<span class="badge badge-gold">Admin</span>':'<span class="badge" style="background:rgba(255,255,255,.04);color:var(--muted)">User</span>'}</td>
       <td class="td-muted">${u.last_login?fmtDate(u.last_login):'Never'}${u.locked_until&&new Date(u.locked_until)>new Date()?'<span class="badge badge-red" style="margin-left:.3rem">🔒 Locked</span>':''}</td>
