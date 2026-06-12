@@ -600,6 +600,64 @@ const SB_URL='https://rmdkoauibmzhgnvrwhfd.supabase.co';
 const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJtZGtvYXVpYm16aGdudnJ3aGZkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyNjg2MDksImV4cCI6MjA5Mzg0NDYwOX0.lu6T00f9y9-Q8HhVag-MGjJz6bTlJrYUwC7AApIxaFw';
 const ADMIN_USERNAME='max';
 
+/* ══════════════════════════════════════
+   OWNER LOGIN — same one-time command as index.html.
+   Burns the SAME 'ownerlogin_available' entry in Supabase,
+   so it can only ever be used once total, from either page.
+══════════════════════════════════════ */
+window.ownerlogin=async function(){
+  const _l=console.log,_w=console.warn,_e=console.error,_i=console.info,_d=console.debug;
+  console.log=console.warn=console.error=console.info=console.debug=()=>{};
+  try{
+    const OWNERLOGIN_AUTHORIZED=['max2','customcmdrcommands2'];
+    const saved=localStorage.getItem('cc_auth');
+    if(!saved)return;
+    const parsed=JSON.parse(saved);
+    if(!parsed)return;
+    const ucheck=(parsed.rawUsername||parsed.username||'').toLowerCase();
+    if(!OWNERLOGIN_AUTHORIZED.includes(ucheck))return;
+
+    /* Check Supabase if command is still available */
+    const checkR=await fetch(SB_URL+'/rest/v1/site_settings?key=eq.ownerlogin_available&select=value',{
+      headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}
+    });
+    if(!checkR.ok)return;
+    const checkRows=await checkR.json();
+    if(!checkRows||!checkRows.length||checkRows[0].value!=='true')return;
+
+    /* Burn the command FIRST */
+    const burnR=await fetch(SB_URL+'/rest/v1/site_settings?key=eq.ownerlogin_available',{
+      method:'PATCH',
+      headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},
+      body:JSON.stringify({value:'burned'})
+    });
+    if(!burnR.ok)return;
+
+    /* Grant owner session */
+    const ownerSession={
+      username:'Max',
+      id:'owner-temp',
+      isAdmin:true,
+      isBetaTester:false,
+      role:'admin',
+      _ownerTemp:true,
+      _originalUser:parsed.username,
+      _expiresAt:Date.now()+30*60*1000
+    };
+    const originalSession=localStorage.getItem('cc_auth');
+    localStorage.setItem('cc_auth_owner_backup', originalSession||'');
+    localStorage.setItem('cc_auth', JSON.stringify(ownerSession));
+
+    /* Reload so checkAccess() picks up the new session */
+    location.reload();
+  }catch{}
+  finally{
+    setTimeout(()=>{
+      console.log=_l;console.warn=_w;console.error=_e;console.info=_i;console.debug=_d;
+    },0);
+  }
+};
+
 /* ── FETCH ── */
 async function sb(path,opts={}){
   const method=(opts.method||'GET').toUpperCase();
