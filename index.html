@@ -91,6 +91,75 @@
   .name-type-btn:hover{border-color:rgba(255,255,255,.18);color:var(--text)}
   .name-type-btn.active-discord{background:rgba(88,101,242,.1);border-color:rgba(88,101,242,.35);color:#8b9cf4}
   .name-type-btn.active-roblox{background:rgba(15,244,198,.1);border-color:rgba(15,244,198,.35);color:var(--conch)}
+
+  /* PASSWORD STRENGTH */
+  .pw-strength-wrap{margin-top:.4rem}
+  .pw-bar-track{height:3px;background:var(--surface2);border-radius:2px;overflow:hidden;margin-bottom:.3rem}
+  .pw-bar-fill{height:100%;border-radius:2px;width:0%;transition:width .3s,background .3s}
+  .pw-strength-label{font-family:var(--mono);font-size:.65rem;color:var(--muted);transition:color .2s}
+
+  /* EMAIL VERIFICATION */
+  .verify-banner{background:rgba(255,200,50,.06);border:1px solid rgba(255,200,50,.2);border-radius:10px;padding:.85rem 1.1rem;display:flex;align-items:center;gap:.75rem;margin-bottom:1.5rem;font-family:var(--mono);font-size:.78rem;color:#ffc832}
+  .verify-banner-btn{font-family:var(--mono);font-size:.7rem;padding:.35rem .8rem;border-radius:6px;border:1px solid rgba(255,200,50,.3);background:rgba(255,200,50,.1);color:#ffc832;cursor:pointer;transition:all .2s;white-space:nowrap;flex-shrink:0}
+  .verify-banner-btn:hover{background:rgba(255,200,50,.2)}
+  .verify-banner-btn:disabled{opacity:.5;cursor:not-allowed}
+
+  /* ═══════ COMMENTS & REACTIONS ═══════ */
+  .file-extras{border-top:1px solid var(--border);padding:.85rem 1.2rem}
+  .reactions-row{display:flex;gap:.4rem;margin-bottom:.75rem;flex-wrap:wrap;align-items:center}
+  .reaction-btn{font-family:var(--mono);font-size:.78rem;padding:.3rem .6rem;border-radius:20px;border:1px solid var(--border);background:var(--surface2);color:var(--muted);cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:.3rem;user-select:none}
+  .reaction-btn:hover{border-color:rgba(255,255,255,.18);transform:scale(1.05)}
+  .reaction-btn.reacted{background:rgba(15,244,198,.1);border-color:rgba(15,244,198,.35);color:var(--conch)}
+  .reaction-count{font-size:.7rem;opacity:.8}
+  .reaction-pill{font-family:var(--mono);font-size:.78rem;padding:.3rem .6rem;border-radius:14px;border:1px solid var(--border);background:var(--surface2);color:var(--muted);cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:.3rem}
+  .reaction-pill:hover{border-color:rgba(255,255,255,.18);transform:scale(1.06)}
+  .reaction-pill.active{border-color:rgba(15,244,198,.4);background:rgba(15,244,198,.1);color:var(--conch)}
+  .comment-delete-btn{background:none;border:none;cursor:pointer;color:var(--muted);font-size:.68rem;padding:.1rem;margin-left:auto;transition:color .2s}
+  .comment-delete-btn:hover{color:var(--cmdr)}
+  .comments-toggle{font-family:var(--mono);font-size:.72rem;padding:.32rem .7rem;border-radius:6px;border:1px solid var(--border);background:none;color:var(--muted);cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:.35rem}
+  .comments-toggle:hover{border-color:rgba(255,255,255,.18);color:var(--text)}
+  .comments-toggle .arr{transition:transform .2s}
+  .comments-toggle.open .arr{transform:rotate(180deg)}
+  .comments-section{display:none;margin-top:.85rem;border-top:1px solid var(--border);padding-top:.85rem}
+  .comments-section.open{display:block}
+  .comment-input-row{display:flex;gap:.5rem;margin-bottom:.85rem}
+  .comment-input{flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:var(--mono);font-size:.78rem;padding:.55rem .85rem;outline:none;transition:border-color .2s}
+  .comment-input:focus{border-color:rgba(15,244,198,.35)}
+  .comment-input::placeholder{color:var(--muted);opacity:.5}
+  .comment-send-btn{font-family:var(--mono);font-size:.75rem;padding:.5rem 1rem;border-radius:8px;border:none;background:rgba(15,244,198,.12);color:var(--conch);cursor:pointer;transition:all .2s;flex-shrink:0}
+  .comment-send-btn:hover{background:rgba(15,244,198,.22)}
+  .comment-send-btn:disabled{opacity:.4;cursor:not-allowed}
+  .comment-item{display:flex;gap:.65rem;padding:.6rem 0;border-bottom:1px solid var(--border)}
+  .comment-item:last-child{border-bottom:none}
+  .comment-avatar{width:30px;height:30px;border-radius:50%;background:rgba(15,244,198,.1);border:1px solid rgba(15,244,198,.2);display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:800;color:var(--conch);flex-shrink:0;overflow:hidden}
+  .comment-avatar img{width:100%;height:100%;object-fit:cover;border-radius:50%}
+  .comment-body{flex:1;min-width:0}
+  .comment-head{display:flex;align-items:center;gap:.5rem;margin-bottom:.2rem;flex-wrap:wrap}
+  .comment-author{font-family:var(--mono);font-size:.76rem;font-weight:700;color:var(--text)}
+  .comment-time{font-family:var(--mono);font-size:.65rem;color:var(--muted);opacity:.6}
+  .comment-text{font-family:var(--mono);font-size:.76rem;color:var(--muted);line-height:1.6;word-break:break-word}
+  .comment-delete{background:none;border:none;color:var(--muted);cursor:pointer;font-size:.7rem;padding:.1rem .3rem;opacity:.5;transition:opacity .2s,color .2s;margin-left:auto}
+  .comment-delete:hover{opacity:1;color:var(--cmdr)}
+  .comments-empty{font-family:var(--mono);font-size:.74rem;color:var(--muted);opacity:.5;text-align:center;padding:.75rem 0}
+  .comments-loading{font-family:var(--mono);font-size:.72rem;color:var(--muted);text-align:center;padding:.75rem 0}
+
+  /* ═══════ WELCOME TOUR ═══════ */
+  .tour-overlay{position:fixed;inset:0;z-index:9500;pointer-events:none}
+  .tour-spotlight{position:absolute;border-radius:10px;box-shadow:0 0 0 9999px rgba(0,0,0,.6);transition:all .35s cubic-bezier(.4,0,.2,1);pointer-events:none}
+  .tour-tooltip{position:fixed;z-index:9501;background:var(--surface);border:1px solid rgba(15,244,198,.3);border-radius:12px;padding:1.1rem 1.3rem;max-width:300px;box-shadow:0 16px 48px rgba(0,0,0,.5);animation:tourIn .3s cubic-bezier(.34,1.56,.64,1);pointer-events:all}
+  @keyframes tourIn{from{opacity:0;transform:scale(.92)}to{opacity:1;transform:scale(1)}}
+  .tour-step-badge{font-family:var(--mono);font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--conch);margin-bottom:.4rem}
+  .tour-title{font-size:1rem;font-weight:800;color:var(--text);margin-bottom:.4rem}
+  .tour-desc{font-family:var(--mono);font-size:.76rem;color:var(--muted);line-height:1.7;margin-bottom:1rem}
+  .tour-actions{display:flex;justify-content:space-between;align-items:center;gap:.5rem}
+  .tour-dots{display:flex;gap:.3rem}
+  .tour-dot{width:6px;height:6px;border-radius:50%;background:var(--surface2);border:1px solid var(--border);transition:all .2s}
+  .tour-dot.active{background:var(--conch);border-color:var(--conch)}
+  .tour-btn{font-family:var(--mono);font-size:.72rem;padding:.4rem .85rem;border-radius:6px;border:1px solid rgba(15,244,198,.3);background:rgba(15,244,198,.1);color:var(--conch);cursor:pointer;transition:all .2s}
+  .tour-btn:hover{background:rgba(15,244,198,.2)}
+  .tour-skip{font-family:var(--mono);font-size:.7rem;color:var(--muted);background:none;border:none;cursor:pointer;transition:color .2s}
+  .tour-skip:hover{color:var(--text)}
+  .tour-arrow{position:absolute;width:12px;height:12px;background:var(--surface);border:1px solid rgba(15,244,198,.3);transform:rotate(45deg)}
   .auth-input.err{border-color:rgba(255,79,94,.5)}
 
   .auth-btn{
@@ -758,6 +827,31 @@ async function checkBan(ip){
 /* ══════════════════════════════════════
    REGISTER
 ══════════════════════════════════════ */
+/* ── PASSWORD STRENGTH METER ── */
+function checkRegPwStrength(){
+  const pw=document.getElementById('reg-pw').value;
+  const bar=document.getElementById('reg-pw-bar');
+  const label=document.getElementById('reg-pw-label');
+  if(!pw){bar.style.width='0%';label.textContent='';return;}
+  let score=0;
+  if(pw.length>=6)score++;
+  if(pw.length>=10)score++;
+  if(/\d/.test(pw))score++;
+  if(/[A-Z]/.test(pw))score++;
+  if(/[^a-zA-Z0-9]/.test(pw))score++;
+  const configs=[
+    {w:'15%',bg:'#ff4f5e',t:'Very Weak'},
+    {w:'30%',bg:'#ff4f5e',t:'Weak'},
+    {w:'55%',bg:'#ffc832',t:'Fair'},
+    {w:'75%',bg:'#64a0ff',t:'Good'},
+    {w:'90%',bg:'#34d399',t:'Strong'},
+    {w:'100%',bg:'#0ff4c6',t:'Very Strong'},
+  ];
+  const cfg=configs[Math.min(score,5)];
+  bar.style.width=cfg.w;bar.style.background=cfg.bg;
+  label.textContent=cfg.t;label.style.color=cfg.bg;
+}
+
 let regNameType='discord';
 function setNameType(type){
   regNameType=type;
@@ -767,6 +861,7 @@ function setNameType(type){
 
 async function doRegister(){
   const name=document.getElementById('reg-name').value.trim();
+  const email=document.getElementById('reg-email').value.trim();
   const pw=document.getElementById('reg-pw').value;
   const pw2=document.getElementById('reg-pw2').value;
   const err=document.getElementById('reg-err');
@@ -774,9 +869,10 @@ async function doRegister(){
   const btn=document.getElementById('reg-btn');
   err.classList.remove('vis');ok.classList.remove('vis');
 
-  if(!name||!pw||!pw2){setAuthErr('reg','All fields are required.');return;}
+  if(!name||!email||!pw||!pw2){setAuthErr('reg','All fields are required.');return;}
   if(name.length<3||name.length>20){setAuthErr('reg','Username must be 3–20 characters.');return;}
   if(/[^a-zA-Z0-9_\-]/.test(name)){setAuthErr('reg','Username: letters, numbers, _ and - only.');return;}
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){setAuthErr('reg','Please enter a valid email address.');return;}
   if(pw.length<6){setAuthErr('reg','Password must be at least 6 characters.');return;}
   if(pw!==pw2){setAuthErr('reg','Passwords do not match.');return;}
 
@@ -802,6 +898,11 @@ async function doRegister(){
     const nameData=await checkName.json();
     if(nameData&&nameData.length>0){setAuthErr('reg','Username already taken.');btn.disabled=false;btn.textContent='Register';return;}
 
+    /* Check if email already used */
+    const checkEmail=await sbFetch(`/rest/v1/cc_users?email=eq.${encodeURIComponent(email.toLowerCase())}&select=id`);
+    const emailData=await checkEmail.json();
+    if(emailData&&emailData.length>0){setAuthErr('reg','An account with this email already exists.');btn.disabled=false;btn.textContent='Register';return;}
+
     /* Check if IP already has an account */
     const checkIP=await sbFetch(`/rest/v1/cc_users?ip=eq.${encodeURIComponent(ip)}&select=id`);
     const ipData=await checkIP.json();
@@ -819,17 +920,25 @@ async function doRegister(){
     /* Hash password */
     const hash=await hashPass(pw);
 
-    /* Create user */
+    /* Create user — unverified */
     btn.textContent='Creating account...';
     const ins=await sbFetch('/rest/v1/cc_users',{
       method:'POST',
       headers:{'Prefer':'return=minimal'},
-      body:JSON.stringify({username:name.toLowerCase(),display_name:name,name_type:regNameType,password_hash:hash,ip,created_at:new Date().toISOString()})
+      body:JSON.stringify({username:name.toLowerCase(),display_name:name,name_type:regNameType,email:email.toLowerCase(),email_verified:false,password_hash:hash,ip,created_at:new Date().toISOString()})
     });
 
     if(ins.ok||ins.status===201||ins.status===204){
-      ok.textContent='Account created! Logging you in...';ok.classList.add('vis');
-      setTimeout(()=>doLoginWithCreds(name,pw),800);
+      /* Send verification email */
+      btn.textContent='Sending verification...';
+      await sendVerificationEmail(email,name);
+      ok.textContent='Account created! Check your email to verify before logging in.';ok.classList.add('vis');
+      btn.disabled=false;btn.textContent='Register';
+      /* Switch to login tab and prefill */
+      setTimeout(()=>{
+        switchTab('login');
+        document.getElementById('login-name').value=name;
+      },1500);
     } else {
       const errBody=await ins.json().catch(()=>({}));
       setAuthErr('reg','Registration failed: '+(errBody.message||ins.status));
@@ -839,6 +948,94 @@ async function doRegister(){
     setAuthErr('reg','Network error. Please try again.');
     btn.disabled=false;btn.textContent='Register';
   }
+}
+
+/* ══════════════════════════════════════
+   EMAIL VERIFICATION
+══════════════════════════════════════ */
+const RESEND_KEY='re_ZrgACA5Q_EjedbzVCGmoWJr3X9K8udazJ';
+
+function genVerifyCode(){
+  const arr=new Uint8Array(24);
+  crypto.getRandomValues(arr);
+  return Array.from(arr).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+
+async function sendVerificationEmail(email,displayName){
+  try{
+    const token=genVerifyCode();
+    const expiresAt=new Date(Date.now()+24*60*60*1000).toISOString();
+
+    /* Save token */
+    await sbFetch('/rest/v1/cc_email_verify',{
+      method:'POST',headers:{'Prefer':'return=minimal'},
+      body:JSON.stringify({email:email.toLowerCase(),token,expires_at:expiresAt,used:false,created_at:new Date().toISOString()})
+    });
+
+    const verifyLink=`https://systems-download.github.io/verify-email.html?token=${token}`;
+
+    await fetch('https://api.resend.com/emails',{
+      method:'POST',
+      headers:{'Authorization':'Bearer '+RESEND_KEY,'Content-Type':'application/json'},
+      body:JSON.stringify({
+        from:'Conch & Cmdr <onboarding@resend.dev>',
+        to:[email],
+        subject:'✅ Verify your Conch & Cmdr account',
+        html:`
+<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+<body style="margin:0;padding:0;background:#0b0c0f;font-family:'Courier New',monospace">
+  <div style="max-width:560px;margin:40px auto;background:#13151a;border:1px solid rgba(255,255,255,0.07);border-radius:16px;overflow:hidden">
+    <div style="padding:2rem;text-align:center;border-bottom:1px solid rgba(255,255,255,0.07);background:linear-gradient(135deg,rgba(15,244,198,0.06),rgba(15,244,198,0.01))">
+      <div style="font-size:2.5rem;margin-bottom:0.5rem">✅</div>
+      <div style="font-size:1.4rem;font-weight:800;color:#e8eaf0;letter-spacing:-0.02em">
+        <span style="color:#0ff4c6">Conch</span><span style="color:#6b7280"> / </span><span style="color:#ff4f5e">Cmdr</span>
+      </div>
+      <div style="font-size:0.75rem;color:#6b7280;margin-top:0.3rem">Email Verification</div>
+    </div>
+    <div style="padding:2rem">
+      <p style="color:#e8eaf0;font-size:0.9rem;margin-bottom:1rem">Hey <strong style="color:#0ff4c6">${displayName}</strong>,</p>
+      <p style="color:#6b7280;font-size:0.82rem;line-height:1.8;margin-bottom:1.5rem">
+        Thanks for registering! Please verify your email address to activate your account and log in.
+      </p>
+      <div style="text-align:center;margin:2rem 0">
+        <a href="${verifyLink}" style="display:inline-block;padding:0.85rem 2rem;background:rgba(15,244,198,0.15);color:#0ff4c6;text-decoration:none;border-radius:8px;border:1px solid rgba(15,244,198,0.3);font-size:0.85rem;font-weight:700;letter-spacing:0.05em">
+          ✅ Verify Email Address
+        </a>
+      </div>
+      <div style="background:rgba(255,200,50,0.06);border:1px solid rgba(255,200,50,0.2);border-radius:8px;padding:1rem;margin-bottom:1.5rem">
+        <p style="color:#ffc832;font-size:0.75rem;margin:0;line-height:1.6">
+          ⚠️ This link expires in <strong>24 hours</strong>. You must verify your email before you can log in.
+        </p>
+      </div>
+      <p style="color:#6b7280;font-size:0.7rem;line-height:1.6">
+        Button not working? Copy this link:<br>
+        <span style="color:#0ff4c6;word-break:break-all">${verifyLink}</span>
+      </p>
+    </div>
+    <div style="padding:1.2rem 2rem;border-top:1px solid rgba(255,255,255,0.07);text-align:center">
+      <p style="color:#6b7280;font-size:0.65rem;margin:0">Conch &amp; Cmdr Downloads · systems-download.github.io</p>
+    </div>
+  </div>
+</body></html>`
+      })
+    });
+  }catch(e){/* Non-fatal */}
+}
+
+/* Resend verification — shown on login error for unverified accounts */
+let resendCooldown=false;
+async function resendVerification(email,displayName){
+  if(resendCooldown)return;
+  resendCooldown=true;
+  const btn=document.getElementById('verify-resend-btn');
+  if(btn){btn.disabled=true;btn.textContent='Sending...';}
+  await sendVerificationEmail(email,displayName);
+  if(btn){btn.textContent='✓ Sent!';}
+  toast({title:'Verification email sent!',sub:'Check your inbox',type:'ok',dur:3500});
+  setTimeout(()=>{
+    resendCooldown=false;
+    if(btn){btn.disabled=false;btn.textContent='Resend Email';}
+  },30000);
 }
 
 /* ══════════════════════════════════════
@@ -873,7 +1070,7 @@ async function doLogin(){
     const hash=await hashPass(pw);
 
     /* Fetch user */
-    const r=await sbFetch(`/rest/v1/cc_users?username=eq.${encodeURIComponent(name.toLowerCase())}&select=id,username,display_name,password_hash,ip,is_banned,failed_attempts,locked_until,role`);
+    const r=await sbFetch(`/rest/v1/cc_users?username=eq.${encodeURIComponent(name.toLowerCase())}&select=id,username,display_name,password_hash,ip,is_banned,is_frozen,freeze_reason,temp_ban_until,temp_ban_reason,failed_attempts,locked_until,role,email,email_verified`);
     const users=await r.json();
 
     if(!users||users.length===0){setAuthErr('login','Username not found.');btn.disabled=false;btn.textContent='Login';return;}
@@ -912,6 +1109,30 @@ async function doLogin(){
       body:JSON.stringify({failed_attempts:0,locked_until:null})
     }).catch(()=>{});
 
+    /* ── EMAIL VERIFICATION CHECK ── */
+    if(!user.email_verified){
+      const errEl=document.getElementById('login-err');
+      errEl.innerHTML=`
+        <div>📧 Please verify your email before logging in.</div>
+        <button id="verify-resend-btn" class="verify-banner-btn" style="margin-top:.5rem" onclick="resendVerification('${eh(user.email||'')}','${eh(user.display_name||user.username)}')">Resend Email</button>
+      `;
+      errEl.classList.add('vis');
+      btn.disabled=false;btn.textContent='Login';return;
+    }
+
+    /* ── FROZEN ACCOUNT CHECK ── */
+    if(user.is_frozen){
+      setAuthErr('login','🧊 This account has been frozen. Reason: '+(user.freeze_reason||'Under review')+'. Contact support for help.');
+      btn.disabled=false;btn.textContent='Login';return;
+    }
+
+    /* ── TEMP BAN CHECK ── */
+    if(user.temp_ban_until&&new Date(user.temp_ban_until)>new Date()){
+      const remaining=Math.ceil((new Date(user.temp_ban_until)-Date.now())/3600000);
+      setAuthErr('login',`⏱ This account is temporarily banned for ${remaining} more hour${remaining!==1?'s':''}. Reason: ${user.temp_ban_reason||'—'}`);
+      btn.disabled=false;btn.textContent='Login';return;
+    }
+
     /* ── IP LOCK — block login from different IP (except user 'max') ── */
     if(user.username!=='max'&&user.ip&&user.ip!=='unknown'&&ip!=='unknown'&&user.ip!==ip){
       setAuthErr('login','⚠️ Login blocked. This account was registered from a different IP address. Contact support if this is an error.');
@@ -940,6 +1161,9 @@ async function doLogin(){
     }
     toast({title:'Welcome back, '+AUTH.user.username+'!',sub:'You are now logged in',type:'ok',dur:3500});
     confetti();
+
+    /* Trigger welcome tour on first-ever login */
+    maybeStartTour();
 
   }catch(e){
     setAuthErr('login','Network error. Please try again.');
@@ -1136,9 +1360,19 @@ function t(k,...a){const v=(T[lang]||T.en)[k];return typeof v==='function'?v(...
             </div>
           </div>
           <div class="auth-field">
+            <label class="auth-label">Email Address</label>
+            <input class="auth-input" id="reg-email" type="email" placeholder="your.email@example.com" autocomplete="email"
+              onkeydown="if(event.key==='Enter')doRegister()">
+            <div style="font-family:var(--mono);font-size:.66rem;color:var(--muted);opacity:.7;margin-top:.2rem">Required — you'll need to verify this email to log in.</div>
+          </div>
+          <div class="auth-field">
             <label class="auth-label">Password</label>
             <input class="auth-input" id="reg-pw" type="password" placeholder="min. 6 characters" autocomplete="new-password"
-              onkeydown="if(event.key==='Enter')doRegister()">
+              oninput="checkRegPwStrength()" onkeydown="if(event.key==='Enter')doRegister()">
+            <div class="pw-strength-wrap">
+              <div class="pw-bar-track"><div class="pw-bar-fill" id="reg-pw-bar"></div></div>
+              <div class="pw-strength-label" id="reg-pw-label"></div>
+            </div>
           </div>
           <div class="auth-field">
             <label class="auth-label">Confirm Password</label>
@@ -1173,6 +1407,24 @@ function t(k,...a){const v=(T[lang]||T.en)[k];return typeof v==='function'?v(...
 <div class="site-banner" id="site-banner"></div>
 <canvas id="confetti-canvas"></canvas>
 <div id="toast-container"></div>
+
+<!-- WELCOME TOUR -->
+<div class="tour-overlay" id="tour-overlay" style="display:none">
+  <div class="tour-spotlight" id="tour-spotlight"></div>
+  <div class="tour-tooltip" id="tour-tooltip">
+    <div class="tour-arrow" id="tour-arrow"></div>
+    <div class="tour-step-badge" id="tour-step-badge">Step 1 / 5</div>
+    <div class="tour-title" id="tour-title"></div>
+    <div class="tour-desc" id="tour-desc"></div>
+    <div class="tour-actions">
+      <button class="tour-skip" onclick="skipTour()">Skip tour</button>
+      <div style="display:flex;align-items:center;gap:.6rem">
+        <div class="tour-dots" id="tour-dots"></div>
+        <button class="tour-btn" id="tour-next-btn" onclick="nextTourStep()">Next →</button>
+      </div>
+    </div>
+  </div>
+</div>
 
 <!-- NAV -->
 <nav>
@@ -1546,6 +1798,165 @@ function cmpVer(a,b){const va=semver(a),vb=semver(b);for(let i=0;i<Math.max(va.l
 
 let _cc=[],_cr=[],_ccb=[],_crb=[];
 
+/* ══════════════════════════════════════════════════════
+   REACTIONS — per file, emoji-based
+══════════════════════════════════════════════════════ */
+const REACTION_EMOJIS=['👍','❤️','🔥','😮','🐛'];
+
+async function loadReactions(elId,fileKey){
+  const wrap=document.getElementById('reactions-'+elId);
+  if(!wrap)return;
+  try{
+    const r=await sbFetch(`/rest/v1/cc_reactions?file_key=eq.${encodeURIComponent(fileKey)}&select=emoji,user_id`);
+    const rows=r.ok?await r.json():[];
+    renderReactions(elId,fileKey,rows);
+  }catch{
+    renderReactions(elId,fileKey,[]);
+  }
+}
+
+function renderReactions(elId,fileKey,rows){
+  const wrap=document.getElementById('reactions-'+elId);
+  if(!wrap)return;
+  const counts={};
+  REACTION_EMOJIS.forEach(e=>counts[e]=0);
+  const myReactions=new Set();
+  rows.forEach(row=>{
+    if(counts[row.emoji]!==undefined)counts[row.emoji]++;
+    if(AUTH.user&&row.user_id===AUTH.user.id)myReactions.add(row.emoji);
+  });
+  wrap.innerHTML=REACTION_EMOJIS.map(emoji=>{
+    const n=counts[emoji];
+    const active=myReactions.has(emoji);
+    return `<button class="reaction-pill${active?' active':''}" onclick="toggleReaction('${elId}','${ea(fileKey)}','${emoji}')" title="React with ${emoji}">${emoji}${n>0?`<span class="reaction-count">${n}</span>`:''}</button>`;
+  }).join('');
+}
+
+async function toggleReaction(elId,fileKey,emoji){
+  if(!AUTH.user){toast({title:'Login required',sub:'Please log in to react',type:'w',dur:2500});return;}
+  try{
+    const r=await sbFetch(`/rest/v1/cc_reactions?file_key=eq.${encodeURIComponent(fileKey)}&user_id=eq.${AUTH.user.id}&emoji=eq.${encodeURIComponent(emoji)}&select=id`);
+    const existing=r.ok?await r.json():[];
+    if(existing&&existing.length>0){
+      await sbFetch(`/rest/v1/cc_reactions?id=eq.${existing[0].id}`,{method:'DELETE'});
+    }else{
+      await sbFetch('/rest/v1/cc_reactions',{
+        method:'POST',headers:{'Prefer':'return=minimal'},
+        body:JSON.stringify({file_key:fileKey,emoji,user_id:AUTH.user.id,username:AUTH.user.username,created_at:new Date().toISOString()})
+      });
+    }
+    loadReactions(elId,fileKey);
+  }catch(e){
+    toast({title:'Reaction failed',sub:'',type:'w',dur:2000});
+  }
+}
+
+/* ══════════════════════════════════════════════════════
+   COMMENTS — per file, collapsible thread
+══════════════════════════════════════════════════════ */
+async function toggleComments(elId,fileKey){
+  const section=document.getElementById('csection-'+elId);
+  const btn=document.getElementById('ctoggle-'+elId);
+  if(!section)return;
+  const isOpen=section.classList.contains('open');
+  section.classList.toggle('open',!isOpen);
+  if(btn)btn.classList.toggle('open',!isOpen);
+  if(!isOpen){
+    await loadComments(elId,fileKey);
+  }
+}
+
+async function loadComments(elId,fileKey){
+  const list=document.getElementById('clist-'+elId);
+  if(!list)return;
+  list.innerHTML='<div class="comments-loading">Loading comments...</div>';
+  try{
+    const r=await sbFetch(`/rest/v1/cc_comments?file_key=eq.${encodeURIComponent(fileKey)}&select=id,username,avatar_url,text,created_at,user_id&order=created_at.desc&limit=50`);
+    const rows=r.ok?await r.json():[];
+    renderComments(elId,fileKey,rows);
+    const countEl=document.getElementById('ccount-'+elId);
+    if(countEl)countEl.textContent=rows.length>0?rows.length:'';
+  }catch(e){
+    list.innerHTML='<div class="comments-loading">Failed to load comments.</div>';
+  }
+}
+
+function renderComments(elId,fileKey,rows){
+  const list=document.getElementById('clist-'+elId);
+  if(!list)return;
+  if(!rows.length){
+    list.innerHTML='<div class="comments-empty">No comments yet. Be the first!</div>';
+    return;
+  }
+  list.innerHTML=rows.map(c=>{
+    const letter=(c.username||'?')[0].toUpperCase();
+    const avatarHTML=c.avatar_url
+      ?`<img src="${eh(c.avatar_url)}" alt="">`
+      :`<span>${eh(letter)}</span>`;
+    const canDelete=AUTH.user&&(AUTH.user.id===c.user_id||AUTH.user.isAdmin);
+    const timeStr=timeAgoShort(c.created_at);
+    return `<div class="comment-item" id="comment-${c.id}">
+      <div class="comment-avatar">${avatarHTML}</div>
+      <div class="comment-body">
+        <div class="comment-head">
+          <span class="comment-author">${eh(c.username)}</span>
+          <span class="comment-time">${timeStr}</span>
+          ${canDelete?`<button class="comment-delete-btn" onclick="deleteComment('${eh(c.id)}','${elId}','${ea(fileKey)}')" title="Delete">🗑️</button>`:''}
+        </div>
+        <div class="comment-text">${eh(c.text)}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function timeAgoShort(s){
+  const diff=(Date.now()-new Date(s))/1000;
+  if(diff<60)return'now';
+  if(diff<3600)return Math.floor(diff/60)+'m';
+  if(diff<86400)return Math.floor(diff/3600)+'h';
+  if(diff<604800)return Math.floor(diff/86400)+'d';
+  return new Date(s).toLocaleDateString('en-US',{month:'short',day:'numeric'});
+}
+
+async function postComment(elId,fileKey){
+  if(!AUTH.user){toast({title:'Login required',sub:'Please log in to comment',type:'w',dur:2500});return;}
+  const input=document.getElementById('cinput-'+elId);
+  if(!input)return;
+  const text=input.value.trim();
+  if(!text){return;}
+  if(text.length>300){toast({title:'Comment too long',sub:'Max 300 characters',type:'w',dur:2500});return;}
+
+  const sendBtn=input.nextElementSibling;
+  if(sendBtn){sendBtn.disabled=true;sendBtn.textContent='...';}
+
+  try{
+    await sbFetch('/rest/v1/cc_comments',{
+      method:'POST',headers:{'Prefer':'return=minimal'},
+      body:JSON.stringify({
+        file_key:fileKey,user_id:AUTH.user.id,username:AUTH.user.username,
+        avatar_url:AUTH.user.avatar_url||null,text,created_at:new Date().toISOString()
+      })
+    });
+    input.value='';
+    await loadComments(elId,fileKey);
+    toast({title:'Comment posted',sub:'',type:'ok',dur:1800});
+  }catch(e){
+    toast({title:'Failed to post comment',sub:'',type:'w',dur:2500});
+  }finally{
+    if(sendBtn){sendBtn.disabled=false;sendBtn.textContent='Send';}
+  }
+}
+
+async function deleteComment(commentId,elId,fileKey){
+  try{
+    await sbFetch(`/rest/v1/cc_comments?id=eq.${commentId}`,{method:'DELETE'});
+    await loadComments(elId,fileKey);
+    toast({title:'Comment deleted',sub:'',type:'i',dur:1800});
+  }catch(e){
+    toast({title:'Failed to delete',sub:'',type:'w',dur:2000});
+  }
+}
+
 async function fetchReleases(){
   showSkel('conch-list');showSkel('cmdr-list');showSkel('conch-beta-list');showSkel('cmdr-beta-list');
   try{
@@ -1599,6 +2010,10 @@ function render(sec,groups,cls){
       const rows=vers.slice(1).map(v=>`<div class="ver-row"><span class="ver-tag vt-${cls}">${eh(v.version)}</span><span class="ver-name" title="${eh(v.name)}">${eh(v.name)}</span><span class="ver-date">${v.date}</span><button class="btn-dl-xs xs-${cls}" onclick="dl('${ea(v.url)}','${ea(v.name)}','${cls}',this)">↓</button></div>`).join('');
       histHTML=`<div class="ver-history" id="h-${id}"><div class="ver-inner"><div class="ver-label">${t('hist_lbl')}</div>${rows}</div></div>`;
     }
+    /* Stable key for comments/reactions — based on filename without version */
+    const fileKey=latest.name.replace(/[_\-]v[\d][\d.]*(?=\.rbxm$)/i,'').replace(/\.rbxm$/i,'').toLowerCase();
+    const fkEsc=ea(fileKey);
+
     el.innerHTML=`
       <div class="file-main">
         <div class="file-icon fi-${cls}">🧩</div>
@@ -1622,8 +2037,26 @@ function render(sec,groups,cls){
         </div>
       </div>
       <div class="dl-progress-wrap"><div class="dl-progress-bar dlp-${cls}"></div></div>
-      ${histHTML}`;
+      ${histHTML}
+      <div class="file-extras">
+        <div class="reactions-row" id="reactions-${id}">
+          <span style="font-family:var(--mono);font-size:.68rem;color:var(--muted);opacity:.5">Loading reactions...</span>
+        </div>
+        <button class="comments-toggle" id="ctoggle-${id}" onclick="toggleComments('${id}','${fkEsc}')">
+          <span>💬</span><span>Comments</span><span class="reaction-count" id="ccount-${id}"></span><span class="arr">▾</span>
+        </button>
+        <div class="comments-section" id="csection-${id}">
+          <div class="comment-input-row">
+            <input class="comment-input" id="cinput-${id}" type="text" placeholder="Write a comment..." maxlength="300" onkeydown="if(event.key==='Enter')postComment('${id}','${fkEsc}')">
+            <button class="comment-send-btn" onclick="postComment('${id}','${fkEsc}')">Send</button>
+          </div>
+          <div id="clist-${id}"><div class="comments-loading">Loading comments...</div></div>
+        </div>
+      </div>`;
     list.appendChild(el);
+
+    /* Load reactions immediately (lightweight) */
+    loadReactions(id,fileKey);
   })
 }
 
@@ -1672,8 +2105,24 @@ function renderBeta(sec,groups,cls){
         </div>
       </div>
       <div class="dl-progress-wrap"><div class="dl-progress-bar dlp-${betaCls}"></div></div>
-      ${histHTML}`;
+      ${histHTML}
+      <div class="file-extras">
+        <div class="reactions-row" id="reactions-${id}">
+          <span style="font-family:var(--mono);font-size:.68rem;color:var(--muted);opacity:.5">Loading reactions...</span>
+        </div>
+        <button class="comments-toggle" id="ctoggle-${id}" onclick="toggleComments('${id}','${ea(latest.name.replace(/[_\-]v[\d][\d.]*(?=\.rbxm$)/i,'').replace(/\.rbxm$/i,'').toLowerCase())}')">
+          <span>💬</span><span>Comments</span><span class="reaction-count" id="ccount-${id}"></span><span class="arr">▾</span>
+        </button>
+        <div class="comments-section" id="csection-${id}">
+          <div class="comment-input-row">
+            <input class="comment-input" id="cinput-${id}" type="text" placeholder="Write a comment..." maxlength="300" onkeydown="if(event.key==='Enter')postComment('${id}','${ea(latest.name.replace(/[_\-]v[\d][\d.]*(?=\.rbxm$)/i,'').replace(/\.rbxm$/i,'').toLowerCase())}')">
+            <button class="comment-send-btn" onclick="postComment('${id}','${ea(latest.name.replace(/[_\-]v[\d][\d.]*(?=\.rbxm$)/i,'').replace(/\.rbxm$/i,'').toLowerCase())}')">Send</button>
+          </div>
+          <div id="clist-${id}"><div class="comments-loading">Loading comments...</div></div>
+        </div>
+      </div>`;
     list.appendChild(el);
+    loadReactions(id,latest.name.replace(/[_\-]v[\d][\d.]*(?=\.rbxm$)/i,'').replace(/\.rbxm$/i,'').toLowerCase());
   });
 }
 
@@ -2138,6 +2587,139 @@ function megaConfetti(){
   function draw(){ctx.clearRect(0,0,cv.width,cv.height);ps.forEach(p=>{ctx.save();ctx.globalAlpha=alpha;ctx.translate(p.x,p.y);ctx.rotate(p.rot);ctx.fillStyle=p.col;if(p.sq){ctx.fillRect(-p.r,-p.r/2,p.r*2,p.r)}else{ctx.beginPath();ctx.arc(0,0,p.r/2,0,Math.PI*2);ctx.fill()}ctx.restore();p.x+=p.vx;p.y+=p.vy;p.rot+=p.rv;p.vy+=.08});
   if(ps.every(p=>p.y>cv.height)){alpha-=.04}if(alpha<=0){ctx.clearRect(0,0,cv.width,cv.height);return}af=requestAnimationFrame(draw)}
   if(af)cancelAnimationFrame(af);draw();
+}
+
+/* ══════════════════════════════════════════════════════
+   WELCOME TOUR — 5 short tooltips on first login
+══════════════════════════════════════════════════════ */
+const TOUR_STEPS=[
+  {
+    selector:'.hero',
+    title:'👋 Welcome to Conch & Cmdr!',
+    desc:'This is your home for downloading the latest Conch and Cmdr releases. Let\'s take a 30-second tour.',
+    placement:'bottom'
+  },
+  {
+    selector:'#search-conch',
+    title:'🔍 Search Files',
+    desc:'Use the search bar to quickly find a specific file by name or version.',
+    placement:'bottom'
+  },
+  {
+    selector:'.btn-dl-c',
+    title:'⬇️ One-Click Downloads',
+    desc:'Click Download on any file to grab it instantly — with a live progress bar.',
+    placement:'top',
+    fallbackSelector:'.btn-dl'
+  },
+  {
+    selector:'.queue-btn',
+    title:'🛒 Download Queue',
+    desc:'Add multiple files to your queue and download them all at once.',
+    placement:'top'
+  },
+  {
+    selector:'.burger',
+    title:'☰ More Options',
+    desc:'Open the menu for your profile, changelog, bug reports, and more. Enjoy the site!',
+    placement:'bottom'
+  }
+];
+
+let tourStepIndex=0;
+let tourActiveSteps=[];
+
+function maybeStartTour(){
+  try{
+    const seenKey='cc_tour_seen_'+(AUTH.user.id||AUTH.user.username);
+    if(localStorage.getItem(seenKey))return;
+    /* Delay slightly so page elements are rendered */
+    setTimeout(()=>startTour(seenKey),900);
+  }catch{}
+}
+
+function startTour(seenKey){
+  /* Build list of steps whose target element actually exists */
+  tourActiveSteps=TOUR_STEPS.filter(s=>{
+    const el=document.querySelector(s.selector)||(s.fallbackSelector?document.querySelector(s.fallbackSelector):null);
+    return !!el;
+  });
+  if(!tourActiveSteps.length)return;
+  tourStepIndex=0;
+  localStorage.setItem(seenKey,'1');
+  document.getElementById('tour-overlay').style.display='block';
+  renderTourStep();
+}
+
+function getTourTarget(step){
+  return document.querySelector(step.selector)||(step.fallbackSelector?document.querySelector(step.fallbackSelector):null);
+}
+
+function renderTourStep(){
+  const step=tourActiveSteps[tourStepIndex];
+  if(!step){endTour();return;}
+  const el=getTourTarget(step);
+  if(!el){nextTourStep();return;}
+
+  el.scrollIntoView({behavior:'smooth',block:'center'});
+
+  /* Wait for scroll to settle before positioning */
+  setTimeout(()=>{
+    const rect=el.getBoundingClientRect();
+    const spotlight=document.getElementById('tour-spotlight');
+    const pad=8;
+    spotlight.style.left=(rect.left-pad)+'px';
+    spotlight.style.top=(rect.top-pad)+'px';
+    spotlight.style.width=(rect.width+pad*2)+'px';
+    spotlight.style.height=(rect.height+pad*2)+'px';
+
+    const tooltip=document.getElementById('tooltip')||document.getElementById('tour-tooltip');
+    const arrow=document.getElementById('tour-arrow');
+    const tt=document.getElementById('tour-tooltip');
+
+    document.getElementById('tour-step-badge').textContent=`Step ${tourStepIndex+1} / ${tourActiveSteps.length}`;
+    document.getElementById('tour-title').textContent=step.title;
+    document.getElementById('tour-desc').textContent=step.desc;
+    document.getElementById('tour-next-btn').textContent=tourStepIndex===tourActiveSteps.length-1?'Finish ✓':'Next →';
+
+    /* Dots */
+    document.getElementById('tour-dots').innerHTML=tourActiveSteps.map((_,i)=>
+      `<div class="tour-dot${i===tourStepIndex?' active':''}"></div>`).join('');
+
+    /* Position tooltip relative to spotlight */
+    const ttWidth=300;
+    let ttTop,ttLeft,arrowClass='';
+    const placement=step.placement||'bottom';
+
+    if(placement==='bottom'){
+      ttTop=rect.bottom+pad+16;
+      ttLeft=Math.min(Math.max(rect.left+rect.width/2-ttWidth/2,12),window.innerWidth-ttWidth-12);
+      arrow.style.top='-6px';arrow.style.left='50%';arrow.style.marginLeft='-6px';
+      arrow.style.borderRight='none';arrow.style.borderBottom='none';
+    }else{
+      ttTop=rect.top-pad-16-140;
+      if(ttTop<12)ttTop=rect.bottom+pad+16;
+      ttLeft=Math.min(Math.max(rect.left+rect.width/2-ttWidth/2,12),window.innerWidth-ttWidth-12);
+      arrow.style.bottom='-6px';arrow.style.top='auto';arrow.style.left='50%';arrow.style.marginLeft='-6px';
+      arrow.style.borderLeft='none';arrow.style.borderTop='none';
+    }
+
+    tt.style.top=ttTop+'px';
+    tt.style.left=ttLeft+'px';
+  },350);
+}
+
+function nextTourStep(){
+  tourStepIndex++;
+  if(tourStepIndex>=tourActiveSteps.length){endTour();return;}
+  renderTourStep();
+}
+
+function skipTour(){endTour();}
+
+function endTour(){
+  document.getElementById('tour-overlay').style.display='none';
+  toast({title:'Tour complete!',sub:'You can always find help in the menu',type:'ok',dur:3000});
 }
 
 /* ══════════════════════════════════════
