@@ -1145,6 +1145,26 @@ async function doLogin(){
       body:JSON.stringify({ip,last_login:new Date().toISOString()})
     });
 
+    /* Log this session for Session Management view */
+    try{
+      const ua=navigator.userAgent;
+      let browser='Unknown Browser';
+      if(ua.includes('Chrome')&&!ua.includes('Edg'))browser='Chrome';
+      else if(ua.includes('Firefox'))browser='Firefox';
+      else if(ua.includes('Safari')&&!ua.includes('Chrome'))browser='Safari';
+      else if(ua.includes('Edg'))browser='Edge';
+      let os='Unknown OS';
+      if(ua.includes('Windows'))os='Windows';
+      else if(ua.includes('Mac'))os='macOS';
+      else if(ua.includes('Linux')&&!ua.includes('Android'))os='Linux';
+      else if(ua.includes('Android'))os='Android';
+      else if(ua.includes('iPhone')||ua.includes('iPad'))os='iOS';
+      await sbFetch('/rest/v1/cc_sessions',{
+        method:'POST',headers:{'Prefer':'return=minimal'},
+        body:JSON.stringify({user_id:user.id,ip,browser,os,logged_in_at:new Date().toISOString()})
+      });
+    }catch{}
+
     /* Success */
     AUTH.user={username:user.display_name||user.username,rawUsername:user.username.toLowerCase(),id:user.id,isAdmin:user.username.toLowerCase()==='max',role:user.role||'user',isBetaTester:user.role==='beta'||user.role==='admin'};
     try{localStorage.setItem('cc_auth',JSON.stringify(AUTH.user));}catch{}
@@ -2304,6 +2324,162 @@ function updateNavAvatar(){
   }
 }
 
+/* ══════════════════════════════════════════════════════
+   CHANGE PASSWORD
+══════════════════════════════════════════════════════ */
+function openChangePassword(){
+  document.getElementById('changepw-new').value='';
+  document.getElementById('changepw-confirm').value='';
+  document.getElementById('changepw-err').style.display='none';
+  document.getElementById('changepw-bar').style.width='0%';
+  document.getElementById('changepw-label').textContent='';
+  document.getElementById('changepw-modal-overlay').classList.add('open');
+}
+
+function closeChangePassword(event){
+  if(event&&event.target!==event.currentTarget)return;
+  document.getElementById('changepw-modal-overlay').classList.remove('open');
+}
+
+function checkChangePwStrength(){
+  const pw=document.getElementById('changepw-new').value;
+  const bar=document.getElementById('changepw-bar');
+  const label=document.getElementById('changepw-label');
+  let score=0;
+  if(pw.length>=6)score++;
+  if(pw.length>=10)score++;
+  if(/\d/.test(pw))score++;
+  if(/[A-Z]/.test(pw))score++;
+  if(/[^a-zA-Z0-9]/.test(pw))score++;
+  const configs=[
+    {w:'0%',bg:'transparent',t:''},
+    {w:'25%',bg:'#ff4f5e',t:'Weak'},
+    {w:'50%',bg:'#ffc832',t:'Fair'},
+    {w:'75%',bg:'#64a0ff',t:'Good'},
+    {w:'90%',bg:'#34d399',t:'Strong'},
+    {w:'100%',bg:'#0ff4c6',t:'Very Strong'},
+  ];
+  const cfg=configs[Math.min(score,5)];
+  bar.style.width=cfg.w;bar.style.background=cfg.bg;
+  label.textContent=cfg.t;label.style.color=cfg.bg||'var(--muted)';
+}
+
+async function submitChangePassword(){
+  if(!AUTH.user)return;
+  const pw=document.getElementById('changepw-new').value;
+  const pw2=document.getElementById('changepw-confirm').value;
+  const errEl=document.getElementById('changepw-err');
+  const btn=document.getElementById('changepw-btn');
+  errEl.style.display='none';
+
+  if(!pw||pw.length<6){errEl.textContent='Password must be at least 6 characters.';errEl.style.display='block';return;}
+  if(pw!==pw2){errEl.textContent='Passwords do not match.';errEl.style.display='block';return;}
+
+  btn.disabled=true;btn.textContent='Saving...';
+  try{
+    const hash=await hashPass(pw);
+    const r=await sbFetch(`/rest/v1/cc_users?id=eq.${AUTH.user.id}`,{
+      method:'PATCH',headers:{'Prefer':'return=minimal'},
+      body:JSON.stringify({password_hash:hash})
+    });
+    if(!r.ok&&r.status!==204)throw new Error('Update failed');
+    closeChangePassword();
+    toast({title:'Password updated!',sub:'Your new password is active',type:'ok',dur:3000});
+  }catch(e){
+    errEl.textContent='Failed to update password. Please try again.';
+    errEl.style.display='block';
+  }finally{
+    btn.disabled=false;btn.textContent='🔑 Update Password';
+  }
+}
+
+/* ══════════════════════════════════════════════════════
+   PUBLIC PROFILE LINK
+══════════════════════════════════════════════════════ */
+function openPublicProfile(){
+  if(!AUTH.user)return;
+  const uname=AUTH.user.rawUsername||AUTH.user.username;
+  window.open('profile.html?user='+encodeURIComponent(uname),'_blank');
+}
+
+/* ══════════════════════════════════════════════════════
+   SESSION MANAGEMENT
+══════════════════════════════════════════════════════ */
+function openSessions(){
+  if(!AUTH.user)return;
+  document.getElementById('sessions-modal-overlay').classList.add('open');
+  document.body.style.overflow='hidden';
+  loadSessions();
+}
+
+function closeSessions(event){
+  if(event&&event.target!==event.currentTarget)return;
+  document.getElementById('sessions-modal-overlay').classList.remove('open');
+  document.body.style.overflow='';
+}
+
+function timeAgoSession(s){
+  const diff=(Date.now()-new Date(s))/1000;
+  if(diff<60)return'just now';
+  if(diff<3600)return Math.floor(diff/60)+'m ago';
+  if(diff<86400)return Math.floor(diff/3600)+'h ago';
+  if(diff<604800)return Math.floor(diff/86400)+'d ago';
+  return new Date(s).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+}
+
+function browserIcon(b){
+  return{Chrome:'🌐',Firefox:'🦊',Safari:'🧭',Edge:'🌊'}[b]||'💻';
+}
+function osIcon(o){
+  return{Windows:'🪟',macOS:'🍎',Linux:'🐧',Android:'🤖',iOS:'📱'}[o]||'💻';
+}
+
+async function loadSessions(){
+  const list=document.getElementById('sessions-list');
+  list.innerHTML='<div style="text-align:center;padding:1.5rem;font-family:var(--mono);font-size:.75rem;color:var(--muted)">Loading sessions...</div>';
+  try{
+    const r=await sbFetch(`/rest/v1/cc_sessions?user_id=eq.${AUTH.user.id}&select=id,ip,browser,os,logged_in_at&order=logged_in_at.desc&limit=10`);
+    const rows=r.ok?await r.json():[];
+    if(!rows.length){
+      list.innerHTML='<div style="text-align:center;padding:1.5rem;font-family:var(--mono);font-size:.75rem;color:var(--muted);opacity:.6">No session history yet.</div>';
+      return;
+    }
+    list.innerHTML=rows.map((s,i)=>{
+      const maskedIP=s.ip&&s.ip!=='unknown'?s.ip.split('.').slice(0,2).join('.')+'.x.x':'unknown';
+      return `<div style="display:flex;align-items:center;gap:.8rem;padding:.7rem .85rem;background:var(--surface2);border:1px solid var(--border);border-radius:10px;${i===0?'border-color:rgba(15,244,198,.25)':''}">
+        <div style="font-size:1.3rem">${browserIcon(s.browser)}</div>
+        <div style="flex:1;min-width:0">
+          <div style="font-family:var(--mono);font-size:.78rem;color:var(--text);display:flex;align-items:center;gap:.4rem">
+            ${eh(s.browser||'Unknown')} on ${osIcon(s.os)} ${eh(s.os||'Unknown')}
+            ${i===0?'<span style="font-family:var(--mono);font-size:.6rem;padding:.1rem .4rem;border-radius:3px;background:rgba(15,244,198,.1);color:var(--conch);border:1px solid rgba(15,244,198,.25)">CURRENT</span>':''}
+          </div>
+          <div style="font-family:var(--mono);font-size:.68rem;color:var(--muted);margin-top:.2rem">${maskedIP} · ${timeAgoSession(s.logged_in_at)}</div>
+        </div>
+      </div>`;
+    }).join('');
+  }catch(e){
+    list.innerHTML='<div style="text-align:center;padding:1.5rem;font-family:var(--mono);font-size:.75rem;color:var(--cmdr)">Failed to load sessions.</div>';
+  }
+}
+
+async function logoutAllSessions(){
+  if(!AUTH.user)return;
+  try{
+    /* Delete all session records for this user */
+    await sbFetch(`/rest/v1/cc_sessions?user_id=eq.${AUTH.user.id}`,{method:'DELETE'});
+    /* Reset failed attempts / locks as a safety measure */
+    await sbFetch(`/rest/v1/cc_users?id=eq.${AUTH.user.id}`,{
+      method:'PATCH',headers:{'Prefer':'return=minimal'},
+      body:JSON.stringify({failed_attempts:0,locked_until:null})
+    });
+    toast({title:'Logged out everywhere',sub:'All sessions have been cleared',type:'ok',dur:3000});
+    closeSessions();
+    setTimeout(()=>{logout();closeProfile();},800);
+  }catch(e){
+    toast({title:'Failed to clear sessions',sub:'',type:'w',dur:2500});
+  }
+}
+
 async function uploadAvatar(input){
   if(!input.files||!input.files[0])return;
   if(!AUTH.user||!AUTH.user.id){toast({title:'Not logged in',sub:'',type:'w',dur:2000});return;}
@@ -2775,9 +2951,63 @@ initAuth().then(()=>{
       </div>
     </div>
     <div class="profile-info" id="profile-info-text"></div>
+    <div class="profile-actions" style="flex-wrap:wrap">
+      <button class="profile-btn" id="public-profile-btn" onclick="openPublicProfile()" style="background:rgba(100,160,255,.1);color:#64a0ff;border:1px solid rgba(100,160,255,.25)">🔗 View Public Profile</button>
+      <button class="profile-btn" onclick="openSessions()" style="background:rgba(167,139,250,.1);color:#a78bfa;border:1px solid rgba(167,139,250,.25)">💻 Sessions</button>
+      <button class="profile-btn" onclick="openChangePassword()" style="background:rgba(255,200,50,.08);color:#ffc832;border:1px solid rgba(255,200,50,.25)">🔑 Change Password</button>
+    </div>
     <div class="profile-actions">
       <button class="profile-btn profile-btn-danger" onclick="logout();closeProfile()">🚪 Logout</button>
       <button class="profile-btn profile-btn-primary" onclick="closeProfile()">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ CHANGE PASSWORD MODAL ═══════════════ -->
+<div class="profile-modal-overlay" id="changepw-modal-overlay" onclick="closeChangePassword(event)">
+  <div class="profile-modal" onclick="event.stopPropagation()" style="max-width:420px">
+    <div class="profile-header">
+      <div class="profile-title">🔑 Change Password</div>
+      <button class="profile-close" onclick="closeChangePassword()">✕</button>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:.85rem">
+      <div>
+        <div style="font-family:var(--mono);font-size:.67rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:.35rem">New Password</div>
+        <input class="auth-input" id="changepw-new" type="password" placeholder="min. 6 characters" style="width:100%" oninput="checkChangePwStrength()">
+        <div style="margin-top:.5rem">
+          <div style="height:3px;background:var(--surface2);border-radius:2px;overflow:hidden;margin-bottom:.3rem">
+            <div id="changepw-bar" style="height:100%;width:0%;border-radius:2px;transition:width .3s,background .3s"></div>
+          </div>
+          <div id="changepw-label" style="font-family:var(--mono);font-size:.65rem;color:var(--muted)"></div>
+        </div>
+      </div>
+      <div>
+        <div style="font-family:var(--mono);font-size:.67rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:.35rem">Confirm New Password</div>
+        <input class="auth-input" id="changepw-confirm" type="password" placeholder="repeat password" style="width:100%" onkeydown="if(event.key==='Enter')submitChangePassword()">
+      </div>
+      <div id="changepw-err" style="display:none;font-family:var(--mono);font-size:.72rem;color:var(--cmdr);background:rgba(255,79,94,.07);border:1px solid rgba(255,79,94,.2);border-radius:7px;padding:.6rem .85rem"></div>
+    </div>
+    <div class="profile-actions" style="margin-top:1.2rem">
+      <button class="profile-btn profile-btn-danger" onclick="closeChangePassword()">Cancel</button>
+      <button class="profile-btn" id="changepw-btn" onclick="submitChangePassword()" style="background:rgba(255,200,50,.12);color:#ffc832;border:1px solid rgba(255,200,50,.3)">🔑 Update Password</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ SESSIONS MODAL ═══════════════ -->
+<div class="profile-modal-overlay" id="sessions-modal-overlay" onclick="closeSessions(event)">
+  <div class="profile-modal" onclick="event.stopPropagation()" style="max-width:480px">
+    <div class="profile-header">
+      <div class="profile-title">💻 Active Sessions</div>
+      <button class="profile-close" onclick="closeSessions()">✕</button>
+    </div>
+    <div style="font-family:var(--mono);font-size:.74rem;color:var(--muted);margin-bottom:1.2rem;line-height:1.6">
+      This shows your recent login activity. If you see a session you don't recognize, log out everywhere immediately.
+    </div>
+    <div id="sessions-list" style="display:flex;flex-direction:column;gap:.6rem;max-height:320px;overflow-y:auto"></div>
+    <div class="profile-actions" style="margin-top:1.2rem">
+      <button class="profile-btn profile-btn-danger" onclick="logoutAllSessions()">🚪 Log Out Everywhere</button>
+      <button class="profile-btn profile-btn-primary" onclick="closeSessions()">Close</button>
     </div>
   </div>
 </div>
