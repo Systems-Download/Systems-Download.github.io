@@ -265,9 +265,9 @@ footer{text-align:center;padding:3rem 2rem;font-family:var(--mono);font-size:.72
           <div class="info-pill-label">Browser</div>
           <div class="info-pill-value" id="info-browser">—</div>
         </div>
-        <div class="info-pill">
+        <div class="info-pill" style="display:none">
           <div class="info-pill-label">IP Address</div>
-          <div class="info-pill-value" id="info-ip" style="filter:blur(4px);user-select:none">Hidden</div>
+          <div class="info-pill-value" id="info-ip">Hidden</div>
         </div>
         <div class="info-pill">
           <div class="info-pill-label">Page</div>
@@ -361,7 +361,7 @@ async function loadAutoInfo(){
 
   /* User from session */
   try{
-    const saved=sessionStorage.getItem('cc_auth');
+    const saved=localStorage.getItem('cc_auth');
     if(saved){
       const parsed=JSON.parse(saved);
       if(parsed&&parsed.username){
