@@ -861,7 +861,6 @@ function setNameType(type){
 
 async function doRegister(){
   const name=document.getElementById('reg-name').value.trim();
-  const email=document.getElementById('reg-email').value.trim();
   const pw=document.getElementById('reg-pw').value;
   const pw2=document.getElementById('reg-pw2').value;
   const err=document.getElementById('reg-err');
@@ -869,10 +868,9 @@ async function doRegister(){
   const btn=document.getElementById('reg-btn');
   err.classList.remove('vis');ok.classList.remove('vis');
 
-  if(!name||!email||!pw||!pw2){setAuthErr('reg','All fields are required.');return;}
+  if(!name||!pw||!pw2){setAuthErr('reg','All fields are required.');return;}
   if(name.length<3||name.length>20){setAuthErr('reg','Username must be 3–20 characters.');return;}
   if(/[^a-zA-Z0-9_\-]/.test(name)){setAuthErr('reg','Username: letters, numbers, _ and - only.');return;}
-  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){setAuthErr('reg','Please enter a valid email address.');return;}
   if(pw.length<6){setAuthErr('reg','Password must be at least 6 characters.');return;}
   if(pw!==pw2){setAuthErr('reg','Passwords do not match.');return;}
 
@@ -898,48 +896,34 @@ async function doRegister(){
     const nameData=await checkName.json();
     if(nameData&&nameData.length>0){setAuthErr('reg','Username already taken.');btn.disabled=false;btn.textContent='Register';return;}
 
-    /* Check if email already used */
-    const checkEmail=await sbFetch(`/rest/v1/cc_users?email=eq.${encodeURIComponent(email.toLowerCase())}&select=id`);
-    const emailData=await checkEmail.json();
-    if(emailData&&emailData.length>0){setAuthErr('reg','An account with this email already exists.');btn.disabled=false;btn.textContent='Register';return;}
-
     /* Check if IP already has an account */
     const checkIP=await sbFetch(`/rest/v1/cc_users?ip=eq.${encodeURIComponent(ip)}&select=id`);
     const ipData=await checkIP.json();
     if(ipData&&ipData.length>0){
-      /* Auto-ban IP for trying to create second account */
       await sbFetch('/rest/v1/cc_bans',{
-        method:'POST',
-        headers:{'Prefer':'return=minimal'},
+        method:'POST',headers:{'Prefer':'return=minimal'},
         body:JSON.stringify({ip,reason:'Attempted to create second account',banned_by:'system',banned_at:new Date().toISOString()})
       });
       showBanWall(ip,'Attempted to create multiple accounts.');
       return;
     }
 
-    /* Hash password */
     const hash=await hashPass(pw);
-
-    /* Create user — unverified */
     btn.textContent='Creating account...';
     const ins=await sbFetch('/rest/v1/cc_users',{
       method:'POST',
       headers:{'Prefer':'return=minimal'},
-      body:JSON.stringify({username:name.toLowerCase(),display_name:name,name_type:regNameType,email:email.toLowerCase(),email_verified:false,password_hash:hash,ip,created_at:new Date().toISOString()})
+      body:JSON.stringify({username:name.toLowerCase(),display_name:name,name_type:regNameType,password_hash:hash,ip,created_at:new Date().toISOString()})
     });
 
     if(ins.ok||ins.status===201||ins.status===204){
-      /* Send verification email */
-      btn.textContent='Sending verification...';
-      await sendVerificationEmail(email,name);
-      ok.textContent='Account created! Check your email to verify before logging in.';ok.classList.add('vis');
+      ok.textContent='Account created! You can now log in.';ok.classList.add('vis');
       btn.disabled=false;btn.textContent='Register';
-      /* Switch to login tab and prefill */
       setTimeout(()=>{
         switchTab('login');
         document.getElementById('login-name').value=name;
       },1500);
-    } else {
+    }else{
       const errBody=await ins.json().catch(()=>({}));
       setAuthErr('reg','Registration failed: '+(errBody.message||ins.status));
       btn.disabled=false;btn.textContent='Register';
@@ -1110,15 +1094,7 @@ async function doLogin(){
     }).catch(()=>{});
 
     /* ── EMAIL VERIFICATION CHECK ── */
-    if(!user.email_verified){
-      const errEl=document.getElementById('login-err');
-      errEl.innerHTML=`
-        <div>📧 Please verify your email before logging in.</div>
-        <button id="verify-resend-btn" class="verify-banner-btn" style="margin-top:.5rem" onclick="resendVerification('${eh(user.email||'')}','${eh(user.display_name||user.username)}')">Resend Email</button>
-      `;
-      errEl.classList.add('vis');
-      btn.disabled=false;btn.textContent='Login';return;
-    }
+
 
     /* ── FROZEN ACCOUNT CHECK ── */
     if(user.is_frozen){
@@ -1379,12 +1355,7 @@ function t(k,...a){const v=(T[lang]||T.en)[k];return typeof v==='function'?v(...
               <button type="button" class="name-type-btn" id="nametype-roblox" onclick="setNameType('roblox')">🎮 Roblox Name</button>
             </div>
           </div>
-          <div class="auth-field">
-            <label class="auth-label">Email Address</label>
-            <input class="auth-input" id="reg-email" type="email" placeholder="your.email@example.com" autocomplete="email"
-              onkeydown="if(event.key==='Enter')doRegister()">
-            <div style="font-family:var(--mono);font-size:.66rem;color:var(--muted);opacity:.7;margin-top:.2rem">Required — you'll need to verify this email to log in.</div>
-          </div>
+
           <div class="auth-field">
             <label class="auth-label">Password</label>
             <input class="auth-input" id="reg-pw" type="password" placeholder="min. 6 characters" autocomplete="new-password"
