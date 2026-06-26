@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Conch & Cmdr — Profile</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --conch:#0ff4c6;--cmdr:#ff4f5e;--gold:#ffc832;--beta:#34d399;--purple:#a78bfa;
+  --bg:#0b0c0f;--surface:#13151a;--surface2:#1a1d24;
+  --border:rgba(255,255,255,0.07);--text:#e8eaf0;--muted:#6b7280;
+  --mono:'JetBrains Mono',monospace;--sans:'Syne',sans-serif;
+}
+:root.light-mode{--bg:#f5f7fa;--surface:#fff;--surface2:#f0f2f5;--border:rgba(0,0,0,0.08);--text:#1a1d24;--muted:#6b7280}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:100vh;display:flex;flex-direction:column;transition:background .3s,color .3s}
+
+nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:1rem 2.5rem;background:rgba(11,12,15,.9);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);height:64px}
+.nav-logo{font-size:1.1rem;font-weight:800;text-decoration:none;display:flex;gap:.4em}
+.nav-logo .c{color:var(--conch)}.nav-logo .r{color:var(--cmdr)}.nav-logo .s{color:var(--muted)}
+.nav-back{font-family:var(--mono);font-size:.75rem;padding:.4rem .9rem;border-radius:6px;border:1px solid var(--border);background:none;color:var(--muted);text-decoration:none;transition:all .2s}
+.nav-back:hover{color:var(--text);border-color:rgba(255,255,255,.2)}
+.icon-btn{display:flex;align-items:center;justify-content:center;width:36px;height:36px;cursor:pointer;background:var(--surface);border:1px solid var(--border);border-radius:8px;transition:all .2s;color:var(--muted);font-size:1rem}
+.icon-btn:hover{border-color:rgba(15,244,198,.35);color:var(--conch)}
+
+.page{flex:1;display:flex;align-items:center;justify-content:center;padding:6rem 1.5rem 3rem}
+
+/* LOADING */
+.loading-state{text-align:center;padding:3rem}
+.loading-spinner{width:36px;height:36px;border:3px solid rgba(15,244,198,.2);border-top-color:var(--conch);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 1rem}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-text{font-family:var(--mono);font-size:.8rem;color:var(--muted)}
+
+/* NOT FOUND */
+.notfound-state{text-align:center;padding:2rem;max-width:380px}
+.notfound-icon{font-size:3rem;margin-bottom:1rem;display:block}
+.notfound-title{font-size:1.5rem;font-weight:800;color:var(--cmdr);margin-bottom:.5rem}
+.notfound-desc{font-family:var(--mono);font-size:.8rem;color:var(--muted);line-height:1.7;margin-bottom:1.5rem}
+.notfound-btn{display:inline-block;font-family:var(--mono);font-size:.8rem;padding:.65rem 1.5rem;border-radius:8px;background:rgba(15,244,198,.1);color:var(--conch);border:1px solid rgba(15,244,198,.25);text-decoration:none;transition:all .2s}
+.notfound-btn:hover{background:rgba(15,244,198,.2)}
+
+/* PROFILE CARD */
+.profile-card{width:100%;max-width:440px;background:var(--surface);border:1px solid var(--border);border-radius:20px;overflow:hidden;box-shadow:0 32px 80px rgba(0,0,0,.5);animation:cardIn .45s cubic-bezier(.34,1.56,.64,1)}
+@keyframes cardIn{from{opacity:0;transform:translateY(20px) scale(.97)}to{opacity:1;transform:none}}
+
+.profile-banner{height:120px;position:relative;background:linear-gradient(135deg,rgba(15,244,198,.15),rgba(255,79,94,.08));overflow:hidden}
+.profile-banner::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 30% 30%,rgba(15,244,198,.2),transparent 60%)}
+.profile-banner.role-admin{background:linear-gradient(135deg,rgba(255,200,50,.18),rgba(255,79,94,.1))}
+.profile-banner.role-beta{background:linear-gradient(135deg,rgba(52,211,153,.18),rgba(15,244,198,.08))}
+.profile-banner.role-vip{background:linear-gradient(135deg,rgba(255,200,50,.2),rgba(167,139,250,.1))}
+
+.profile-avatar-wrap{display:flex;justify-content:center;margin-top:-52px;position:relative;z-index:2}
+.profile-avatar{width:104px;height:104px;border-radius:50%;background:linear-gradient(135deg,rgba(15,244,198,.25),rgba(15,244,198,.08));border:4px solid var(--surface);display:flex;align-items:center;justify-content:center;font-size:2.6rem;font-weight:800;color:var(--conch);font-family:var(--sans);overflow:hidden;box-shadow:0 8px 24px rgba(0,0,0,.3)}
+.profile-avatar img{width:100%;height:100%;object-fit:cover;border-radius:50%}
+.profile-avatar.role-admin{border-color:var(--gold);box-shadow:0 0 0 2px rgba(255,200,50,.3),0 8px 24px rgba(0,0,0,.3)}
+.profile-avatar.role-beta{border-color:var(--beta);box-shadow:0 0 0 2px rgba(52,211,153,.3),0 8px 24px rgba(0,0,0,.3)}
+.profile-avatar.role-vip{border-color:var(--gold);box-shadow:0 0 0 2px rgba(255,200,50,.4),0 8px 24px rgba(0,0,0,.3)}
+
+.profile-body{padding:1.5rem 2rem 2rem;text-align:center}
+.profile-name-row{display:flex;align-items:center;justify-content:center;gap:.5rem;margin-bottom:.4rem;flex-wrap:wrap}
+.profile-name{font-size:1.5rem;font-weight:800;letter-spacing:-.02em}
+.profile-name.role-admin{color:var(--gold)}
+.profile-name.role-beta{color:var(--beta)}
+.profile-name.role-vip{color:var(--gold)}
+
+.role-badge{font-family:var(--mono);font-size:.65rem;letter-spacing:.08em;text-transform:uppercase;padding:.25rem .65rem;border-radius:20px;display:inline-flex;align-items:center;gap:.3rem}
+.role-badge.admin{background:rgba(255,200,50,.12);color:var(--gold);border:1px solid rgba(255,200,50,.3)}
+.role-badge.beta{background:rgba(52,211,153,.12);color:var(--beta);border:1px solid rgba(52,211,153,.3)}
+.role-badge.vip{background:rgba(255,200,50,.12);color:var(--gold);border:1px solid rgba(255,200,50,.3)}
+.role-badge.user{background:rgba(255,255,255,.04);color:var(--muted);border:1px solid var(--border)}
+
+.profile-meta{font-family:var(--mono);font-size:.78rem;color:var(--muted);margin-top:1rem;display:flex;flex-direction:column;gap:.5rem}
+.profile-meta-row{display:flex;align-items:center;justify-content:center;gap:.5rem}
+.profile-meta-icon{opacity:.7}
+
+.profile-divider{height:1px;background:var(--border);margin:1.5rem 0}
+
+.profile-stats{display:grid;grid-template-columns:repeat(2,1fr);gap:.75rem}
+.stat-box{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:.85rem;text-align:center}
+.stat-box-value{font-family:var(--mono);font-size:1.3rem;font-weight:700;color:var(--conch)}
+.stat-box-label{font-family:var(--mono);font-size:.65rem;color:var(--muted);margin-top:.2rem;text-transform:uppercase;letter-spacing:.05em}
+
+.profile-footer-actions{margin-top:1.5rem;display:flex;gap:.6rem;justify-content:center}
+.share-btn{font-family:var(--mono);font-size:.75rem;padding:.5rem 1.1rem;border-radius:7px;border:1px solid var(--border);background:none;color:var(--muted);cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:.4rem}
+.share-btn:hover{border-color:rgba(15,244,198,.3);color:var(--conch)}
+.share-btn.copied{border-color:rgba(15,244,198,.4);color:var(--conch)}
+
+.owner-since-badge{display:inline-flex;align-items:center;gap:.3rem;font-family:var(--mono);font-size:.68rem;color:var(--muted);background:var(--surface2);padding:.3rem .65rem;border-radius:6px;margin-top:.6rem}
+
+footer{text-align:center;padding:2rem;font-family:var(--mono);font-size:.7rem;color:var(--muted);opacity:.4}
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="index.html"><span class="c">Conch</span><span class="s">/</span><span class="r">Cmdr</span></a>
+  <div style="display:flex;align-items:center;gap:.6rem">
+    <a class="nav-back" href="index.html">← Downloads</a>
+    <button class="icon-btn" onclick="toggleTheme()" id="theme-btn" title="Toggle Theme">🌙</button>
+  </div>
+</nav>
+
+<div class="page" id="page-content">
+  <div class="loading-state" id="loading-state">
+    <div class="loading-spinner"></div>
+    <div class="loading-text">Loading profile...</div>
+  </div>
+</div>
+
+<footer>Conch & Cmdr — Public Profile</footer>
+
+<script>
+const SB_URL='https://rmdkoauibmzhgnvrwhfd.supabase.co';
+const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJtZGtvYXVpYm16aGdudnJ3aGZkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyNjg2MDksImV4cCI6MjA5Mzg0NDYwOX0.lu6T00f9y9-Q8HhVag-MGjJz6bTlJrYUwC7AApIxaFw';
+const ADMIN_USERNAME='max';
+
+function toggleTheme(){
+  const root=document.documentElement,btn=document.getElementById('theme-btn');
+  const isDark=!root.classList.contains('light-mode');
+  if(isDark){root.classList.add('light-mode');btn.textContent='☀️';localStorage.setItem('cc_theme','light');}
+  else{root.classList.remove('light-mode');btn.textContent='🌙';localStorage.setItem('cc_theme','dark');}
+}
+(function(){
+  const s=localStorage.getItem('cc_theme'),btn=document.getElementById('theme-btn');
+  if(s==='light'){document.documentElement.classList.add('light-mode');if(btn)btn.textContent='☀️';}
+})();
+
+function eh(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+
+function getRole(user){
+  if(user.username.toLowerCase()===ADMIN_USERNAME)return'admin';
+  if(user.role==='admin')return'admin';
+  if(user.role==='vip')return'vip';
+  if(user.role==='beta')return'beta';
+  return'user';
+}
+
+function roleBadgeHTML(role){
+  const map={
+    admin:{icon:'👑',label:'Owner'},
+    vip:{icon:'⭐',label:'VIP'},
+    beta:{icon:'🧪',label:'Beta Tester'},
+    user:{icon:'👤',label:'Member'}
+  };
+  const r=map[role]||map.user;
+  return `<span class="role-badge ${role}">${r.icon} ${r.label}</span>`;
+}
+
+function fmtDate(s){
+  if(!s)return'—';
+  return new Date(s).toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'});
+}
+
+function daysSince(s){
+  if(!s)return 0;
+  return Math.floor((Date.now()-new Date(s))/(1000*60*60*24));
+}
+
+async function loadProfile(){
+  const params=new URLSearchParams(window.location.search);
+  const username=params.get('user');
+
+  if(!username){
+    showNotFound('No user specified','Add ?user=username to the URL to view a profile.');
+    return;
+  }
+
+  try{
+    const r=await fetch(`${SB_URL}/rest/v1/cc_users?username=eq.${encodeURIComponent(username.toLowerCase())}&select=id,username,display_name,avatar_url,role,created_at,is_banned,is_frozen`,{
+      headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}
+    });
+    if(!r.ok)throw new Error('Network error');
+    const rows=await r.json();
+
+    if(!rows||!rows.length){
+      showNotFound('Profile Not Found',`No user named "${eh(username)}" exists.`);
+      return;
+    }
+
+    const user=rows[0];
+    renderProfile(user);
+
+  }catch(e){
+    showNotFound('Something went wrong','Could not load this profile. Please try again later.');
+  }
+}
+
+function showNotFound(title,desc){
+  document.getElementById('page-content').innerHTML=`
+    <div class="notfound-state">
+      <span class="notfound-icon">🔍</span>
+      <div class="notfound-title">${eh(title)}</div>
+      <div class="notfound-desc">${eh(desc)}</div>
+      <a class="notfound-btn" href="index.html">← Back to Downloads</a>
+    </div>`;
+}
+
+async function renderProfile(user){
+  const role=getRole(user);
+  const displayName=user.display_name||user.username;
+  const letter=(displayName[0]||'?').toUpperCase();
+  const memberDays=daysSince(user.created_at);
+
+  const avatarHTML=user.avatar_url
+    ?`<img src="${eh(user.avatar_url)}" alt="Avatar">`
+    :`<span>${eh(letter)}</span>`;
+
+  /* Fetch public stats: comment count, reaction count */
+  let commentCount=0,reactionCount=0;
+  try{
+    const cr=await fetch(`${SB_URL}/rest/v1/cc_comments?user_id=eq.${user.id}&select=id`,{headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}});
+    if(cr.ok){const rows=await cr.json();commentCount=rows.length;}
+  }catch{}
+  try{
+    const rr=await fetch(`${SB_URL}/rest/v1/cc_reactions?user_id=eq.${user.id}&select=id`,{headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}});
+    if(rr.ok){const rows=await rr.json();reactionCount=rows.length;}
+  }catch{}
+
+  document.getElementById('page-content').innerHTML=`
+    <div class="profile-card">
+      <div class="profile-banner role-${role}"></div>
+      <div class="profile-avatar-wrap">
+        <div class="profile-avatar role-${role}">${avatarHTML}</div>
+      </div>
+      <div class="profile-body">
+        <div class="profile-name-row">
+          <span class="profile-name role-${role}">${eh(displayName)}</span>
+        </div>
+        ${roleBadgeHTML(role)}
+
+        <div class="profile-meta">
+          <div class="profile-meta-row">
+            <span class="profile-meta-icon">📅</span>
+            <span>Member since ${fmtDate(user.created_at)}</span>
+          </div>
+          ${memberDays>0?`<div class="owner-since-badge" style="margin:0 auto">🕐 ${memberDays} day${memberDays!==1?'s':''} as a member</div>`:''}
+        </div>
+
+        <div class="profile-divider"></div>
+
+        <div class="profile-stats">
+          <div class="stat-box">
+            <div class="stat-box-value">${commentCount}</div>
+            <div class="stat-box-label">Comments</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-box-value">${reactionCount}</div>
+            <div class="stat-box-label">Reactions</div>
+          </div>
+        </div>
+
+        <div class="profile-footer-actions">
+          <button class="share-btn" id="share-btn" onclick="shareProfile()">🔗 Copy Profile Link</button>
+        </div>
+      </div>
+    </div>`;
+
+  document.title=`${displayName} — Conch & Cmdr Profile`;
+}
+
+function shareProfile(){
+  const url=window.location.href;
+  const btn=document.getElementById('share-btn');
+  const copy=()=>{
+    btn.classList.add('copied');btn.textContent='✓ Copied!';
+    setTimeout(()=>{btn.classList.remove('copied');btn.innerHTML='🔗 Copy Profile Link';},2000);
+  };
+  if(navigator.clipboard){
+    navigator.clipboard.writeText(url).then(copy).catch(()=>{
+      const ta=document.createElement('textarea');ta.value=url;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);copy();
+    });
+  }
+}
+
+loadProfile();
+</script>
+</body>
+</html>
