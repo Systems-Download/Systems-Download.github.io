@@ -77,6 +77,20 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:cen
 .user-card-name.role-admin{color:var(--gold)}
 .user-card-name.role-beta{color:var(--beta)}
 .user-card-name.role-vip{color:var(--gold)}
+.user-card-name.role-cocreator{color:#60a5fa}
+.user-card-name.role-partner{color:#f97316}
+.user-card-banner.role-cocreator{background:linear-gradient(135deg,rgba(96,165,250,.18),rgba(167,139,250,.08))}
+.user-card-banner.role-partner{background:linear-gradient(135deg,rgba(249,115,22,.18),rgba(251,191,36,.08))}
+.user-card-avatar.role-cocreator{border-color:#60a5fa}
+.user-card-avatar.role-partner{border-color:#f97316}
+.ubadge-role-cocreator{background:rgba(96,165,250,.1);color:#60a5fa;border:1px solid rgba(96,165,250,.25)}
+.ubadge-role-partner{background:rgba(249,115,22,.1);color:#f97316;border:1px solid rgba(249,115,22,.25)}
+.profile-banner.role-cocreator{background:linear-gradient(135deg,rgba(96,165,250,.18),rgba(167,139,250,.08))}
+.profile-banner.role-partner{background:linear-gradient(135deg,rgba(249,115,22,.18),rgba(251,191,36,.08))}
+.profile-avatar.role-cocreator{border-color:#60a5fa;box-shadow:0 0 0 2px rgba(96,165,250,.3),0 8px 24px rgba(0,0,0,.3)}
+.profile-avatar.role-partner{border-color:#f97316;box-shadow:0 0 0 2px rgba(249,115,22,.3),0 8px 24px rgba(0,0,0,.3)}
+.profile-name.role-cocreator{color:#60a5fa}
+.profile-name.role-partner{color:#f97316}
 .user-card-badges{display:flex;align-items:center;justify-content:center;gap:.3rem;flex-wrap:wrap}
 .ubadge{font-family:var(--mono);font-size:.58rem;padding:.15rem .4rem;border-radius:4px;letter-spacing:.04em}
 .ubadge-role-admin{background:rgba(255,200,50,.1);color:var(--gold);border:1px solid rgba(255,200,50,.25)}
@@ -122,6 +136,13 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:cen
 .back-link:hover{color:var(--conch)}
 
 footer{text-align:center;padding:2rem;font-family:var(--mono);font-size:.7rem;color:var(--muted);opacity:.4}
+
+  .follow-btn{font-family:var(--mono);font-size:.75rem;padding:.5rem 1.1rem;border-radius:7px;border:1px solid rgba(15,244,198,.3);background:rgba(15,244,198,.08);color:var(--conch);cursor:pointer;transition:all .2s}
+  .follow-btn:hover{background:rgba(15,244,198,.18)}
+  .follow-btn.following{background:rgba(255,79,94,.06);border-color:rgba(255,79,94,.25);color:#ff4f5e}
+  .follow-btn.following:hover{background:rgba(255,79,94,.14)}
+  .follow-stats{display:flex;gap:1.5rem;justify-content:center;font-family:var(--mono);font-size:.75rem;color:var(--muted)}
+  .follow-stat strong{color:var(--text);display:block;font-size:1rem;margin-bottom:.1rem}
 </style>
 </head>
 <body>
@@ -160,12 +181,14 @@ function daysSince(s){if(!s)return 0;return Math.floor((Date.now()-new Date(s))/
 function getRole(user){
   if((user.username||'').toLowerCase()===ADMIN_USERNAME)return'admin';
   if(user.role==='admin')return'admin';
+  if(user.role==='cocreator')return'cocreator';
+  if(user.role==='partner')return'partner';
   if(user.role==='vip')return'vip';
   if(user.role==='beta')return'beta';
   return'user';
 }
 
-const ROLE_LABELS={admin:'👑 Owner',vip:'⭐ VIP',beta:'🧪 Beta',user:'👤 Member'};
+const ROLE_LABELS={admin:'👑 Owner',cocreator:'🛠️ Co-Creator',partner:'🤝 Partner',vip:'⭐ VIP',beta:'🧪 Beta',user:'👤 Member'};
 const NAME_TYPE_LABELS={discord:'💬 Discord',roblox:'🎮 Roblox'};
 
 /* ── AUTH CHECK ── */
@@ -300,6 +323,7 @@ async function showSingleProfile(username){
     try{const rr=await fetch(`${SB_URL}/rest/v1/cc_reactions?user_id=eq.${user.id}&select=id`,{headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}});if(rr.ok){const d=await rr.json();reactions=d.length;}}catch{}
 
     document.title=`${displayName} — Conch & Cmdr`;
+    const loggedIn=getLoggedInUser();
 
     setRoot(`<div class="profile-page"><div>
       <a class="back-link" href="profile.html">← All Members</a>
@@ -325,6 +349,11 @@ async function showSingleProfile(username){
           </div>
           <div class="profile-actions">
             <button class="profile-action-btn" onclick="copyLink()">🔗 Copy Link</button>
+            ${loggedIn&&loggedIn.id!==user.id?`<button class="follow-btn" id="follow-btn" onclick="toggleFollow()">+ Follow</button>`:''}
+          </div>
+          <div class="follow-stats" style="margin-top:1rem">
+            <div><strong id="followers-count">—</strong> Followers</div>
+            <div><strong id="following-count">—</strong> Following</div>
           </div>
         </div>
       </div>
@@ -339,6 +368,63 @@ function copyLink(){
     const btn=document.querySelector('.profile-action-btn');
     if(btn){btn.textContent='✓ Copied!';setTimeout(()=>btn.textContent='🔗 Copy Link',2000);}
   }).catch(()=>{});
+}
+
+let _profileUser=null;
+
+async function loadFollowData(user){
+  _profileUser=user;
+  /* Follower/Following counts */
+  try{
+    const [fr,fg]=await Promise.all([
+      fetch(`${SB_URL}/rest/v1/cc_follows?following_id=eq.${user.id}&select=id`,{headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}}),
+      fetch(`${SB_URL}/rest/v1/cc_follows?follower_id=eq.${user.id}&select=id`,{headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}})
+    ]);
+    const followers=fr.ok?await fr.json():[];
+    const following=fg.ok?await fg.json():[];
+    const fc=document.getElementById('followers-count');
+    const fgc=document.getElementById('following-count');
+    if(fc)fc.textContent=followers.length;
+    if(fgc)fgc.textContent=following.length;
+
+    /* Check if logged-in user follows this profile */
+    const loggedIn=getLoggedInUser();
+    if(loggedIn&&loggedIn.id!==user.id){
+      const btn=document.getElementById('follow-btn');
+      if(btn){
+        const isFollowing=followers.some(f=>f.follower_id===loggedIn.id);
+        /* Re-check with proper query */
+        const cr=await fetch(`${SB_URL}/rest/v1/cc_follows?follower_id=eq.${loggedIn.id}&following_id=eq.${user.id}&select=id`,{headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}});
+        const existing=cr.ok?await cr.json():[];
+        if(existing.length>0){btn.classList.add('following');btn.textContent='✓ Following';}
+      }
+    }
+  }catch{}
+}
+
+async function toggleFollow(){
+  const loggedIn=getLoggedInUser();
+  if(!loggedIn||!_profileUser)return;
+  const btn=document.getElementById('follow-btn');
+  const isFollowing=btn.classList.contains('following');
+  btn.disabled=true;
+  try{
+    if(isFollowing){
+      await fetch(`${SB_URL}/rest/v1/cc_follows?follower_id=eq.${loggedIn.id}&following_id=eq.${_profileUser.id}`,{
+        method:'DELETE',headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}
+      });
+      btn.classList.remove('following');btn.textContent='+ Follow';
+    }else{
+      await fetch(`${SB_URL}/rest/v1/cc_follows`,{
+        method:'POST',
+        headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},
+        body:JSON.stringify({follower_id:loggedIn.id,follower_username:loggedIn.username,following_id:_profileUser.id,following_username:_profileUser.display_name||_profileUser.username,created_at:new Date().toISOString()})
+      });
+      btn.classList.add('following');btn.textContent='✓ Following';
+    }
+    await loadFollowData(_profileUser);
+  }catch{}
+  btn.disabled=false;
 }
 
 /* ── INIT ── */
