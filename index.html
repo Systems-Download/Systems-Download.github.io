@@ -590,6 +590,58 @@
   .vt-beta-r{background:rgba(167,139,250,.08);color:#a78bfa;border:1px solid rgba(167,139,250,.2)}
   .badge-beta{font-family:var(--mono);font-size:.6rem;padding:.1rem .4rem;border-radius:3px;background:rgba(167,139,250,.15);color:#a78bfa;border:1px solid rgba(167,139,250,.3);flex-shrink:0}
   .ripple-beta-c{background:rgba(52,211,153,.35)}.ripple-beta-r{background:rgba(167,139,250,.35)}
+
+  /* ── NOTIFICATION BELL ── */
+  .notif-bell-wrap{position:relative;display:none}
+  .notif-bell-wrap.vis{display:flex;align-items:center}
+  .notif-bell{background:var(--surface);border:1px solid var(--border);border-radius:8px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:1rem;transition:all .2s;position:relative}
+  .notif-bell:hover{border-color:rgba(255,200,50,.35);background:rgba(255,200,50,.05)}
+  .notif-badge{position:absolute;top:-5px;right:-5px;min-width:16px;height:16px;border-radius:8px;background:var(--cmdr);color:#fff;font-family:var(--mono);font-size:.6rem;font-weight:700;display:flex;align-items:center;justify-content:center;padding:0 4px;border:2px solid var(--bg);animation:notif-pop .3s cubic-bezier(.34,1.56,.64,1)}
+  @keyframes notif-pop{from{transform:scale(0)}to{transform:scale(1)}}
+  @keyframes notif-shake{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-15deg)}40%,80%{transform:rotate(15deg)}}
+
+  /* NOTIF DROPDOWN */
+  .notif-dropdown{position:absolute;top:calc(100% + 8px);right:0;width:300px;background:var(--surface);border:1px solid var(--border);border-radius:12px;box-shadow:0 16px 40px rgba(0,0,0,.5);z-index:500;overflow:hidden;animation:dropIn .2s ease}
+  @keyframes dropIn{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:none}}
+  .notif-header{display:flex;align-items:center;justify-content:space-between;padding:.75rem 1rem;border-bottom:1px solid var(--border)}
+  .notif-header-title{font-family:var(--mono);font-size:.72rem;font-weight:700;color:var(--text)}
+  .notif-mark-read{font-family:var(--mono);font-size:.65rem;color:var(--muted);background:none;border:none;cursor:pointer;transition:color .2s}
+  .notif-mark-read:hover{color:var(--conch)}
+  .notif-list{max-height:320px;overflow-y:auto}
+  .notif-item{padding:.8rem 1rem;border-bottom:1px solid var(--border);display:flex;gap:.75rem;align-items:flex-start;transition:background .15s;cursor:default}
+  .notif-item:last-child{border-bottom:none}
+  .notif-item.unread{background:rgba(15,244,198,.03)}
+  .notif-item-icon{font-size:1.1rem;flex-shrink:0;margin-top:.1rem}
+  .notif-item-body{flex:1;min-width:0}
+  .notif-item-title{font-family:var(--mono);font-size:.75rem;font-weight:600;color:var(--text);margin-bottom:.2rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .notif-item-desc{font-family:var(--mono);font-size:.67rem;color:var(--muted);line-height:1.5}
+  .notif-item-time{font-family:var(--mono);font-size:.6rem;color:var(--muted);opacity:.6;margin-top:.2rem}
+  .notif-item-dot{width:6px;height:6px;border-radius:50%;background:var(--conch);flex-shrink:0;margin-top:.35rem}
+  .notif-empty{text-align:center;padding:2rem 1rem;font-family:var(--mono);font-size:.75rem;color:var(--muted);opacity:.6}
+
+  /* ── ANIMATED AVATAR RINGS ── */
+  .nav-avatar.ring-admin{border:none;position:relative;box-shadow:none}
+  .nav-avatar.ring-admin::before{content:'';position:absolute;inset:-2px;border-radius:50%;background:conic-gradient(var(--gold),#ff4f5e,var(--gold));animation:spin-ring 2s linear infinite;z-index:-1}
+  .nav-avatar.ring-beta{border:none;position:relative}
+  .nav-avatar.ring-beta::before{content:'';position:absolute;inset:-2px;border-radius:50%;background:conic-gradient(#34d399,#0ff4c6,#34d399);animation:spin-ring 2.5s linear infinite;z-index:-1}
+  .nav-avatar.ring-vip{border:none;position:relative}
+  .nav-avatar.ring-vip::before{content:'';position:absolute;inset:-2px;border-radius:50%;background:conic-gradient(var(--gold),#a78bfa,var(--gold));animation:spin-ring 3s linear infinite;z-index:-1}
+  @keyframes spin-ring{to{transform:rotate(360deg)}}
+  .nav-avatar.ring-cocreator{border:none;position:relative}
+  .nav-avatar.ring-cocreator::before{content:'';position:absolute;inset:-2px;border-radius:50%;background:conic-gradient(#60a5fa,#a78bfa,#60a5fa);animation:spin-ring 2s linear infinite;z-index:-1}
+  .nav-avatar.ring-partner{border:none;position:relative}
+  .nav-avatar.ring-partner::before{content:'';position:absolute;inset:-2px;border-radius:50%;background:conic-gradient(#f97316,#fbbf24,#f97316);animation:spin-ring 2.5s linear infinite;z-index:-1}
+
+  /* ── DIRECT LINK ── */
+  .dl-link-btn{font-family:var(--mono);font-size:.7rem;padding:.3rem .6rem;border-radius:6px;border:1px solid var(--border);background:none;color:var(--muted);cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:.25rem}
+  .dl-link-btn:hover{border-color:rgba(255,255,255,.2);color:var(--text)}
+  .dl-link-btn.copied{border-color:rgba(15,244,198,.4);color:var(--conch)}
+
+  /* ── FOLLOWER SYSTEM ── */
+  .follow-btn{font-family:var(--mono);font-size:.72rem;padding:.4rem .9rem;border-radius:7px;border:1px solid rgba(15,244,198,.3);background:rgba(15,244,198,.08);color:var(--conch);cursor:pointer;transition:all .2s}
+  .follow-btn:hover{background:rgba(15,244,198,.16)}
+  .follow-btn.following{background:rgba(255,79,94,.06);border-color:rgba(255,79,94,.25);color:var(--cmdr)}
+  .follow-btn.following:hover{background:rgba(255,79,94,.14)}
 </style>
 </head>
 <body>
@@ -1142,7 +1194,7 @@ async function doLogin(){
     }catch{}
 
     /* Success */
-    AUTH.user={username:user.display_name||user.username,rawUsername:user.username.toLowerCase(),id:user.id,isAdmin:user.username.toLowerCase()==='max',role:user.role||'user',isBetaTester:user.role==='beta'||user.role==='admin'};
+    AUTH.user={username:user.display_name||user.username,rawUsername:user.username.toLowerCase(),id:user.id,isAdmin:user.username.toLowerCase()==='max',role:user.role||'user',isBetaTester:user.role==='beta'||user.role==='admin',isCoCreator:user.role==='cocreator',isPartner:user.role==='partner'};
     try{localStorage.setItem('cc_auth',JSON.stringify(AUTH.user));}catch{}
     hideAuthWall();
     updateNavUser();
@@ -1160,6 +1212,8 @@ async function doLogin(){
 
     /* Trigger welcome tour on first-ever login */
     maybeStartTour();
+    /* Init notification bell */
+    initNotifications();
 
   }catch(e){
     setAuthErr('login','Network error. Please try again.');
@@ -1258,6 +1312,9 @@ async function initAuth(){
           const dl=document.getElementById('drawer-admin-link');if(dl)dl.style.display='flex';
         }
         if(AUTH.user&&AUTH.user.isBetaTester){const bb=document.getElementById('beta-tester-badge');if(bb)bb.style.display='inline-flex';}
+        if(AUTH.user&&AUTH.user.isCoCreator){const cb=document.getElementById('cocreator-badge');if(cb)cb.style.display='inline-flex';}
+        if(AUTH.user&&AUTH.user.isPartner){const pb=document.getElementById('partner-badge');if(pb)pb.style.display='inline-flex';}
+        initNotifications();
         const PLUGIN_AUTH2=['max','[dev]'];
         if(AUTH.user&&(PLUGIN_AUTH2.includes((AUTH.user.username||'').toLowerCase())||AUTH.user.bypassed)){
           const pl=document.getElementById('drawer-plugins-link');if(pl)pl.style.display='flex';
@@ -1280,6 +1337,9 @@ async function initAuth(){
           const dl=document.getElementById('drawer-admin-link');if(dl)dl.style.display='flex';
         }
         if(AUTH.user&&AUTH.user.isBetaTester){const bb=document.getElementById('beta-tester-badge');if(bb)bb.style.display='inline-flex';}
+        if(AUTH.user&&AUTH.user.isCoCreator){const cb=document.getElementById('cocreator-badge');if(cb)cb.style.display='inline-flex';}
+        if(AUTH.user&&AUTH.user.isPartner){const pb=document.getElementById('partner-badge');if(pb)pb.style.display='inline-flex';}
+        initNotifications();
         const PLUGIN_AUTH2=['max','[dev]'];
         if(AUTH.user&&(PLUGIN_AUTH2.includes((AUTH.user.username||'').toLowerCase())||AUTH.user.bypassed)){
           const pl=document.getElementById('drawer-plugins-link');if(pl)pl.style.display='flex';
@@ -1422,10 +1482,28 @@ function t(k,...a){const v=(T[lang]||T.en)[k];return typeof v==='function'?v(...
   <div class="nav-logo"><span class="c">Conch</span><span class="sep">/</span><span class="r">Cmdr</span></div>
   <div class="nav-right">
 <!-- USER BADGE -->
+    <!-- NOTIFICATION BELL -->
+    <div class="notif-bell-wrap" id="notif-bell-wrap">
+      <button class="notif-bell" id="notif-bell" onclick="toggleNotifDropdown()" title="Notifications">
+        🔔
+        <span class="notif-badge" id="notif-badge" style="display:none">0</span>
+      </button>
+      <div class="notif-dropdown" id="notif-dropdown" style="display:none">
+        <div class="notif-header">
+          <span class="notif-header-title">🔔 Notifications</span>
+          <button class="notif-mark-read" onclick="markAllRead()">Mark all read</button>
+        </div>
+        <div class="notif-list" id="notif-list">
+          <div class="notif-empty">No notifications yet.</div>
+        </div>
+      </div>
+    </div>
     <!-- ADMIN BTN (only for Max) -->
     <a id="admin-nav-btn" href="cc-control.html" style="display:none;font-family:var(--mono);font-size:.72rem;padding:.35rem .7rem;border-radius:6px;border:1px solid rgba(255,200,50,.3);background:rgba(255,200,50,.08);color:#ffc832;text-decoration:none;align-items:center;gap:.35rem;transition:all .2s" onmouseover="this.style.background='rgba(255,200,50,.18)'" onmouseout="this.style.background='rgba(255,200,50,.08)'">⚙️ Admin</a>
     <!-- BETA TESTER BADGE -->
     <span id="beta-tester-badge" style="display:none;font-family:var(--mono);font-size:.62rem;padding:.2rem .55rem;border-radius:4px;background:rgba(52,211,153,.1);color:#34d399;border:1px solid rgba(52,211,153,.25)">🧪 Beta</span>
+    <span id="cocreator-badge" style="display:none;font-family:var(--mono);font-size:.62rem;padding:.2rem .55rem;border-radius:4px;background:rgba(96,165,250,.1);color:#60a5fa;border:1px solid rgba(96,165,250,.25)">🛠️ Co-Creator</span>
+    <span id="partner-badge" style="display:none;font-family:var(--mono);font-size:.62rem;padding:.2rem .55rem;border-radius:4px;background:rgba(249,115,22,.1);color:#f97316;border:1px solid rgba(249,115,22,.25)">🤝 Partner</span>
     <!-- USER BADGE + AVATAR -->
     <div class="user-badge" id="user-badge">
       <div class="nav-avatar" id="nav-avatar" onclick="openProfile()" title="Profile"></div>
@@ -2022,6 +2100,7 @@ function render(sec,groups,cls){
         </div>
         <div class="file-actions">
           <button class="btn-sm" onclick="share('${ea(latest.url)}',this)" title="Copy link">⎘</button>
+          <button class="dl-link-btn" onclick="copyDirectLink('${ea(latest.url)}','${ea(latest.name)}',this)" title="Copy direct download link">⎘ Link</button>
           <button class="btn-queue" id="qbtn-${id}" onclick="addToQueue('${ea(latest.url)}','${ea(latest.name)}','${cls}','${id}')" title="Add to queue">🛒</button>
           ${hasH?`<button class="btn-hist" id="hb-${id}" onclick="toggleHist(${id})"><span>${t('hist')}</span><span class="arr">▾</span></button>`:''}
           <button class="btn-dl btn-dl-${cls}" onclick="dl('${ea(latest.url)}','${ea(latest.name)}','${cls}',this)">${t('dl')}</button>
@@ -2278,6 +2357,16 @@ function renderProfileModal(){
     `<strong>${eh(u.username)}</strong><br>Member since ${u.created_at?new Date(u.created_at).toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'}):'—'}<br><span style="opacity:.6;font-size:.7rem">ID: ${u.id||'—'}</span>`;
   updateNavAvatar();
 }
+function getAvatarRingClass(user){
+  if(!user)return'';
+  if(user.isAdmin||user.role==='admin')return'ring-admin';
+  if(user.role==='cocreator')return'ring-cocreator';
+  if(user.role==='partner')return'ring-partner';
+  if(user.role==='vip')return'ring-vip';
+  if(user.role==='beta'||user.isBetaTester)return'ring-beta';
+  return'';
+}
+
 function updateNavUser(){
   const badge=document.getElementById('user-badge');
   const nameEl=document.getElementById('user-badge-name');
@@ -2293,6 +2382,10 @@ function updateNavAvatar(){
   } else {
     nav.textContent=(AUTH.user.username||'?')[0].toUpperCase();
   }
+  /* Apply animated ring based on role */
+  nav.classList.remove('ring-admin','ring-beta','ring-vip');
+  const ring=getAvatarRingClass(AUTH.user);
+  if(ring)nav.classList.add(ring);
 }
 
 /* ══════════════════════════════════════════════════════
@@ -2735,6 +2828,190 @@ function megaConfetti(){
   if(ps.every(p=>p.y>cv.height)){alpha-=.04}if(alpha<=0){ctx.clearRect(0,0,cv.width,cv.height);return}af=requestAnimationFrame(draw)}
   if(af)cancelAnimationFrame(af);draw();
 }
+
+
+
+/* ══════════════════════════════════════════════════════
+   DIRECT LINK — copy short download URL
+══════════════════════════════════════════════════════ */
+function copyDirectLink(url, name, btn){
+  const link=url; /* Direct GitHub download URL */
+  const copy=()=>{
+    btn.classList.add('copied');btn.innerHTML='✓ Copied!';
+    toast({title:'Link copied!',sub:name,type:'i',dur:2000});
+    setTimeout(()=>{btn.classList.remove('copied');btn.innerHTML='⎘ Link';},2000);
+  };
+  if(navigator.clipboard){navigator.clipboard.writeText(link).then(copy).catch(()=>{fbCopy(link);copy();});}
+  else{fbCopy(link);copy();}
+}
+
+function fbCopy(t){
+  const ta=document.createElement('textarea');ta.value=t;ta.style.position='fixed';ta.style.opacity='0';
+  document.body.appendChild(ta);ta.select();
+  try{document.execCommand('copy');}catch{}
+  document.body.removeChild(ta);
+}
+
+/* ══════════════════════════════════════════════════════
+   FOLLOWER SYSTEM
+══════════════════════════════════════════════════════ */
+async function followUser(targetId, targetUsername, btn){
+  if(!AUTH.user){toast({title:'Login required',sub:'',type:'w',dur:2000});return;}
+  if(AUTH.user.id===targetId)return;
+
+  const isFollowing=btn.classList.contains('following');
+  btn.disabled=true;
+
+  try{
+    if(isFollowing){
+      /* Unfollow */
+      await sbFetch(`/rest/v1/cc_follows?follower_id=eq.${AUTH.user.id}&following_id=eq.${targetId}`,{method:'DELETE'});
+      btn.classList.remove('following');
+      btn.textContent='+ Follow';
+      toast({title:'Unfollowed '+targetUsername,sub:'',type:'i',dur:2000});
+    }else{
+      /* Follow */
+      await sbFetch('/rest/v1/cc_follows',{
+        method:'POST',headers:{'Prefer':'return=minimal'},
+        body:JSON.stringify({follower_id:AUTH.user.id,follower_username:AUTH.user.username,following_id:targetId,following_username:targetUsername,created_at:new Date().toISOString()})
+      });
+      btn.classList.add('following');
+      btn.textContent='✓ Following';
+      toast({title:'Now following '+targetUsername,sub:'',type:'ok',dur:2000});
+    }
+  }catch(e){
+    toast({title:'Failed',sub:'',type:'w',dur:2000});
+  }
+  btn.disabled=false;
+}
+
+async function checkFollowStatus(targetId, btn){
+  if(!AUTH.user||!targetId)return;
+  try{
+    const r=await sbFetch(`/rest/v1/cc_follows?follower_id=eq.${AUTH.user.id}&following_id=eq.${targetId}&select=id`);
+    const rows=r.ok?await r.json():[];
+    if(rows&&rows.length>0){
+      btn.classList.add('following');
+      btn.textContent='✓ Following';
+    }
+  }catch{}
+}
+
+/* ══════════════════════════════════════════════════════
+   NOTIFICATION BELL — checks GitHub releases for new ones
+══════════════════════════════════════════════════════ */
+let _notifOpen=false;
+let _notifs=[];
+
+async function initNotifications(){
+  if(!AUTH.user)return;
+  document.getElementById('notif-bell-wrap').classList.add('vis');
+  await checkNewReleases();
+}
+
+async function checkNewReleases(){
+  try{
+    /* Load last seen release from localStorage */
+    const lastSeenKey='cc_last_seen_release_'+(AUTH.user.id||'anon');
+    const lastSeen=localStorage.getItem(lastSeenKey)||'';
+
+    const r=await fetch('https://api.github.com/repos/Systems-Download/Systems-Download.github.io/releases?per_page=5');
+    if(!r.ok)return;
+    const releases=await r.json();
+    if(!releases||!releases.length)return;
+
+    /* Find releases newer than last seen */
+    const newReleases=lastSeen
+      ?releases.filter(rel=>new Date(rel.published_at)>new Date(lastSeen))
+      :releases.slice(0,1); /* First time — show latest 1 */
+
+    _notifs=newReleases.map(rel=>{
+      const assets=(rel.assets||[]).filter(a=>a.name.toLowerCase().endsWith('.rbxm'));
+      const lo=(assets[0]?.name||'').toLowerCase();
+      const type=lo.includes('conch')?'🧩 Conch':lo.includes('cmdr')?'⚔️ Cmdr':'📦';
+      return{
+        id:rel.id,
+        icon:lo.includes('conch')?'🧩':lo.includes('cmdr')?'⚔️':'📦',
+        title:`New ${type} Release — ${rel.tag_name||rel.name}`,
+        desc:assets.length?`${assets.length} file${assets.length>1?'s':''} available`:'New release available',
+        time:rel.published_at,
+        unread:true,
+        url:rel.html_url
+      };
+    });
+
+    renderNotifs();
+    updateBadge();
+  }catch{}
+}
+
+function renderNotifs(){
+  const list=document.getElementById('notif-list');
+  if(!_notifs.length){
+    list.innerHTML='<div class="notif-empty">No new releases.</div>';
+    return;
+  }
+  list.innerHTML=_notifs.map(n=>`
+    <div class="notif-item${n.unread?' unread':''}" onclick="openNotif('${n.url}')">
+      ${n.unread?'<div class="notif-item-dot"></div>':''}
+      <div class="notif-item-icon">${n.icon}</div>
+      <div class="notif-item-body">
+        <div class="notif-item-title">${eh(n.title)}</div>
+        <div class="notif-item-desc">${eh(n.desc)}</div>
+        <div class="notif-item-time">${timeAgoShort(n.time)}</div>
+      </div>
+    </div>`).join('');
+}
+
+function openNotif(url){
+  if(url)window.open(url,'_blank');
+  closeNotifDropdown();
+}
+
+function updateBadge(){
+  const unread=_notifs.filter(n=>n.unread).length;
+  const badge=document.getElementById('notif-badge');
+  if(unread>0){
+    badge.style.display='flex';
+    badge.textContent=unread>9?'9+':unread;
+    /* Animate bell */
+    const bell=document.getElementById('notif-bell');
+    bell.style.animation='none';
+    setTimeout(()=>{bell.style.animation='notif-shake .5s ease';},10);
+  }else{
+    badge.style.display='none';
+  }
+}
+
+function toggleNotifDropdown(){
+  _notifOpen=!_notifOpen;
+  document.getElementById('notif-dropdown').style.display=_notifOpen?'block':'none';
+}
+
+function closeNotifDropdown(){
+  _notifOpen=false;
+  document.getElementById('notif-dropdown').style.display='none';
+}
+
+function markAllRead(){
+  /* Save last seen as latest release time */
+  if(_notifs.length){
+    const lastSeenKey='cc_last_seen_release_'+(AUTH.user.id||'anon');
+    const latest=_notifs[0].time;
+    localStorage.setItem(lastSeenKey,latest);
+  }
+  _notifs=_notifs.map(n=>({...n,unread:false}));
+  renderNotifs();
+  updateBadge();
+  closeNotifDropdown();
+}
+
+/* Close dropdown when clicking outside */
+document.addEventListener('click',e=>{
+  if(_notifOpen&&!document.getElementById('notif-bell-wrap').contains(e.target)){
+    closeNotifDropdown();
+  }
+});
 
 /* ══════════════════════════════════════════════════════
    WELCOME TOUR — 5 short tooltips on first login
