@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>404 — Conch & Cmdr</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --conch:#0ff4c6;--cmdr:#ff4f5e;--gold:#ffc832;
+  --bg:#0b0c0f;--surface:#13151a;--surface2:#1a1d24;
+  --border:rgba(255,255,255,0.07);--text:#e8eaf0;--muted:#6b7280;
+  --mono:'JetBrains Mono',monospace;--sans:'Syne',sans-serif;
+}
+:root.light-mode{--bg:#f5f7fa;--surface:#fff;--surface2:#f0f2f5;--border:rgba(0,0,0,0.08);--text:#1a1d24;--muted:#6b7280}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden;transition:background .3s,color .3s;position:relative}
+
+/* PARTICLES */
+.particles{position:fixed;inset:0;pointer-events:none;z-index:0}
+.particle{position:absolute;border-radius:50%;animation:float linear infinite;opacity:0}
+@keyframes float{
+  0%{transform:translateY(100vh) scale(0);opacity:0}
+  10%{opacity:.6}
+  90%{opacity:.3}
+  100%{transform:translateY(-10vh) scale(1);opacity:0}
+}
+
+/* GLITCH */
+@keyframes glitch1{
+  0%,100%{clip-path:inset(0 0 98% 0);transform:translate(-2px)}
+  20%{clip-path:inset(30% 0 50% 0);transform:translate(2px)}
+  40%{clip-path:inset(60% 0 20% 0);transform:translate(-1px)}
+  60%{clip-path:inset(10% 0 80% 0);transform:translate(1px)}
+  80%{clip-path:inset(80% 0 5% 0);transform:translate(-2px)}
+}
+@keyframes glitch2{
+  0%,100%{clip-path:inset(50% 0 30% 0);transform:translate(2px)}
+  20%{clip-path:inset(10% 0 70% 0);transform:translate(-2px)}
+  40%{clip-path:inset(80% 0 5% 0);transform:translate(1px)}
+  60%{clip-path:inset(40% 0 40% 0);transform:translate(-1px)}
+  80%{clip-path:inset(0% 0 90% 0);transform:translate(2px)}
+}
+@keyframes scanline{
+  0%{transform:translateY(-100%)}
+  100%{transform:translateY(100vh)}
+}
+@keyframes pulse{0%,100%{opacity:.6}50%{opacity:1}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+
+/* MAIN */
+.container{position:relative;z-index:1;text-align:center;padding:2rem;max-width:600px}
+
+.four-o-four{position:relative;display:inline-block;margin-bottom:1rem}
+.four-o-four-text{font-size:clamp(7rem,20vw,12rem);font-weight:800;line-height:1;letter-spacing:-.04em;background:linear-gradient(135deg,var(--conch),rgba(15,244,198,.4));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;user-select:none}
+.four-o-four-glitch{position:absolute;inset:0;font-size:clamp(7rem,20vw,12rem);font-weight:800;line-height:1;letter-spacing:-.04em}
+.four-o-four-glitch::before{content:'404';position:absolute;inset:0;color:var(--cmdr);animation:glitch1 3s infinite;opacity:.5}
+.four-o-four-glitch::after{content:'404';position:absolute;inset:0;color:var(--conch);animation:glitch2 3s infinite .5s;opacity:.5}
+
+.scanline{position:fixed;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,rgba(15,244,198,.15),transparent);animation:scanline 4s linear infinite;pointer-events:none;z-index:0}
+
+.subtitle{font-family:var(--mono);font-size:clamp(.75rem,2vw,.9rem);color:var(--muted);margin-bottom:.5rem;animation:fadeUp .5s ease .1s both}
+.title{font-size:clamp(1.3rem,4vw,2rem);font-weight:800;margin-bottom:.75rem;animation:fadeUp .5s ease .2s both}
+.desc{font-family:var(--mono);font-size:.82rem;color:var(--muted);line-height:1.8;max-width:420px;margin:0 auto 2rem;animation:fadeUp .5s ease .3s both}
+
+.cursor{display:inline-block;animation:blink 1s step-end infinite}
+
+.actions{display:flex;gap:.75rem;justify-content:center;flex-wrap:wrap;animation:fadeUp .5s ease .4s both}
+.btn-home{font-family:var(--mono);font-size:.8rem;padding:.65rem 1.5rem;border-radius:8px;background:rgba(15,244,198,.12);color:var(--conch);border:1px solid rgba(15,244,198,.3);text-decoration:none;transition:all .2s;display:inline-flex;align-items:center;gap:.4rem}
+.btn-home:hover{background:rgba(15,244,198,.22);transform:translateY(-1px)}
+.btn-back{font-family:var(--mono);font-size:.8rem;padding:.65rem 1.5rem;border-radius:8px;background:none;color:var(--muted);border:1px solid var(--border);cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;gap:.4rem}
+.btn-back:hover{border-color:rgba(255,255,255,.2);color:var(--text)}
+
+.error-code{margin-top:2rem;font-family:var(--mono);font-size:.68rem;color:var(--muted);opacity:.4;animation:fadeUp .5s ease .5s both}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:1rem 2.5rem;background:rgba(11,12,15,.6);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);height:64px}
+.nav-logo{font-size:1.1rem;font-weight:800;text-decoration:none;display:flex;gap:.4em}
+.nav-logo .c{color:var(--conch)}.nav-logo .r{color:var(--cmdr)}.nav-logo .s{color:var(--muted)}
+.icon-btn{display:flex;align-items:center;justify-content:center;width:36px;height:36px;cursor:pointer;background:var(--surface);border:1px solid var(--border);border-radius:8px;color:var(--muted);font-size:1rem;transition:all .2s}
+.icon-btn:hover{border-color:rgba(15,244,198,.35);color:var(--conch)}
+</style>
+</head>
+<body>
+
+<div class="scanline"></div>
+<div class="particles" id="particles"></div>
+
+<nav>
+  <a class="nav-logo" href="index.html"><span class="c">Conch</span><span class="s">/</span><span class="r">Cmdr</span></a>
+  <button class="icon-btn" onclick="toggleTheme()" id="theme-btn">🌙</button>
+</nav>
+
+<div class="container">
+  <div class="four-o-four">
+    <div class="four-o-four-text">404</div>
+    <div class="four-o-four-glitch" aria-hidden="true"></div>
+  </div>
+
+  <div class="subtitle">ERROR_CODE :: PAGE_NOT_FOUND</div>
+  <div class="title">Oops, this page doesn't exist<span class="cursor">_</span></div>
+  <div class="desc">
+    The page you're looking for has been moved, deleted, or never existed in the first place. Don't worry — it happens to the best of us.
+  </div>
+
+  <div class="actions">
+    <a class="btn-home" href="index.html">← Back to Downloads</a>
+    <button class="btn-back" onclick="history.length>1?history.back():location.href='index.html'">↩ Go Back</button>
+  </div>
+
+  <div class="error-code">
+    requested_path: <span id="path-display"></span> · timestamp: <span id="ts-display"></span>
+  </div>
+</div>
+
+<script>
+/* Theme */
+function toggleTheme(){
+  const root=document.documentElement,btn=document.getElementById('theme-btn');
+  const isDark=!root.classList.contains('light-mode');
+  if(isDark){root.classList.add('light-mode');btn.textContent='☀️';localStorage.setItem('cc_theme','light');}
+  else{root.classList.remove('light-mode');btn.textContent='🌙';localStorage.setItem('cc_theme','dark');}
+}
+(function(){const s=localStorage.getItem('cc_theme'),btn=document.getElementById('theme-btn');if(s==='light'){document.documentElement.classList.add('light-mode');if(btn)btn.textContent='☀️';}})();
+
+/* Path + timestamp */
+document.getElementById('path-display').textContent=window.location.pathname;
+document.getElementById('ts-display').textContent=new Date().toISOString().slice(0,19).replace('T',' ');
+
+/* Particles */
+(function(){
+  const container=document.getElementById('particles');
+  const colors=['rgba(15,244,198,','rgba(255,79,94,','rgba(255,200,50,'];
+  for(let i=0;i<25;i++){
+    const el=document.createElement('div');
+    el.className='particle';
+    const size=Math.random()*4+2;
+    const color=colors[Math.floor(Math.random()*colors.length)];
+    el.style.cssText=`
+      width:${size}px;height:${size}px;
+      left:${Math.random()*100}%;
+      background:${color}${Math.random()*.5+.2});
+      animation-duration:${Math.random()*12+8}s;
+      animation-delay:${Math.random()*8}s;
+    `;
+    container.appendChild(el);
+  }
+})();
+</script>
+</body>
+</html>
