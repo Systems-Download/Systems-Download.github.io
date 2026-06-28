@@ -2936,7 +2936,7 @@ async function checkNewReleases(){
         desc:assets.length?`${assets.length} file${assets.length>1?'s':''} available`:'New release available',
         time:rel.published_at,
         unread:true,
-        url:rel.html_url
+        url:lo.includes('cmdr')?'#cmdr':lo.includes('conch')?'#conch':'#conch'
       };
     });
 
@@ -2964,7 +2964,10 @@ function renderNotifs(){
 }
 
 function openNotif(url){
-  if(url)window.open(url,'_blank');
+  if(url){
+    const el=document.querySelector(url);
+    if(el){el.scrollIntoView({behavior:'smooth',block:'start'});}
+  }
   closeNotifDropdown();
 }
 
