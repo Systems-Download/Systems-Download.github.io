@@ -328,6 +328,12 @@ tr:hover td{background:rgba(255,255,255,.02)}
     <div class="sidebar-item" onclick="showSection('announcements')" id="nav-announcements">
       <span class="sidebar-icon">📋</span>Announcements<span class="sidebar-count" id="count-ann">—</span>
     </div>
+    <div class="sidebar-item" onclick="showSection('notifications')" id="nav-notifications">
+      <span class="sidebar-icon">🔔</span>Notifications<span class="sidebar-count" id="count-notif">—</span>
+    </div>
+    <div class="sidebar-item" onclick="showSection('roles')" id="nav-roles">
+      <span class="sidebar-icon">🎭</span>Roles
+    </div>
   </div>
 
   <!-- MAIN -->
@@ -591,6 +597,87 @@ tr:hover td{background:rgba(255,255,255,.02)}
       </div>
     </div>
 
+
+    <!-- NOTIFICATIONS -->
+    <div class="section-wrap" id="section-notifications">
+      <div class="page-title">🔔 Send Notifications</div>
+      <div class="page-sub">Send a message to the notification bell of all users or a specific user</div>
+
+      <!-- SEND FORM -->
+      <div class="panel" style="margin-bottom:1.5rem">
+        <div class="panel-header"><div class="panel-title">✏️ New Notification</div></div>
+        <div style="padding:1.2rem;display:flex;flex-direction:column;gap:.85rem">
+          <div>
+            <div class="modal-label" style="margin-bottom:.3rem">Title</div>
+            <input class="modal-input" id="notif-title-input" type="text" placeholder="e.g. New Conch v3 is out!" maxlength="80">
+          </div>
+          <div>
+            <div class="modal-label" style="margin-bottom:.3rem">Message</div>
+            <textarea class="modal-input" id="notif-message-input" placeholder="Short message shown in the bell..." style="min-height:80px;resize:vertical;font-family:var(--mono);font-size:.8rem;line-height:1.6" maxlength="300"></textarea>
+          </div>
+          <div>
+            <div class="modal-label" style="margin-bottom:.3rem">Type</div>
+            <div style="display:flex;gap:.5rem;flex-wrap:wrap">
+              <button class="btn-action" id="notif-type-info" onclick="selectNotifType('info')" style="background:rgba(100,160,255,.15);color:#64a0ff;border-color:rgba(100,160,255,.3)">ℹ️ Info</button>
+              <button class="btn-action" id="notif-type-update" onclick="selectNotifType('update')" style="background:none;color:var(--muted);border-color:var(--border)">🚀 Update</button>
+              <button class="btn-action" id="notif-type-warning" onclick="selectNotifType('warning')" style="background:none;color:var(--muted);border-color:var(--border)">⚠️ Warning</button>
+              <button class="btn-action" id="notif-type-hotfix" onclick="selectNotifType('hotfix')" style="background:none;color:var(--muted);border-color:var(--border)">🔧 Hotfix</button>
+            </div>
+          </div>
+          <div>
+            <div class="modal-label" style="margin-bottom:.3rem">Target</div>
+            <div style="display:flex;gap:.75rem;align-items:center;flex-wrap:wrap">
+              <label style="display:flex;align-items:center;gap:.4rem;font-family:var(--mono);font-size:.78rem;cursor:pointer">
+                <input type="radio" name="notif-target" id="notif-target-all" value="all" checked onchange="toggleUserSearch()"> All Users
+              </label>
+              <label style="display:flex;align-items:center;gap:.4rem;font-family:var(--mono);font-size:.78rem;cursor:pointer">
+                <input type="radio" name="notif-target" id="notif-target-user" value="user" onchange="toggleUserSearch()"> Specific User
+              </label>
+            </div>
+            <div id="notif-user-search-wrap" style="display:none;margin-top:.6rem">
+              <input class="modal-input" id="notif-user-search" type="text" placeholder="Type username..." oninput="searchNotifUser(this.value)">
+              <div id="notif-user-results" style="margin-top:.4rem;display:flex;flex-direction:column;gap:.3rem;max-height:160px;overflow-y:auto"></div>
+              <input type="hidden" id="notif-target-user-id" value="">
+              <div id="notif-target-display" style="display:none;margin-top:.4rem;font-family:var(--mono);font-size:.72rem;color:var(--conch);padding:.4rem .7rem;background:rgba(15,244,198,.06);border:1px solid rgba(15,244,198,.2);border-radius:6px"></div>
+            </div>
+          </div>
+          <div style="display:flex;gap:.75rem;align-items:center">
+            <button class="btn-gold" style="font-family:var(--mono);font-size:.8rem;padding:.6rem 1.4rem;border-radius:8px;cursor:pointer;font-weight:600" onclick="sendNotification()">🔔 Send Notification</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- SENT NOTIFICATIONS LIST -->
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title">🔔 Sent Notifications <span id="notif-count-badge" class="sidebar-count"></span></div>
+          <button class="btn-action btn-primary" onclick="loadNotifications()">↺ Refresh</button>
+        </div>
+        <table>
+          <thead><tr><th>Title</th><th>Type</th><th>Target</th><th>Sent</th><th>Actions</th></tr></thead>
+          <tbody id="notif-tbody"><tr class="loading-row"><td colspan="5">Loading...</td></tr></tbody>
+        </table>
+        <div class="tbl-empty" id="notif-empty" style="display:none">No notifications sent yet.</div>
+      </div>
+    </div>
+
+    <!-- ROLES -->
+    <div class="section-wrap" id="section-roles">
+      <div class="page-title">🎭 Role Management</div>
+      <div class="page-sub">Assign or remove roles from users</div>
+
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title">👥 All Users</div>
+          <input class="modal-input" id="roles-search" type="text" placeholder="🔍 Search user..." oninput="filterRolesTable(this.value)" style="width:200px;padding:.35rem .75rem;font-size:.75rem">
+        </div>
+        <table>
+          <thead><tr><th>Username</th><th>Current Role</th><th>Assign Role</th></tr></thead>
+          <tbody id="roles-tbody"><tr class="loading-row"><td colspan="3">Loading...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
   </div><!-- end .main -->
 </div><!-- end .layout -->
 
@@ -758,7 +845,7 @@ async function checkAccess(){
 
 /* ── LOAD ALL ── */
 async function loadAll(){
-  await Promise.all([loadUsers(),loadBans(),loadBugs(),loadSettings(),loadAnnouncements(),loadFrozen()]);
+  await Promise.all([loadUsers(),loadBans(),loadBugs(),loadSettings(),loadAnnouncements(),loadFrozen(),loadNotifications(),loadRoles()]);
   updateStats();
 }
 
@@ -1309,6 +1396,169 @@ async function unlockUser(id){
     await sb(`/rest/v1/cc_users?id=eq.${id}`,{method:'PATCH',headers:{'Prefer':'return=minimal'},body:JSON.stringify({failed_attempts:0,locked_until:null})});
     toast('🔓 Account unlocked','ok');loadUsers();
   }catch(e){toast('Failed: '+e.message,'err');}
+}
+
+/* ── NOTIFICATIONS ── */
+let selectedNotifType='info';
+let selectedTargetUserId=null;
+let _rolesUsers=[];
+
+function selectNotifType(type){
+  selectedNotifType=type;
+  const types=['info','update','warning','hotfix'];
+  const colors={info:'rgba(100,160,255,.15)',update:'rgba(15,244,198,.15)',warning:'rgba(255,200,50,.15)',hotfix:'rgba(255,79,94,.15)'};
+  const textColors={info:'#64a0ff',update:'var(--conch)',warning:'#ffc832',hotfix:'var(--cmdr)'};
+  const borderColors={info:'rgba(100,160,255,.3)',update:'rgba(15,244,198,.3)',warning:'rgba(255,200,50,.3)',hotfix:'rgba(255,79,94,.3)'};
+  types.forEach(t=>{
+    const btn=document.getElementById('notif-type-'+t);if(!btn)return;
+    if(t===type){btn.style.background=colors[t];btn.style.color=textColors[t];btn.style.borderColor=borderColors[t];}
+    else{btn.style.background='none';btn.style.color='var(--muted)';btn.style.borderColor='var(--border)';}
+  });
+}
+
+function toggleUserSearch(){
+  const isUser=document.getElementById('notif-target-user').checked;
+  document.getElementById('notif-user-search-wrap').style.display=isUser?'block':'none';
+  if(!isUser){selectedTargetUserId=null;}
+}
+
+async function searchNotifUser(q){
+  const results=document.getElementById('notif-user-results');
+  if(!q){results.innerHTML='';return;}
+  try{
+    const r=await sb(`/rest/v1/cc_users?username=ilike.*${encodeURIComponent(q)}*&select=id,username,display_name&limit=5`);
+    const rows=await r.json();
+    results.innerHTML=(rows||[]).map(u=>`
+      <div onclick="selectNotifUser('${eh(u.id)}','${eh(u.display_name||u.username)}')" style="padding:.4rem .75rem;background:var(--surface2);border:1px solid var(--border);border-radius:6px;cursor:pointer;font-family:var(--mono);font-size:.75rem;transition:border-color .15s" onmouseover="this.style.borderColor='rgba(15,244,198,.3)'" onmouseout="this.style.borderColor='var(--border)'">
+        ${eh(u.display_name||u.username)}
+      </div>`).join('');
+  }catch{}
+}
+
+function selectNotifUser(id,name){
+  selectedTargetUserId=id;
+  document.getElementById('notif-user-results').innerHTML='';
+  document.getElementById('notif-user-search').value=name;
+  const display=document.getElementById('notif-target-display');
+  display.style.display='block';
+  display.textContent='✓ Target: '+name;
+}
+
+async function sendNotification(){
+  const title=document.getElementById('notif-title-input').value.trim();
+  const message=document.getElementById('notif-message-input').value.trim();
+  const isUser=document.getElementById('notif-target-user').checked;
+  if(!title){toast('Please enter a title','err');return;}
+  if(!message){toast('Please write a message','err');return;}
+  if(isUser&&!selectedTargetUserId){toast('Please select a user','err');return;}
+  try{
+    await sb('/rest/v1/cc_notifications',{
+      method:'POST',headers:{'Prefer':'return=minimal'},
+      body:JSON.stringify({
+        title,message,type:selectedNotifType,
+        target_user_id:isUser?selectedTargetUserId:null,
+        active:true,sent_by:ADMIN_USERNAME,
+        created_at:new Date().toISOString()
+      })
+    });
+    document.getElementById('notif-title-input').value='';
+    document.getElementById('notif-message-input').value='';
+    selectedTargetUserId=null;
+    document.getElementById('notif-target-display').style.display='none';
+    document.getElementById('notif-target-all').checked=true;
+    toggleUserSearch();
+    toast('🔔 Notification sent!','ok');
+    loadNotifications();
+  }catch(e){toast('Failed: '+e.message,'err');}
+}
+
+async function loadNotifications(){
+  document.getElementById('notif-tbody').innerHTML='<tr class="loading-row"><td colspan="5">Loading...</td></tr>';
+  document.getElementById('notif-empty').style.display='none';
+  try{
+    const r=await sb('/rest/v1/cc_notifications?select=*&order=created_at.desc&limit=50');
+    if(!r.ok){
+      document.getElementById('notif-tbody').innerHTML='';
+      document.getElementById('notif-empty').textContent='Table not found. Run SQL setup first.';
+      document.getElementById('notif-empty').style.display='block';
+      return;
+    }
+    const rows=await r.json();
+    const c=rows.length;
+    document.getElementById('count-notif').textContent=c;
+    document.getElementById('notif-count-badge').textContent=c;
+    if(!rows.length){document.getElementById('notif-tbody').innerHTML='';document.getElementById('notif-empty').style.display='block';return;}
+    const icons={info:'ℹ️',update:'🚀',warning:'⚠️',hotfix:'🔧'};
+    document.getElementById('notif-tbody').innerHTML=rows.map(n=>`
+      <tr>
+        <td><strong>${eh(n.title)}</strong><div style="font-family:var(--mono);font-size:.68rem;color:var(--muted);margin-top:.2rem">${eh(n.message.slice(0,60))}${n.message.length>60?'...':''}</div></td>
+        <td><span class="badge">${icons[n.type]||'📢'} ${eh(n.type)}</span></td>
+        <td class="td-muted">${n.target_user_id?'<span style="color:var(--conch)">👤 Specific</span>':'🌐 All Users'}</td>
+        <td class="td-muted">${fmtDate(n.created_at)}</td>
+        <td>
+          <button class="btn-action btn-delete" onclick="deleteNotification('${eh(n.id)}')">🗑️ Delete</button>
+        </td>
+      </tr>`).join('');
+  }catch(e){toast('Error: '+e.message,'err');}
+}
+
+async function deleteNotification(id){
+  try{
+    await sb(`/rest/v1/cc_notifications?id=eq.${id}`,{method:'DELETE'});
+    toast('Notification deleted','ok');
+    loadNotifications();
+  }catch(e){toast('Failed','err');}
+}
+
+/* ── ROLES SECTION ── */
+async function loadRoles(){
+  document.getElementById('roles-tbody').innerHTML='<tr class="loading-row"><td colspan="3">Loading...</td></tr>';
+  try{
+    const r=await sb('/rest/v1/cc_users?select=id,username,display_name,role&order=created_at.asc');
+    _rolesUsers=await r.json();
+    renderRolesTable(_rolesUsers);
+  }catch(e){
+    document.getElementById('roles-tbody').innerHTML=`<tr class="loading-row"><td colspan="3">Error: ${e.message}</td></tr>`;
+  }
+}
+
+function renderRolesTable(users){
+  const roleColors={admin:'var(--gold)',cocreator:'#60a5fa',partner:'#f97316',vip:'var(--gold)',beta:'#34d399',user:'var(--muted)'};
+  const roleLabels={admin:'👑 Admin',cocreator:'🛠️ Co-Creator',partner:'🤝 Partner',vip:'⭐ VIP',beta:'🧪 Beta',user:'👤 User'};
+  document.getElementById('roles-tbody').innerHTML=users.map(u=>`
+    <tr>
+      <td><strong>${eh(u.display_name||u.username)}</strong></td>
+      <td><span style="font-family:var(--mono);font-size:.72rem;color:${roleColors[u.role||'user']||'var(--muted)'}">${roleLabels[u.role||'user']||'👤 User'}</span></td>
+      <td>
+        <select onchange="applyRole('${eh(u.id)}',this.value,this)" style="font-family:var(--mono);font-size:.75rem;background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:.35rem .6rem;border-radius:6px;cursor:pointer;outline:none">
+          <option value="user" ${(!u.role||u.role==='user')?'selected':''}>👤 User</option>
+          <option value="beta" ${u.role==='beta'?'selected':''}>🧪 Beta</option>
+          <option value="cocreator" ${u.role==='cocreator'?'selected':''}>🛠️ Co-Creator</option>
+          <option value="partner" ${u.role==='partner'?'selected':''}>🤝 Partner</option>
+          <option value="vip" ${u.role==='vip'?'selected':''}>⭐ VIP</option>
+          <option value="admin" ${u.role==='admin'?'selected':''}>👑 Admin</option>
+        </select>
+      </td>
+    </tr>`).join('');
+}
+
+function filterRolesTable(q){
+  if(!_rolesUsers)return;
+  const filtered=q?_rolesUsers.filter(u=>(u.display_name||u.username||'').toLowerCase().includes(q.toLowerCase())):_rolesUsers;
+  renderRolesTable(filtered);
+}
+
+async function applyRole(id,role,select){
+  try{
+    await sb(`/rest/v1/cc_users?id=eq.${id}`,{method:'PATCH',headers:{'Prefer':'return=minimal'},body:JSON.stringify({role})});
+    toast('✓ Role updated','ok');
+    /* Update local data */
+    const u=_rolesUsers.find(u=>u.id===id);
+    if(u)u.role=role;
+  }catch(e){
+    toast('Failed: '+e.message,'err');
+    select.value=_rolesUsers.find(u=>u.id===id)?.role||'user';
+  }
 }
 
 /* ── INIT ── */
