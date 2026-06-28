@@ -2906,7 +2906,36 @@ let _notifs=[];
 async function initNotifications(){
   if(!AUTH.user)return;
   document.getElementById('notif-bell-wrap').classList.add('vis');
-  await checkNewReleases();
+  await Promise.all([checkNewReleases(),checkAdminMessages()]);
+}
+
+async function checkAdminMessages(){
+  try{
+    const seenKey='cc_seen_msgs_'+(AUTH.user.id||'anon');
+    const seen=JSON.parse(localStorage.getItem(seenKey)||'[]');
+
+    /* Fetch messages for this user or all users */
+    const r=await sbFetch(`/rest/v1/cc_notifications?or=(target_user_id.eq.${AUTH.user.id},target_user_id.is.null)&active=eq.true&select=*&order=created_at.desc&limit=20`);
+    if(!r.ok)return;
+    const rows=await r.json();
+    if(!rows||!rows.length)return;
+
+    const adminNotifs=rows.map(n=>({
+      id:'msg-'+n.id,
+      icon:{info:'ℹ️',update:'🚀',warning:'⚠️',hotfix:'🔧'}[n.type]||'📢',
+      title:n.title,
+      desc:n.message,
+      time:n.created_at,
+      unread:!seen.includes('msg-'+n.id),
+      url:null,
+      source:'admin'
+    }));
+
+    /* Merge with existing release notifs */
+    _notifs=[..._notifs,...adminNotifs].sort((a,b)=>new Date(b.time)-new Date(a.time));
+    renderNotifs();
+    updateBadge();
+  }catch{}
 }
 
 async function checkNewReleases(){
@@ -2997,11 +3026,14 @@ function closeNotifDropdown(){
 }
 
 function markAllRead(){
-  /* Save last seen as latest release time */
-  if(_notifs.length){
-    const lastSeenKey='cc_last_seen_release_'+(AUTH.user.id||'anon');
-    const latest=_notifs[0].time;
-    localStorage.setItem(lastSeenKey,latest);
+  const lastSeenKey='cc_last_seen_release_'+(AUTH.user.id||'anon');
+  const seenKey='cc_seen_msgs_'+(AUTH.user.id||'anon');
+  const releaseNotifs=_notifs.filter(n=>!n.source);
+  const adminNotifs=_notifs.filter(n=>n.source==='admin');
+  if(releaseNotifs.length)localStorage.setItem(lastSeenKey,releaseNotifs[0].time);
+  if(adminNotifs.length){
+    const seen=adminNotifs.map(n=>n.id);
+    localStorage.setItem(seenKey,JSON.stringify(seen));
   }
   _notifs=_notifs.map(n=>({...n,unread:false}));
   renderNotifs();
