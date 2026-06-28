@@ -407,7 +407,7 @@ tr:hover td{background:rgba(255,255,255,.02)}
           <button class="btn-action btn-primary" onclick="loadBans()">↺ Refresh</button>
         </div>
         <table>
-          <thead><tr><th>IP / Range</th><th>Type</th><th>Reason</th><th>Banned By</th><th>Expires</th><th>Date</th><th>Actions</th></tr></thead>
+          <thead><tr><th>IP / Range</th><th>Username</th><th>Type</th><th>Reason</th><th>Banned By</th><th>Expires</th><th>Date</th><th>Actions</th></tr></thead>
           <tbody id="bans-tbody"><tr class="loading-row"><td colspan="5">Loading...</td></tr></tbody>
         </table>
         <div class="tbl-empty" id="bans-empty" style="display:none">No bans found.</div>
@@ -746,6 +746,7 @@ async function checkAccess(){
     /* If ownerTemp — use 'Max' as display name */
     const displayName=isOwnerTemp?'Max (temp)':parsed.username;
     document.getElementById('nav-username').textContent=displayName;
+    window._adminDisplayName=displayName;
     document.getElementById('access-wall').classList.add('hidden');
     document.getElementById('main-layout').style.display='grid';
     loadAll();
@@ -852,7 +853,7 @@ async function confirmBan(){
   try{
     await sb(`/rest/v1/cc_users?id=eq.${userId}`,{method:'PATCH',headers:{'Prefer':'return=minimal'},body:JSON.stringify({is_banned:true})});
     if(userIP&&userIP!=='unknown'){
-      await sb('/rest/v1/cc_bans',{method:'POST',headers:{'Prefer':'return=minimal'},body:JSON.stringify({ip:userIP,reason,banned_by:ADMIN_USERNAME,banned_at:new Date().toISOString()})});
+      await sb('/rest/v1/cc_bans',{method:'POST',headers:{'Prefer':'return=minimal'},body:JSON.stringify({ip:userIP,banned_username:userName,reason,banned_by:window._adminDisplayName||ADMIN_USERNAME,banned_at:new Date().toISOString()})});
     }
     closeBanModal();
     toast('User '+userName+' banned','ok');
@@ -893,7 +894,7 @@ async function confirmDelete(){
 async function loadBans(){
   document.getElementById('bans-tbody').innerHTML='<tr class="loading-row"><td colspan="5">Loading...</td></tr>';
   try{
-    const r=await sb('/rest/v1/cc_bans?select=*&order=banned_at.desc');
+    const r=await sb('/rest/v1/cc_bans?select=id,ip,banned_username,reason,banned_by,banned_at,is_range,is_temp,expires_at&order=banned_at.desc');
     allBans=await r.json();
     renderBans(allBans);
     const c=allBans.length;
@@ -911,6 +912,7 @@ function renderBans(bans){
   tb.innerHTML=bans.map(b=>`
     <tr>
       <td><span class="badge ${b.is_range?'badge-range':'badge-red'}">${b.is_range?'🌐 ':''}${eh(b.ip)}</span></td>
+      <td class="td-muted">${b.banned_username?eh(b.banned_username):'—'}</td>
       <td>${b.is_temp?'<span class="badge badge-temp-ban">⏱ Temp</span>':b.is_range?'<span class="badge badge-range">🌐 Range</span>':'<span class="badge badge-red">Permanent</span>'}</td>
       <td class="td-truncate td-muted">${eh(b.reason||'—')}</td>
       <td class="td-muted">${eh(b.banned_by||'system')}</td>
@@ -925,7 +927,7 @@ async function addManualBan(){
   const reason=document.getElementById('manual-ban-reason').value.trim();
   if(!ip){toast('Enter an IP address','err');return;}
   try{
-    await sb('/rest/v1/cc_bans',{method:'POST',headers:{'Prefer':'return=minimal'},body:JSON.stringify({ip,reason:reason||'Manual ban',banned_by:ADMIN_USERNAME,banned_at:new Date().toISOString()})});
+    await sb('/rest/v1/cc_bans',{method:'POST',headers:{'Prefer':'return=minimal'},body:JSON.stringify({ip,reason:reason||'Manual ban',banned_by:window._adminDisplayName||ADMIN_USERNAME,banned_at:new Date().toISOString()})});
     document.getElementById('manual-ban-ip').value='';
     document.getElementById('manual-ban-reason').value='';
     toast('IP '+ip+' banned','ok');loadBans();
@@ -1177,7 +1179,7 @@ async function confirmFreeze(){
   const userName=pendingFreezeUser.username;
   try{
     await sb(`/rest/v1/cc_users?id=eq.${userId}`,{method:'PATCH',headers:{'Prefer':'return=minimal'},
-      body:JSON.stringify({is_frozen:true,freeze_reason:reason,frozen_by:ADMIN_USERNAME,frozen_at:new Date().toISOString()})});
+      body:JSON.stringify({is_frozen:true,freeze_reason:reason,frozen_by:window._adminDisplayName||ADMIN_USERNAME,frozen_at:new Date().toISOString()})});
     closeFreezeModal();
     toast('🧊 Account frozen: '+userName,'ok');
     loadUsers();loadFrozen();
