@@ -789,7 +789,14 @@ function renderUsers(users){
       <td><strong>${eh(u.display_name||u.username)}</strong>${u.username===ADMIN_USERNAME?'<span class="badge badge-gold" style="margin-left:.4rem">Owner</span>':''}</td>
       <td>${u.name_type==='roblox'?'<span class="badge" style="background:rgba(15,244,198,.1);color:var(--conch);border:1px solid rgba(15,244,198,.2)">🎮 Roblox</span>':u.name_type==='discord'?'<span class="badge" style="background:rgba(88,101,242,.1);color:#8b9cf4;border:1px solid rgba(88,101,242,.2)">💬 Discord</span>':'<span class="badge" style="background:rgba(255,255,255,.04);color:var(--muted)">—</span>'}</td>
       <td class="td-muted">${u.ip||'—'}</td>
-      <td>${u.role==='beta'?'<span class="badge" style="background:rgba(52,211,153,.1);color:#34d399;border:1px solid rgba(52,211,153,.2)">🧪 Beta</span>':u.role==='admin'?'<span class="badge badge-gold">Admin</span>':'<span class="badge" style="background:rgba(255,255,255,.04);color:var(--muted)">User</span>'}</td>
+      <td>${
+  u.role==='admin'?'<span class="badge badge-gold">👑 Admin</span>':
+  u.role==='cocreator'?'<span class="badge" style="background:rgba(96,165,250,.1);color:#60a5fa;border:1px solid rgba(96,165,250,.2)">🛠️ Co-Creator</span>':
+  u.role==='partner'?'<span class="badge" style="background:rgba(249,115,22,.1);color:#f97316;border:1px solid rgba(249,115,22,.2)">🤝 Partner</span>':
+  u.role==='vip'?'<span class="badge badge-gold">⭐ VIP</span>':
+  u.role==='beta'?'<span class="badge" style="background:rgba(52,211,153,.1);color:#34d399;border:1px solid rgba(52,211,153,.2)">🧪 Beta</span>':
+  '<span class="badge" style="background:rgba(255,255,255,.04);color:var(--muted)">👤 User</span>'
+}</td>
       <td class="td-muted">${u.last_login?fmtDate(u.last_login):'Never'}${u.locked_until&&new Date(u.locked_until)>new Date()?'<span class="badge badge-red" style="margin-left:.3rem">🔒 Locked</span>':''}</td>
       <td class="td-muted">${fmtDate(u.created_at)}</td>
       <td>${u.is_frozen?'<span class="badge badge-frozen">🧊 Frozen</span>':u.is_banned?'<span class="badge badge-red">Banned</span>':u.temp_ban_until&&new Date(u.temp_ban_until)>new Date()?'<span class="badge badge-temp-ban">⏱ Temp Ban</span>':'<span class="badge badge-green">Active</span>'}</td>
@@ -1273,13 +1280,27 @@ async function confirmRangeBan(){
 }
 
 /* ── BETA TESTER & UNLOCK ── */
-async function toggleBeta(id,role){
+async function setUserRole(id,role){
   try{
     await sb(`/rest/v1/cc_users?id=eq.${id}`,{method:'PATCH',headers:{'Prefer':'return=minimal'},body:JSON.stringify({role})});
-    toast(role==='beta'?'🧪 Beta Tester role assigned':'👤 Reverted to User','ok');
+    const labels={user:'👤 User',beta:'🧪 Beta',cocreator:'🛠️ Co-Creator',partner:'🤝 Partner',vip:'⭐ VIP',admin:'👑 Admin'};
+    toast((labels[role]||role)+' role assigned','ok');
     loadUsers();
   }catch(e){toast('Failed: '+e.message,'err');}
 }
+
+function toggleRoleMenu(id,btn){
+  closeRoleMenus();
+  const menu=document.getElementById('role-menu-'+id);
+  if(menu)menu.style.display=menu.style.display==='none'?'block':'none';
+  event.stopPropagation();
+}
+
+function closeRoleMenus(){
+  document.querySelectorAll('[id^="role-menu-"]').forEach(m=>m.style.display='none');
+}
+
+document.addEventListener('click',()=>closeRoleMenus());
 
 async function unlockUser(id){
   try{
