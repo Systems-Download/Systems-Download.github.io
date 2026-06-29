@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Conch & Cmdr — Settings</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --conch:#0ff4c6;--cmdr:#ff4f5e;--gold:#ffc832;
+  --bg:#0b0c0f;--surface:#13151a;--surface2:#1a1d24;
+  --border:rgba(255,255,255,0.07);--text:#e8eaf0;--muted:#6b7280;
+  --mono:'JetBrains Mono',monospace;--sans:'Syne',sans-serif;
+}
+:root.light-mode{--bg:#f5f7fa;--surface:#fff;--surface2:#f0f2f5;--border:rgba(0,0,0,0.08);--text:#1a1d24;--muted:#6b7280}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:100vh;transition:background .3s,color .3s}
+
+nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:1rem 2.5rem;background:rgba(11,12,15,.9);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);height:64px}
+.nav-logo{font-size:1.1rem;font-weight:800;text-decoration:none;display:flex;gap:.4em}
+.nav-logo .c{color:var(--conch)}.nav-logo .r{color:var(--cmdr)}.nav-logo .s{color:var(--muted)}
+.nav-back{font-family:var(--mono);font-size:.75rem;padding:.4rem .9rem;border-radius:6px;border:1px solid var(--border);background:none;color:var(--muted);text-decoration:none;transition:all .2s}
+.nav-back:hover{color:var(--text);border-color:rgba(255,255,255,.2)}
+
+.page{max-width:700px;margin:0 auto;padding:6rem 1.5rem 4rem}
+.page-title{font-size:2rem;font-weight:800;letter-spacing:-.02em;margin-bottom:.4rem}
+.page-title em{font-style:normal;color:var(--conch)}
+.page-sub{font-family:var(--mono);font-size:.8rem;color:var(--muted);margin-bottom:2.5rem}
+
+/* SETTINGS CARD */
+.settings-section{background:var(--surface);border:1px solid var(--border);border-radius:16px;overflow:hidden;margin-bottom:1.2rem}
+.settings-section-header{padding:1rem 1.4rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:.6rem}
+.settings-section-icon{font-size:1rem}
+.settings-section-title{font-family:var(--mono);font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text)}
+
+.setting-row{display:flex;align-items:center;justify-content:space-between;padding:.9rem 1.4rem;border-bottom:1px solid var(--border);gap:1rem}
+.setting-row:last-child{border-bottom:none}
+.setting-left{flex:1;min-width:0}
+.setting-label{font-family:var(--mono);font-size:.82rem;color:var(--text);margin-bottom:.15rem}
+.setting-desc{font-family:var(--mono);font-size:.68rem;color:var(--muted);line-height:1.5}
+
+/* TOGGLE */
+.toggle-wrap{position:relative;flex-shrink:0}
+.toggle-input{opacity:0;width:0;height:0;position:absolute}
+.toggle-slider{display:block;width:44px;height:24px;border-radius:12px;background:var(--surface2);border:1px solid var(--border);cursor:pointer;transition:all .25s;position:relative}
+.toggle-slider::after{content:'';position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:50%;background:var(--muted);transition:all .25s}
+.toggle-input:checked+.toggle-slider{background:rgba(15,244,198,.2);border-color:rgba(15,244,198,.4)}
+.toggle-input:checked+.toggle-slider::after{transform:translateX(20px);background:var(--conch)}
+
+/* SELECT */
+.setting-select{font-family:var(--mono);font-size:.78rem;background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:.45rem .8rem;border-radius:8px;outline:none;cursor:pointer;transition:border-color .2s;flex-shrink:0}
+.setting-select:focus{border-color:rgba(15,244,198,.35)}
+
+/* COLOR PICKER */
+.color-grid{display:flex;gap:.5rem;flex-wrap:wrap;flex-shrink:0}
+.color-dot{width:28px;height:28px;border-radius:50%;cursor:pointer;transition:transform .2s,box-shadow .2s;border:2px solid transparent}
+.color-dot:hover{transform:scale(1.15)}
+.color-dot.active{border-color:var(--text);box-shadow:0 0 0 2px var(--bg)}
+
+/* DANGER ZONE */
+.danger-row{padding:.9rem 1.4rem;border-bottom:1px solid var(--border)}
+.danger-row:last-child{border-bottom:none}
+.danger-btn{font-family:var(--mono);font-size:.75rem;padding:.45rem 1rem;border-radius:7px;border:1px solid rgba(255,79,94,.3);background:rgba(255,79,94,.06);color:var(--cmdr);cursor:pointer;transition:all .2s}
+.danger-btn:hover{background:rgba(255,79,94,.14)}
+
+/* SAVED TOAST */
+.save-toast{position:fixed;bottom:1.5rem;right:1.5rem;font-family:var(--mono);font-size:.75rem;padding:.65rem 1.1rem;background:var(--surface2);border:1px solid rgba(15,244,198,.3);border-radius:8px;color:var(--conch);display:none;animation:tIn .25s ease;box-shadow:0 8px 24px rgba(0,0,0,.4);z-index:999}
+.save-toast.vis{display:flex;align-items:center;gap:.5rem}
+@keyframes tIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+@media(max-width:600px){.page{padding:5rem 1rem 3rem}.setting-row{flex-direction:column;align-items:flex-start;gap:.75rem}}
+</style>
+</head>
+<body>
+
+<div class="save-toast" id="save-toast">✓ Settings saved</div>
+
+<nav>
+  <a class="nav-logo" href="index.html"><span class="c">Conch</span><span class="s">/</span><span class="r">Cmdr</span></a>
+  <a class="nav-back" href="index.html">← Back</a>
+</nav>
+
+<div class="page">
+  <div class="page-title">⚙️ <em>Settings</em></div>
+  <div class="page-sub">Your preferences are saved locally and applied across all pages.</div>
+
+  <!-- APPEARANCE -->
+  <div class="settings-section">
+    <div class="settings-section-header">
+      <span class="settings-section-icon">🎨</span>
+      <span class="settings-section-title">Appearance</span>
+    </div>
+
+    <div class="setting-row">
+      <div class="setting-left">
+        <div class="setting-label">Dark Mode</div>
+        <div class="setting-desc">Switch between dark and light theme</div>
+      </div>
+      <label class="toggle-wrap">
+        <input type="checkbox" class="toggle-input" id="s-darkmode" onchange="save('cc_theme',this.checked?'dark':'light');applyTheme()">
+        <span class="toggle-slider"></span>
+      </label>
+    </div>
+
+    <div class="setting-row">
+      <div class="setting-left">
+        <div class="setting-label">System Theme</div>
+        <div class="setting-desc">Automatically match your OS dark/light preference</div>
+      </div>
+      <label class="toggle-wrap">
+        <input type="checkbox" class="toggle-input" id="s-systemtheme" onchange="save('cc_system_theme',this.checked?'1':'0');applyTheme()">
+        <span class="toggle-slider"></span>
+      </label>
+    </div>
+
+    <div class="setting-row">
+      <div class="setting-left">
+        <div class="setting-label">Accent Color</div>
+        <div class="setting-desc">Your personal accent color across the site</div>
+      </div>
+      <div class="color-grid" id="color-grid"></div>
+    </div>
+
+    <div class="setting-row">
+      <div class="setting-left">
+        <div class="setting-label">Compact View</div>
+        <div class="setting-desc">Show files in a more compact list style</div>
+      </div>
+      <label class="toggle-wrap">
+        <input type="checkbox" class="toggle-input" id="s-compact" onchange="save('cc_compact_view',this.checked?'1':'0')">
+        <span class="toggle-slider"></span>
+      </label>
+    </div>
+  </div>
+
+  <!-- LANGUAGE -->
+  <div class="settings-section">
+    <div class="settings-section-header">
+      <span class="settings-section-icon">🌐</span>
+      <span class="settings-section-title">Language</span>
+    </div>
+    <div class="setting-row">
+      <div class="setting-left">
+        <div class="setting-label">Display Language</div>
+        <div class="setting-desc">Language used for the interface</div>
+      </div>
+      <select class="setting-select" id="s-lang" onchange="save('cc_lang',this.value)">
+        <option value="en">🇬🇧 English</option>
+        <option value="de">🇩🇪 Deutsch</option>
+        <option value="es">🇪🇸 Español</option>
+        <option value="fr">🇫🇷 Français</option>
+        <option value="it">🇮🇹 Italiano</option>
+        <option value="pt">🇧🇷 Português</option>
+        <option value="ru">🇷🇺 Русский</option>
+        <option value="ja">🇯🇵 日本語</option>
+        <option value="zh">🇨🇳 中文</option>
+        <option value="ko">🇰🇷 한국어</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- NOTIFICATIONS -->
+  <div class="settings-section">
+    <div class="settings-section-header">
+      <span class="settings-section-icon">🔔</span>
+      <span class="settings-section-title">Notifications</span>
+    </div>
+    <div class="setting-row">
+      <div class="setting-left">
+        <div class="setting-label">Release Notifications</div>
+        <div class="setting-desc">Show bell notification when a new file is released</div>
+      </div>
+      <label class="toggle-wrap">
+        <input type="checkbox" class="toggle-input" id="s-release-notif" onchange="save('cc_notif_releases',this.checked?'1':'0')">
+        <span class="toggle-slider"></span>
+      </label>
+    </div>
+    <div class="setting-row">
+      <div class="setting-left">
+        <div class="setting-label">Live Release Banner</div>
+        <div class="setting-desc">Show banner at top of page when new release appears while you're online</div>
+      </div>
+      <label class="toggle-wrap">
+        <input type="checkbox" class="toggle-input" id="s-live-banner" onchange="save('cc_live_banner',this.checked?'1':'0')">
+        <span class="toggle-slider"></span>
+      </label>
+    </div>
+    <div class="setting-row">
+      <div class="setting-left">
+        <div class="setting-label">Admin Messages</div>
+        <div class="setting-desc">Show notifications sent by admins</div>
+      </div>
+      <label class="toggle-wrap">
+        <input type="checkbox" class="toggle-input" id="s-admin-notif" onchange="save('cc_notif_admin',this.checked?'1':'0')">
+        <span class="toggle-slider"></span>
+      </label>
+    </div>
+  </div>
+
+  <!-- DOWNLOADS -->
+  <div class="settings-section">
+    <div class="settings-section-header">
+      <span class="settings-section-icon">⬇️</span>
+      <span class="settings-section-title">Downloads</span>
+    </div>
+    <div class="setting-row">
+      <div class="setting-left">
+        <div class="setting-label">Confetti on Download</div>
+        <div class="setting-desc">Show confetti animation when downloading a file</div>
+      </div>
+      <label class="toggle-wrap">
+        <input type="checkbox" class="toggle-input" id="s-confetti" onchange="save('cc_confetti',this.checked?'1':'0')">
+        <span class="toggle-slider"></span>
+      </label>
+    </div>
+    <div class="setting-row">
+      <div class="setting-left">
+        <div class="setting-label">Show Beta Files</div>
+        <div class="setting-desc">Show beta/unstable versions in download list</div>
+      </div>
+      <label class="toggle-wrap">
+        <input type="checkbox" class="toggle-input" id="s-show-beta" onchange="save('cc_show_beta',this.checked?'1':'0')">
+        <span class="toggle-slider"></span>
+      </label>
+    </div>
+    <div class="setting-row">
+      <div class="setting-left">
+        <div class="setting-label">Sort Files By</div>
+        <div class="setting-desc">Default sort order for file list</div>
+      </div>
+      <select class="setting-select" id="s-sort" onchange="save('cc_sort',this.value)">
+        <option value="date">📅 Date (newest first)</option>
+        <option value="name">🔤 Name (A-Z)</option>
+        <option value="size">📦 Size</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- PRIVACY -->
+  <div class="settings-section">
+    <div class="settings-section-header">
+      <span class="settings-section-icon">🔒</span>
+      <span class="settings-section-title">Privacy</span>
+    </div>
+    <div class="setting-row">
+      <div class="setting-left">
+        <div class="setting-label">Show Online Status</div>
+        <div class="setting-desc">Let others see when you were last active</div>
+      </div>
+      <label class="toggle-wrap">
+        <input type="checkbox" class="toggle-input" id="s-online-status" onchange="save('cc_show_online',this.checked?'1':'0')">
+        <span class="toggle-slider"></span>
+      </label>
+    </div>
+    <div class="setting-row">
+      <div class="setting-left">
+        <div class="setting-label">Public Profile</div>
+        <div class="setting-desc">Allow others to view your profile page</div>
+      </div>
+      <label class="toggle-wrap">
+        <input type="checkbox" class="toggle-input" id="s-public-profile" onchange="save('cc_public_profile',this.checked?'1':'0')">
+        <span class="toggle-slider"></span>
+      </label>
+    </div>
+  </div>
+
+  <!-- FUN -->
+  <div class="settings-section">
+    <div class="settings-section-header">
+      <span class="settings-section-icon">✨</span>
+      <span class="settings-section-title">Fun</span>
+    </div>
+    <div class="setting-row">
+      <div class="setting-left">
+        <div class="setting-label">Cursor Trail</div>
+        <div class="setting-desc">Show a subtle particle trail following your cursor</div>
+      </div>
+      <label class="toggle-wrap">
+        <input type="checkbox" class="toggle-input" id="s-cursor-trail" onchange="save('cc_cursor_trail',this.checked?'1':'0')">
+        <span class="toggle-slider"></span>
+      </label>
+    </div>
+    <div class="setting-row">
+      <div class="setting-left">
+        <div class="setting-label">Easter Eggs</div>
+        <div class="setting-desc">Enable hidden easter eggs and secrets</div>
+      </div>
+      <label class="toggle-wrap">
+        <input type="checkbox" class="toggle-input" id="s-easter-eggs" onchange="save('cc_easter_eggs',this.checked?'1':'0')">
+        <span class="toggle-slider"></span>
+      </label>
+    </div>
+    <div class="setting-row">
+      <div class="setting-left">
+        <div class="setting-label">Animations</div>
+        <div class="setting-desc">Enable animations and transitions (disable for performance)</div>
+      </div>
+      <label class="toggle-wrap">
+        <input type="checkbox" class="toggle-input" id="s-animations" onchange="save('cc_animations',this.checked?'1':'0');applyAnimations()">
+        <span class="toggle-slider"></span>
+      </label>
+    </div>
+  </div>
+
+  <!-- DANGER ZONE -->
+  <div class="settings-section" style="border-color:rgba(255,79,94,.2)">
+    <div class="settings-section-header" style="border-color:rgba(255,79,94,.15)">
+      <span class="settings-section-icon">⚠️</span>
+      <span class="settings-section-title" style="color:var(--cmdr)">Danger Zone</span>
+    </div>
+    <div class="danger-row">
+      <div class="setting-label" style="margin-bottom:.3rem">Reset All Settings</div>
+      <div class="setting-desc" style="margin-bottom:.75rem">Restore all settings to their defaults</div>
+      <button class="danger-btn" onclick="resetAll()">↺ Reset to Defaults</button>
+    </div>
+    <div class="danger-row">
+      <div class="setting-label" style="margin-bottom:.3rem">Clear Notification History</div>
+      <div class="setting-desc" style="margin-bottom:.75rem">Mark all notifications as unseen</div>
+      <button class="danger-btn" onclick="clearNotifHistory()">🗑️ Clear History</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+/* ── ACCENT COLORS ── */
+const ACCENT_COLORS=[
+  {name:'Conch',value:'#0ff4c6'},
+  {name:'Red',value:'#ff4f5e'},
+  {name:'Gold',value:'#ffc832'},
+  {name:'Purple',value:'#a78bfa'},
+  {name:'Blue',value:'#60a5fa'},
+  {name:'Orange',value:'#f97316'},
+  {name:'Pink',value:'#f472b6'},
+  {name:'Green',value:'#34d399'},
+];
+
+/* ── DEFAULTS ── */
+const DEFAULTS={
+  cc_theme:'dark',
+  cc_system_theme:'0',
+  cc_lang:'en',
+  cc_compact_view:'0',
+  cc_notif_releases:'1',
+  cc_live_banner:'1',
+  cc_notif_admin:'1',
+  cc_confetti:'1',
+  cc_show_beta:'1',
+  cc_sort:'date',
+  cc_show_online:'1',
+  cc_public_profile:'1',
+  cc_cursor_trail:'0',
+  cc_easter_eggs:'1',
+  cc_animations:'1',
+  cc_accent:'#0ff4c6',
+};
+
+function get(key){return localStorage.getItem(key)??DEFAULTS[key];}
+
+function save(key,value){
+  localStorage.setItem(key,value);
+  showSaveToast();
+}
+
+function showSaveToast(){
+  const t=document.getElementById('save-toast');
+  t.classList.add('vis');
+  clearTimeout(t._timeout);
+  t._timeout=setTimeout(()=>t.classList.remove('vis'),2000);
+}
+
+/* ── APPLY THEME ── */
+function applyTheme(){
+  const useSystem=get('cc_system_theme')==='1';
+  const root=document.documentElement;
+  if(useSystem){
+    root.classList.toggle('light-mode',window.matchMedia('(prefers-color-scheme:light)').matches);
+  }else{
+    root.classList.toggle('light-mode',get('cc_theme')==='light');
+  }
+}
+
+function applyAnimations(){
+  const on=get('cc_animations')==='1';
+  document.documentElement.style.setProperty('--transition-speed',on?'.3s':'0s');
+  if(!on){
+    const style=document.getElementById('no-anim-style')||document.createElement('style');
+    style.id='no-anim-style';
+    style.textContent='*{animation-duration:0.001ms!important;transition-duration:0.001ms!important}';
+    document.head.appendChild(style);
+  }else{
+    const s=document.getElementById('no-anim-style');if(s)s.remove();
+  }
+}
+
+/* ── LOAD ALL SETTINGS ── */
+function loadSettings(){
+  /* Theme */
+  applyTheme();
+  document.getElementById('s-darkmode').checked=get('cc_theme')==='dark';
+  document.getElementById('s-systemtheme').checked=get('cc_system_theme')==='1';
+
+  /* Language */
+  document.getElementById('s-lang').value=get('cc_lang');
+
+  /* Toggles */
+  const toggleMap={
+    's-compact':'cc_compact_view',
+    's-release-notif':'cc_notif_releases',
+    's-live-banner':'cc_live_banner',
+    's-admin-notif':'cc_notif_admin',
+    's-confetti':'cc_confetti',
+    's-show-beta':'cc_show_beta',
+    's-online-status':'cc_show_online',
+    's-public-profile':'cc_public_profile',
+    's-cursor-trail':'cc_cursor_trail',
+    's-easter-eggs':'cc_easter_eggs',
+    's-animations':'cc_animations',
+  };
+  Object.entries(toggleMap).forEach(([id,key])=>{
+    const el=document.getElementById(id);
+    if(el)el.checked=get(key)==='1';
+  });
+
+  document.getElementById('s-sort').value=get('cc_sort');
+
+  /* Accent colors */
+  const grid=document.getElementById('color-grid');
+  const currentAccent=get('cc_accent');
+  grid.innerHTML=ACCENT_COLORS.map(c=>`
+    <div class="color-dot${c.value===currentAccent?' active':''}"
+      style="background:${c.value}"
+      title="${c.name}"
+      onclick="setAccent('${c.value}',this)">
+    </div>`).join('');
+
+  applyAnimations();
+}
+
+function setAccent(value,dot){
+  document.querySelectorAll('.color-dot').forEach(d=>d.classList.remove('active'));
+  dot.classList.add('active');
+  save('cc_accent',value);
+  /* Apply accent live */
+  document.documentElement.style.setProperty('--conch',value);
+}
+
+/* ── RESET ── */
+function resetAll(){
+  if(!confirm('Reset all settings to defaults?'))return;
+  Object.entries(DEFAULTS).forEach(([key,val])=>localStorage.setItem(key,val));
+  loadSettings();
+  showSaveToast();
+}
+
+function clearNotifHistory(){
+  try{
+    const auth=JSON.parse(localStorage.getItem('cc_auth')||'{}');
+    const id=auth.id||'anon';
+    localStorage.removeItem('cc_last_seen_release_'+id);
+    localStorage.removeItem('cc_seen_msgs_'+id);
+    showSaveToast();
+    document.getElementById('save-toast').innerHTML='✓ Notification history cleared';
+  }catch{}
+}
+
+/* ── INIT ── */
+loadSettings();
+
+/* System theme change listener */
+window.matchMedia('(prefers-color-scheme:light)').addEventListener('change',()=>{
+  if(get('cc_system_theme')==='1')applyTheme();
+});
+</script>
+</body>
+</html>
