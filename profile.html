@@ -24,7 +24,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:cen
 .icon-btn{display:flex;align-items:center;justify-content:center;width:36px;height:36px;cursor:pointer;background:var(--surface);border:1px solid var(--border);border-radius:8px;transition:all .2s;color:var(--muted);font-size:1rem}
 .icon-btn:hover{border-color:rgba(15,244,198,.35);color:var(--conch)}
 
-/* ── LOADING / ACCESS ── */
+/* ACCESS / LOADING */
 .center-page{flex:1;display:flex;align-items:center;justify-content:center;padding:6rem 1.5rem 3rem}
 .loading-spinner{width:36px;height:36px;border:3px solid rgba(15,244,198,.2);border-top-color:var(--conch);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 1rem}
 @keyframes spin{to{transform:rotate(360deg)}}
@@ -34,9 +34,8 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:cen
 .access-title{font-size:1.5rem;font-weight:800;color:var(--cmdr);margin-bottom:.5rem}
 .access-desc{font-family:var(--mono);font-size:.8rem;color:var(--muted);line-height:1.7;margin-bottom:1.5rem}
 .access-btn{display:inline-block;font-family:var(--mono);font-size:.8rem;padding:.65rem 1.5rem;border-radius:8px;background:rgba(15,244,198,.1);color:var(--conch);border:1px solid rgba(15,244,198,.25);text-decoration:none;transition:all .2s}
-.access-btn:hover{background:rgba(15,244,198,.2)}
 
-/* ── USER GRID ── */
+/* USER GRID */
 .users-page{flex:1;padding:6rem 2.5rem 4rem}
 .users-header{max-width:1200px;margin:0 auto 2rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem}
 .users-title{font-size:2rem;font-weight:800;letter-spacing:-.02em}
@@ -45,104 +44,110 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:cen
 .users-search{font-family:var(--mono);font-size:.78rem;padding:.45rem .9rem;border-radius:8px;border:1px solid var(--border);background:var(--surface);color:var(--text);outline:none;width:220px;transition:border-color .2s}
 .users-search:focus{border-color:rgba(15,244,198,.35)}
 .users-search::placeholder{color:var(--muted);opacity:.5}
-
 .users-grid{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:repeat(5,1fr);gap:1rem}
 @media(max-width:1100px){.users-grid{grid-template-columns:repeat(4,1fr)}}
 @media(max-width:860px){.users-grid{grid-template-columns:repeat(3,1fr)}}
 @media(max-width:580px){.users-grid{grid-template-columns:repeat(2,1fr)}}
 
-/* ── USER CARD ── */
+/* USER CARD */
 .user-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden;cursor:pointer;transition:border-color .2s,transform .2s;animation:fadeUp .35s ease both;text-decoration:none;display:block}
 .user-card:hover{border-color:rgba(15,244,198,.3);transform:translateY(-3px)}
 .user-card.role-admin{border-color:rgba(255,200,50,.2)}.user-card.role-admin:hover{border-color:rgba(255,200,50,.4)}
 .user-card.role-beta{border-color:rgba(52,211,153,.15)}.user-card.role-beta:hover{border-color:rgba(52,211,153,.35)}
 .user-card.role-vip{border-color:rgba(255,200,50,.2)}.user-card.role-vip:hover{border-color:rgba(255,200,50,.4)}
+.user-card.role-cocreator{border-color:rgba(96,165,250,.2)}.user-card.role-cocreator:hover{border-color:rgba(96,165,250,.4)}
+.user-card.role-partner{border-color:rgba(249,115,22,.2)}.user-card.role-partner:hover{border-color:rgba(249,115,22,.4)}
 @keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
-
 .user-card-banner{height:56px;position:relative;overflow:hidden}
 .user-card-banner.role-admin{background:linear-gradient(135deg,rgba(255,200,50,.2),rgba(255,79,94,.08))}
 .user-card-banner.role-beta{background:linear-gradient(135deg,rgba(52,211,153,.18),rgba(15,244,198,.06))}
 .user-card-banner.role-vip{background:linear-gradient(135deg,rgba(255,200,50,.22),rgba(167,139,250,.08))}
 .user-card-banner.role-user{background:linear-gradient(135deg,rgba(15,244,198,.08),rgba(255,79,94,.04))}
-
+.user-card-banner.role-cocreator{background:linear-gradient(135deg,rgba(96,165,250,.18),rgba(167,139,250,.08))}
+.user-card-banner.role-partner{background:linear-gradient(135deg,rgba(249,115,22,.18),rgba(251,191,36,.08))}
 .user-card-avatar-wrap{display:flex;justify-content:center;margin-top:-28px;position:relative;z-index:2}
 .user-card-avatar{width:56px;height:56px;border-radius:50%;border:3px solid var(--surface);background:var(--surface2);display:flex;align-items:center;justify-content:center;font-size:1.3rem;font-weight:800;color:var(--conch);overflow:hidden;box-shadow:0 4px 12px rgba(0,0,0,.3);font-family:var(--sans)}
 .user-card-avatar img{width:100%;height:100%;object-fit:cover;border-radius:50%}
-.user-card-avatar.role-admin{border-color:var(--gold)}
-.user-card-avatar.role-beta{border-color:var(--beta)}
-.user-card-avatar.role-vip{border-color:var(--gold)}
-
+.user-card-avatar.role-admin{border-color:var(--gold)}.user-card-avatar.role-beta{border-color:var(--beta)}.user-card-avatar.role-vip{border-color:var(--gold)}.user-card-avatar.role-cocreator{border-color:#60a5fa}.user-card-avatar.role-partner{border-color:#f97316}
 .user-card-body{padding:.75rem .85rem 1rem;text-align:center}
 .user-card-name{font-family:var(--mono);font-size:.82rem;font-weight:700;color:var(--text);margin-bottom:.4rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.user-card-name.role-admin{color:var(--gold)}
-.user-card-name.role-beta{color:var(--beta)}
-.user-card-name.role-vip{color:var(--gold)}
-.user-card-name.role-cocreator{color:#60a5fa}
-.user-card-name.role-partner{color:#f97316}
-.user-card-banner.role-cocreator{background:linear-gradient(135deg,rgba(96,165,250,.18),rgba(167,139,250,.08))}
-.user-card-banner.role-partner{background:linear-gradient(135deg,rgba(249,115,22,.18),rgba(251,191,36,.08))}
-.user-card-avatar.role-cocreator{border-color:#60a5fa}
-.user-card-avatar.role-partner{border-color:#f97316}
-.ubadge-role-cocreator{background:rgba(96,165,250,.1);color:#60a5fa;border:1px solid rgba(96,165,250,.25)}
-.ubadge-role-partner{background:rgba(249,115,22,.1);color:#f97316;border:1px solid rgba(249,115,22,.25)}
-.profile-banner.role-cocreator{background:linear-gradient(135deg,rgba(96,165,250,.18),rgba(167,139,250,.08))}
-.profile-banner.role-partner{background:linear-gradient(135deg,rgba(249,115,22,.18),rgba(251,191,36,.08))}
-.profile-avatar.role-cocreator{border-color:#60a5fa;box-shadow:0 0 0 2px rgba(96,165,250,.3),0 8px 24px rgba(0,0,0,.3)}
-.profile-avatar.role-partner{border-color:#f97316;box-shadow:0 0 0 2px rgba(249,115,22,.3),0 8px 24px rgba(0,0,0,.3)}
-.profile-name.role-cocreator{color:#60a5fa}
-.profile-name.role-partner{color:#f97316}
+.user-card-name.role-admin{color:var(--gold)}.user-card-name.role-beta{color:var(--beta)}.user-card-name.role-vip{color:var(--gold)}.user-card-name.role-cocreator{color:#60a5fa}.user-card-name.role-partner{color:#f97316}
 .user-card-badges{display:flex;align-items:center;justify-content:center;gap:.3rem;flex-wrap:wrap}
 .ubadge{font-family:var(--mono);font-size:.58rem;padding:.15rem .4rem;border-radius:4px;letter-spacing:.04em}
 .ubadge-role-admin{background:rgba(255,200,50,.1);color:var(--gold);border:1px solid rgba(255,200,50,.25)}
 .ubadge-role-beta{background:rgba(52,211,153,.1);color:var(--beta);border:1px solid rgba(52,211,153,.25)}
 .ubadge-role-vip{background:rgba(255,200,50,.1);color:var(--gold);border:1px solid rgba(255,200,50,.25)}
 .ubadge-role-user{background:rgba(255,255,255,.04);color:var(--muted);border:1px solid var(--border)}
+.ubadge-role-cocreator{background:rgba(96,165,250,.1);color:#60a5fa;border:1px solid rgba(96,165,250,.25)}
+.ubadge-role-partner{background:rgba(249,115,22,.1);color:#f97316;border:1px solid rgba(249,115,22,.25)}
 .ubadge-discord{background:rgba(88,101,242,.1);color:#8b9cf4;border:1px solid rgba(88,101,242,.2)}
 .ubadge-roblox{background:rgba(15,244,198,.08);color:var(--conch);border:1px solid rgba(15,244,198,.2)}
-
 .users-empty{grid-column:1/-1;text-align:center;padding:3rem;font-family:var(--mono);font-size:.82rem;color:var(--muted);opacity:.6}
 
-/* ── SINGLE PROFILE ── */
-.profile-page{flex:1;display:flex;align-items:center;justify-content:center;padding:6rem 1.5rem 3rem}
-.profile-card{width:100%;max-width:440px;background:var(--surface);border:1px solid var(--border);border-radius:20px;overflow:hidden;box-shadow:0 32px 80px rgba(0,0,0,.5);animation:cardIn .45s cubic-bezier(.34,1.56,.64,1)}
+/* SINGLE PROFILE */
+.profile-page{flex:1;display:flex;align-items:flex-start;justify-content:center;padding:6rem 1.5rem 3rem}
+.profile-card{width:100%;max-width:460px;background:var(--surface);border:1px solid var(--border);border-radius:20px;overflow:hidden;box-shadow:0 32px 80px rgba(0,0,0,.5);animation:cardIn .45s cubic-bezier(.34,1.56,.64,1)}
 @keyframes cardIn{from{opacity:0;transform:translateY(20px) scale(.97)}to{opacity:1;transform:none}}
-.profile-banner{height:120px;position:relative;overflow:hidden}
-.profile-banner.role-admin{background:linear-gradient(135deg,rgba(255,200,50,.18),rgba(255,79,94,.1))}
-.profile-banner.role-beta{background:linear-gradient(135deg,rgba(52,211,153,.18),rgba(15,244,198,.08))}
-.profile-banner.role-vip{background:linear-gradient(135deg,rgba(255,200,50,.2),rgba(167,139,250,.1))}
-.profile-banner.role-user{background:linear-gradient(135deg,rgba(15,244,198,.1),rgba(255,79,94,.05))}
+
+/* PROFILE BANNER */
+.profile-banner{height:140px;position:relative;overflow:hidden;cursor:default}
+.profile-banner.role-admin{background:linear-gradient(135deg,rgba(255,200,50,.22),rgba(255,79,94,.12))}
+.profile-banner.role-beta{background:linear-gradient(135deg,rgba(52,211,153,.22),rgba(15,244,198,.1))}
+.profile-banner.role-vip{background:linear-gradient(135deg,rgba(255,200,50,.25),rgba(167,139,250,.12))}
+.profile-banner.role-user{background:linear-gradient(135deg,rgba(15,244,198,.1),rgba(255,79,94,.06))}
+.profile-banner.role-cocreator{background:linear-gradient(135deg,rgba(96,165,250,.22),rgba(167,139,250,.1))}
+.profile-banner.role-partner{background:linear-gradient(135deg,rgba(249,115,22,.22),rgba(251,191,36,.1))}
+.profile-banner-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.6}
+
 .profile-avatar-wrap{display:flex;justify-content:center;margin-top:-52px;position:relative;z-index:2}
 .profile-avatar{width:104px;height:104px;border-radius:50%;border:4px solid var(--surface);background:var(--surface2);display:flex;align-items:center;justify-content:center;font-size:2.6rem;font-weight:800;color:var(--conch);overflow:hidden;box-shadow:0 8px 24px rgba(0,0,0,.3);font-family:var(--sans)}
 .profile-avatar img{width:100%;height:100%;object-fit:cover;border-radius:50%}
 .profile-avatar.role-admin{border-color:var(--gold);box-shadow:0 0 0 2px rgba(255,200,50,.3),0 8px 24px rgba(0,0,0,.3)}
 .profile-avatar.role-beta{border-color:var(--beta);box-shadow:0 0 0 2px rgba(52,211,153,.3),0 8px 24px rgba(0,0,0,.3)}
 .profile-avatar.role-vip{border-color:var(--gold);box-shadow:0 0 0 2px rgba(255,200,50,.4),0 8px 24px rgba(0,0,0,.3)}
+.profile-avatar.role-cocreator{border-color:#60a5fa;box-shadow:0 0 0 2px rgba(96,165,250,.3),0 8px 24px rgba(0,0,0,.3)}
+.profile-avatar.role-partner{border-color:#f97316;box-shadow:0 0 0 2px rgba(249,115,22,.3),0 8px 24px rgba(0,0,0,.3)}
+
 .profile-body{padding:1.5rem 2rem 2rem;text-align:center}
-.profile-name{font-size:1.5rem;font-weight:800;letter-spacing:-.02em;margin-bottom:.5rem}
-.profile-name.role-admin{color:var(--gold)}
-.profile-name.role-beta{color:var(--beta)}
-.profile-name.role-vip{color:var(--gold)}
-.profile-badges{display:flex;align-items:center;justify-content:center;gap:.4rem;flex-wrap:wrap;margin-bottom:1rem}
+.profile-name{font-size:1.5rem;font-weight:800;letter-spacing:-.02em;margin-bottom:.3rem}
+.profile-name.role-admin{color:var(--gold)}.profile-name.role-beta{color:var(--beta)}.profile-name.role-vip{color:var(--gold)}.profile-name.role-cocreator{color:#60a5fa}.profile-name.role-partner{color:#f97316}
+.profile-badges{display:flex;align-items:center;justify-content:center;gap:.4rem;flex-wrap:wrap;margin-bottom:.75rem}
+
+/* BIO */
+.profile-bio{font-family:var(--mono);font-size:.78rem;color:var(--muted);line-height:1.7;margin-bottom:1rem;font-style:italic;max-width:340px;margin-left:auto;margin-right:auto}
+
 .profile-meta{font-family:var(--mono);font-size:.76rem;color:var(--muted);display:flex;flex-direction:column;gap:.4rem;align-items:center}
 .profile-divider{height:1px;background:var(--border);margin:1.2rem 0}
-.profile-stats{display:grid;grid-template-columns:repeat(2,1fr);gap:.75rem}
+.profile-stats{display:grid;grid-template-columns:repeat(2,1fr);gap:.75rem;margin-bottom:1rem}
 .stat-box{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:.85rem;text-align:center}
 .stat-box-value{font-family:var(--mono);font-size:1.3rem;font-weight:700;color:var(--conch)}
 .stat-box-label{font-family:var(--mono);font-size:.65rem;color:var(--muted);margin-top:.2rem;text-transform:uppercase;letter-spacing:.05em}
-.profile-actions{margin-top:1.2rem;display:flex;gap:.6rem;justify-content:center;flex-wrap:wrap}
+
+.follow-stats{display:flex;gap:1.5rem;justify-content:center;font-family:var(--mono);font-size:.75rem;color:var(--muted);margin-bottom:1rem}
+.follow-stat strong{color:var(--text);display:block;font-size:1rem;margin-bottom:.1rem}
+
+.profile-actions{display:flex;gap:.6rem;justify-content:center;flex-wrap:wrap}
 .profile-action-btn{font-family:var(--mono);font-size:.75rem;padding:.5rem 1rem;border-radius:7px;border:1px solid var(--border);background:none;color:var(--muted);cursor:pointer;transition:all .2s;text-decoration:none;display:inline-flex;align-items:center;gap:.35rem}
 .profile-action-btn:hover{border-color:rgba(15,244,198,.3);color:var(--conch)}
+.follow-btn{font-family:var(--mono);font-size:.75rem;padding:.5rem 1.1rem;border-radius:7px;border:1px solid rgba(15,244,198,.3);background:rgba(15,244,198,.08);color:var(--conch);cursor:pointer;transition:all .2s}
+.follow-btn:hover{background:rgba(15,244,198,.18)}
+.follow-btn.following{background:rgba(255,79,94,.06);border-color:rgba(255,79,94,.25);color:var(--cmdr)}
+.follow-btn.following:hover{background:rgba(255,79,94,.14)}
+.follow-btn:disabled{opacity:.5;cursor:not-allowed}
+
 .back-link{display:inline-flex;align-items:center;gap:.35rem;font-family:var(--mono);font-size:.75rem;color:var(--muted);text-decoration:none;margin-bottom:1.2rem;transition:color .2s}
 .back-link:hover{color:var(--conch)}
 
-footer{text-align:center;padding:2rem;font-family:var(--mono);font-size:.7rem;color:var(--muted);opacity:.4}
+/* SNAKE GAME EASTER EGG */
+.snake-overlay{position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.92);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:1rem;animation:fadeIn .2s ease}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.snake-title{font-family:var(--mono);font-size:1rem;color:var(--conch);letter-spacing:.1em;text-transform:uppercase}
+.snake-canvas{border:2px solid rgba(15,244,198,.3);border-radius:8px;background:#0b0c0f}
+.snake-info{font-family:var(--mono);font-size:.72rem;color:var(--muted);text-align:center;line-height:1.8}
+.snake-close{font-family:var(--mono);font-size:.72rem;color:var(--muted);background:none;border:1px solid var(--border);padding:.4rem .9rem;border-radius:6px;cursor:pointer;transition:all .2s}
+.snake-close:hover{color:var(--text);border-color:rgba(255,255,255,.2)}
 
-  .follow-btn{font-family:var(--mono);font-size:.75rem;padding:.5rem 1.1rem;border-radius:7px;border:1px solid rgba(15,244,198,.3);background:rgba(15,244,198,.08);color:var(--conch);cursor:pointer;transition:all .2s}
-  .follow-btn:hover{background:rgba(15,244,198,.18)}
-  .follow-btn.following{background:rgba(255,79,94,.06);border-color:rgba(255,79,94,.25);color:#ff4f5e}
-  .follow-btn.following:hover{background:rgba(255,79,94,.14)}
-  .follow-stats{display:flex;gap:1.5rem;justify-content:center;font-family:var(--mono);font-size:.75rem;color:var(--muted)}
-  .follow-stat strong{color:var(--text);display:block;font-size:1rem;margin-bottom:.1rem}
+footer{text-align:center;padding:2rem;font-family:var(--mono);font-size:.7rem;color:var(--muted);opacity:.4}
 </style>
 </head>
 <body>
@@ -156,8 +161,7 @@ footer{text-align:center;padding:2rem;font-family:var(--mono);font-size:.7rem;co
 </nav>
 
 <div id="root" style="display:contents"></div>
-
-<footer>Conch & Cmdr — Profiles</footer>
+<footer>Conch & Cmdr — Profiles · <span onclick="startSnake()" style="cursor:pointer;opacity:.4;transition:opacity .2s" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='.4'" title="🐍">🐍</span></footer>
 
 <script>
 const SB_URL='https://rmdkoauibmzhgnvrwhfd.supabase.co';
@@ -177,9 +181,16 @@ function toggleTheme(){
 function eh(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
 function fmtDate(s){if(!s)return'—';return new Date(s).toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'})}
 function daysSince(s){if(!s)return 0;return Math.floor((Date.now()-new Date(s))/(1000*60*60*24))}
+function sb(path,opts={}){
+  const m=(opts.method||'GET').toUpperCase();
+  const h={'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY};
+  if(m!=='GET'&&m!=='HEAD')h['Content-Type']='application/json';
+  return fetch(SB_URL+path,{headers:{...h,...(opts.headers||{})},method:m,...(opts.body?{body:opts.body}:{})});
+}
 
 function getRole(user){
-  if((user.username||'').toLowerCase()===ADMIN_USERNAME)return'admin';
+  const u=(user.username||'').toLowerCase();
+  if(u===ADMIN_USERNAME)return'admin';
   if(user.role==='admin')return'admin';
   if(user.role==='cocreator')return'cocreator';
   if(user.role==='partner')return'partner';
@@ -191,57 +202,35 @@ function getRole(user){
 const ROLE_LABELS={admin:'👑 Owner',cocreator:'🛠️ Co-Creator',partner:'🤝 Partner',vip:'⭐ VIP',beta:'🧪 Beta',user:'👤 Member'};
 const NAME_TYPE_LABELS={discord:'💬 Discord',roblox:'🎮 Roblox'};
 
-/* ── AUTH CHECK ── */
 function getLoggedInUser(){
   try{
-    const saved=localStorage.getItem('cc_auth');
-    if(!saved)return null;
-    const parsed=JSON.parse(saved);
-    return parsed&&parsed.username?parsed:null;
+    const s=localStorage.getItem('cc_auth');
+    if(!s)return null;
+    const p=JSON.parse(s);
+    return p&&p.username?p:null;
   }catch{return null;}
 }
 
-/* ── RENDER LOADING ── */
 function setRoot(html){document.getElementById('root').innerHTML=html;}
+function showLoading(){setRoot(`<div class="center-page"><div><div class="loading-spinner"></div><div class="loading-text">Loading...</div></div></div>`);}
+function showAccessWall(){setRoot(`<div class="center-page"><div class="access-wall"><span class="access-icon">🔒</span><div class="access-title">Login Required</div><div class="access-desc">You need to be logged in to view profiles.</div><a class="access-btn" href="index.html">← Back to Login</a></div></div>`);}
 
-function showLoading(){
-  setRoot(`<div class="center-page"><div><div class="loading-spinner"></div><div class="loading-text">Loading...</div></div></div>`);
-}
-
-function showAccessWall(){
-  setRoot(`<div class="center-page"><div class="access-wall">
-    <span class="access-icon">🔒</span>
-    <div class="access-title">Login Required</div>
-    <div class="access-desc">You need to be logged in to view profiles.</div>
-    <a class="access-btn" href="index.html">← Back to Login</a>
-  </div></div>`);
-}
-
-/* ══════════════════════════════
-   USER GRID
-══════════════════════════════ */
+/* ══ USER GRID ══ */
 async function showUserGrid(){
   showLoading();
   try{
-    const r=await fetch(`${SB_URL}/rest/v1/cc_users?select=id,username,display_name,avatar_url,role,name_type,is_banned,created_at&order=created_at.asc`,{
-      headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}
-    });
+    const r=await sb('/rest/v1/cc_users?select=id,username,display_name,avatar_url,role,name_type,bio,is_banned,created_at&order=created_at.asc');
     const users=await r.json();
-
-    setRoot(`
-      <div class="users-page">
-        <div class="users-header">
-          <div>
-            <div class="users-title">All <em>Members</em></div>
-          </div>
-          <div style="display:flex;align-items:center;gap:.75rem;flex-wrap:wrap">
-            <span class="users-count" id="users-count">${users.length} members</span>
-            <input class="users-search" id="users-search" type="text" placeholder="🔍 Search members..." oninput="filterUsers(this.value)">
-          </div>
+    setRoot(`<div class="users-page">
+      <div class="users-header">
+        <div><div class="users-title">All <em>Members</em></div></div>
+        <div style="display:flex;align-items:center;gap:.75rem;flex-wrap:wrap">
+          <span class="users-count" id="users-count">${users.length} members</span>
+          <input class="users-search" id="users-search" type="text" placeholder="🔍 Search members..." oninput="filterUsers(this.value)">
         </div>
-        <div class="users-grid" id="users-grid"></div>
-      </div>`);
-
+      </div>
+      <div class="users-grid" id="users-grid"></div>
+    </div>`);
     renderUserCards(users);
     window._allUsers=users;
   }catch(e){
@@ -252,23 +241,16 @@ async function showUserGrid(){
 function renderUserCards(users){
   const grid=document.getElementById('users-grid');
   if(!grid)return;
-  if(!users.length){
-    grid.innerHTML='<div class="users-empty">No members found.</div>';
-    return;
-  }
+  if(!users.length){grid.innerHTML='<div class="users-empty">No members found.</div>';return;}
   grid.innerHTML=users.map((u,i)=>{
     const role=getRole(u);
     const displayName=u.display_name||u.username;
     const letter=(displayName[0]||'?').toUpperCase();
-    const avatarHTML=u.avatar_url
-      ?`<img src="${eh(u.avatar_url)}" alt="">`
-      :`${eh(letter)}`;
+    const avatarHTML=u.avatar_url?`<img src="${eh(u.avatar_url)}" alt="">`:`${eh(letter)}`;
     const nameType=u.name_type||'discord';
-    return `<a class="user-card role-${role}" href="profile.html?user=${encodeURIComponent(u.username)}" style="animation-delay:${i*0.03}s">
+    return `<a class="user-card role-${role}" href="profile.html?user=${encodeURIComponent(u.username)}" style="animation-delay:${i*.03}s">
       <div class="user-card-banner role-${role}"></div>
-      <div class="user-card-avatar-wrap">
-        <div class="user-card-avatar role-${role}">${avatarHTML}</div>
-      </div>
+      <div class="user-card-avatar-wrap"><div class="user-card-avatar role-${role}">${avatarHTML}</div></div>
       <div class="user-card-body">
         <div class="user-card-name role-${role}">${eh(displayName)}</div>
         <div class="user-card-badges">
@@ -282,53 +264,63 @@ function renderUserCards(users){
 
 function filterUsers(q){
   if(!window._allUsers)return;
-  const filtered=q
-    ?window._allUsers.filter(u=>(u.display_name||u.username||'').toLowerCase().includes(q.toLowerCase()))
-    :window._allUsers;
+  const filtered=q?window._allUsers.filter(u=>(u.display_name||u.username||'').toLowerCase().includes(q.toLowerCase())):window._allUsers;
   const countEl=document.getElementById('users-count');
   if(countEl)countEl.textContent=filtered.length+' member'+(filtered.length!==1?'s':'');
   renderUserCards(filtered);
 }
 
-/* ══════════════════════════════
-   SINGLE PROFILE
-══════════════════════════════ */
+/* ══ SINGLE PROFILE ══ */
+let _profileUser=null;
+
 async function showSingleProfile(username){
   showLoading();
   try{
-    const r=await fetch(`${SB_URL}/rest/v1/cc_users?username=eq.${encodeURIComponent(username.toLowerCase())}&select=id,username,display_name,avatar_url,role,name_type,created_at,is_banned`,{
-      headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}
-    });
+    const r=await sb(`/rest/v1/cc_users?username=eq.${encodeURIComponent(username.toLowerCase())}&select=id,username,display_name,avatar_url,role,name_type,bio,banner_url,created_at,is_banned`);
     const rows=await r.json();
     if(!rows||!rows.length){
-      setRoot(`<div class="profile-page"><div class="access-wall">
-        <span class="access-icon">🔍</span>
-        <div class="access-title">Not Found</div>
-        <div class="access-desc">No user named "${eh(username)}" exists.</div>
-        <a class="access-btn" href="profile.html">← All Members</a>
-      </div></div>`);
+      setRoot(`<div class="profile-page"><div class="access-wall"><span class="access-icon">🔍</span><div class="access-title">Not Found</div><div class="access-desc">No user named "${eh(username)}" exists.</div><a class="access-btn" href="profile.html">← All Members</a></div></div>`);
       return;
     }
     const user=rows[0];
+    _profileUser=user;
     const role=getRole(user);
     const displayName=user.display_name||user.username;
     const letter=(displayName[0]||'?').toUpperCase();
     const avatarHTML=user.avatar_url?`<img src="${eh(user.avatar_url)}" alt="">`:`${eh(letter)}`;
     const nameType=user.name_type||'discord';
     const days=daysSince(user.created_at);
+    const loggedIn=getLoggedInUser();
+    const isOwnProfile=loggedIn&&(loggedIn.id===user.id||(loggedIn.rawUsername||loggedIn.username||'').toLowerCase()===user.username.toLowerCase());
 
-    /* Fetch stats */
-    let comments=0,reactions=0;
-    try{const cr=await fetch(`${SB_URL}/rest/v1/cc_comments?user_id=eq.${user.id}&select=id`,{headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}});if(cr.ok){const d=await cr.json();comments=d.length;}}catch{}
-    try{const rr=await fetch(`${SB_URL}/rest/v1/cc_reactions?user_id=eq.${user.id}&select=id`,{headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}});if(rr.ok){const d=await rr.json();reactions=d.length;}}catch{}
+    /* Fetch stats, follows in parallel */
+    const [commR,reactR,follR,flingR]=await Promise.all([
+      sb(`/rest/v1/cc_comments?user_id=eq.${user.id}&select=id`),
+      sb(`/rest/v1/cc_reactions?user_id=eq.${user.id}&select=id`),
+      sb(`/rest/v1/cc_follows?following_id=eq.${user.id}&select=follower_id`),
+      sb(`/rest/v1/cc_follows?follower_id=eq.${user.id}&select=following_id`)
+    ]);
+    const comments=commR.ok?(await commR.json()).length:0;
+    const reactions=reactR.ok?(await reactR.json()).length:0;
+    const followersData=follR.ok?await follR.json():[];
+    const followingData=flingR.ok?await flingR.json():[];
+    const followersCount=followersData.length;
+    const followingCount=followingData.length;
+
+    /* Check if logged-in user is following */
+    let isFollowing=false;
+    if(loggedIn&&!isOwnProfile){
+      isFollowing=followersData.some(f=>f.follower_id===loggedIn.id);
+    }
 
     document.title=`${displayName} — Conch & Cmdr`;
-    const loggedIn=getLoggedInUser();
 
-    setRoot(`<div class="profile-page"><div>
+    setRoot(`<div class="profile-page"><div style="width:100%;max-width:460px">
       <a class="back-link" href="profile.html">← All Members</a>
       <div class="profile-card">
-        <div class="profile-banner role-${role}"></div>
+        <div class="profile-banner role-${role}">
+          ${user.banner_url?`<img class="profile-banner-img" src="${eh(user.banner_url)}" alt="">`:''}
+        </div>
         <div class="profile-avatar-wrap">
           <div class="profile-avatar role-${role}">${avatarHTML}</div>
         </div>
@@ -338,22 +330,23 @@ async function showSingleProfile(username){
             <span class="ubadge ubadge-role-${role}">${ROLE_LABELS[role]||'👤 Member'}</span>
             <span class="ubadge ubadge-${nameType}">${NAME_TYPE_LABELS[nameType]||'💬 Discord'}</span>
           </div>
+          ${user.bio?`<div class="profile-bio">"${eh(user.bio)}"</div>`:''}
           <div class="profile-meta">
             <span>📅 Member since ${fmtDate(user.created_at)}</span>
             ${days>0?`<span style="font-family:var(--mono);font-size:.7rem;background:var(--surface2);padding:.25rem .6rem;border-radius:5px">🕐 ${days} day${days!==1?'s':''} as member</span>`:''}
           </div>
           <div class="profile-divider"></div>
+          <div class="follow-stats">
+            <div style="text-align:center"><strong style="font-size:1.1rem;color:var(--text);display:block">${followersCount}</strong>Followers</div>
+            <div style="text-align:center"><strong style="font-size:1.1rem;color:var(--text);display:block">${followingCount}</strong>Following</div>
+          </div>
           <div class="profile-stats">
             <div class="stat-box"><div class="stat-box-value">${comments}</div><div class="stat-box-label">Comments</div></div>
             <div class="stat-box"><div class="stat-box-value">${reactions}</div><div class="stat-box-label">Reactions</div></div>
           </div>
           <div class="profile-actions">
             <button class="profile-action-btn" onclick="copyLink()">🔗 Copy Link</button>
-            ${loggedIn&&loggedIn.id!==user.id?`<button class="follow-btn" id="follow-btn" onclick="toggleFollow()">+ Follow</button>`:''}
-          </div>
-          <div class="follow-stats" style="margin-top:1rem">
-            <div><strong id="followers-count">—</strong> Followers</div>
-            <div><strong id="following-count">—</strong> Following</div>
+            ${!isOwnProfile&&loggedIn?`<button class="follow-btn${isFollowing?' following':''}" id="follow-btn" onclick="toggleFollow()">${isFollowing?'✓ Following':'+ Follow'}</button>`:''}
           </div>
         </div>
       </div>
@@ -370,61 +363,134 @@ function copyLink(){
   }).catch(()=>{});
 }
 
-let _profileUser=null;
-
-async function loadFollowData(user){
-  _profileUser=user;
-  /* Follower/Following counts */
-  try{
-    const [fr,fg]=await Promise.all([
-      fetch(`${SB_URL}/rest/v1/cc_follows?following_id=eq.${user.id}&select=id`,{headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}}),
-      fetch(`${SB_URL}/rest/v1/cc_follows?follower_id=eq.${user.id}&select=id`,{headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}})
-    ]);
-    const followers=fr.ok?await fr.json():[];
-    const following=fg.ok?await fg.json():[];
-    const fc=document.getElementById('followers-count');
-    const fgc=document.getElementById('following-count');
-    if(fc)fc.textContent=followers.length;
-    if(fgc)fgc.textContent=following.length;
-
-    /* Check if logged-in user follows this profile */
-    const loggedIn=getLoggedInUser();
-    if(loggedIn&&loggedIn.id!==user.id){
-      const btn=document.getElementById('follow-btn');
-      if(btn){
-        const isFollowing=followers.some(f=>f.follower_id===loggedIn.id);
-        /* Re-check with proper query */
-        const cr=await fetch(`${SB_URL}/rest/v1/cc_follows?follower_id=eq.${loggedIn.id}&following_id=eq.${user.id}&select=id`,{headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}});
-        const existing=cr.ok?await cr.json():[];
-        if(existing.length>0){btn.classList.add('following');btn.textContent='✓ Following';}
-      }
-    }
-  }catch{}
-}
-
 async function toggleFollow(){
   const loggedIn=getLoggedInUser();
   if(!loggedIn||!_profileUser)return;
   const btn=document.getElementById('follow-btn');
+  if(!btn)return;
   const isFollowing=btn.classList.contains('following');
   btn.disabled=true;
   try{
     if(isFollowing){
-      await fetch(`${SB_URL}/rest/v1/cc_follows?follower_id=eq.${loggedIn.id}&following_id=eq.${_profileUser.id}`,{
-        method:'DELETE',headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}
-      });
-      btn.classList.remove('following');btn.textContent='+ Follow';
+      await sb(`/rest/v1/cc_follows?follower_id=eq.${loggedIn.id}&following_id=eq.${_profileUser.id}`,{method:'DELETE'});
+      btn.classList.remove('following');
+      btn.textContent='+ Follow';
     }else{
-      await fetch(`${SB_URL}/rest/v1/cc_follows`,{
+      await sb('/rest/v1/cc_follows',{
         method:'POST',
-        headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},
-        body:JSON.stringify({follower_id:loggedIn.id,follower_username:loggedIn.username,following_id:_profileUser.id,following_username:_profileUser.display_name||_profileUser.username,created_at:new Date().toISOString()})
+        headers:{'Prefer':'return=minimal'},
+        body:JSON.stringify({
+          follower_id:loggedIn.id,
+          follower_username:loggedIn.username,
+          following_id:_profileUser.id,
+          following_username:_profileUser.display_name||_profileUser.username,
+          created_at:new Date().toISOString()
+        })
       });
-      btn.classList.add('following');btn.textContent='✓ Following';
+      btn.classList.add('following');
+      btn.textContent='✓ Following';
     }
-    await loadFollowData(_profileUser);
+    /* Refresh follow counts */
+    const r=await sb(`/rest/v1/cc_follows?following_id=eq.${_profileUser.id}&select=follower_id`);
+    if(r.ok){
+      const data=await r.json();
+      const fc=document.querySelector('.follow-stats strong');
+      if(fc)fc.textContent=data.length;
+    }
   }catch{}
   btn.disabled=false;
+}
+
+/* ══ SNAKE EASTER EGG ══ */
+let snakeInterval=null;
+
+function startSnake(){
+  const overlay=document.createElement('div');
+  overlay.className='snake-overlay';
+  overlay.id='snake-overlay';
+  const CELL=20,COLS=20,ROWS=20;
+  overlay.innerHTML=`
+    <div class="snake-title">🐍 Snake</div>
+    <canvas class="snake-canvas" id="snake-canvas" width="${COLS*CELL}" height="${ROWS*CELL}"></canvas>
+    <div class="snake-info">Arrow keys or WASD to move · ESC to close</div>
+    <div id="snake-score" style="font-family:var(--mono);font-size:.85rem;color:var(--conch)">Score: 0</div>
+    <button class="snake-close" onclick="stopSnake()">✕ Close</button>`;
+  document.body.appendChild(overlay);
+
+  const canvas=document.getElementById('snake-canvas');
+  const ctx=canvas.getContext('2d');
+  let snake=[{x:10,y:10}];
+  let dir={x:1,y:0};
+  let nextDir={x:1,y:0};
+  let food={x:5,y:5};
+  let score=0;
+  let running=true;
+
+  function randFood(){
+    let pos;
+    do{pos={x:Math.floor(Math.random()*COLS),y:Math.floor(Math.random()*ROWS)};}
+    while(snake.some(s=>s.x===pos.x&&s.y===pos.y));
+    return pos;
+  }
+
+  function draw(){
+    ctx.fillStyle='#0b0c0f';ctx.fillRect(0,0,COLS*CELL,ROWS*CELL);
+    /* Grid */
+    ctx.strokeStyle='rgba(255,255,255,.03)';
+    for(let x=0;x<COLS;x++){ctx.beginPath();ctx.moveTo(x*CELL,0);ctx.lineTo(x*CELL,ROWS*CELL);ctx.stroke();}
+    for(let y=0;y<ROWS;y++){ctx.beginPath();ctx.moveTo(0,y*CELL);ctx.lineTo(COLS*CELL,y*CELL);ctx.stroke();}
+    /* Snake */
+    snake.forEach((s,i)=>{
+      ctx.fillStyle=i===0?'#0ff4c6':'rgba(15,244,198,.6)';
+      ctx.beginPath();ctx.roundRect(s.x*CELL+1,s.y*CELL+1,CELL-2,CELL-2,4);ctx.fill();
+    });
+    /* Food */
+    ctx.fillStyle='#ff4f5e';
+    ctx.beginPath();ctx.arc(food.x*CELL+CELL/2,food.y*CELL+CELL/2,CELL/2-2,0,Math.PI*2);ctx.fill();
+  }
+
+  function step(){
+    if(!running)return;
+    dir=nextDir;
+    const head={x:snake[0].x+dir.x,y:snake[0].y+dir.y};
+    /* Wall collision */
+    if(head.x<0||head.x>=COLS||head.y<0||head.y>=ROWS){gameOver();return;}
+    /* Self collision */
+    if(snake.some(s=>s.x===head.x&&s.y===head.y)){gameOver();return;}
+    snake.unshift(head);
+    if(head.x===food.x&&head.y===food.y){
+      score++;document.getElementById('snake-score').textContent='Score: '+score;
+      food=randFood();
+    }else{snake.pop();}
+    draw();
+  }
+
+  function gameOver(){
+    running=false;clearInterval(snakeInterval);
+    ctx.fillStyle='rgba(0,0,0,.7)';ctx.fillRect(0,0,COLS*CELL,ROWS*CELL);
+    ctx.fillStyle='#ff4f5e';ctx.font='bold 20px Syne';ctx.textAlign='center';
+    ctx.fillText('Game Over!',COLS*CELL/2,ROWS*CELL/2-10);
+    ctx.fillStyle='#0ff4c6';ctx.font='14px JetBrains Mono';
+    ctx.fillText('Score: '+score,COLS*CELL/2,ROWS*CELL/2+20);
+  }
+
+  draw();
+  snakeInterval=setInterval(step,130);
+
+  function onKey(e){
+    const map={ArrowUp:{x:0,y:-1},ArrowDown:{x:0,y:1},ArrowLeft:{x:-1,y:0},ArrowRight:{x:1,y:0},w:{x:0,y:-1},s:{x:0,y:1},a:{x:-1,y:0},d:{x:1,y:0}};
+    const nd=map[e.key];
+    if(nd&&!(nd.x===-dir.x&&nd.y===-dir.y)){nextDir=nd;e.preventDefault();}
+    if(e.key==='Escape')stopSnake();
+  }
+  document.addEventListener('keydown',onKey);
+  overlay._cleanup=()=>{document.removeEventListener('keydown',onKey);};
+}
+
+function stopSnake(){
+  clearInterval(snakeInterval);
+  const overlay=document.getElementById('snake-overlay');
+  if(overlay){if(overlay._cleanup)overlay._cleanup();overlay.remove();}
 }
 
 /* ── INIT ── */
