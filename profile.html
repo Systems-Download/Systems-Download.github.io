@@ -149,6 +149,29 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:cen
 
 footer{text-align:center;padding:2rem;font-family:var(--mono);font-size:.7rem;color:var(--muted);opacity:.4}
 </style>
+
+<script>
+/* ── CC SETTINGS LOADER ── */
+(function(){
+  function get(key,def){return localStorage.getItem(key)??def;}
+  /* Theme */
+  const useSystem=get('cc_system_theme','0')==='1';
+  if(useSystem){
+    document.documentElement.classList.toggle('light-mode',window.matchMedia('(prefers-color-scheme:light)').matches);
+  }else{
+    if(get('cc_theme','dark')==='light')document.documentElement.classList.add('light-mode');
+  }
+  /* Accent color */
+  const accent=get('cc_accent','#0ff4c6');
+  if(accent&&accent!=='#0ff4c6')document.documentElement.style.setProperty('--conch',accent);
+  /* Animations */
+  if(get('cc_animations','1')==='0'){
+    const s=document.createElement('style');
+    s.textContent='*{animation-duration:0.001ms!important;transition-duration:0.001ms!important}';
+    document.head.appendChild(s);
+  }
+})();
+</script>
 </head>
 <body>
 
@@ -337,7 +360,7 @@ async function showSingleProfile(username){
           </div>
           <div class="profile-divider"></div>
           <div class="follow-stats">
-            <div style="text-align:center"><strong style="font-size:1.1rem;color:var(--text);display:block">${followersCount}</strong>Followers</div>
+            <div style="text-align:center"><strong id="followers-count-val" style="font-size:1.1rem;color:var(--text);display:block">${followersCount}</strong>Followers</div>
             <div style="text-align:center"><strong style="font-size:1.1rem;color:var(--text);display:block">${followingCount}</strong>Following</div>
           </div>
           <div class="profile-stats">
@@ -366,38 +389,45 @@ function copyLink(){
 async function toggleFollow(){
   const loggedIn=getLoggedInUser();
   if(!loggedIn||!_profileUser)return;
+  /* Ensure we have loggedIn.id */
+  const myId=loggedIn.id;
+  if(!myId){return;}
   const btn=document.getElementById('follow-btn');
   if(!btn)return;
   const isFollowing=btn.classList.contains('following');
   btn.disabled=true;
   try{
     if(isFollowing){
-      await sb(`/rest/v1/cc_follows?follower_id=eq.${loggedIn.id}&following_id=eq.${_profileUser.id}`,{method:'DELETE'});
-      btn.classList.remove('following');
-      btn.textContent='+ Follow';
+      const dr=await sb(`/rest/v1/cc_follows?follower_id=eq.${myId}&following_id=eq.${_profileUser.id}`,{method:'DELETE'});
+      if(dr.ok||dr.status===200||dr.status===204){
+        btn.classList.remove('following');
+        btn.textContent='+ Follow';
+      }
     }else{
-      await sb('/rest/v1/cc_follows',{
+      const pr=await sb('/rest/v1/cc_follows',{
         method:'POST',
         headers:{'Prefer':'return=minimal'},
         body:JSON.stringify({
-          follower_id:loggedIn.id,
-          follower_username:loggedIn.username,
+          follower_id:myId,
+          follower_username:loggedIn.username||loggedIn.rawUsername,
           following_id:_profileUser.id,
           following_username:_profileUser.display_name||_profileUser.username,
           created_at:new Date().toISOString()
         })
       });
-      btn.classList.add('following');
-      btn.textContent='✓ Following';
+      if(pr.ok||pr.status===201||pr.status===204){
+        btn.classList.add('following');
+        btn.textContent='✓ Following';
+      }
     }
-    /* Refresh follow counts */
-    const r=await sb(`/rest/v1/cc_follows?following_id=eq.${_profileUser.id}&select=follower_id`);
+    /* Refresh follower count */
+    const r=await sb(`/rest/v1/cc_follows?following_id=eq.${_profileUser.id}&select=id`);
     if(r.ok){
       const data=await r.json();
-      const fc=document.querySelector('.follow-stats strong');
+      const fc=document.getElementById('followers-count-val');
       if(fc)fc.textContent=data.length;
     }
-  }catch{}
+  }catch(e){console.error('Follow error:',e);}
   btn.disabled=false;
 }
 
