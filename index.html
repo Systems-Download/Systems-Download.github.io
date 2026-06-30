@@ -581,6 +581,8 @@
   .notif-bell-wrap{position:relative;display:none}
   .notif-bell-wrap.vis{display:flex;align-items:center}
   .notif-bell{background:var(--surface);border:1px solid var(--border);border-radius:8px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:1rem;transition:all .2s;position:relative}
+  .friends-bell{background:var(--surface);border:1px solid var(--border);border-radius:8px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:1rem;transition:all .2s;position:relative}
+  .friends-bell:hover{border-color:rgba(167,139,250,.35);background:rgba(167,139,250,.05)}
   .notif-bell:hover{border-color:rgba(255,200,50,.35);background:rgba(255,200,50,.05)}
   .notif-badge{position:absolute;top:-5px;right:-5px;min-width:16px;height:16px;border-radius:8px;background:var(--cmdr);color:#fff;font-family:var(--mono);font-size:.6rem;font-weight:700;display:flex;align-items:center;justify-content:center;padding:0 4px;border:2px solid var(--bg);animation:notif-pop .3s cubic-bezier(.34,1.56,.64,1)}
   @keyframes notif-pop{from{transform:scale(0)}to{transform:scale(1)}}
@@ -628,6 +630,98 @@
   .follow-btn:hover{background:rgba(15,244,198,.16)}
   .follow-btn.following{background:rgba(255,79,94,.06);border-color:rgba(255,79,94,.25);color:var(--cmdr)}
   .follow-btn.following:hover{background:rgba(255,79,94,.14)}
+
+  /* ── FAVORITES ── */
+  .btn-fav{background:none;border:none;cursor:pointer;font-size:1rem;padding:.2rem;transition:transform .2s;color:var(--muted);line-height:1}
+  .btn-fav:hover{transform:scale(1.2)}
+  .btn-fav.active{color:#ffc832}
+  .badge-trending{font-family:var(--mono);font-size:.58rem;padding:.1rem .38rem;border-radius:3px;background:rgba(255,120,50,.12);color:#ff7832;border:1px solid rgba(255,120,50,.25)}
+  .fav-modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:9997;display:none;align-items:center;justify-content:center;padding:1rem}
+  .fav-modal-overlay.open{display:flex}
+  .fav-modal{background:var(--surface);border:1px solid var(--border);border-radius:16px;width:100%;max-width:500px;max-height:80vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,0.5);animation:modalSlideIn .3s cubic-bezier(.34,1.56,.64,1)}
+  @keyframes modalIn{from{transform:scale(.96);opacity:0}to{transform:scale(1);opacity:1}}
+  .fav-header{display:flex;align-items:center;justify-content:space-between;padding:1.1rem 1.4rem;border-bottom:1px solid var(--border)}
+  .fav-title{font-family:var(--mono);font-size:.85rem;font-weight:700;color:var(--text)}
+  .fav-close{background:none;border:none;cursor:pointer;color:var(--muted);font-size:1.1rem;transition:color .2s}
+  .fav-close:hover{color:var(--text)}
+  .fav-list{overflow-y:auto;flex:1;padding:.75rem}
+  .fav-item{display:flex;align-items:center;gap:.85rem;padding:.75rem;background:var(--surface2);border:1px solid var(--border);border-radius:10px;margin-bottom:.5rem}
+  .fav-item-name{font-family:var(--mono);font-size:.8rem;color:var(--text);flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .fav-item-meta{font-family:var(--mono);font-size:.65rem;color:var(--muted)}
+  .fav-dl-btn{font-family:var(--mono);font-size:.7rem;padding:.35rem .75rem;border-radius:6px;border:none;cursor:pointer;background:rgba(15,244,198,.1);color:var(--conch);transition:all .2s;flex-shrink:0}
+  .fav-dl-btn:hover{background:rgba(15,244,198,.2)}
+  .fav-remove-btn{background:none;border:none;cursor:pointer;color:var(--muted);font-size:.85rem;transition:color .2s;flex-shrink:0}
+  .fav-remove-btn:hover{color:var(--cmdr)}
+  .fav-empty{text-align:center;padding:2.5rem 1rem;font-family:var(--mono);font-size:.8rem;color:var(--muted);opacity:.6}
+
+  /* ── FRIENDS & MESSAGES ── */
+  .friends-bell-wrap{position:relative;display:none}
+  .friends-bell-wrap.vis{display:flex;align-items:center}
+  .friends-badge{position:absolute;top:-5px;right:-5px;min-width:16px;height:16px;border-radius:8px;background:#a78bfa;color:#fff;font-family:var(--mono);font-size:.6rem;font-weight:700;display:flex;align-items:center;justify-content:center;padding:0 4px;border:2px solid var(--bg)}
+  .msg-modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:9997;display:none;align-items:center;justify-content:center;padding:1rem}
+  .msg-modal-overlay.open{display:flex}
+  .msg-modal{background:var(--surface);border:1px solid var(--border);border-radius:16px;width:100%;max-width:720px;height:80vh;max-height:600px;display:flex;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,0.5);animation:modalSlideIn .3s cubic-bezier(.34,1.56,.64,1)}
+  .msg-sidebar{width:240px;flex-shrink:0;border-right:1px solid var(--border);display:flex;flex-direction:column;background:var(--surface2)}
+  .msg-sidebar-tabs{display:flex;border-bottom:1px solid var(--border)}
+  .msg-tab{flex:1;padding:.7rem .5rem;font-family:var(--mono);font-size:.68rem;text-align:center;cursor:pointer;color:var(--muted);background:none;border:none;border-bottom:2px solid transparent;transition:all .2s;position:relative}
+  .msg-tab.active{color:var(--conch);border-bottom-color:var(--conch)}
+  .msg-tab-badge{position:absolute;top:.3rem;right:.4rem;min-width:14px;height:14px;border-radius:7px;background:#a78bfa;color:#fff;font-size:.55rem;display:flex;align-items:center;justify-content:center;padding:0 3px}
+  .msg-search-wrap{padding:.6rem;border-bottom:1px solid var(--border)}
+  .msg-search-input{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:7px;color:var(--text);font-family:var(--mono);font-size:.72rem;padding:.45rem .7rem;outline:none}
+  .msg-search-input:focus{border-color:rgba(167,139,250,.35)}
+  .msg-list-scroll{flex:1;overflow-y:auto;padding:.4rem}
+  .friend-item{display:flex;align-items:center;gap:.6rem;padding:.55rem .5rem;border-radius:8px;cursor:pointer;transition:background .15s;margin-bottom:.15rem}
+  .friend-item:hover{background:var(--surface)}
+  .friend-item.active-chat{background:rgba(167,139,250,.08)}
+  .friend-avatar{width:32px;height:32px;border-radius:50%;background:var(--surface);display:flex;align-items:center;justify-content:center;font-size:.78rem;font-weight:700;color:var(--conch);flex-shrink:0;overflow:hidden;font-family:var(--sans)}
+  .friend-avatar img{width:100%;height:100%;object-fit:cover}
+  .friend-info{flex:1;min-width:0}
+  .friend-name{font-family:var(--mono);font-size:.74rem;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .friend-last-msg{font-family:var(--mono);font-size:.6rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .friend-unread-dot{width:7px;height:7px;border-radius:50%;background:var(--conch);flex-shrink:0}
+  .req-actions{display:flex;gap:.3rem}
+  .req-btn{width:24px;height:24px;border-radius:6px;border:none;cursor:pointer;font-size:.7rem;display:flex;align-items:center;justify-content:center;transition:all .15s}
+  .req-accept{background:rgba(15,244,198,.12);color:var(--conch)}
+  .req-accept:hover{background:rgba(15,244,198,.22)}
+  .req-decline{background:rgba(255,79,94,.1);color:var(--cmdr)}
+  .req-decline:hover{background:rgba(255,79,94,.2)}
+  .msg-empty-list{text-align:center;padding:2rem 1rem;font-family:var(--mono);font-size:.7rem;color:var(--muted);opacity:.6}
+  .add-friend-btn{margin:.6rem;font-family:var(--mono);font-size:.7rem;padding:.5rem;border-radius:7px;border:1px solid rgba(167,139,250,.3);background:rgba(167,139,250,.08);color:#a78bfa;cursor:pointer;transition:all .2s;text-align:center}
+  .add-friend-btn:hover{background:rgba(167,139,250,.16)}
+  .msg-chat-area{flex:1;display:flex;flex-direction:column;min-width:0}
+  .msg-chat-header{padding:.85rem 1.1rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:.7rem}
+  .msg-chat-header-avatar{width:34px;height:34px;border-radius:50%;background:var(--surface2);display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;color:var(--conch);overflow:hidden;font-family:var(--sans)}
+  .msg-chat-header-avatar img{width:100%;height:100%;object-fit:cover}
+  .msg-chat-header-name{font-family:var(--mono);font-size:.8rem;font-weight:700;color:var(--text)}
+  .msg-close{margin-left:auto;background:none;border:none;cursor:pointer;color:var(--muted);font-size:1rem;transition:color .2s}
+  .msg-close:hover{color:var(--text)}
+  .msg-chat-empty{flex:1;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:.5rem;padding:2rem}
+  .msg-chat-empty-icon{font-size:2.5rem;opacity:.3}
+  .msg-chat-empty-text{font-family:var(--mono);font-size:.78rem;color:var(--muted);text-align:center}
+  .msg-thread{flex:1;overflow-y:auto;padding:1rem;display:flex;flex-direction:column;gap:.5rem}
+  .msg-bubble-row{display:flex}
+  .msg-bubble-row.own{justify-content:flex-end}
+  .msg-bubble{max-width:75%;padding:.55rem .8rem;border-radius:14px;font-family:var(--mono);font-size:.78rem;line-height:1.5;word-break:break-word}
+  .msg-bubble.other{background:var(--surface2);color:var(--text);border-bottom-left-radius:4px}
+  .msg-bubble.own{background:rgba(167,139,250,.15);color:var(--text);border-bottom-right-radius:4px}
+  .msg-time{font-family:var(--mono);font-size:.6rem;color:var(--muted);margin-top:.2rem;opacity:.6}
+  .msg-input-row{padding:.75rem;border-top:1px solid var(--border);display:flex;gap:.5rem;align-items:flex-end}
+  .msg-input{flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:10px;color:var(--text);font-family:var(--mono);font-size:.78rem;padding:.6rem .85rem;outline:none;resize:none;max-height:80px;line-height:1.5}
+  .msg-input:focus{border-color:rgba(167,139,250,.35)}
+  .msg-send-btn{background:rgba(167,139,250,.15);color:#a78bfa;border:none;border-radius:10px;width:38px;height:38px;cursor:pointer;font-size:1rem;flex-shrink:0;transition:all .2s;display:flex;align-items:center;justify-content:center}
+  .msg-send-btn:hover{background:rgba(167,139,250,.25)}
+  .msg-send-btn:disabled{opacity:.4;cursor:not-allowed}
+  .addfriend-modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:9998;display:none;align-items:center;justify-content:center;padding:1rem}
+  .addfriend-modal-overlay.open{display:flex}
+  .addfriend-modal{background:var(--surface);border:1px solid var(--border);border-radius:16px;width:100%;max-width:380px;padding:1.4rem;box-shadow:0 20px 60px rgba(0,0,0,0.5);animation:modalSlideIn .3s cubic-bezier(.34,1.56,.64,1)}
+  .addfriend-title{font-family:var(--mono);font-size:.85rem;font-weight:700;margin-bottom:1rem;color:var(--text)}
+  .addfriend-input{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:var(--mono);font-size:.8rem;padding:.65rem .9rem;outline:none;margin-bottom:.7rem}
+  .addfriend-input:focus{border-color:rgba(167,139,250,.35)}
+  .addfriend-results{display:flex;flex-direction:column;gap:.4rem;max-height:200px;overflow-y:auto;margin-bottom:.7rem}
+  .addfriend-result{display:flex;align-items:center;gap:.6rem;padding:.5rem .7rem;background:var(--surface2);border:1px solid var(--border);border-radius:8px;cursor:pointer;transition:border-color .15s}
+  .addfriend-result:hover{border-color:rgba(167,139,250,.3)}
+  .addfriend-close-btn{width:100%;font-family:var(--mono);font-size:.78rem;padding:.55rem;border-radius:8px;border:1px solid var(--border);background:none;color:var(--muted);cursor:pointer;transition:all .2s}
+  .addfriend-close-btn:hover{color:var(--text);border-color:rgba(255,255,255,.2)}
 </style>
 
 <script>
@@ -3031,12 +3125,14 @@ function toggleFav(url,name,version,btn){
 
 function openFavModal(){
   document.getElementById('fav-modal-overlay').classList.add('open');
+  document.body.style.overflow='hidden';
   renderFavList();
 }
 
 function closeFavModal(event){
   if(event&&event.target!==event.currentTarget)return;
   document.getElementById('fav-modal-overlay').classList.remove('open');
+  document.body.style.overflow='';
 }
 
 function renderFavList(){
@@ -3143,6 +3239,7 @@ async function refreshFriendsBadge(){
 function openMsgModal(){
   if(!AUTH.user){toast({title:'Login required',sub:'',type:'w',dur:2000});return;}
   document.getElementById('msg-modal-overlay').classList.add('open');
+  document.body.style.overflow='hidden';
   switchMsgTab('friends');
   loadFriendsList();
   loadFriendRequests();
@@ -3151,6 +3248,7 @@ function openMsgModal(){
 function closeMsgModal(event){
   if(event&&event.target!==event.currentTarget)return;
   document.getElementById('msg-modal-overlay').classList.remove('open');
+  document.body.style.overflow='';
   if(_chatPollInterval){clearInterval(_chatPollInterval);_chatPollInterval=null;}
 }
 
