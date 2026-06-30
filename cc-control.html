@@ -447,13 +447,6 @@ tr:hover td{background:rgba(255,255,255,.02)}
       <div class="settings-grid">
         <div class="setting-row">
           <div class="setting-info">
-            <div class="setting-name">🔧 Maintenance Mode</div>
-            <div class="setting-desc">Redirects all visitors to maintenance.html</div>
-          </div>
-          <label class="toggle"><input type="checkbox" id="toggle-maintenance" onchange="saveSetting('maintenance_enabled',this.checked)"><span class="toggle-slider"></span></label>
-        </div>
-        <div class="setting-row">
-          <div class="setting-info">
             <div class="setting-name">⭐ Featured File</div>
             <div class="setting-desc">Show a recommended file at the top of the page</div>
           </div>
@@ -1107,7 +1100,6 @@ async function loadSettings(){
     if(!r.ok)return;
     const rows=await r.json();
     const s={};rows.forEach(x=>s[x.key]=x.value);
-    if(document.getElementById('toggle-maintenance'))document.getElementById('toggle-maintenance').checked=s.maintenance_enabled==='true';
     if(document.getElementById('toggle-featured'))document.getElementById('toggle-featured').checked=s.featured_enabled==='true';
     if(document.getElementById('toggle-banner'))document.getElementById('toggle-banner').checked=s.banner_enabled==='true';
     if(s.featured_file_name)document.getElementById('input-featured-name').value=s.featured_file_name;
