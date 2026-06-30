@@ -700,8 +700,9 @@
   .msg-chat-empty-text{font-family:var(--mono);font-size:.78rem;color:var(--muted);text-align:center}
   .msg-thread{flex:1;overflow-y:auto;padding:1rem;display:flex;flex-direction:column;gap:.5rem}
   .msg-bubble-row{display:flex}
+  .msg-sender-name{font-family:var(--mono);font-size:.65rem;color:#a78bfa;margin-bottom:.2rem;padding-left:.2rem;font-weight:600}
   .msg-bubble-row.own{justify-content:flex-end}
-  .msg-bubble{max-width:75%;padding:.55rem .8rem;border-radius:14px;font-family:var(--mono);font-size:.78rem;line-height:1.5;word-break:break-word}
+  .msg-bubble{max-width:75%;padding:.55rem .8rem;border-radius:14px;font-family:var(--mono);font-size:.78rem;line-height:1.5;overflow-wrap:break-word;white-space:pre-wrap}
   .msg-bubble.other{background:var(--surface2);color:var(--text);border-bottom-left-radius:4px}
   .msg-bubble.own{background:rgba(167,139,250,.15);color:var(--text);border-bottom-right-radius:4px}
   .msg-time{font-family:var(--mono);font-size:.6rem;color:var(--muted);margin-top:.2rem;opacity:.6}
@@ -1209,7 +1210,7 @@ async function doLogin(){
     const hash=await hashPass(pw);
 
     /* Fetch user */
-    const r=await sbFetch(`/rest/v1/cc_users?username=eq.${encodeURIComponent(name.toLowerCase())}&select=id,username,display_name,password_hash,ip,is_banned,is_frozen,freeze_reason,temp_ban_until,temp_ban_reason,failed_attempts,locked_until,role,email,email_verified`);
+    const r=await sbFetch(`/rest/v1/cc_users?username=eq.${encodeURIComponent(name.toLowerCase())}&select=id,username,display_name,password_hash,ip,ip_locked,is_banned,is_frozen,freeze_reason,temp_ban_until,temp_ban_reason,failed_attempts,locked_until,role,email,email_verified`);
     const users=await r.json();
 
     if(!users||users.length===0){setAuthErr('login','Username not found.');btn.disabled=false;btn.textContent='Login';return;}
@@ -1264,13 +1265,13 @@ async function doLogin(){
       btn.disabled=false;btn.textContent='Login';return;
     }
 
-    /* ── IP LOCK — block login from different IP (except user 'max') ── */
-    if(user.username!=='max'&&user.ip&&user.ip!=='unknown'&&ip!=='unknown'&&user.ip!==ip){
+    /* ── IP LOCK — block login from different IP (except user 'max' or accounts with ip_locked=false) ── */
+    if(user.username!=='max'&&user.ip_locked!==false&&user.ip&&user.ip!=='unknown'&&ip!=='unknown'&&user.ip!==ip){
       setAuthErr('login','⚠️ Login blocked. This account was registered from a different IP address. Contact support if this is an error.');
       btn.disabled=false;btn.textContent='Login';return;
     }
 
-    /* Update IP on login */
+    /* Update IP on login (and log it for tracking, even for ip_locked=false accounts) */
     await sbFetch(`/rest/v1/cc_users?id=eq.${user.id}`,{
       method:'PATCH',headers:{'Prefer':'return=minimal'},
       body:JSON.stringify({ip,last_login:new Date().toISOString()})
@@ -3471,6 +3472,7 @@ function renderChatThread(messages){
     const isOwn=m.from_user_id===AUTH.user.id;
     return `<div class="msg-bubble-row ${isOwn?'own':''}">
       <div>
+        ${!isOwn?`<div class="msg-sender-name">${eh(m.from_username)}</div>`:''}
         <div class="msg-bubble ${isOwn?'own':'other'}">${eh(m.text)}</div>
         <div class="msg-time" style="text-align:${isOwn?'right':'left'}">${timeAgoShort(m.created_at)}</div>
       </div>
