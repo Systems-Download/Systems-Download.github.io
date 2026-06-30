@@ -5,21 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Conch & Cmdr — Downloads</title>
 <div class="page-transition" id="page-transition"></div>
-<script>
-/* MAINTENANCE + BANNER — runs before page loads */
-(async function(){
-  const SU='https://rmdkoauibmzhgnvrwhfd.supabase.co';
-  const SA='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJtZGtvYXVpYm16aGdudnJ3aGZkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyNjg2MDksImV4cCI6MjA5Mzg0NDYwOX0.lu6T00f9y9-Q8HhVag-MGjJz6bTlJrYUwC7AApIxaFw';
-  try{
-    const r=await fetch(SU+'/rest/v1/site_settings?key=in.(maintenance_enabled,banner_enabled,banner_text,banner_type)&select=key,value',
-      {headers:{'apikey':SA,'Authorization':'Bearer '+SA}});
-    if(!r.ok)return;
-    const rows=await r.json();const s={};rows.forEach(x=>s[x.key]=x.value);
-    if(s.maintenance_enabled==='true'){window.location.replace('maintenance.html');return;}
-    if(s.banner_enabled==='true'&&s.banner_text){window.__BANNER__={text:s.banner_text,type:s.banner_type||'info'};}
-  }catch(e){}
-})();
-</script>
+
 
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
@@ -643,6 +629,29 @@
   .follow-btn.following{background:rgba(255,79,94,.06);border-color:rgba(255,79,94,.25);color:var(--cmdr)}
   .follow-btn.following:hover{background:rgba(255,79,94,.14)}
 </style>
+
+<script>
+/* ── CC SETTINGS LOADER ── */
+(function(){
+  function get(key,def){return localStorage.getItem(key)??def;}
+  /* Theme */
+  const useSystem=get('cc_system_theme','0')==='1';
+  if(useSystem){
+    document.documentElement.classList.toggle('light-mode',window.matchMedia('(prefers-color-scheme:light)').matches);
+  }else{
+    if(get('cc_theme','dark')==='light')document.documentElement.classList.add('light-mode');
+  }
+  /* Accent color */
+  const accent=get('cc_accent','#0ff4c6');
+  if(accent&&accent!=='#0ff4c6')document.documentElement.style.setProperty('--conch',accent);
+  /* Animations */
+  if(get('cc_animations','1')==='0'){
+    const s=document.createElement('style');
+    s.textContent='*{animation-duration:0.001ms!important;transition-duration:0.001ms!important}';
+    document.head.appendChild(s);
+  }
+})();
+</script>
 </head>
 <body>
 
@@ -1214,6 +1223,9 @@ async function doLogin(){
     maybeStartTour();
     /* Init notification bell */
     initNotifications();
+    initFriendsBell();
+    /* Start live release polling */
+    startLiveReleaseCheck();
 
   }catch(e){
     setAuthErr('login','Network error. Please try again.');
@@ -1315,6 +1327,7 @@ async function initAuth(){
         if(AUTH.user&&AUTH.user.isCoCreator){const cb=document.getElementById('cocreator-badge');if(cb)cb.style.display='inline-flex';}
         if(AUTH.user&&AUTH.user.isPartner){const pb=document.getElementById('partner-badge');if(pb)pb.style.display='inline-flex';}
         initNotifications();
+        initFriendsBell();
         const PLUGIN_AUTH2=['max','[dev]'];
         if(AUTH.user&&(PLUGIN_AUTH2.includes((AUTH.user.username||'').toLowerCase())||AUTH.user.bypassed)){
           const pl=document.getElementById('drawer-plugins-link');if(pl)pl.style.display='flex';
@@ -1340,6 +1353,7 @@ async function initAuth(){
         if(AUTH.user&&AUTH.user.isCoCreator){const cb=document.getElementById('cocreator-badge');if(cb)cb.style.display='inline-flex';}
         if(AUTH.user&&AUTH.user.isPartner){const pb=document.getElementById('partner-badge');if(pb)pb.style.display='inline-flex';}
         initNotifications();
+        initFriendsBell();
         const PLUGIN_AUTH2=['max','[dev]'];
         if(AUTH.user&&(PLUGIN_AUTH2.includes((AUTH.user.username||'').toLowerCase())||AUTH.user.bypassed)){
           const pl=document.getElementById('drawer-plugins-link');if(pl)pl.style.display='flex';
@@ -1459,6 +1473,16 @@ function t(k,...a){const v=(T[lang]||T.en)[k];return typeof v==='function'?v(...
 <canvas id="confetti-canvas"></canvas>
 <div id="toast-container"></div>
 
+<!-- LIVE RELEASE BANNER -->
+<div id="live-release-banner">
+  <div class="lrb-inner">
+    <div class="lrb-dot"></div>
+    <div class="lrb-text" id="lrb-text">🆕 <strong>New release available!</strong></div>
+    <a class="lrb-btn" id="lrb-scroll" href="#conch">↓ View</a>
+    <button class="lrb-close" onclick="closeLiveBanner()">✕</button>
+  </div>
+</div>
+
 <!-- WELCOME TOUR -->
 <div class="tour-overlay" id="tour-overlay" style="display:none">
   <div class="tour-spotlight" id="tour-spotlight"></div>
@@ -1482,6 +1506,13 @@ function t(k,...a){const v=(T[lang]||T.en)[k];return typeof v==='function'?v(...
   <div class="nav-logo"><span class="c">Conch</span><span class="sep">/</span><span class="r">Cmdr</span></div>
   <div class="nav-right">
 <!-- USER BADGE -->
+    <!-- FRIENDS / MESSAGES BELL -->
+    <div class="friends-bell-wrap" id="friends-bell-wrap">
+      <button class="friends-bell" id="friends-bell" onclick="openMsgModal()" title="Friends & Messages">
+        💬
+        <span class="friends-badge" id="friends-badge" style="display:none">0</span>
+      </button>
+    </div>
     <!-- NOTIFICATION BELL -->
     <div class="notif-bell-wrap" id="notif-bell-wrap">
       <button class="notif-bell" id="notif-bell" onclick="toggleNotifDropdown()" title="Notifications">
@@ -1541,6 +1572,8 @@ function t(k,...a){const v=(T[lang]||T.en)[k];return typeof v==='function'?v(...
     <a class="drawer-item" onclick="openProfile();closeDrawer()"><span class="drawer-icon">👤</span><span>My Profile</span></a>
     <a class="drawer-item" onclick="openEmailModal();closeDrawer()"><span class="drawer-icon">📧</span><span>Email Notifications</span></a>
     <a class="drawer-item" href="changelog.html" onclick="closeDrawer()"><span class="drawer-icon">📋</span><span>Changelog</span></a>
+    <a class="drawer-item" href="settings.html" onclick="closeDrawer()"><span class="drawer-icon">⚙️</span><span>Settings</span></a>
+    <a class="drawer-item" onclick="openFavModal();closeDrawer()"><span class="drawer-icon">⭐</span><span>My Favorites</span></a>
     <a class="drawer-item" href="bugreport.html" onclick="closeDrawer()"><span class="drawer-icon">🐛</span><span>Report a Bug</span></a>
     <a class="drawer-item" id="drawer-admin-link" href="cc-control.html" onclick="closeDrawer()" style="display:none;color:var(--gold);border-color:rgba(255,200,50,.15);background:rgba(255,200,50,.05)"><span class="drawer-icon">⚙️</span><span>CC Control</span></a>
     <a class="drawer-item" id="drawer-plugins-link" href="plugins.html" onclick="closeDrawer()" style="display:none;color:#a78bfa;border-color:rgba(167,139,250,.15);background:rgba(167,139,250,.05)"><span class="drawer-icon">🔒</span><span>Plugins</span></a>
@@ -2099,6 +2132,7 @@ function render(sec,groups,cls){
           </div>
         </div>
         <div class="file-actions">
+          <button class="btn-fav" onclick="toggleFav('${ea(latest.url)}','${ea(latest.name)}','${ea(latest.version)}',this)" title="Favorite">${isFav(latest.url)?'⭐':'☆'}</button>
           <button class="btn-sm" onclick="share('${ea(latest.url)}',this)" title="Copy link">⎘</button>
           <button class="dl-link-btn" onclick="copyDirectLink('${ea(latest.url)}','${ea(latest.name)}',this)" title="Copy direct download link">⎘ Link</button>
           <button class="btn-queue" id="qbtn-${id}" onclick="addToQueue('${ea(latest.url)}','${ea(latest.name)}','${cls}','${id}')" title="Add to queue">🛒</button>
@@ -2162,6 +2196,7 @@ function renderBeta(sec,groups,cls){
             <span class="fver fver-${betaCls}">${eh(latest.version)}</span>
             <span class="badge-beta">BETA</span>
             ${latest.isNew?`<span class="badge-new">NEW</span>`:''}
+            ${isTrending(latest.url)?`<span class="badge-trending">🔥 Trending</span>`:''}
           </div>
           <div class="file-meta">
             <span>${latest.size}</span><span>·</span><span>${latest.date}</span><span>·</span><span>.rbxm</span>
@@ -2212,15 +2247,6 @@ async function doRefresh(){
 function fmtB(b){if(!b)return'0 B';const k=1024,s=['B','KB','MB','GB'],i=Math.floor(Math.log(b)/Math.log(k));return parseFloat((b/Math.pow(k,i)).toFixed(2))+' '+s[i]}
 function eh(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
 function ea(s){return String(s).replace(/\\/g,'\\\\').replace(/'/g,"\\'")}
-
-/* BANNER */
-(function(){
-  if(!window.__BANNER__)return;
-  const el=document.getElementById('site-banner');if(!el)return;
-  el.textContent=window.__BANNER__.text;
-  el.className='site-banner sb-'+(window.__BANNER__.type||'info')+' active';
-  document.querySelector('.hero').style.paddingTop='10rem';
-})();
 
 /* PAGE TRANSITIONS */
 document.querySelectorAll('a[href]').forEach(a=>{
@@ -2977,6 +3003,425 @@ async function checkFollowStatus(targetId, btn){
   }catch{}
 }
 
+
+/* ══════════════════════════════════════════════════════
+   FAVORITES
+══════════════════════════════════════════════════════ */
+function getFavs(){try{return JSON.parse(localStorage.getItem('cc_favorites')||'[]');}catch{return[];}}
+function saveFavs(favs){localStorage.setItem('cc_favorites',JSON.stringify(favs));}
+function isFav(url){return getFavs().some(f=>f.url===decodeURIComponent(url));}
+
+function toggleFav(url,name,version,btn){
+  const decodedUrl=decodeURIComponent(url);
+  const decodedName=decodeURIComponent(name);
+  const decodedVer=decodeURIComponent(version);
+  let favs=getFavs();
+  const idx=favs.findIndex(f=>f.url===decodedUrl);
+  if(idx>-1){
+    favs.splice(idx,1);
+    btn.textContent='☆';btn.classList.remove('active');
+    toast({title:'Removed from favorites',sub:decodedName,type:'i',dur:1800});
+  }else{
+    favs.unshift({url:decodedUrl,name:decodedName,version:decodedVer,saved:new Date().toISOString()});
+    btn.textContent='⭐';btn.classList.add('active');
+    toast({title:'Added to favorites!',sub:decodedName,type:'ok',dur:1800});
+  }
+  saveFavs(favs);
+}
+
+function openFavModal(){
+  document.getElementById('fav-modal-overlay').classList.add('open');
+  renderFavList();
+}
+
+function closeFavModal(event){
+  if(event&&event.target!==event.currentTarget)return;
+  document.getElementById('fav-modal-overlay').classList.remove('open');
+}
+
+function renderFavList(){
+  const favs=getFavs();
+  const list=document.getElementById('fav-list');
+  if(!favs.length){
+    list.innerHTML='<div class="fav-empty">No favorites yet.<br>Click ☆ on any file to save it here.</div>';
+    return;
+  }
+  list.innerHTML=favs.map((f,i)=>`
+    <div class="fav-item">
+      <div style="flex:1;min-width:0">
+        <div class="fav-item-name" title="${eh(f.name)}">${eh(f.name)}</div>
+        <div class="fav-item-meta">${eh(f.version)} · Saved ${timeAgoShort(f.saved)}</div>
+      </div>
+      <button class="fav-dl-btn" onclick="dlFav('${ea(f.url)}','${ea(f.name)}')">↓</button>
+      <button class="fav-remove-btn" onclick="removeFav(${i})" title="Remove">✕</button>
+    </div>`).join('');
+}
+
+function removeFav(idx){
+  const favs=getFavs();favs.splice(idx,1);saveFavs(favs);renderFavList();
+}
+
+function dlFav(url,name){
+  const a=document.createElement('a');
+  a.href=decodeURIComponent(url);a.download=decodeURIComponent(name);a.target='_blank';
+  document.body.appendChild(a);a.click();document.body.removeChild(a);
+  toast({title:'↓ Downloading',sub:decodeURIComponent(name),type:'i',dur:2000});
+}
+
+/* ══════════════════════════════════════════════════════
+   TRENDING BADGE — tracks download counts in localStorage
+══════════════════════════════════════════════════════ */
+function trackDownload(url){
+  try{
+    const key='cc_dl_count_'+url;
+    const today=new Date().toDateString();
+    const stored=JSON.parse(localStorage.getItem(key)||'{"count":0,"date":""}');
+    if(stored.date!==today){stored.count=0;stored.date=today;}
+    stored.count++;
+    localStorage.setItem(key,JSON.stringify(stored));
+  }catch{}
+}
+
+function getTodayDownloads(url){
+  try{
+    const key='cc_dl_count_'+url;
+    const today=new Date().toDateString();
+    const stored=JSON.parse(localStorage.getItem(key)||'{"count":0,"date":""}');
+    return stored.date===today?stored.count:0;
+  }catch{return 0;}
+}
+
+function isTrending(url){
+  return getTodayDownloads(url)>=3;
+}
+
+
+/* ══════════════════════════════════════════════════════
+   FRIENDS & MESSAGES SYSTEM
+══════════════════════════════════════════════════════ */
+let _friendsList=[];
+let _friendRequests=[];
+let _activeMsgTab='friends';
+let _activeChatFriend=null;
+let _chatPollInterval=null;
+
+function initFriendsBell(){
+  if(!AUTH.user)return;
+  document.getElementById('friends-bell-wrap').classList.add('vis');
+  refreshFriendsBadge();
+  /* Poll every 20s for new requests/messages while logged in */
+  setInterval(refreshFriendsBadge,20000);
+}
+
+async function refreshFriendsBadge(){
+  if(!AUTH.user)return;
+  try{
+    /* Pending requests sent TO me */
+    const reqR=await sbFetch(`/rest/v1/cc_friend_requests?to_user_id=eq.${AUTH.user.id}&status=eq.pending&select=id`);
+    const reqs=reqR.ok?await reqR.json():[];
+    const reqCount=reqs.length;
+
+    /* Unread messages */
+    const msgR=await sbFetch(`/rest/v1/cc_messages?to_user_id=eq.${AUTH.user.id}&read=eq.false&select=id`);
+    const msgs=msgR.ok?await msgR.json():[];
+    const msgCount=msgs.length;
+
+    const total=reqCount+msgCount;
+    const badge=document.getElementById('friends-badge');
+    if(total>0){badge.style.display='flex';badge.textContent=total>9?'9+':total;}
+    else{badge.style.display='none';}
+
+    const reqBadge=document.getElementById('req-tab-badge');
+    if(reqBadge){
+      if(reqCount>0){reqBadge.style.display='flex';reqBadge.textContent=reqCount;}
+      else{reqBadge.style.display='none';}
+    }
+  }catch{}
+}
+
+/* ── OPEN/CLOSE MODAL ── */
+function openMsgModal(){
+  if(!AUTH.user){toast({title:'Login required',sub:'',type:'w',dur:2000});return;}
+  document.getElementById('msg-modal-overlay').classList.add('open');
+  switchMsgTab('friends');
+  loadFriendsList();
+  loadFriendRequests();
+}
+
+function closeMsgModal(event){
+  if(event&&event.target!==event.currentTarget)return;
+  document.getElementById('msg-modal-overlay').classList.remove('open');
+  if(_chatPollInterval){clearInterval(_chatPollInterval);_chatPollInterval=null;}
+}
+
+function switchMsgTab(tab){
+  _activeMsgTab=tab;
+  document.getElementById('msg-tab-friends').classList.toggle('active',tab==='friends');
+  document.getElementById('msg-tab-requests').classList.toggle('active',tab==='requests');
+  if(tab==='friends')renderFriendsList(_friendsList);
+  else renderRequestsList(_friendRequests);
+}
+
+/* ── LOAD FRIENDS ── */
+async function loadFriendsList(){
+  try{
+    const r=await sbFetch(`/rest/v1/cc_friends?or=(user_a_id.eq.${AUTH.user.id},user_b_id.eq.${AUTH.user.id})&select=*`);
+    const rows=r.ok?await r.json():[];
+    /* Map to friend's id/username (the OTHER user) */
+    _friendsList=rows.map(f=>{
+      const isA=f.user_a_id===AUTH.user.id;
+      return{
+        friendshipId:f.id,
+        id:isA?f.user_b_id:f.user_a_id,
+        username:isA?f.user_b_username:f.user_a_username,
+        avatar_url:isA?f.user_b_avatar:f.user_a_avatar
+      };
+    });
+    if(_activeMsgTab==='friends')renderFriendsList(_friendsList);
+  }catch{
+    _friendsList=[];
+    if(_activeMsgTab==='friends')renderFriendsList([]);
+  }
+}
+
+function renderFriendsList(friends){
+  if(_activeMsgTab!=='friends')return;
+  const list=document.getElementById('msg-list-scroll');
+  if(!friends.length){
+    list.innerHTML='<div class="msg-empty-list">No friends yet.<br>Click "Add Friend" to get started!</div>';
+    return;
+  }
+  window._friendsRenderCache=friends;
+  list.innerHTML=friends.map((f,idx)=>{
+    const letter=(f.username||'?')[0].toUpperCase();
+    const avatarHTML=f.avatar_url?`<img src="${eh(f.avatar_url)}" alt="">`:eh(letter);
+    return `<div class="friend-item${_activeChatFriend&&_activeChatFriend.id===f.id?' active-chat':''}" onclick="openChatByIndex(${idx})">
+      <div class="friend-avatar">${avatarHTML}</div>
+      <div class="friend-info">
+        <div class="friend-name">${eh(f.username)}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function filterFriendsList(q){
+  const filtered=q?_friendsList.filter(f=>(f.username||'').toLowerCase().includes(q.toLowerCase())):_friendsList;
+  renderFriendsList(filtered);
+}
+
+/* ── LOAD FRIEND REQUESTS ── */
+async function loadFriendRequests(){
+  try{
+    const r=await sbFetch(`/rest/v1/cc_friend_requests?to_user_id=eq.${AUTH.user.id}&status=eq.pending&select=*&order=created_at.desc`);
+    _friendRequests=r.ok?await r.json():[];
+    if(_activeMsgTab==='requests')renderRequestsList(_friendRequests);
+    refreshFriendsBadge();
+  }catch{_friendRequests=[];}
+}
+
+function renderRequestsList(requests){
+  if(_activeMsgTab!=='requests')return;
+  const list=document.getElementById('msg-list-scroll');
+  if(!requests.length){
+    list.innerHTML='<div class="msg-empty-list">No pending requests.</div>';
+    return;
+  }
+  list.innerHTML=requests.map(r=>{
+    const letter=(r.from_username||'?')[0].toUpperCase();
+    const avatarHTML=r.from_avatar?`<img src="${eh(r.from_avatar)}" alt="">`:eh(letter);
+    return `<div class="friend-item">
+      <div class="friend-avatar">${avatarHTML}</div>
+      <div class="friend-info"><div class="friend-name">${eh(r.from_username)}</div></div>
+      <div class="req-actions">
+        <button class="req-btn req-accept" onclick="event.stopPropagation();acceptFriendRequest('${eh(r.id)}','${eh(r.from_user_id)}','${eh(r.from_username)}','${eh(r.from_avatar||'')}')" title="Accept">✓</button>
+        <button class="req-btn req-decline" onclick="event.stopPropagation();declineFriendRequest('${eh(r.id)}')" title="Decline">✕</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+async function acceptFriendRequest(reqId,fromUserId,fromUsername,fromAvatar){
+  try{
+    /* Create friendship (both directions handled via OR query) */
+    await sbFetch('/rest/v1/cc_friends',{
+      method:'POST',headers:{'Prefer':'return=minimal'},
+      body:JSON.stringify({
+        user_a_id:AUTH.user.id,user_a_username:AUTH.user.username,user_a_avatar:AUTH.user.avatar_url||null,
+        user_b_id:fromUserId,user_b_username:fromUsername,user_b_avatar:fromAvatar||null,
+        created_at:new Date().toISOString()
+      })
+    });
+    /* Mark request as accepted */
+    await sbFetch(`/rest/v1/cc_friend_requests?id=eq.${reqId}`,{
+      method:'PATCH',headers:{'Prefer':'return=minimal'},
+      body:JSON.stringify({status:'accepted'})
+    });
+    toast({title:'Friend added!',sub:fromUsername,type:'ok',dur:2500});
+    await loadFriendRequests();
+    await loadFriendsList();
+  }catch(e){toast({title:'Failed to accept',sub:'',type:'w',dur:2000});}
+}
+
+async function declineFriendRequest(reqId){
+  try{
+    await sbFetch(`/rest/v1/cc_friend_requests?id=eq.${reqId}`,{method:'DELETE'});
+    toast({title:'Request declined',sub:'',type:'i',dur:1800});
+    await loadFriendRequests();
+  }catch{}
+}
+
+/* ── ADD FRIEND MODAL ── */
+function openAddFriendModal(){
+  document.getElementById('addfriend-modal-overlay').classList.add('open');
+  document.getElementById('addfriend-search').value='';
+  document.getElementById('addfriend-results').innerHTML='';
+}
+
+function closeAddFriendModal(event){
+  if(event&&event.target!==event.currentTarget)return;
+  document.getElementById('addfriend-modal-overlay').classList.remove('open');
+}
+
+let _addFriendDebounce=null;
+function searchAddFriend(q){
+  clearTimeout(_addFriendDebounce);
+  if(!q||q.length<2){document.getElementById('addfriend-results').innerHTML='';return;}
+  _addFriendDebounce=setTimeout(async()=>{
+    try{
+      const r=await sbFetch(`/rest/v1/cc_users?username=ilike.*${encodeURIComponent(q)}*&select=id,username,display_name,avatar_url&limit=8`);
+      const rows=r.ok?await r.json():[];
+      const filtered=rows.filter(u=>u.id!==AUTH.user.id);
+      const results=document.getElementById('addfriend-results');
+      if(!filtered.length){results.innerHTML='<div class="msg-empty-list">No users found.</div>';return;}
+      results.innerHTML=filtered.map(u=>{
+        const letter=(u.display_name||u.username||'?')[0].toUpperCase();
+        const avatarHTML=u.avatar_url?`<img src="${eh(u.avatar_url)}" alt="" style="width:28px;height:28px;border-radius:50%;object-fit:cover">`:`<div style="width:28px;height:28px;border-radius:50%;background:var(--surface);display:flex;align-items:center;justify-content:center;font-size:.7rem;color:var(--conch);font-weight:700">${eh(letter)}</div>`;
+        return `<div class="addfriend-result" onclick="sendFriendRequest('${eh(u.id)}','${eh(u.display_name||u.username)}','${eh(u.avatar_url||'')}',this)">
+          ${avatarHTML}
+          <span style="font-family:var(--mono);font-size:.78rem;flex:1">${eh(u.display_name||u.username)}</span>
+          <span style="font-family:var(--mono);font-size:.65rem;color:#a78bfa">+ Add</span>
+        </div>`;
+      }).join('');
+    }catch{}
+  },300);
+}
+
+async function sendFriendRequest(toId,toUsername,toAvatar,el){
+  try{
+    /* Check if already friends */
+    const existing=_friendsList.find(f=>f.id===toId);
+    if(existing){toast({title:'Already friends!',sub:toUsername,type:'i',dur:2000});return;}
+
+    await sbFetch('/rest/v1/cc_friend_requests',{
+      method:'POST',headers:{'Prefer':'return=minimal'},
+      body:JSON.stringify({
+        from_user_id:AUTH.user.id,from_username:AUTH.user.username,from_avatar:AUTH.user.avatar_url||null,
+        to_user_id:toId,to_username:toUsername,
+        status:'pending',created_at:new Date().toISOString()
+      })
+    });
+    if(el){el.innerHTML='<span style="font-family:var(--mono);font-size:.72rem;color:var(--conch)">✓ Sent</span>';el.style.pointerEvents='none';el.style.opacity='.6';}
+    toast({title:'Friend request sent!',sub:toUsername,type:'ok',dur:2500});
+  }catch(e){toast({title:'Failed to send request',sub:'',type:'w',dur:2000});}
+}
+
+/* ── CHAT ── */
+function openChatByIndex(idx){
+  const friend=(window._friendsRenderCache||[])[idx];
+  if(friend)openChat(friend);
+}
+
+function openChat(friend){
+  _activeChatFriend=friend;
+  document.getElementById('msg-chat-empty-wrap').style.display='none';
+  document.getElementById('msg-chat-active-wrap').style.display='flex';
+
+  const letter=(friend.username||'?')[0].toUpperCase();
+  document.getElementById('chat-header-avatar').innerHTML=friend.avatar_url?`<img src="${eh(friend.avatar_url)}" alt="">`:eh(letter);
+  document.getElementById('chat-header-name').textContent=friend.username;
+
+  renderFriendsList(_friendsList); /* re-render to highlight active */
+  loadChatThread();
+
+  if(_chatPollInterval)clearInterval(_chatPollInterval);
+  _chatPollInterval=setInterval(loadChatThread,4000);
+}
+
+async function loadChatThread(){
+  if(!_activeChatFriend)return;
+  try{
+    const r=await sbFetch(`/rest/v1/cc_messages?or=(and(from_user_id.eq.${AUTH.user.id},to_user_id.eq.${_activeChatFriend.id}),and(from_user_id.eq.${_activeChatFriend.id},to_user_id.eq.${AUTH.user.id}))&select=*&order=created_at.asc&limit=100`);
+    const rows=r.ok?await r.json():[];
+    renderChatThread(rows);
+    /* Mark incoming as read */
+    const unread=rows.filter(m=>m.to_user_id===AUTH.user.id&&!m.read);
+    if(unread.length){
+      await Promise.all(unread.map(m=>sbFetch(`/rest/v1/cc_messages?id=eq.${m.id}`,{method:'PATCH',headers:{'Prefer':'return=minimal'},body:JSON.stringify({read:true})})));
+      refreshFriendsBadge();
+    }
+  }catch{}
+}
+
+function renderChatThread(messages){
+  const thread=document.getElementById('msg-thread');
+  const wasAtBottom=thread.scrollHeight-thread.scrollTop-thread.clientHeight<60;
+  if(!messages.length){
+    thread.innerHTML='<div class="msg-empty-list">No messages yet. Say hi! 👋</div>';
+    return;
+  }
+  thread.innerHTML=messages.map(m=>{
+    const isOwn=m.from_user_id===AUTH.user.id;
+    return `<div class="msg-bubble-row ${isOwn?'own':''}">
+      <div>
+        <div class="msg-bubble ${isOwn?'own':'other'}">${eh(m.text)}</div>
+        <div class="msg-time" style="text-align:${isOwn?'right':'left'}">${timeAgoShort(m.created_at)}</div>
+      </div>
+    </div>`;
+  }).join('');
+  if(wasAtBottom)thread.scrollTop=thread.scrollHeight;
+}
+
+function handleMsgKeydown(e){
+  if(e.key==='Enter'&&!e.shiftKey){
+    e.preventDefault();
+    sendChatMessage();
+  }
+}
+
+function autoGrowMsgInput(el){
+  el.style.height='auto';
+  el.style.height=Math.min(el.scrollHeight,80)+'px';
+}
+
+async function sendChatMessage(){
+  if(!_activeChatFriend)return;
+  const input=document.getElementById('msg-input');
+  const text=input.value.trim();
+  if(!text)return;
+  if(text.length>500){toast({title:'Message too long',sub:'Max 500 characters',type:'w',dur:2000});return;}
+
+  const btn=document.getElementById('msg-send-btn');
+  btn.disabled=true;
+  input.value='';
+  input.style.height='auto';
+
+  try{
+    await sbFetch('/rest/v1/cc_messages',{
+      method:'POST',headers:{'Prefer':'return=minimal'},
+      body:JSON.stringify({
+        from_user_id:AUTH.user.id,from_username:AUTH.user.username,
+        to_user_id:_activeChatFriend.id,to_username:_activeChatFriend.username,
+        text,read:false,created_at:new Date().toISOString()
+      })
+    });
+    await loadChatThread();
+  }catch(e){
+    toast({title:'Failed to send',sub:'',type:'w',dur:2000});
+    input.value=text;
+  }
+  btn.disabled=false;
+}
+
 /* ══════════════════════════════════════════════════════
    NOTIFICATION BELL — checks GitHub releases for new ones
 ══════════════════════════════════════════════════════ */
@@ -3127,6 +3572,56 @@ document.addEventListener('click',e=>{
     closeNotifDropdown();
   }
 });
+
+
+/* ══════════════════════════════════════════════════════
+   LIVE RELEASE BANNER — polls GitHub every 2 min
+══════════════════════════════════════════════════════ */
+let _liveLatestRelease=null;
+let _liveBannerDismissed=false;
+
+async function startLiveReleaseCheck(){
+  if(localStorage.getItem('cc_live_banner')==='0')return;
+  /* Get initial latest */
+  try{
+    const r=await fetch('https://api.github.com/repos/Systems-Download/Systems-Download.github.io/releases/latest');
+    if(r.ok){const d=await r.json();_liveLatestRelease=d.published_at;}
+  }catch{}
+  /* Poll every 2 minutes */
+  setInterval(async()=>{
+    if(_liveBannerDismissed)return;
+    if(localStorage.getItem('cc_live_banner')==='0')return;
+    try{
+      const r=await fetch('https://api.github.com/repos/Systems-Download/Systems-Download.github.io/releases/latest?_='+Date.now());
+      if(!r.ok)return;
+      const d=await r.json();
+      if(_liveLatestRelease&&d.published_at!==_liveLatestRelease){
+        /* New release detected! */
+        _liveLatestRelease=d.published_at;
+        showLiveBanner(d);
+      }
+    }catch{}
+  },2*60*1000);
+}
+
+function showLiveBanner(release){
+  const tag=release.tag_name||release.name||'New Release';
+  const assets=(release.assets||[]).filter(a=>a.name.toLowerCase().endsWith('.rbxm'));
+  const isConch=assets.some(a=>a.name.toLowerCase().includes('conch'));
+  const isCmdr=assets.some(a=>a.name.toLowerCase().includes('cmdr'));
+  const type=isConch&&isCmdr?'Conch & Cmdr':isConch?'Conch':isCmdr?'Cmdr':'New';
+  document.getElementById('lrb-text').innerHTML=`🆕 <strong>${type} ${tag}</strong> is now available!`;
+  const btn=document.getElementById('lrb-scroll');
+  btn.href=isConch?'#conch':'#cmdr';
+  document.getElementById('live-release-banner').classList.add('show');
+  /* Also trigger notification bell refresh */
+  if(typeof initNotifications==='function')initNotifications();
+}
+
+function closeLiveBanner(){
+  _liveBannerDismissed=true;
+  document.getElementById('live-release-banner').classList.remove('show');
+}
 
 /* ══════════════════════════════════════════════════════
    WELCOME TOUR — 5 short tooltips on first login
@@ -3371,6 +3866,71 @@ initAuth().then(()=>{
     <div class="profile-actions" style="margin-top:1.2rem">
       <button class="profile-btn profile-btn-danger" onclick="closeChangePassword()">Cancel</button>
       <button class="profile-btn" id="changepw-btn" onclick="submitChangePassword()" style="background:rgba(255,200,50,.12);color:#ffc832;border:1px solid rgba(255,200,50,.3)">🔑 Update Password</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ FAVORITES MODAL ═══════════════ -->
+<!-- ═══════════════ MESSAGES MODAL ═══════════════ -->
+<div class="msg-modal-overlay" id="msg-modal-overlay" onclick="closeMsgModal(event)">
+  <div class="msg-modal" onclick="event.stopPropagation()">
+    <!-- SIDEBAR -->
+    <div class="msg-sidebar">
+      <div class="msg-sidebar-tabs">
+        <button class="msg-tab active" id="msg-tab-friends" onclick="switchMsgTab('friends')">Friends</button>
+        <button class="msg-tab" id="msg-tab-requests" onclick="switchMsgTab('requests')">
+          Requests<span class="msg-tab-badge" id="req-tab-badge" style="display:none">0</span>
+        </button>
+      </div>
+      <div class="msg-search-wrap">
+        <input class="msg-search-input" id="friend-search" type="text" placeholder="🔍 Search friends..." oninput="filterFriendsList(this.value)">
+      </div>
+      <button class="add-friend-btn" onclick="openAddFriendModal()">➕ Add Friend</button>
+      <div class="msg-list-scroll" id="msg-list-scroll">
+        <div class="msg-empty-list">Loading...</div>
+      </div>
+    </div>
+
+    <!-- CHAT AREA -->
+    <div class="msg-chat-area">
+      <div id="msg-chat-empty-wrap" class="msg-chat-empty">
+        <div class="msg-chat-empty-icon">💬</div>
+        <div class="msg-chat-empty-text">Select a friend to start chatting</div>
+      </div>
+      <div id="msg-chat-active-wrap" style="display:none;flex:1;display:flex;flex-direction:column;min-height:0">
+        <div class="msg-chat-header">
+          <div class="msg-chat-header-avatar" id="chat-header-avatar"></div>
+          <div class="msg-chat-header-name" id="chat-header-name"></div>
+          <button class="msg-close" onclick="closeMsgModal()">✕</button>
+        </div>
+        <div class="msg-thread" id="msg-thread"></div>
+        <div class="msg-input-row">
+          <textarea class="msg-input" id="msg-input" placeholder="Type a message..." rows="1" onkeydown="handleMsgKeydown(event)" oninput="autoGrowMsgInput(this)"></textarea>
+          <button class="msg-send-btn" id="msg-send-btn" onclick="sendChatMessage()">➤</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ ADD FRIEND MODAL ═══════════════ -->
+<div class="addfriend-modal-overlay" id="addfriend-modal-overlay" onclick="closeAddFriendModal(event)">
+  <div class="addfriend-modal" onclick="event.stopPropagation()">
+    <div class="addfriend-title">➕ Add Friend</div>
+    <input class="addfriend-input" id="addfriend-search" type="text" placeholder="Search by username..." oninput="searchAddFriend(this.value)">
+    <div class="addfriend-results" id="addfriend-results"></div>
+    <button class="addfriend-close-btn" onclick="closeAddFriendModal()">Close</button>
+  </div>
+</div>
+
+<div class="fav-modal-overlay" id="fav-modal-overlay" onclick="closeFavModal(event)">
+  <div class="fav-modal" onclick="event.stopPropagation()">
+    <div class="fav-header">
+      <div class="fav-title">⭐ My Favorites</div>
+      <button class="fav-close" onclick="closeFavModal()">✕</button>
+    </div>
+    <div class="fav-list" id="fav-list">
+      <div class="fav-empty">No favorites yet. Click ☆ on any file to save it here.</div>
     </div>
   </div>
 </div>
