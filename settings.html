@@ -223,17 +223,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:cen
         <span class="toggle-slider"></span>
       </label>
     </div>
-    <div class="setting-row">
-      <div class="setting-left">
-        <div class="setting-label">Sort Files By</div>
-        <div class="setting-desc">Default sort order for file list</div>
-      </div>
-      <select class="setting-select" id="s-sort" onchange="save('cc_sort',this.value)">
-        <option value="date">📅 Date (newest first)</option>
-        <option value="name">🔤 Name (A-Z)</option>
-        <option value="size">📦 Size</option>
-      </select>
-    </div>
+
   </div>
 
   <!-- PRIVACY -->
@@ -422,7 +412,7 @@ function loadSettings(){
     if(el)el.checked=get(key)==='1';
   });
 
-  document.getElementById('s-sort').value=get('cc_sort');
+
 
   /* Accent colors */
   const grid=document.getElementById('color-grid');
