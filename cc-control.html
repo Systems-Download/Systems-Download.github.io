@@ -334,6 +334,9 @@ tr:hover td{background:rgba(255,255,255,.02)}
     <div class="sidebar-item" onclick="showSection('roles')" id="nav-roles">
       <span class="sidebar-icon">🎭</span>Roles
     </div>
+    <div class="sidebar-item" onclick="showSection('createacc')" id="nav-createacc">
+      <span class="sidebar-icon">➕</span>Create Account
+    </div>
   </div>
 
   <!-- MAIN -->
@@ -668,6 +671,64 @@ tr:hover td{background:rgba(255,255,255,.02)}
           <thead><tr><th>Username</th><th>Current Role</th><th>Assign Role</th></tr></thead>
           <tbody id="roles-tbody"><tr class="loading-row"><td colspan="3">Loading...</td></tr></tbody>
         </table>
+      </div>
+    </div>
+
+
+    <!-- CREATE ACCOUNT -->
+    <div class="section-wrap" id="section-createacc">
+      <div class="page-title">➕ Create Account</div>
+      <div class="page-sub">Manually create an account to give to someone — useful for friends who keep getting auto-banned</div>
+
+      <div class="panel" style="max-width:480px">
+        <div class="panel-header"><div class="panel-title">👤 New Account</div></div>
+        <div style="padding:1.2rem;display:flex;flex-direction:column;gap:.85rem">
+          <div>
+            <div class="modal-label" style="margin-bottom:.3rem">Username</div>
+            <input class="modal-input" id="ca-username" type="text" placeholder="username" maxlength="20">
+          </div>
+          <div>
+            <div class="modal-label" style="margin-bottom:.3rem">Password</div>
+            <div style="display:flex;gap:.5rem">
+              <input class="modal-input" id="ca-password" type="text" placeholder="password" style="flex:1">
+              <button class="btn-action btn-primary" onclick="generateCAPassword()" style="white-space:nowrap">🎲 Generate</button>
+            </div>
+          </div>
+          <div>
+            <div class="modal-label" style="margin-bottom:.3rem">Name Type</div>
+            <div style="display:flex;gap:.5rem">
+              <button class="btn-action" id="ca-type-discord" onclick="selectCANameType('discord')" style="background:rgba(88,101,242,.15);color:#8b9cf4;border-color:rgba(88,101,242,.3)">💬 Discord</button>
+              <button class="btn-action" id="ca-type-roblox" onclick="selectCANameType('roblox')" style="background:none;color:var(--muted);border-color:var(--border)">🎮 Roblox</button>
+            </div>
+          </div>
+          <div>
+            <div class="modal-label" style="margin-bottom:.3rem">Role</div>
+            <select id="ca-role" style="font-family:var(--mono);font-size:.78rem;background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:.55rem .75rem;border-radius:8px;width:100%;cursor:pointer;outline:none">
+              <option value="user">👤 User</option>
+              <option value="beta">🧪 Beta</option>
+              <option value="cocreator">🛠️ Co-Creator</option>
+              <option value="partner">🤝 Partner</option>
+              <option value="vip">⭐ VIP</option>
+            </select>
+          </div>
+          <div style="font-family:var(--mono);font-size:.72rem;color:var(--muted);background:rgba(15,244,198,.05);border:1px solid rgba(15,244,198,.15);border-radius:7px;padding:.6rem .8rem;line-height:1.6">
+            ℹ️ This account will bypass the normal IP-based duplicate-account check, since it's being created manually for someone who keeps getting auto-banned.
+          </div>
+          <button class="btn-gold" style="font-family:var(--mono);font-size:.8rem;padding:.65rem 1.4rem;border-radius:8px;cursor:pointer;font-weight:600" onclick="createAccountManually()">➕ Create Account</button>
+        </div>
+      </div>
+
+      <!-- RESULT DISPLAY -->
+      <div class="panel" id="ca-result-panel" style="max-width:480px;margin-top:1rem;display:none;border-color:rgba(15,244,198,.3)">
+        <div class="panel-header"><div class="panel-title" style="color:var(--conch)">✅ Account Created</div></div>
+        <div style="padding:1.2rem">
+          <div style="font-family:var(--mono);font-size:.78rem;color:var(--muted);margin-bottom:.5rem">Send these credentials to your friend:</div>
+          <div style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:.85rem 1rem;font-family:var(--mono);font-size:.82rem;line-height:2">
+            Username: <strong id="ca-result-user" style="color:var(--conch)"></strong><br>
+            Password: <strong id="ca-result-pass" style="color:var(--conch)"></strong>
+          </div>
+          <button class="btn-action btn-primary" style="margin-top:.75rem;width:100%" onclick="copyCAResult()">⎘ Copy Credentials</button>
+        </div>
       </div>
     </div>
 
@@ -1551,6 +1612,99 @@ async function applyRole(id,role,select){
     toast('Failed: '+e.message,'err');
     select.value=_rolesUsers.find(u=>u.id===id)?.role||'user';
   }
+}
+
+/* ── CREATE ACCOUNT ── */
+let selectedCANameType='discord';
+
+function selectCANameType(type){
+  selectedCANameType=type;
+  document.getElementById('ca-type-discord').style.background=type==='discord'?'rgba(88,101,242,.15)':'none';
+  document.getElementById('ca-type-discord').style.color=type==='discord'?'#8b9cf4':'var(--muted)';
+  document.getElementById('ca-type-discord').style.borderColor=type==='discord'?'rgba(88,101,242,.3)':'var(--border)';
+  document.getElementById('ca-type-roblox').style.background=type==='roblox'?'rgba(15,244,198,.15)':'none';
+  document.getElementById('ca-type-roblox').style.color=type==='roblox'?'var(--conch)':'var(--muted)';
+  document.getElementById('ca-type-roblox').style.borderColor=type==='roblox'?'rgba(15,244,198,.3)':'var(--border)';
+}
+
+function generateCAPassword(){
+  const chars='ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789';
+  let pw='';
+  for(let i=0;i<12;i++)pw+=chars[Math.floor(Math.random()*chars.length)];
+  document.getElementById('ca-password').value=pw;
+}
+
+async function hashPassCC(pw){
+  const buf=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(pw));
+  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+
+async function createAccountManually(){
+  const username=document.getElementById('ca-username').value.trim();
+  const password=document.getElementById('ca-password').value;
+  const role=document.getElementById('ca-role').value;
+
+  if(!username||username.length<3||username.length>20){toast('Username must be 3-20 characters','err');return;}
+  if(/[^a-zA-Z0-9_\-]/.test(username)){toast('Username: letters, numbers, _ and - only','err');return;}
+  if(!password||password.length<6){toast('Password must be at least 6 characters','err');return;}
+
+  try{
+    /* Check if username exists */
+    const checkR=await sb(`/rest/v1/cc_users?username=eq.${encodeURIComponent(username.toLowerCase())}&select=id`);
+    const existing=await checkR.json();
+    if(existing&&existing.length>0){toast('Username already taken','err');return;}
+
+    const hash=await hashPassCC(password);
+
+    const ins=await sb('/rest/v1/cc_users',{
+      method:'POST',
+      headers:{'Prefer':'return=minimal'},
+      body:JSON.stringify({
+        username:username.toLowerCase(),
+        display_name:username,
+        name_type:selectedCANameType,
+        password_hash:hash,
+        role:role,
+        ip:null, /* No IP — bypasses duplicate-account ban check */
+        ip_locked:false, /* Allows logging in from any IP, IP still gets tracked */
+        created_at:new Date().toISOString()
+      })
+    });
+
+    if(!ins.ok&&ins.status!==201&&ins.status!==204){
+      const err=await ins.json().catch(()=>({}));
+      throw new Error(err.message||'Failed to create account');
+    }
+
+    /* Show result */
+    document.getElementById('ca-result-user').textContent=username;
+    document.getElementById('ca-result-pass').textContent=password;
+    document.getElementById('ca-result-panel').style.display='block';
+    document.getElementById('ca-result-panel').scrollIntoView({behavior:'smooth',block:'nearest'});
+
+    toast('✅ Account created!','ok');
+    /* Clear form */
+    document.getElementById('ca-username').value='';
+    document.getElementById('ca-password').value='';
+    loadUsers();
+    loadRoles();
+  }catch(e){
+    toast('Failed: '+e.message,'err');
+  }
+}
+
+function copyCAResult(){
+  const user=document.getElementById('ca-result-user').textContent;
+  const pass=document.getElementById('ca-result-pass').textContent;
+  const text=`Username: ${user}\nPassword: ${pass}`;
+  navigator.clipboard.writeText(text).then(()=>{
+    toast('Copied to clipboard!','ok');
+  }).catch(()=>{
+    const ta=document.createElement('textarea');ta.value=text;document.body.appendChild(ta);ta.select();
+    try{document.execCommand('copy');}catch{}
+    document.body.removeChild(ta);
+    toast('Copied to clipboard!','ok');
+  });
 }
 
 /* ── INIT ── */
