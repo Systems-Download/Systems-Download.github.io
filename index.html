@@ -1607,10 +1607,10 @@ function t(k,...a){const v=(T[lang]||T.en)[k];return typeof v==='function'?v(...
 <!-- USER BADGE -->
     <!-- FRIENDS / MESSAGES BELL -->
     <div class="friends-bell-wrap" id="friends-bell-wrap">
-      <button class="friends-bell" id="friends-bell" onclick="openMsgModal()" title="Friends & Messages">
+      <a href="messages.html" class="friends-bell" id="friends-bell" title="Friends & Messages" style="text-decoration:none">
         💬
         <span class="friends-badge" id="friends-badge" style="display:none">0</span>
-      </button>
+      </a>
     </div>
     <!-- NOTIFICATION BELL -->
     <div class="notif-bell-wrap" id="notif-bell-wrap">
@@ -1672,6 +1672,7 @@ function t(k,...a){const v=(T[lang]||T.en)[k];return typeof v==='function'?v(...
     <a class="drawer-item" onclick="openEmailModal();closeDrawer()"><span class="drawer-icon">📧</span><span>Email Notifications</span></a>
     <a class="drawer-item" href="changelog.html" onclick="closeDrawer()"><span class="drawer-icon">📋</span><span>Changelog</span></a>
     <a class="drawer-item" href="settings.html" onclick="closeDrawer()"><span class="drawer-icon">⚙️</span><span>Settings</span></a>
+    <a class="drawer-item" href="messages.html" onclick="closeDrawer()"><span class="drawer-icon">💬</span><span>Messages</span></a>
     <a class="drawer-item" onclick="openFavModal();closeDrawer()"><span class="drawer-icon">⭐</span><span>My Favorites</span></a>
     <a class="drawer-item" href="bugreport.html" onclick="closeDrawer()"><span class="drawer-icon">🐛</span><span>Report a Bug</span></a>
     <a class="drawer-item" id="drawer-admin-link" href="cc-control.html" onclick="closeDrawer()" style="display:none;color:var(--gold);border-color:rgba(255,200,50,.15);background:rgba(255,200,50,.05)"><span class="drawer-icon">⚙️</span><span>CC Control</span></a>
