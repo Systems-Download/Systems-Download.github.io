@@ -66,10 +66,24 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:cen
 /* SAVED TOAST */
 .save-toast{position:fixed;bottom:1.5rem;right:1.5rem;font-family:var(--mono);font-size:.75rem;padding:.65rem 1.1rem;background:var(--surface2);border:1px solid rgba(15,244,198,.3);border-radius:8px;color:var(--conch);display:none;animation:tIn .25s ease;box-shadow:0 8px 24px rgba(0,0,0,.4);z-index:999}
 .save-toast.vis{display:flex;align-items:center;gap:.5rem}
+.connected-row{display:flex;align-items:center;gap:.75rem;padding:.9rem 1.4rem;border-bottom:1px solid var(--border)}
+.connected-row:last-child{border-bottom:none}
+.connected-icon{font-size:1.2rem;flex-shrink:0;width:28px;text-align:center}
+.connected-fields{display:flex;gap:.5rem;flex:1;flex-wrap:wrap}
+.connected-input{font-family:var(--mono);font-size:.76rem;padding:.4rem .7rem;border-radius:7px;border:1px solid var(--border);background:var(--surface2);color:var(--text);outline:none;transition:border-color .2s;flex:1;min-width:100px}
+.connected-input:focus{border-color:rgba(15,244,198,.35)}
+.connected-input::placeholder{color:var(--muted);opacity:.5}
+.connected-save-btn{font-family:var(--mono);font-size:.7rem;padding:.4rem .75rem;border-radius:7px;border:1px solid rgba(15,244,198,.3);background:rgba(15,244,198,.08);color:var(--conch);cursor:pointer;transition:all .2s;flex-shrink:0;white-space:nowrap}
+.connected-save-btn:hover{background:rgba(15,244,198,.16)}
+.connected-badge{font-family:var(--mono);font-size:.62rem;padding:.15rem .45rem;border-radius:4px;flex-shrink:0}
+.badge-discord{background:rgba(88,101,242,.12);color:#8b9cf4;border:1px solid rgba(88,101,242,.25)}
+.badge-roblox{background:rgba(15,244,198,.1);color:var(--conch);border:1px solid rgba(15,244,198,.2)}
+.badge-youtube{background:rgba(255,60,60,.1);color:#ff3c3c;border:1px solid rgba(255,60,60,.2)}
 @keyframes tIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 
 @media(max-width:600px){.page{padding:5rem 1rem 3rem}.setting-row{flex-direction:column;align-items:flex-start;gap:.75rem}}
 </style>
+<script src="i18n.js"></script>
 </head>
 <body>
 
@@ -144,7 +158,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:cen
         <div class="setting-label">Display Language</div>
         <div class="setting-desc">Language used for the interface</div>
       </div>
-      <select class="setting-select" id="s-lang" onchange="save('cc_lang',this.value)">
+      <select class="setting-select" id="s-lang" onchange="save('cc_lang',this.value);if(typeof applyTranslations!=='undefined')applyTranslations()">
         <option value="en">🇬🇧 English</option>
         <option value="de">🇩🇪 Deutsch</option>
         <option value="es">🇪🇸 Español</option>
@@ -235,20 +249,70 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:cen
     <div class="setting-row">
       <div class="setting-left">
         <div class="setting-label">Show Online Status</div>
-        <div class="setting-desc">Let others see when you were last active</div>
+        <div class="setting-desc">Let others see when you were last active on your profile</div>
       </div>
       <label class="toggle-wrap">
-        <input type="checkbox" class="toggle-input" id="s-online-status" onchange="save('cc_show_online',this.checked?'1':'0')">
+        <input type="checkbox" class="toggle-input" id="s-online-status" onchange="save('cc_show_online',this.checked?'1':'0');applyPrivacy()">
         <span class="toggle-slider"></span>
       </label>
     </div>
     <div class="setting-row">
       <div class="setting-left">
         <div class="setting-label">Public Profile</div>
-        <div class="setting-desc">Allow others to view your profile page</div>
+        <div class="setting-desc">Allow others to view your profile page and stats</div>
       </div>
       <label class="toggle-wrap">
-        <input type="checkbox" class="toggle-input" id="s-public-profile" onchange="save('cc_public_profile',this.checked?'1':'0')">
+        <input type="checkbox" class="toggle-input" id="s-public-profile" onchange="save('cc_public_profile',this.checked?'1':'0');applyPrivacy()">
+        <span class="toggle-slider"></span>
+      </label>
+    </div>
+    <div class="setting-row">
+      <div class="setting-left">
+        <div class="setting-label">Allow Friend Requests</div>
+        <div class="setting-desc">Others can send you friend requests</div>
+      </div>
+      <label class="toggle-wrap">
+        <input type="checkbox" class="toggle-input" id="s-allow-friend-req" onchange="save('cc_allow_friend_req',this.checked?'1':'0')">
+        <span class="toggle-slider"></span>
+      </label>
+    </div>
+    <div class="setting-row">
+      <div class="setting-left">
+        <div class="setting-label">Allow Direct Messages</div>
+        <div class="setting-desc">Only friends can message you when disabled</div>
+      </div>
+      <label class="toggle-wrap">
+        <input type="checkbox" class="toggle-input" id="s-allow-dm" onchange="save('cc_allow_dm',this.checked?'1':'0')">
+        <span class="toggle-slider"></span>
+      </label>
+    </div>
+    <div class="setting-row">
+      <div class="setting-left">
+        <div class="setting-label">Show in Members List</div>
+        <div class="setting-desc">Appear in the public members grid on profile.html</div>
+      </div>
+      <label class="toggle-wrap">
+        <input type="checkbox" class="toggle-input" id="s-show-in-list" onchange="save('cc_show_in_list',this.checked?'1':'0');applyPrivacy()">
+        <span class="toggle-slider"></span>
+      </label>
+    </div>
+    <div class="setting-row">
+      <div class="setting-left">
+        <div class="setting-label">Show Download History</div>
+        <div class="setting-desc">Let others see which files you've downloaded on your profile</div>
+      </div>
+      <label class="toggle-wrap">
+        <input type="checkbox" class="toggle-input" id="s-show-dl-history" onchange="save('cc_show_dl_history',this.checked?'1':'0')">
+        <span class="toggle-slider"></span>
+      </label>
+    </div>
+    <div class="setting-row">
+      <div class="setting-left">
+        <div class="setting-label">Show Follower Count</div>
+        <div class="setting-desc">Display your follower and following count on your profile</div>
+      </div>
+      <label class="toggle-wrap">
+        <input type="checkbox" class="toggle-input" id="s-show-followers" onchange="save('cc_show_followers',this.checked?'1':'0')">
         <span class="toggle-slider"></span>
       </label>
     </div>
@@ -266,7 +330,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:cen
         <div class="setting-desc">Show a subtle particle trail following your cursor</div>
       </div>
       <label class="toggle-wrap">
-        <input type="checkbox" class="toggle-input" id="s-cursor-trail" onchange="save('cc_cursor_trail',this.checked?'1':'0')">
+        <input type="checkbox" class="toggle-input" id="s-cursor-trail" onchange="save('cc_cursor_trail',this.checked?'1':'0');applyCursorTrail(this.checked)">
         <span class="toggle-slider"></span>
       </label>
     </div>
@@ -290,6 +354,54 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:cen
         <span class="toggle-slider"></span>
       </label>
     </div>
+  </div>
+
+  <!-- CONNECTED ACCOUNTS -->
+  <div class="settings-section" id="connected-section">
+    <div class="settings-section-header">
+      <span class="settings-section-icon">🔗</span>
+      <span class="settings-section-title">Connected Accounts</span>
+    </div>
+
+    <!-- DISCORD -->
+    <div class="connected-row">
+      <div class="connected-icon">💬</div>
+      <div style="flex:1;min-width:0">
+        <div class="setting-label" style="margin-bottom:.4rem">Discord <span class="connected-badge badge-discord">Discord</span></div>
+        <div class="connected-fields">
+          <input class="connected-input" id="ca-discord-name" type="text" placeholder="Username e.g. max#1234" maxlength="50">
+          <input class="connected-input" id="ca-discord-link" type="url" placeholder="Profile link (optional)" maxlength="200">
+        </div>
+      </div>
+      <button class="connected-save-btn" onclick="saveConnected('discord')">Save</button>
+    </div>
+
+    <!-- ROBLOX -->
+    <div class="connected-row">
+      <div class="connected-icon">🎮</div>
+      <div style="flex:1;min-width:0">
+        <div class="setting-label" style="margin-bottom:.4rem">Roblox <span class="connected-badge badge-roblox">Roblox</span></div>
+        <div class="connected-fields">
+          <input class="connected-input" id="ca-roblox-name" type="text" placeholder="Roblox username" maxlength="50">
+          <input class="connected-input" id="ca-roblox-link" type="url" placeholder="Profile link (optional)" maxlength="200">
+        </div>
+      </div>
+      <button class="connected-save-btn" onclick="saveConnected('roblox')">Save</button>
+    </div>
+
+    <!-- YOUTUBE (only for max) -->
+    <div class="connected-row" id="ca-youtube-row" style="display:none">
+      <div class="connected-icon">▶️</div>
+      <div style="flex:1;min-width:0">
+        <div class="setting-label" style="margin-bottom:.4rem">YouTube <span class="connected-badge badge-youtube">YouTube</span></div>
+        <div class="connected-fields">
+          <input class="connected-input" id="ca-youtube-name" type="text" placeholder="Channel name" maxlength="50">
+          <input class="connected-input" id="ca-youtube-link" type="url" placeholder="Channel link" maxlength="200">
+        </div>
+      </div>
+      <button class="connected-save-btn" onclick="saveConnected('youtube')">Save</button>
+    </div>
+
   </div>
 
   <!-- DANGER ZONE -->
@@ -338,6 +450,11 @@ const DEFAULTS={
   cc_show_beta:'1',
   cc_sort:'date',
   cc_show_online:'1',
+  cc_allow_friend_req:'1',
+  cc_allow_dm:'1',
+  cc_show_in_list:'1',
+  cc_show_dl_history:'1',
+  cc_show_followers:'1',
   cc_public_profile:'1',
   cc_cursor_trail:'0',
   cc_easter_eggs:'1',
@@ -383,6 +500,88 @@ function applyAnimations(){
   }
 }
 
+function applyCursorTrail(on){
+  if(on){
+    if(!document.querySelector('script[src="cursor-trail.js"]')){
+      const s=document.createElement('script');s.src='cursor-trail.js';document.body.appendChild(s);
+    }
+  }
+}
+
+/* ── APPLY PRIVACY ── */
+function applyPrivacy(){
+  /* Write privacy prefs to Supabase if logged in */
+  try{
+    const auth=JSON.parse(localStorage.getItem('cc_auth')||'{}');
+    if(!auth.id)return;
+    const SB_URL='https://rmdkoauibmzhgnvrwhfd.supabase.co';
+    const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJtZGtvYXVpYm16aGdudnJ3aGZkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyNjg2MDksImV4cCI6MjA5Mzg0NDYwOX0.lu6T00f9y9-Q8HhVag-MGjJz6bTlJrYUwC7AApIxaFw';
+    fetch(`${SB_URL}/rest/v1/cc_users?id=eq.${auth.id}`,{
+      method:'PATCH',
+      headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},
+      body:JSON.stringify({
+        privacy_show_online:get('cc_show_online')==='1',
+        privacy_public_profile:get('cc_public_profile')==='1',
+        privacy_show_in_list:get('cc_show_in_list')==='1',
+      })
+    }).catch(()=>{});
+  }catch{}
+}
+
+/* ── CONNECTED ACCOUNTS ── */
+const SB_URL_CA='https://rmdkoauibmzhgnvrwhfd.supabase.co';
+const SB_KEY_CA='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJtZGtvYXVpYm16aGdudnJ3aGZkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyNjg2MDksImV4cCI6MjA5Mzg0NDYwOX0.lu6T00f9y9-Q8HhVag-MGjJz6bTlJrYUwC7AApIxaFw';
+
+async function loadConnectedAccounts(){
+  try{
+    const auth=JSON.parse(localStorage.getItem('cc_auth')||'{}');
+    if(!auth.id)return;
+
+    /* Show YouTube only for max */
+    if((auth.rawUsername||auth.username||'').toLowerCase()==='max'){
+      document.getElementById('ca-youtube-row').style.display='flex';
+    }
+
+    const r=await fetch(`${SB_URL_CA}/rest/v1/cc_users?id=eq.${auth.id}&select=connected_discord_name,connected_discord_link,connected_roblox_name,connected_roblox_link,connected_youtube_name,connected_youtube_link`,{
+      headers:{'apikey':SB_KEY_CA,'Authorization':'Bearer '+SB_KEY_CA}
+    });
+    if(!r.ok)return;
+    const rows=await r.json();
+    if(!rows.length)return;
+    const u=rows[0];
+    if(u.connected_discord_name)document.getElementById('ca-discord-name').value=u.connected_discord_name;
+    if(u.connected_discord_link)document.getElementById('ca-discord-link').value=u.connected_discord_link;
+    if(u.connected_roblox_name)document.getElementById('ca-roblox-name').value=u.connected_roblox_name;
+    if(u.connected_roblox_link)document.getElementById('ca-roblox-link').value=u.connected_roblox_link;
+    if(u.connected_youtube_name)document.getElementById('ca-youtube-name').value=u.connected_youtube_name;
+    if(u.connected_youtube_link)document.getElementById('ca-youtube-link').value=u.connected_youtube_link;
+  }catch{}
+}
+
+async function saveConnected(platform){
+  try{
+    const auth=JSON.parse(localStorage.getItem('cc_auth')||'{}');
+    if(!auth.id){showSaveToast();return;}
+    const name=document.getElementById(`ca-${platform}-name`).value.trim();
+    const link=document.getElementById(`ca-${platform}-link`).value.trim();
+    const payload={};
+    payload[`connected_${platform}_name`]=name||null;
+    payload[`connected_${platform}_link`]=link||null;
+    const r=await fetch(`${SB_URL_CA}/rest/v1/cc_users?id=eq.${auth.id}`,{
+      method:'PATCH',
+      headers:{'apikey':SB_KEY_CA,'Authorization':'Bearer '+SB_KEY_CA,'Content-Type':'application/json','Prefer':'return=minimal'},
+      body:JSON.stringify(payload)
+    });
+    if(r.ok||r.status===204){
+      const t=document.getElementById('save-toast');
+      t.innerHTML='✓ '+platform.charAt(0).toUpperCase()+platform.slice(1)+' saved';
+      t.classList.add('vis');
+      clearTimeout(t._timeout);
+      t._timeout=setTimeout(()=>t.classList.remove('vis'),2000);
+    }
+  }catch{}
+}
+
 /* ── LOAD ALL SETTINGS ── */
 function loadSettings(){
   /* Theme */
@@ -402,6 +601,11 @@ function loadSettings(){
     's-confetti':'cc_confetti',
     's-show-beta':'cc_show_beta',
     's-online-status':'cc_show_online',
+    's-allow-friend-req':'cc_allow_friend_req',
+    's-allow-dm':'cc_allow_dm',
+    's-show-in-list':'cc_show_in_list',
+    's-show-dl-history':'cc_show_dl_history',
+    's-show-followers':'cc_show_followers',
     's-public-profile':'cc_public_profile',
     's-cursor-trail':'cc_cursor_trail',
     's-easter-eggs':'cc_easter_eggs',
@@ -440,6 +644,7 @@ function resetAll(){
   if(!confirm('Reset all settings to defaults?'))return;
   Object.entries(DEFAULTS).forEach(([key,val])=>localStorage.setItem(key,val));
   loadSettings();
+loadConnectedAccounts();
   showSaveToast();
 }
 
@@ -462,5 +667,6 @@ window.matchMedia('(prefers-color-scheme:light)').addEventListener('change',()=>
   if(get('cc_system_theme')==='1')applyTheme();
 });
 </script>
+<script src="cursor-trail.js"></script>
 </body>
 </html>
