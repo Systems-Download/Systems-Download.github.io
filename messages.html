@@ -640,7 +640,7 @@ function renderMsgs(rows){
       ${rHTML}
       <div class="mfooter">
         <span class="mtime">${hhmm(m.created_at)}</span>
-        ${own?`<span class="mtick">${m.read?'✓✓':'✓'}</span>`:''}
+        ${own?`<span class="mtick" style="color:${m.read?'var(--conch)':'var(--muted)'}">${m.read?'✓✓':'✓'}</span>`:''}
       </div>
     </div>`;
   });
