@@ -751,6 +751,7 @@
   }
 })();
 </script>
+<script src="i18n.js"></script>
 </head>
 <body>
 
@@ -761,8 +762,8 @@
 const CONFIG={
   GITHUB_REPO:'Systems-Download/Systems-Download.github.io',
   MAX_RELEASES:20,DEBUG:false,
-  NEXT_RELEASE_CONCH:'NONE',
-  NEXT_RELEASE_CMDR:'NONE',
+  NEXT_RELEASE_CONCH:'2026-06-01T15:45:00Z',
+  NEXT_RELEASE_CMDR:'2026-07-10T15:45:00Z',
   /* ── SUPABASE ── */
   SB_URL:'https://rmdkoauibmzhgnvrwhfd.supabase.co',
   SB_KEY:'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJtZGtvYXVpYm16aGdudnJ3aGZkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyNjg2MDksImV4cCI6MjA5Mzg0NDYwOX0.lu6T00f9y9-Q8HhVag-MGjJz6bTlJrYUwC7AApIxaFw',
@@ -3536,7 +3537,34 @@ let _notifs=[];
 async function initNotifications(){
   if(!AUTH.user)return;
   document.getElementById('notif-bell-wrap').classList.add('vis');
-  await Promise.all([checkNewReleases(),checkAdminMessages()]);
+  await Promise.all([checkNewReleases(),checkAdminMessages(),checkFriendRequestNotifs()]);
+}
+
+async function checkFriendRequestNotifs(){
+  try{
+    const seenKey='cc_seen_freqs_'+(AUTH.user.id||'anon');
+    const seen=JSON.parse(localStorage.getItem(seenKey)||'[]');
+
+    const r=await sbFetch(`/rest/v1/cc_friend_requests?to_user_id=eq.${AUTH.user.id}&status=eq.pending&select=*&order=created_at.desc&limit=10`);
+    if(!r.ok)return;
+    const rows=await r.json();
+    if(!rows||!rows.length)return;
+
+    const freqNotifs=rows.map(req=>({
+      id:'freq-'+req.id,
+      icon:'👤',
+      title:`${req.from_username} sent you a friend request`,
+      desc:'Go to Messages to accept or decline.',
+      time:req.created_at,
+      unread:!seen.includes('freq-'+req.id),
+      url:'messages.html',
+      source:'freq'
+    }));
+
+    _notifs=[..._notifs,...freqNotifs].sort((a,b)=>new Date(b.time)-new Date(a.time));
+    renderNotifs();
+    updateBadge();
+  }catch{}
 }
 
 async function checkAdminMessages(){
@@ -3624,8 +3652,8 @@ function renderNotifs(){
 
 function openNotif(url){
   if(url){
-    const el=document.querySelector(url);
-    if(el){el.scrollIntoView({behavior:'smooth',block:'start'});}
+    if(url.startsWith('messages')){window.location.href=url;}
+    else{const el=document.querySelector(url);if(el)el.scrollIntoView({behavior:'smooth',block:'start'});}
   }
   closeNotifDropdown();
 }
@@ -3658,13 +3686,13 @@ function closeNotifDropdown(){
 function markAllRead(){
   const lastSeenKey='cc_last_seen_release_'+(AUTH.user.id||'anon');
   const seenKey='cc_seen_msgs_'+(AUTH.user.id||'anon');
+  const freqKey='cc_seen_freqs_'+(AUTH.user.id||'anon');
   const releaseNotifs=_notifs.filter(n=>!n.source);
   const adminNotifs=_notifs.filter(n=>n.source==='admin');
+  const freqNotifs=_notifs.filter(n=>n.source==='freq');
   if(releaseNotifs.length)localStorage.setItem(lastSeenKey,releaseNotifs[0].time);
-  if(adminNotifs.length){
-    const seen=adminNotifs.map(n=>n.id);
-    localStorage.setItem(seenKey,JSON.stringify(seen));
-  }
+  if(adminNotifs.length)localStorage.setItem(seenKey,JSON.stringify(adminNotifs.map(n=>n.id)));
+  if(freqNotifs.length)localStorage.setItem(freqKey,JSON.stringify(freqNotifs.map(n=>n.id)));
   _notifs=_notifs.map(n=>({...n,unread:false}));
   renderNotifs();
   updateBadge();
@@ -4058,5 +4086,6 @@ initAuth().then(()=>{
   </div>
 </div>
 
+<script src="cursor-trail.js"></script>
 </body>
 </html>
