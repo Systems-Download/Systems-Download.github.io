@@ -480,7 +480,7 @@ function filterSidebar(q){
 async function checkOnline(){
   if(!friends.length)return;
   try{
-    const ids=friends.map(f=>`'${f.id}'`).join(',');
+    const ids=friends.map(f=>f.id).join(',');
     if(!ids)return;
     const r=await sb(`/rest/v1/cc_users?id=in.(${ids})&select=id,last_login`);
     if(!r.ok)return;
