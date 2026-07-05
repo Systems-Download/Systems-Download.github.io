@@ -337,6 +337,18 @@ tr:hover td{background:rgba(255,255,255,.02)}
     <div class="sidebar-item" onclick="showSection('createacc')" id="nav-createacc">
       <span class="sidebar-icon">➕</span>Create Account
     </div>
+    <div class="sidebar-item" onclick="showSection('ipstats')" id="nav-ipstats">
+      <span class="sidebar-icon">🌐</span>IP Statistics
+    </div>
+    <div class="sidebar-item" onclick="showSection('dashboard')" id="nav-dashboard">
+      <span class="sidebar-icon">📊</span>Live Dashboard
+    </div>
+    <div class="sidebar-item" onclick="showSection('dlstats')" id="nav-dlstats">
+      <span class="sidebar-icon">📈</span>Download Stats
+    </div>
+    <div class="sidebar-item" onclick="showSection('bulk')" id="nav-bulk">
+      <span class="sidebar-icon">⚡</span>Bulk Actions
+    </div>
   </div>
 
   <!-- MAIN -->
@@ -732,6 +744,258 @@ tr:hover td{background:rgba(255,255,255,.02)}
       </div>
     </div>
 
+
+    <!-- BULK ACTIONS -->
+    <div class="section-wrap" id="section-bulk">
+      <div class="page-title">⚡ Bulk Actions</div>
+      <div class="page-sub">Select multiple users and apply actions to all of them at once</div>
+
+      <!-- FILTERS + SEARCH -->
+      <div class="panel" style="margin-bottom:1.2rem">
+        <div class="panel-header">
+          <div class="panel-title">👥 Select Users</div>
+          <div style="display:flex;gap:.5rem;align-items:center;flex-wrap:wrap">
+            <input class="modal-input" id="bulk-search" type="text" placeholder="🔍 Filter by username..." oninput="filterBulkUsers(this.value)" style="width:200px;padding:.35rem .75rem;font-size:.75rem">
+            <select id="bulk-role-filter" onchange="filterBulkUsers(document.getElementById('bulk-search').value)" style="font-family:var(--mono);font-size:.72rem;background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:.35rem .6rem;border-radius:6px;outline:none">
+              <option value="">All Roles</option>
+              <option value="user">👤 User</option>
+              <option value="beta">🧪 Beta</option>
+              <option value="cocreator">🛠️ Co-Creator</option>
+              <option value="partner">🤝 Partner</option>
+              <option value="vip">⭐ VIP</option>
+              <option value="admin">👑 Admin</option>
+            </select>
+            <button class="btn-action btn-primary" onclick="bulkSelectAll()">Select All</button>
+            <button class="btn-action" onclick="bulkSelectNone()">Deselect All</button>
+          </div>
+        </div>
+        <div style="max-height:320px;overflow-y:auto">
+          <table>
+            <thead><tr>
+              <th style="width:36px"><input type="checkbox" id="bulk-check-all" onchange="bulkToggleAll(this.checked)" style="cursor:pointer"></th>
+              <th>Username</th><th>Role</th><th>Status</th><th>Created</th>
+            </tr></thead>
+            <tbody id="bulk-tbody"><tr class="loading-row"><td colspan="5">Loading...</td></tr></tbody>
+          </table>
+        </div>
+        <div style="padding:.6rem 1rem;border-top:1px solid var(--border);font-family:var(--mono);font-size:.72rem;color:var(--muted)">
+          <span id="bulk-selected-count">0</span> users selected
+        </div>
+      </div>
+
+      <!-- ACTIONS -->
+      <div class="panel">
+        <div class="panel-header"><div class="panel-title">🎯 Apply Action</div></div>
+        <div style="padding:1.1rem;display:flex;flex-direction:column;gap:.85rem">
+
+          <!-- Set Role -->
+          <div style="display:flex;align-items:center;gap:.75rem;flex-wrap:wrap;padding-bottom:.85rem;border-bottom:1px solid var(--border)">
+            <div style="font-family:var(--mono);font-size:.78rem;color:var(--text);min-width:120px">🎭 Set Role</div>
+            <select id="bulk-role-select" style="font-family:var(--mono);font-size:.75rem;background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:.4rem .7rem;border-radius:7px;outline:none;cursor:pointer">
+              <option value="user">👤 User</option>
+              <option value="beta">🧪 Beta</option>
+              <option value="cocreator">🛠️ Co-Creator</option>
+              <option value="partner">🤝 Partner</option>
+              <option value="vip">⭐ VIP</option>
+            </select>
+            <button class="btn-action btn-primary" onclick="bulkSetRole()">Apply to Selected</button>
+          </div>
+
+          <!-- Freeze -->
+          <div style="display:flex;align-items:center;gap:.75rem;flex-wrap:wrap;padding-bottom:.85rem;border-bottom:1px solid var(--border)">
+            <div style="font-family:var(--mono);font-size:.78rem;color:var(--text);min-width:120px">🧊 Freeze</div>
+            <input class="modal-input" id="bulk-freeze-reason" type="text" placeholder="Freeze reason..." style="flex:1;min-width:160px;padding:.4rem .7rem;font-size:.75rem">
+            <button class="btn-action" style="border-color:rgba(100,160,255,.3);color:#64a0ff;background:rgba(100,160,255,.08)" onclick="bulkFreeze()">Freeze Selected</button>
+          </div>
+
+          <!-- Ban -->
+          <div style="display:flex;align-items:center;gap:.75rem;flex-wrap:wrap;padding-bottom:.85rem;border-bottom:1px solid var(--border)">
+            <div style="font-family:var(--mono);font-size:.78rem;color:var(--text);min-width:120px">🚫 Ban</div>
+            <input class="modal-input" id="bulk-ban-reason" type="text" placeholder="Ban reason..." style="flex:1;min-width:160px;padding:.4rem .7rem;font-size:.75rem">
+            <button class="btn-action btn-delete" onclick="bulkBan()">Ban Selected</button>
+          </div>
+
+          <!-- Unban / Unfreeze -->
+          <div style="display:flex;align-items:center;gap:.75rem;flex-wrap:wrap">
+            <div style="font-family:var(--mono);font-size:.78rem;color:var(--text);min-width:120px">✅ Restore</div>
+            <button class="btn-action" style="border-color:rgba(15,244,198,.3);color:var(--conch);background:rgba(15,244,198,.08)" onclick="bulkUnfreeze()">Unfreeze Selected</button>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- PROGRESS -->
+      <div id="bulk-progress" style="display:none;margin-top:1rem">
+        <div class="panel" style="padding:1rem">
+          <div style="font-family:var(--mono);font-size:.75rem;color:var(--muted);margin-bottom:.6rem" id="bulk-progress-text">Processing...</div>
+          <div style="height:6px;background:var(--surface2);border-radius:3px;overflow:hidden">
+            <div id="bulk-progress-bar" style="height:100%;width:0%;background:var(--conch);border-radius:3px;transition:width .2s"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DOWNLOAD STATS -->
+    <div class="section-wrap" id="section-dlstats">
+      <div class="page-title">📈 Download Statistics</div>
+      <div class="page-sub">Track which files are being downloaded from GitHub Releases</div>
+
+      <!-- STAT CARDS -->
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1rem;margin-bottom:1.5rem">
+        <div class="panel" style="padding:1.1rem;text-align:center">
+          <div style="font-size:1.9rem;font-weight:800;color:var(--conch);font-family:var(--mono)" id="dl-total">—</div>
+          <div style="font-family:var(--mono);font-size:.68rem;color:var(--muted);margin-top:.3rem">Total Downloads</div>
+        </div>
+        <div class="panel" style="padding:1.1rem;text-align:center">
+          <div style="font-size:1.9rem;font-weight:800;color:var(--cmdr);font-family:var(--mono)" id="dl-releases">—</div>
+          <div style="font-family:var(--mono);font-size:.68rem;color:var(--muted);margin-top:.3rem">Total Releases</div>
+        </div>
+        <div class="panel" style="padding:1.1rem;text-align:center">
+          <div style="font-size:1.9rem;font-weight:800;color:var(--gold);font-family:var(--mono)" id="dl-conch-total">—</div>
+          <div style="font-family:var(--mono);font-size:.68rem;color:var(--muted);margin-top:.3rem">Conch Downloads</div>
+        </div>
+        <div class="panel" style="padding:1.1rem;text-align:center">
+          <div style="font-size:1.9rem;font-weight:800;color:var(--purple);font-family:var(--mono)" id="dl-cmdr-total">—</div>
+          <div style="font-family:var(--mono);font-size:.68rem;color:var(--muted);margin-top:.3rem">Cmdr Downloads</div>
+        </div>
+      </div>
+
+      <!-- CHART -->
+      <div class="panel" style="margin-bottom:1.5rem">
+        <div class="panel-header">
+          <div class="panel-title">📊 Downloads per Release</div>
+          <button class="btn-action btn-primary" onclick="loadDLStats()">↺ Refresh</button>
+        </div>
+        <div style="padding:1rem;overflow-x:auto">
+          <div id="dl-chart" style="min-height:200px;display:flex;align-items:flex-end;gap:6px;padding:0 .5rem"></div>
+          <div id="dl-chart-labels" style="display:flex;gap:6px;margin-top:.4rem;padding:0 .5rem;overflow-x:auto"></div>
+        </div>
+      </div>
+
+      <!-- TOP FILES TABLE -->
+      <div class="panel">
+        <div class="panel-header"><div class="panel-title">🏆 Top Files by Downloads</div></div>
+        <table>
+          <thead><tr><th>File</th><th>Version</th><th>Type</th><th>Downloads</th><th>Size</th></tr></thead>
+          <tbody id="dl-table"><tr class="loading-row"><td colspan="5">Loading from GitHub...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- LIVE DASHBOARD -->
+    <div class="section-wrap" id="section-dashboard">
+      <div class="page-title">📊 Live Dashboard</div>
+      <div class="page-sub">Real-time overview of site activity <span id="dash-last-updated" style="color:var(--muted);font-size:.7rem"></span></div>
+
+      <!-- STAT CARDS -->
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1rem;margin-bottom:1.5rem">
+        <div class="panel" style="padding:1.1rem;text-align:center">
+          <div style="font-size:1.9rem;font-weight:800;color:var(--conch);font-family:var(--mono)" id="dash-total-users">—</div>
+          <div style="font-family:var(--mono);font-size:.68rem;color:var(--muted);margin-top:.3rem">Total Users</div>
+        </div>
+        <div class="panel" style="padding:1.1rem;text-align:center">
+          <div style="font-size:1.9rem;font-weight:800;color:#34d399;font-family:var(--mono)" id="dash-online-users">—</div>
+          <div style="font-family:var(--mono);font-size:.68rem;color:var(--muted);margin-top:.3rem">Online (last 5 min)</div>
+        </div>
+        <div class="panel" style="padding:1.1rem;text-align:center">
+          <div style="font-size:1.9rem;font-weight:800;color:var(--gold);font-family:var(--mono)" id="dash-today-logins">—</div>
+          <div style="font-family:var(--mono);font-size:.68rem;color:var(--muted);margin-top:.3rem">Logins Today</div>
+        </div>
+        <div class="panel" style="padding:1.1rem;text-align:center">
+          <div style="font-size:1.9rem;font-weight:800;color:var(--cmdr);font-family:var(--mono)" id="dash-total-bans">—</div>
+          <div style="font-family:var(--mono);font-size:.68rem;color:var(--muted);margin-top:.3rem">Total Bans</div>
+        </div>
+        <div class="panel" style="padding:1.1rem;text-align:center">
+          <div style="font-size:1.9rem;font-weight:800;color:var(--purple);font-family:var(--mono)" id="dash-total-reports">—</div>
+          <div style="font-family:var(--mono);font-size:.68rem;color:var(--muted);margin-top:.3rem">Bug Reports</div>
+        </div>
+        <div class="panel" style="padding:1.1rem;text-align:center">
+          <div style="font-size:1.9rem;font-weight:800;color:#60a5fa;font-family:var(--mono)" id="dash-total-messages">—</div>
+          <div style="font-family:var(--mono);font-size:.68rem;color:var(--muted);margin-top:.3rem">Total Messages</div>
+        </div>
+      </div>
+
+      <!-- ROLE DISTRIBUTION -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.5rem">
+        <div class="panel">
+          <div class="panel-header"><div class="panel-title">👥 Role Distribution</div></div>
+          <div style="padding:.85rem 1rem" id="dash-roles"></div>
+        </div>
+        <div class="panel">
+          <div class="panel-header"><div class="panel-title">📅 New Users (last 7 days)</div></div>
+          <div style="padding:.85rem 1rem" id="dash-new-users"></div>
+        </div>
+      </div>
+
+      <!-- ONLINE NOW -->
+      <div class="panel" style="margin-bottom:1.5rem">
+        <div class="panel-header">
+          <div class="panel-title">🟢 Online Now</div>
+          <button class="btn-action btn-primary" onclick="loadDashboard()">↺ Refresh</button>
+        </div>
+        <div id="dash-online-list" style="padding:.5rem .85rem 1rem;display:flex;flex-wrap:wrap;gap:.5rem">
+          <span style="font-family:var(--mono);font-size:.75rem;color:var(--muted)">Loading...</span>
+        </div>
+      </div>
+
+      <!-- RECENT ACTIVITY -->
+      <div class="panel">
+        <div class="panel-header"><div class="panel-title">🕐 Recent Logins</div></div>
+        <table>
+          <thead><tr><th>User</th><th>Role</th><th>Last Login</th><th>IP</th></tr></thead>
+          <tbody id="dash-recent-tbody"><tr class="loading-row"><td colspan="4">Loading...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- IP STATISTICS -->
+    <div class="section-wrap" id="section-ipstats">
+      <div class="page-title">🌐 IP Statistics</div>
+      <div class="page-sub">Overview of IP addresses used to access the site</div>
+
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1rem;margin-bottom:1.5rem" id="ip-stat-cards">
+        <div class="panel" style="padding:1.2rem;text-align:center">
+          <div style="font-size:1.8rem;font-weight:800;color:var(--conch);font-family:var(--mono)" id="ip-unique-count">—</div>
+          <div style="font-family:var(--mono);font-size:.7rem;color:var(--muted);margin-top:.3rem">Unique IPs</div>
+        </div>
+        <div class="panel" style="padding:1.2rem;text-align:center">
+          <div style="font-size:1.8rem;font-weight:800;color:var(--gold);font-family:var(--mono)" id="ip-null-count">—</div>
+          <div style="font-family:var(--mono);font-size:.7rem;color:var(--muted);margin-top:.3rem">No IP (manual accounts)</div>
+        </div>
+        <div class="panel" style="padding:1.2rem;text-align:center">
+          <div style="font-size:1.8rem;font-weight:800;color:var(--cmdr);font-family:var(--mono)" id="ip-banned-count">—</div>
+          <div style="font-family:var(--mono);font-size:.7rem;color:var(--muted);margin-top:.3rem">Banned IPs</div>
+        </div>
+        <div class="panel" style="padding:1.2rem;text-align:center">
+          <div style="font-size:1.8rem;font-weight:800;color:var(--purple);font-family:var(--mono)" id="ip-multi-count">—</div>
+          <div style="font-family:var(--mono);font-size:.7rem;color:var(--muted);margin-top:.3rem">IPs with multiple accounts</div>
+        </div>
+      </div>
+
+      <!-- TOP IPs TABLE -->
+      <div class="panel" style="margin-bottom:1.5rem">
+        <div class="panel-header">
+          <div class="panel-title">🔝 Top IPs by Account Count</div>
+          <button class="btn-action btn-primary" onclick="loadIPStats()">↺ Refresh</button>
+        </div>
+        <table>
+          <thead><tr><th>IP Address</th><th>Accounts</th><th>Usernames</th><th>Status</th><th>Actions</th></tr></thead>
+          <tbody id="ip-top-tbody"><tr class="loading-row"><td colspan="5">Loading...</td></tr></tbody>
+        </table>
+      </div>
+
+      <!-- RECENT LOGINS TABLE -->
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title">🕐 Recent Logins by IP</div>
+        </div>
+        <table>
+          <thead><tr><th>IP Address</th><th>Username</th><th>Last Login</th><th>Actions</th></tr></thead>
+          <tbody id="ip-recent-tbody"><tr class="loading-row"><td colspan="4">Loading...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
   </div><!-- end .main -->
 </div><!-- end .layout -->
 
@@ -899,7 +1163,7 @@ async function checkAccess(){
 
 /* ── LOAD ALL ── */
 async function loadAll(){
-  await Promise.all([loadUsers(),loadBans(),loadBugs(),loadSettings(),loadAnnouncements(),loadFrozen(),loadNotifications(),loadRoles()]);
+  await Promise.all([loadUsers(),loadBans(),loadBugs(),loadSettings(),loadAnnouncements(),loadFrozen(),loadNotifications(),loadRoles(),loadIPStats(),loadDashboard(),loadDLStats(),loadBulkUsers()]);
   updateStats();
 }
 
@@ -1189,6 +1453,13 @@ function updateStats(){/* Already done in loadUsers/loadBans/loadBugs */}
 
 /* ── SECTION NAV ── */
 function showSection(name){
+  if(name==='dashboard'){
+    loadDashboard();
+    if(dashInterval)clearInterval(dashInterval);
+    dashInterval=setInterval(loadDashboard,30000);
+  }else{
+    if(dashInterval){clearInterval(dashInterval);dashInterval=null;}
+  }
   document.querySelectorAll('.section-wrap').forEach(s=>s.classList.remove('active'));
   document.querySelectorAll('.sidebar-item').forEach(s=>s.classList.remove('active'));
   document.getElementById('section-'+name).classList.add('active');
@@ -1705,6 +1976,386 @@ function copyCAResult(){
     document.body.removeChild(ta);
     toast('Copied to clipboard!','ok');
   });
+}
+
+/* ── BULK ACTIONS ── */
+let _bulkAllUsers=[];
+let _bulkFiltered=[];
+let _bulkSelected=new Set();
+
+async function loadBulkUsers(){
+  document.getElementById('bulk-tbody').innerHTML='<tr class="loading-row"><td colspan="5">Loading...</td></tr>';
+  try{
+    const r=await sb('/rest/v1/cc_users?select=id,username,display_name,role,is_banned,is_frozen,created_at&order=created_at.desc&limit=500');
+    if(!r.ok)return;
+    _bulkAllUsers=await r.json();
+    _bulkFiltered=[..._bulkAllUsers];
+    renderBulkTable(_bulkFiltered);
+  }catch(e){
+    document.getElementById('bulk-tbody').innerHTML=`<tr class="loading-row"><td colspan="5">Error: ${eh(e.message)}</td></tr>`;
+  }
+}
+
+function filterBulkUsers(q){
+  const role=document.getElementById('bulk-role-filter').value;
+  _bulkFiltered=_bulkAllUsers.filter(u=>{
+    const matchQ=!q||(u.display_name||u.username||'').toLowerCase().includes(q.toLowerCase());
+    const matchR=!role||u.role===role;
+    return matchQ&&matchR;
+  });
+  renderBulkTable(_bulkFiltered);
+}
+
+function renderBulkTable(users){
+  const roleLabels={admin:'👑 Admin',cocreator:'🛠️ Co-Creator',partner:'🤝 Partner',vip:'⭐ VIP',beta:'🧪 Beta',user:'👤 User'};
+  document.getElementById('bulk-tbody').innerHTML=users.map(u=>`
+    <tr>
+      <td><input type="checkbox" class="bulk-cb" data-id="${u.id}" onchange="bulkToggleUser('${u.id}',this.checked)" ${_bulkSelected.has(u.id)?'checked':''} style="cursor:pointer"></td>
+      <td><strong>${eh(u.display_name||u.username)}</strong></td>
+      <td style="font-family:var(--mono);font-size:.7rem;color:var(--muted)">${roleLabels[u.role||'user']||'👤 User'}</td>
+      <td>${u.is_banned?'<span class="badge badge-red">Banned</span>':u.is_frozen?'<span class="badge" style="color:#64a0ff;background:rgba(100,160,255,.1);border:1px solid rgba(100,160,255,.2)">Frozen</span>':'<span class="badge" style="color:var(--conch);background:rgba(15,244,198,.08);border:1px solid rgba(15,244,198,.15)">Active</span>'}</td>
+      <td class="td-muted">${u.created_at?new Date(u.created_at).toLocaleDateString():'-'}</td>
+    </tr>`).join('');
+  updateBulkCount();
+}
+
+function bulkToggleUser(id,checked){
+  if(checked)_bulkSelected.add(id);else _bulkSelected.delete(id);
+  updateBulkCount();
+}
+
+function bulkToggleAll(checked){
+  _bulkFiltered.forEach(u=>{if(checked)_bulkSelected.add(u.id);else _bulkSelected.delete(u.id);});
+  renderBulkTable(_bulkFiltered);
+}
+
+function bulkSelectAll(){document.getElementById('bulk-check-all').checked=true;bulkToggleAll(true);}
+function bulkSelectNone(){document.getElementById('bulk-check-all').checked=false;bulkToggleAll(false);}
+
+function updateBulkCount(){
+  document.getElementById('bulk-selected-count').textContent=_bulkSelected.size;
+}
+
+function getBulkSelected(){
+  const sel=Array.from(_bulkSelected);
+  if(!sel.length){toast('No users selected','err');return null;}
+  return sel;
+}
+
+async function bulkProgress(ids,action){
+  const prog=document.getElementById('bulk-progress');
+  const bar=document.getElementById('bulk-progress-bar');
+  const txt=document.getElementById('bulk-progress-text');
+  prog.style.display='block';bar.style.width='0%';
+  let done=0;
+  for(const id of ids){
+    try{await action(id);}catch{}
+    done++;
+    const pct=Math.round(done/ids.length*100);
+    bar.style.width=pct+'%';
+    txt.textContent=`Processing... ${done}/${ids.length}`;
+  }
+  txt.textContent=`✓ Done! ${done} users processed.`;
+  bar.style.background='#34d399';
+  setTimeout(()=>{prog.style.display='none';bar.style.background='var(--conch)';},3000);
+}
+
+async function bulkSetRole(){
+  const ids=getBulkSelected();if(!ids)return;
+  const role=document.getElementById('bulk-role-select').value;
+  if(!confirm(`Set role to "${role}" for ${ids.length} users?`))return;
+  await bulkProgress(ids,async id=>{
+    await sb(`/rest/v1/cc_users?id=eq.${id}`,{method:'PATCH',headers:{'Prefer':'return=minimal'},body:JSON.stringify({role})});
+  });
+  toast(`Role set for ${ids.length} users`,'ok');
+  loadBulkUsers();loadUsers();
+}
+
+async function bulkFreeze(){
+  const ids=getBulkSelected();if(!ids)return;
+  const reason=document.getElementById('bulk-freeze-reason').value.trim()||'Bulk freeze';
+  if(!confirm(`Freeze ${ids.length} users?`))return;
+  await bulkProgress(ids,async id=>{
+    await sb(`/rest/v1/cc_users?id=eq.${id}`,{method:'PATCH',headers:{'Prefer':'return=minimal'},body:JSON.stringify({is_frozen:true,freeze_reason:reason,frozen_by:window._adminDisplayName||ADMIN_USERNAME,frozen_at:new Date().toISOString()})});
+  });
+  toast(`${ids.length} users frozen`,'ok');
+  loadBulkUsers();loadUsers();
+}
+
+async function bulkBan(){
+  const ids=getBulkSelected();if(!ids)return;
+  const reason=document.getElementById('bulk-ban-reason').value.trim()||'Bulk ban';
+  if(!confirm(`Ban ${ids.length} users? This will also ban their IPs.`))return;
+  /* Get IPs for these users */
+  const r=await sb(`/rest/v1/cc_users?id=in.(${ids.join(',')})&select=id,username,ip`);
+  const users=r.ok?await r.json():[];
+  await bulkProgress(ids,async id=>{
+    await sb(`/rest/v1/cc_users?id=eq.${id}`,{method:'PATCH',headers:{'Prefer':'return=minimal'},body:JSON.stringify({is_banned:true})});
+    const u=users.find(u=>u.id===id);
+    if(u&&u.ip){
+      await sb('/rest/v1/cc_bans',{method:'POST',headers:{'Prefer':'return=minimal'},body:JSON.stringify({ip:u.ip,banned_username:u.username,reason,banned_by:window._adminDisplayName||ADMIN_USERNAME,banned_at:new Date().toISOString()})});
+    }
+  });
+  toast(`${ids.length} users banned`,'ok');
+  loadBulkUsers();loadUsers();loadBans();
+}
+
+async function bulkUnfreeze(){
+  const ids=getBulkSelected();if(!ids)return;
+  if(!confirm(`Unfreeze ${ids.length} users?`))return;
+  await bulkProgress(ids,async id=>{
+    await sb(`/rest/v1/cc_users?id=eq.${id}`,{method:'PATCH',headers:{'Prefer':'return=minimal'},body:JSON.stringify({is_frozen:false,freeze_reason:null})});
+  });
+  toast(`${ids.length} users unfrozen`,'ok');
+  loadBulkUsers();loadUsers();
+}
+
+/* ── DOWNLOAD STATISTICS ── */
+async function loadDLStats(){
+  document.getElementById('dl-table').innerHTML='<tr class="loading-row"><td colspan="5">Loading from GitHub...</td></tr>';
+  try{
+    const r=await fetch('https://api.github.com/repos/Systems-Download/Systems-Download.github.io/releases?per_page=50&_='+Date.now());
+    if(!r.ok)throw new Error('GitHub API error');
+    const releases=await r.json();
+
+    document.getElementById('dl-releases').textContent=releases.length;
+
+    let totalDL=0,conchDL=0,cmdrDL=0;
+    const allFiles=[];
+
+    releases.forEach(rel=>{
+      (rel.assets||[]).forEach(a=>{
+        if(!a.name.toLowerCase().endsWith('.rbxm'))return;
+        const dl=a.download_count||0;
+        totalDL+=dl;
+        const lo=a.name.toLowerCase();
+        const isConch=lo.includes('conch')&&!lo.includes('cmdr');
+        const isCmdr=lo.includes('cmdr')&&!lo.includes('conch');
+        const isBeta=lo.includes('beta');
+        if(isConch)conchDL+=dl;
+        if(isCmdr)cmdrDL+=dl;
+        allFiles.push({
+          name:a.name,
+          version:rel.tag_name||rel.name||'v?',
+          type:isConch&&isBeta?'Conch Beta':isCmdr&&isBeta?'Cmdr Beta':isConch?'Conch':isCmdr?'Cmdr':'Other',
+          downloads:dl,
+          size:a.size,
+          published:rel.published_at
+        });
+      });
+    });
+
+    document.getElementById('dl-total').textContent=totalDL.toLocaleString();
+    document.getElementById('dl-conch-total').textContent=conchDL.toLocaleString();
+    document.getElementById('dl-cmdr-total').textContent=cmdrDL.toLocaleString();
+
+    /* Sort by downloads */
+    allFiles.sort((a,b)=>b.downloads-a.downloads);
+
+    /* Chart — top 15 files */
+    const chartFiles=allFiles.slice(0,15);
+    const maxDL=Math.max(...chartFiles.map(f=>f.downloads),1);
+    const typeColors={'Conch':'#0ff4c6','Cmdr':'#ff4f5e','Conch Beta':'#34d399','Cmdr Beta':'#a78bfa','Other':'#6b7280'};
+    const chartEl=document.getElementById('dl-chart');
+    const labelsEl=document.getElementById('dl-chart-labels');
+    const barW=Math.max(28,Math.floor((chartEl.parentElement.offsetWidth-40)/chartFiles.length)-6);
+
+    chartEl.innerHTML=chartFiles.map(f=>{
+      const pct=Math.round((f.downloads/maxDL)*180);
+      const color=typeColors[f.type]||'#6b7280';
+      return`<div style="display:flex;flex-direction:column;align-items:center;gap:.25rem;flex-shrink:0;width:${barW}px" title="${eh(f.name)}: ${f.downloads} downloads">
+        <span style="font-family:var(--mono);font-size:.58rem;color:var(--muted)">${f.downloads}</span>
+        <div style="width:100%;height:${pct}px;background:${color};border-radius:4px 4px 0 0;opacity:.85;transition:opacity .2s;cursor:default" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=.85"></div>
+      </div>`;
+    }).join('');
+
+    labelsEl.innerHTML=chartFiles.map(f=>`
+      <div style="width:${barW}px;flex-shrink:0;font-family:var(--mono);font-size:.55rem;color:var(--muted);text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="${eh(f.name)}">${eh(f.version)}</div>`).join('');
+
+    /* Table */
+    function fmtB(b){if(!b)return'—';const k=1024,s=['B','KB','MB'];const i=Math.floor(Math.log(b)/Math.log(k));return+(b/Math.pow(k,i)).toFixed(1)+s[i];}
+    document.getElementById('dl-table').innerHTML=allFiles.length
+      ?allFiles.map(f=>`<tr>
+        <td><span class="badge" style="font-family:var(--mono);font-size:.7rem">${eh(f.name)}</span></td>
+        <td class="td-muted">${eh(f.version)}</td>
+        <td><span class="badge" style="color:${typeColors[f.type]||'var(--muted)'};background:rgba(255,255,255,.04)">${eh(f.type)}</span></td>
+        <td><strong style="color:${f.downloads>100?'var(--conch)':f.downloads>50?'var(--gold)':'var(--text)'}">${f.downloads.toLocaleString()}</strong></td>
+        <td class="td-muted">${fmtB(f.size)}</td>
+      </tr>`).join('')
+      :'<tr class="loading-row"><td colspan="5">No files found.</td></tr>';
+  }catch(e){
+    document.getElementById('dl-table').innerHTML=`<tr class="loading-row"><td colspan="5">Error: ${eh(e.message)}</td></tr>`;
+  }
+}
+
+/* ── LIVE DASHBOARD ── */
+let dashInterval=null;
+
+async function loadDashboard(){
+  document.getElementById('dash-last-updated').textContent='Updating...';
+  try{
+    const now=new Date();
+    const fiveMinAgo=new Date(now-5*60*1000).toISOString();
+    const todayStart=new Date(now.getFullYear(),now.getMonth(),now.getDate()).toISOString();
+    const sevenDaysAgo=new Date(now-7*24*3600*1000).toISOString();
+
+    const [usersR,bansR,reportsR,msgsR]=await Promise.all([
+      sb('/rest/v1/cc_users?select=id,username,display_name,role,last_login,is_banned&order=last_login.desc.nullslast&limit=500'),
+      sb('/rest/v1/cc_bans?select=id'),
+      sb('/rest/v1/cc_bug_reports?select=id'),
+      sb('/rest/v1/cc_messages?select=id'),
+    ]);
+
+    const users=usersR.ok?await usersR.json():[];
+    const bans=bansR.ok?await bansR.json():[];
+    const reports=reportsR.ok?await reportsR.json():[];
+    const messages=msgsR.ok?await msgsR.json():[];
+
+    /* Stat cards */
+    document.getElementById('dash-total-users').textContent=users.length;
+    document.getElementById('dash-total-bans').textContent=bans.length;
+    document.getElementById('dash-total-reports').textContent=reports.length;
+    document.getElementById('dash-total-messages').textContent=messages.length;
+
+    /* Online now */
+    const onlineUsers=users.filter(u=>u.last_login&&new Date(u.last_login)>new Date(fiveMinAgo));
+    document.getElementById('dash-online-users').textContent=onlineUsers.length;
+
+    /* Logins today */
+    const todayLogins=users.filter(u=>u.last_login&&new Date(u.last_login)>new Date(todayStart));
+    document.getElementById('dash-today-logins').textContent=todayLogins.length;
+
+    /* Online list */
+    const olEl=document.getElementById('dash-online-list');
+    if(onlineUsers.length){
+      olEl.innerHTML=onlineUsers.map(u=>`
+        <span style="font-family:var(--mono);font-size:.72rem;padding:.25rem .6rem;border-radius:6px;background:rgba(52,211,153,.08);border:1px solid rgba(52,211,153,.2);color:#34d399;display:inline-flex;align-items:center;gap:.3rem">
+          <span style="width:6px;height:6px;border-radius:50%;background:#34d399;flex-shrink:0"></span>
+          ${eh(u.display_name||u.username)}
+        </span>`).join('');
+    }else{
+      olEl.innerHTML='<span style="font-family:var(--mono);font-size:.75rem;color:var(--muted);opacity:.6">No users online right now.</span>';
+    }
+
+    /* Role distribution */
+    const roleCounts={admin:0,cocreator:0,partner:0,vip:0,beta:0,user:0};
+    users.forEach(u=>roleCounts[u.role||'user']=(roleCounts[u.role||'user']||0)+1);
+    const roleColors={admin:'var(--gold)',cocreator:'#60a5fa',partner:'#f97316',vip:'var(--gold)',beta:'#34d399',user:'var(--muted)'};
+    const roleLabels={admin:'👑 Admin',cocreator:'🛠️ Co-Creator',partner:'🤝 Partner',vip:'⭐ VIP',beta:'🧪 Beta',user:'👤 User'};
+    const total=users.length||1;
+    document.getElementById('dash-roles').innerHTML=Object.entries(roleCounts).filter(([,c])=>c>0).map(([role,count])=>`
+      <div style="margin-bottom:.6rem">
+        <div style="display:flex;justify-content:space-between;font-family:var(--mono);font-size:.7rem;margin-bottom:.2rem">
+          <span style="color:${roleColors[role]}">${roleLabels[role]||role}</span>
+          <span style="color:var(--muted)">${count}</span>
+        </div>
+        <div style="height:5px;background:var(--surface2);border-radius:3px;overflow:hidden">
+          <div style="height:100%;width:${Math.round(count/total*100)}%;background:${roleColors[role]};border-radius:3px;transition:width .4s"></div>
+        </div>
+      </div>`).join('');
+
+    /* New users last 7 days */
+    const newUsersR=await sb(`/rest/v1/cc_users?created_at=gte.${sevenDaysAgo}&select=username,created_at&order=created_at.desc&limit=10`);
+    const newUsers=newUsersR.ok?await newUsersR.json():[];
+    document.getElementById('dash-new-users').innerHTML=newUsers.length
+      ?newUsers.map(u=>`<div style="display:flex;justify-content:space-between;font-family:var(--mono);font-size:.7rem;padding:.3rem 0;border-bottom:1px solid var(--border)"><span>${eh(u.username)}</span><span style="color:var(--muted)">${new Date(u.created_at).toLocaleDateString()}</span></div>`).join('')
+      :'<div style="font-family:var(--mono);font-size:.72rem;color:var(--muted);opacity:.6;padding:.5rem 0">No new users this week.</div>';
+
+    /* Recent logins table */
+    document.getElementById('dash-recent-tbody').innerHTML=users.filter(u=>u.last_login).slice(0,15).map(u=>{
+      const roleColors2={admin:'var(--gold)',cocreator:'#60a5fa',partner:'#f97316',vip:'var(--gold)',beta:'#34d399',user:'var(--muted)'};
+      return`<tr>
+        <td><strong>${eh(u.display_name||u.username)}</strong></td>
+        <td><span style="font-family:var(--mono);font-size:.7rem;color:${roleColors2[u.role||'user']}">${roleLabels[u.role||'user']||'👤 User'}</span></td>
+        <td class="td-muted">${u.last_login?new Date(u.last_login).toLocaleString():'-'}</td>
+        <td class="td-muted">${eh(u.ip||'—')}</td>
+      </tr>`;
+    }).join('');
+
+    document.getElementById('dash-last-updated').textContent='· Updated '+new Date().toLocaleTimeString();
+  }catch(e){
+    console.error('Dashboard error:',e);
+    document.getElementById('dash-last-updated').textContent='· Error loading';
+  }
+}
+
+/* ── IP STATISTICS ── */
+async function loadIPStats(){
+  document.getElementById('ip-top-tbody').innerHTML='<tr class="loading-row"><td colspan="5">Loading...</td></tr>';
+  document.getElementById('ip-recent-tbody').innerHTML='<tr class="loading-row"><td colspan="4">Loading...</td></tr>';
+
+  try{
+    /* Fetch all users with IP data */
+    const r=await sb('/rest/v1/cc_users?select=id,username,ip,last_login,role,is_banned&order=last_login.desc.nullslast&limit=500');
+    if(!r.ok){document.getElementById('ip-top-tbody').innerHTML='<tr class="loading-row"><td colspan="5">Error loading data.</td></tr>';return;}
+    const users=await r.json();
+
+    /* Fetch banned IPs */
+    const banR=await sb('/rest/v1/cc_bans?select=ip&limit=500');
+    const bans=banR.ok?await banR.json():[];
+    const bannedIPs=new Set(bans.map(b=>b.ip));
+
+    /* Stats */
+    const uniqueIPs=new Set(users.filter(u=>u.ip).map(u=>u.ip));
+    const nullIPs=users.filter(u=>!u.ip).length;
+    document.getElementById('ip-unique-count').textContent=uniqueIPs.size;
+    document.getElementById('ip-null-count').textContent=nullIPs;
+    document.getElementById('ip-banned-count').textContent=bannedIPs.size;
+
+    /* Group by IP */
+    const ipMap={};
+    users.forEach(u=>{
+      if(!u.ip)return;
+      if(!ipMap[u.ip])ipMap[u.ip]=[];
+      ipMap[u.ip].push(u);
+    });
+
+    /* Multi-account IPs */
+    const multiIPs=Object.entries(ipMap).filter(([ip,us])=>us.length>1);
+    document.getElementById('ip-multi-count').textContent=multiIPs.length;
+
+    /* Top IPs table — sorted by account count */
+    const sorted=Object.entries(ipMap).sort((a,b)=>b[1].length-a[1].length).slice(0,30);
+    document.getElementById('ip-top-tbody').innerHTML=sorted.map(([ip,us])=>{
+      const isBanned=bannedIPs.has(ip);
+      const usernames=us.map(u=>`<span class="badge" style="margin:.1rem">${eh(u.username)}</span>`).join('');
+      return`<tr>
+        <td><code style="font-size:.75rem;color:var(--conch)">${eh(ip)}</code>${isBanned?'<span class="badge badge-red" style="margin-left:.4rem">Banned</span>':''}</td>
+        <td><strong style="color:${us.length>1?'var(--cmdr)':'var(--text)'}">${us.length}</strong></td>
+        <td style="max-width:260px;flex-wrap:wrap">${usernames}</td>
+        <td>${isBanned?'<span class="badge badge-red">Banned</span>':'<span class="badge" style="color:var(--conch);background:rgba(15,244,198,.08);border:1px solid rgba(15,244,198,.2)">Clean</span>'}</td>
+        <td>
+          ${!isBanned?`<button class="btn-action btn-delete" onclick="quickBanIP('${eh(ip)}')">🚫 Ban IP</button>`:''}
+          <button class="btn-action" onclick="navigator.clipboard.writeText('${eh(ip)}').then(()=>toast('Copied!','ok'))">⎘ Copy</button>
+        </td>
+      </tr>`;
+    }).join('');
+
+    /* Recent logins */
+    const recentUsers=users.filter(u=>u.ip&&u.last_login).slice(0,25);
+    document.getElementById('ip-recent-tbody').innerHTML=recentUsers.map(u=>{
+      const isBanned=bannedIPs.has(u.ip);
+      return`<tr>
+        <td><code style="font-size:.75rem;color:var(--conch)">${eh(u.ip)}</code>${isBanned?'<span class="badge badge-red" style="margin-left:.4rem">⚠️</span>':''}</td>
+        <td><strong>${eh(u.username)}</strong></td>
+        <td class="td-muted">${u.last_login?new Date(u.last_login).toLocaleString():'-'}</td>
+        <td>
+          ${!isBanned?`<button class="btn-action btn-delete" onclick="quickBanIP('${eh(u.ip)}')">🚫 Ban</button>`:'<span class="badge badge-red">Banned</span>'}
+        </td>
+      </tr>`;
+    }).join('');
+  }catch(e){
+    document.getElementById('ip-top-tbody').innerHTML=`<tr class="loading-row"><td colspan="5">Error: ${eh(e.message)}</td></tr>`;
+  }
+}
+
+async function quickBanIP(ip){
+  if(!confirm('Ban IP: '+ip+'?'))return;
+  try{
+    await sb('/rest/v1/cc_bans',{method:'POST',headers:{'Prefer':'return=minimal'},body:JSON.stringify({ip,reason:'Manual IP ban from IP Statistics',banned_by:window._adminDisplayName||ADMIN_USERNAME,banned_at:new Date().toISOString()})});
+    toast('IP banned: '+ip,'ok');
+    loadIPStats();
+  }catch(e){toast('Failed: '+e.message,'err');}
 }
 
 /* ── INIT ── */
