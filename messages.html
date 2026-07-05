@@ -676,7 +676,7 @@ function onInput(el){
 async function setTyping(on){
   if(!activeChat||activeChat.type!=='dm')return;
   try{
-    if(on){await sb('/rest/v1/cc_typing',{method:'POST',headers:{'Prefer':'return=minimal'},body:JSON.stringify({user_id:ME.id,to_user_id:activeChat.id,username:ME.username,updated_at:new Date().toISOString()})}).catch(()=>{});}
+    if(on){await sb('/rest/v1/cc_typing',{method:'POST',headers:{'Prefer':'resolution=merge-duplicates,return=minimal'},body:JSON.stringify({user_id:ME.id,to_user_id:activeChat.id,username:ME.username,updated_at:new Date().toISOString()})}).catch(()=>{});}
     else{await sb(`/rest/v1/cc_typing?user_id=eq.${ME.id}&to_user_id=eq.${activeChat.id}`,{method:'DELETE'}).catch(()=>{});}
   }catch{}
 }
