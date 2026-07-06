@@ -1101,6 +1101,23 @@ async function uploadFile(file){
 
 function fmtSize(b){if(b<1024)return b+'B';if(b<1048576)return(b/1024).toFixed(1)+'KB';return(b/1048576).toFixed(1)+'MB';}
 
+async function dlFile(url,name){
+  try{
+    const r=await fetch(url);
+    if(!r.ok)throw new Error();
+    const blob=await r.blob();
+    const a=document.createElement('a');
+    a.href=URL.createObjectURL(blob);
+    a.download=name;
+    document.body.appendChild(a);a.click();
+    setTimeout(()=>{URL.revokeObjectURL(a.href);document.body.removeChild(a);},1000);
+  }catch{
+    /* Fallback */
+    const a=document.createElement('a');a.href=url;a.download=name;a.target='_blank';
+    document.body.appendChild(a);a.click();document.body.removeChild(a);
+  }
+}
+
 /* ── GROUP INFO / LEAVE / DELETE ── */
 function openGrpInfo(){
   if(!activeChat||activeChat.type!=='grp')return;
@@ -1355,7 +1372,12 @@ renderMsgs=async function(rows){
       });
       // Replace [file:url|name|size] with download link
       parsed=parsed.replace(/\[file:([^\|]+)\|([^\|]+)\|([^\]]+)\]/g,(match,url,name,size)=>{
-        return`<a href="${eh(url)}" download="${eh(name)}" target="_blank" style="display:inline-flex;align-items:center;gap:.4rem;margin-top:.3rem;padding:.4rem .7rem;background:var(--surface2);border:1px solid var(--border);border-radius:8px;font-family:var(--mono);font-size:.7rem;color:var(--conch);text-decoration:none;transition:border-color .15s" onmouseover="this.style.borderColor='rgba(15,244,198,.4)'" onmouseout="this.style.borderColor='var(--border)'">📎 ${eh(name)} <span style="color:var(--muted)">${eh(size)}</span></a>`;
+        return`<div style="display:inline-flex;align-items:center;gap:.4rem;margin-top:.3rem;padding:.4rem .7rem;background:var(--surface2);border:1px solid var(--border);border-radius:8px;cursor:pointer;transition:border-color .15s" onmouseover="this.style.borderColor='rgba(15,244,198,.4)'" onmouseout="this.style.borderColor='var(--border)'" onclick="dlFile('${eh(url)}','${eh(name)}')">
+          <span style="font-family:var(--mono);font-size:.7rem;color:var(--conch)">📎</span>
+          <span style="font-family:var(--mono);font-size:.7rem;color:var(--text)">${eh(name)}</span>
+          <span style="font-family:var(--mono);font-size:.62rem;color:var(--muted)">${eh(size)}</span>
+          <span style="font-family:var(--mono);font-size:.62rem;color:var(--conch)">↓</span>
+        </div>`;
       });
       bubbleContent=parsed;
     }
