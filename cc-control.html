@@ -1192,7 +1192,7 @@ function renderUsers(users){
   em.style.display='none';
   tb.innerHTML=users.map(u=>`
     <tr>
-      <td><strong>${eh(u.display_name||u.username)}</strong>${u.username===ADMIN_USERNAME?'<span class="badge badge-gold" style="margin-left:.4rem">Owner</span>':''}</td>
+      <td><strong>${eh(u.display_name||u.username)}</strong>${u.has_1year_badge?' <span title="1 Year Badge" style="font-size:.7rem">🎂</span>':''}${u.username===ADMIN_USERNAME?'<span class="badge badge-gold" style="margin-left:.4rem">Owner</span>':''}</td>
       <td>${u.name_type==='roblox'?'<span class="badge" style="background:rgba(15,244,198,.1);color:var(--conch);border:1px solid rgba(15,244,198,.2)">🎮 Roblox</span>':u.name_type==='discord'?'<span class="badge" style="background:rgba(88,101,242,.1);color:#8b9cf4;border:1px solid rgba(88,101,242,.2)">💬 Discord</span>':'<span class="badge" style="background:rgba(255,255,255,.04);color:var(--muted)">—</span>'}</td>
       <td class="td-muted">${u.ip||'—'}</td>
       <td>${
@@ -1474,7 +1474,10 @@ function toast(msg,type='ok',dur=3000){
   const c=document.getElementById('toast-c');
   const el=document.createElement('div');el.className='toast';
   const col={ok:'#3cc878',err:'#ff4f5e',warn:'#ffc832'}[type]||'#0ff4c6';
-  el.innerHTML=`<span>${{ok:'✓',err:'✕',warn:'!'}[type]||'⚑'}</span><span style="flex:1">${msg}</span><div class="tbar" style="background:${col};animation-duration:${dur}ms"></div>`;
+  const icon=document.createElement('span');icon.textContent={ok:'✓',err:'✕',warn:'!'}[type]||'⚑';
+  const txt=document.createElement('span');txt.style.flex='1';txt.textContent=msg;
+  const bar=document.createElement('div');bar.className='tbar';bar.style.background=col;bar.style.animationDuration=dur+'ms';
+  el.appendChild(icon);el.appendChild(txt);el.appendChild(bar);
   c.appendChild(el);setTimeout(()=>{el.classList.add('out');setTimeout(()=>el.remove(),300)},dur);
 }
 
