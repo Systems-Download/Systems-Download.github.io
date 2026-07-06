@@ -1253,7 +1253,7 @@ function setChatBg(id){
 function applyBg(){
   const th=document.getElementById('thread');
   if(!th)return;
-  BG_OPTIONS.forEach(b=>th.classList.remove(b.class));
+  BG_OPTIONS.forEach(b=>{if(b.class)th.classList.remove(b.class);});
   const id=localStorage.getItem('cc_chat_bg')||'none';
   const opt=BG_OPTIONS.find(b=>b.id===id);
   if(opt&&opt.class)th.classList.add(opt.class);
