@@ -1411,8 +1411,24 @@ sendMsg=async function(){
 
 /* ── OVERRIDE openChat to load pinned ── */
 const _origShowChatUI=showChatUI;
-function showChatUI(item){
-  _origShowChatUI(item);
+showChatUI=function(item){
+  // Call original directly to avoid recursion
+  document.getElementById('no-chat').style.display='none';
+  document.getElementById('chat-ui').style.display='flex';
+  const isGrp=item.type==='grp';
+  const name=isGrp?item.name:item.username;
+  const hdrAv=document.getElementById('chdr-av');
+  if(isGrp){
+    hdrAv.innerHTML='👥';hdrAv.className='cav grp';hdrAv.style.cssText='width:34px;height:34px;font-size:.78rem;flex-shrink:0;background:rgba(167,139,250,.15);border-color:rgba(167,139,250,.3);color:var(--purple)';
+  }else{
+    hdrAv.innerHTML=item.avatar_url?`<img src="${eh(item.avatar_url)}" alt="">`:eh((name||'?')[0].toUpperCase());
+    hdrAv.className='cav';hdrAv.style.cssText='width:34px;height:34px;font-size:.78rem;flex-shrink:0';
+    updateStatus(item.id);
+  }
+  document.getElementById('chdr-name').textContent=name;
+  document.getElementById('btn-remove').style.display=isGrp?'none':'flex';
+  document.getElementById('btn-block').style.display=isGrp?'none':'flex';
+  document.getElementById('btn-grpinfo').style.display=isGrp?'flex':'none';
   loadPinned();
   applyBg();
 }
