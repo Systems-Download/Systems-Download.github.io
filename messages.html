@@ -502,7 +502,10 @@ function toast(msg,type='ok',dur=2800){
   const c=document.getElementById('tc'),el=document.createElement('div');
   el.className='tst';
   const col={ok:'#34d399',err:'#ff4f5e',info:'#a78bfa'}[type]||'#a78bfa';
-  el.innerHTML=`<span style="color:${col}">${{ok:'✓',err:'✕',info:'•'}[type]}</span><span style="flex:1">${msg}</span><div class="tbar" style="background:${col};animation-duration:${dur}ms"></div>`;
+  const icon=document.createElement('span');icon.style.color=col;icon.textContent={ok:'✓',err:'✕',info:'•'}[type]||'•';
+  const txt=document.createElement('span');txt.style.flex='1';txt.textContent=msg;
+  const bar=document.createElement('div');bar.className='tbar';bar.style.background=col;bar.style.animationDuration=dur+'ms';
+  el.appendChild(icon);el.appendChild(txt);el.appendChild(bar);
   c.appendChild(el);setTimeout(()=>{el.classList.add('out');setTimeout(()=>el.remove(),220)},dur);
 }
 function openOv(id){document.getElementById(id).classList.add('open');}
