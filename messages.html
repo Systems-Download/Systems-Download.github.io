@@ -1062,7 +1062,7 @@ function onFileAttach(input){
   if(!files.length)return;
   files.forEach(f=>{
     if(attachedFiles.length>=5){toast('Max 5 files at once','err');return;}
-    if(f.size>5*1024*1024){toast(f.name+' is too large (max 5MB)','err');return;}
+    if(f.size>10*1024*1024){toast(f.name+' is too large (max 10MB)','err');return;}
     attachedFiles.push(f);
   });
   input.value='';
@@ -1075,8 +1075,9 @@ function renderAttachPreview(){
   wrap.classList.add('show');
   wrap.innerHTML=attachedFiles.map((f,i)=>{
     const isImg=f.type.startsWith('image/');
+    const previewUrl=isImg?URL.createObjectURL(f):'';
     return`<div class="attach-item">
-      ${isImg?`<img src="${URL.createObjectURL(f)}" alt="">`:f.name.split('.').pop().toUpperCase()}
+      ${isImg?`<img src="${previewUrl}" alt="">`:f.name.split('.').pop().toUpperCase()}
       <span style="max-width:80px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${eh(f.name)}</span>
       <button class="attach-remove" onclick="removeAttach(${i})">✕</button>
     </div>`;
@@ -1084,6 +1085,21 @@ function renderAttachPreview(){
 }
 
 function removeAttach(i){attachedFiles.splice(i,1);renderAttachPreview();}
+
+async function uploadFile(file){
+  const ext=file.name.split('.').pop();
+  const path=`messages/${ME.id}_${Date.now()}_${Math.random().toString(36).slice(2)}.${ext}`;
+  const r=await fetch(`${SB}/storage/v1/object/message-files/${path}`,{
+    method:'POST',
+    headers:{'apikey':KEY,'Authorization':'Bearer '+KEY,'Content-Type':file.type,'x-upsert':'true'},
+    body:file
+  });
+  if(!r.ok)throw new Error('Upload failed');
+  const publicUrl=`${SB}/storage/v1/object/public/message-files/${path}`;
+  return{url:publicUrl,name:file.name,type:file.type,size:file.size};
+}
+
+function fmtSize(b){if(b<1024)return b+'B';if(b<1048576)return(b/1024).toFixed(1)+'KB';return(b/1048576).toFixed(1)+'MB';}
 
 /* ── GROUP INFO / LEAVE / DELETE ── */
 function openGrpInfo(){
@@ -1331,7 +1347,17 @@ renderMsgs=async function(rows){
     if(stickerMatch){
       bubbleContent=`<span style="font-size:2.5rem;line-height:1">${stickerMatch[1]}</span>`;
     }else{
-      bubbleContent=eh(m.text);
+      // Parse text for images, files, and regular text
+      let parsed=m.text;
+      // Replace [img:url|name] with actual image
+      parsed=parsed.replace(/\[img:([^\|]+)\|([^\]]+)\]/g,(match,url,name)=>{
+        return`<div style="margin-top:.3rem"><img src="${eh(url)}" alt="${eh(name)}" style="max-width:220px;max-height:180px;border-radius:8px;cursor:pointer;display:block" onclick="window.open('${eh(url)}','_blank')"><div style="font-family:var(--mono);font-size:.6rem;color:var(--muted);margin-top:.15rem">${eh(name)}</div></div>`;
+      });
+      // Replace [file:url|name|size] with download link
+      parsed=parsed.replace(/\[file:([^\|]+)\|([^\|]+)\|([^\]]+)\]/g,(match,url,name,size)=>{
+        return`<a href="${eh(url)}" download="${eh(name)}" target="_blank" style="display:inline-flex;align-items:center;gap:.4rem;margin-top:.3rem;padding:.4rem .7rem;background:var(--surface2);border:1px solid var(--border);border-radius:8px;font-family:var(--mono);font-size:.7rem;color:var(--conch);text-decoration:none;transition:border-color .15s" onmouseover="this.style.borderColor='rgba(15,244,198,.4)'" onmouseout="this.style.borderColor='var(--border)'">📎 ${eh(name)} <span style="color:var(--muted)">${eh(size)}</span></a>`;
+      });
+      bubbleContent=parsed;
     }
 
     // Reply quote
@@ -1393,11 +1419,26 @@ sendMsg=async function(){
   const counter=document.getElementById('char-counter');
   if(counter)counter.textContent='0 / 2000';
 
+  /* Upload files first */
   let attachText='';
   if(attachedFiles.length){
-    attachText=attachedFiles.map(f=>`[📎 ${f.name}]`).join(' ');
+    toast('Uploading files...','info',3000);
+    const uploaded=[];
+    for(const f of attachedFiles){
+      try{
+        const res=await uploadFile(f);
+        const isImg=f.type.startsWith('image/');
+        if(isImg){
+          uploaded.push(`[img:${res.url}|${res.name}]`);
+        }else{
+          uploaded.push(`[file:${res.url}|${res.name}|${fmtSize(res.size)}]`);
+        }
+      }catch{toast('Failed to upload '+f.name,'err');}
+    }
+    attachText=uploaded.join(' ');
     attachedFiles=[];renderAttachPreview();
   }
+
   const fullText=[text,attachText].filter(Boolean).join('\n');
   const savedReply=replyTo?{reply_to_id:replyTo.id,reply_to_text:replyTo.text}:{};
   clearReply();
