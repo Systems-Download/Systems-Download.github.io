@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Conch & Cmdr — Ban Appeal</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<script>
+(function(){
+  const s=localStorage.getItem('cc_theme');
+  if(s==='light')document.documentElement.classList.add('light-mode');
+})();
+</script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --conch:#0ff4c6;--cmdr:#ff4f5e;--gold:#ffc832;
+  --bg:#0b0c0f;--surface:#13151a;--surface2:#1a1d24;
+  --border:rgba(255,255,255,0.07);--text:#e8eaf0;--muted:#6b7280;
+  --mono:'JetBrains Mono',monospace;--sans:'Syne',sans-serif;
+}
+:root.light-mode{--bg:#f5f7fa;--surface:#fff;--surface2:#f0f2f5;--border:rgba(0,0,0,0.08);--text:#1a1d24;--muted:#6b7280}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:1.5rem;transition:background .3s,color .3s}
+
+nav{position:fixed;top:0;left:0;right:0;display:flex;align-items:center;justify-content:space-between;padding:.85rem 1.5rem;background:rgba(11,12,15,.9);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);height:54px;z-index:100}
+.nav-logo{font-size:.95rem;font-weight:800;text-decoration:none;display:flex;gap:.3em}
+.nav-logo .c{color:var(--conch)}.nav-logo .r{color:var(--cmdr)}.nav-logo .s{color:var(--muted)}
+.nav-back{font-family:var(--mono);font-size:.7rem;padding:.3rem .7rem;border-radius:6px;border:1px solid var(--border);background:none;color:var(--muted);text-decoration:none;transition:all .2s}
+.nav-back:hover{color:var(--text);border-color:rgba(255,255,255,.2)}
+
+/* STATES */
+.state{width:100%;max-width:480px;animation:fadeUp .4s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+
+/* NOT BANNED */
+.not-banned{text-align:center;padding:2rem}
+.nb-icon{font-size:3rem;margin-bottom:1rem;display:block}
+.nb-title{font-size:1.4rem;font-weight:800;color:var(--conch);margin-bottom:.5rem}
+.nb-desc{font-family:var(--mono);font-size:.78rem;color:var(--muted);line-height:1.8}
+
+/* APPEAL FORM */
+.appeal-card{background:var(--surface);border:1px solid rgba(255,79,94,.2);border-radius:16px;overflow:hidden;box-shadow:0 24px 60px rgba(0,0,0,.5)}
+.appeal-header{background:linear-gradient(135deg,rgba(255,79,94,.12),rgba(255,79,94,.04));padding:1.4rem 1.6rem;border-bottom:1px solid rgba(255,79,94,.15);display:flex;align-items:center;gap:.85rem}
+.appeal-icon{font-size:2rem;flex-shrink:0}
+.appeal-header-text{}
+.appeal-title{font-size:1.15rem;font-weight:800;color:var(--cmdr);margin-bottom:.2rem}
+.appeal-sub{font-family:var(--mono);font-size:.72rem;color:var(--muted);line-height:1.6}
+
+/* BAN INFO */
+.ban-info{margin:1.2rem 1.6rem;background:rgba(255,79,94,.06);border:1px solid rgba(255,79,94,.15);border-radius:10px;padding:.85rem 1rem}
+.ban-info-row{display:flex;gap:.6rem;font-family:var(--mono);font-size:.72rem;margin-bottom:.35rem}
+.ban-info-row:last-child{margin-bottom:0}
+.ban-info-label{color:var(--muted);flex-shrink:0;min-width:80px}
+.ban-info-val{color:var(--text);font-weight:600}
+
+/* FORM */
+.appeal-form{padding:0 1.6rem 1.6rem}
+.field{margin-bottom:1rem}
+.field-label{font-family:var(--mono);font-size:.65rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:.35rem;display:block}
+.field-input{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:9px;color:var(--text);font-family:var(--mono);font-size:.78rem;padding:.65rem .9rem;outline:none;transition:border-color .2s}
+.field-input:focus{border-color:rgba(255,79,94,.4)}
+.field-input::placeholder{color:var(--muted);opacity:.45}
+textarea.field-input{resize:none;min-height:90px;line-height:1.6}
+select.field-input{cursor:pointer;-webkit-appearance:none}
+
+.type-btns{display:flex;gap:.4rem;flex-wrap:wrap}
+.type-btn{font-family:var(--mono);font-size:.7rem;padding:.4rem .8rem;border-radius:7px;border:1px solid var(--border);background:none;color:var(--muted);cursor:pointer;transition:all .2s}
+.type-btn.active{border-color:rgba(255,79,94,.4);color:var(--cmdr);background:rgba(255,79,94,.08)}
+
+.submit-btn{width:100%;font-family:var(--mono);font-size:.82rem;font-weight:700;padding:.75rem;border-radius:10px;border:none;cursor:pointer;background:rgba(255,79,94,.12);color:var(--cmdr);border:1px solid rgba(255,79,94,.3);transition:all .2s;margin-top:.5rem}
+.submit-btn:hover{background:rgba(255,79,94,.2)}
+.submit-btn:disabled{opacity:.4;cursor:not-allowed}
+
+/* MESSAGES */
+.msg-box{padding:.65rem .9rem;border-radius:8px;font-family:var(--mono);font-size:.74rem;margin-top:.75rem;display:none;line-height:1.6}
+.msg-box.show{display:block}
+.msg-err{background:rgba(255,79,94,.07);border:1px solid rgba(255,79,94,.2);color:var(--cmdr)}
+.msg-ok{background:rgba(15,244,198,.07);border:1px solid rgba(15,244,198,.2);color:var(--conch)}
+
+/* SUCCESS */
+.success-state{text-align:center;padding:2.5rem 1.5rem}
+.success-icon{font-size:3rem;margin-bottom:1rem;display:block}
+.success-title{font-size:1.3rem;font-weight:800;color:var(--conch);margin-bottom:.5rem}
+.success-desc{font-family:var(--mono);font-size:.78rem;color:var(--muted);line-height:1.8;margin-bottom:1.2rem}
+
+/* LOADING */
+.loading{text-align:center;padding:3rem}
+.spinner{width:36px;height:36px;border:3px solid rgba(255,79,94,.2);border-top-color:var(--cmdr);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 1rem}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-text{font-family:var(--mono);font-size:.78rem;color:var(--muted)}
+
+/* COOLDOWN */
+.cooldown-state{text-align:center;padding:2rem 1.5rem}
+.cooldown-icon{font-size:2.5rem;margin-bottom:.75rem;display:block}
+.cooldown-title{font-size:1.1rem;font-weight:800;color:var(--gold);margin-bottom:.4rem}
+.cooldown-desc{font-family:var(--mono);font-size:.75rem;color:var(--muted);line-height:1.8}
+</style>
+</head>
+<body>
+<nav>
+  <a class="nav-logo" href="index.html"><span class="c">Conch</span><span class="s">/</span><span class="r">Cmdr</span></a>
+  <a class="nav-back" href="index.html">← Back</a>
+</nav>
+
+<div class="state" id="root" style="margin-top:54px">
+  <div class="loading">
+    <div class="spinner"></div>
+    <div class="loading-text">Checking your status...</div>
+  </div>
+</div>
+
+<script>
+const SB='https://rmdkoauibmzhgnvrwhfd.supabase.co';
+const KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJtZGtvYXVpYm16aGdudnJ3aGZkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyNjg2MDksImV4cCI6MjA5Mzg0NDYwOX0.lu6T00f9y9-Q8HhVag-MGjJz6bTlJrYUwC7AApIxaFw';
+const WEBHOOK='https://discord.com/api/webhooks/1510446146458353747/pnX8TWoZRQsPb9zK5UY5XK1jET80JB9r-DvafMdDVAauLRKCCvGPUha_SvkmtLcoG31p';
+const ADMIN_USERNAME='max';
+const COOLDOWN_HOURS=24;
+
+let currentUser=null;
+let banInfo=null;
+let selectedBanType='permanent';
+
+function sb(path,opts={}){
+  const m=(opts.method||'GET').toUpperCase();
+  const h={'apikey':KEY,'Authorization':'Bearer '+KEY};
+  if(m!=='GET'&&m!=='HEAD')h['Content-Type']='application/json';
+  return fetch(SB+path,{headers:{...h,...(opts.headers||{})},method:m,...(opts.body?{body:opts.body}:{})});
+}
+
+function eh(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+function setRoot(html){document.getElementById('root').innerHTML=html;}
+
+/* ── GET IP ── */
+async function getIP(){
+  try{const r=await fetch('https://api.ipify.org?format=json');const d=await r.json();return d.ip||'unknown';}
+  catch{return'unknown';}
+}
+
+/* ── INIT ── */
+async function init(){
+  /* Check if logged in */
+  let username='unknown';
+  let userId=null;
+  try{
+    const saved=localStorage.getItem('cc_auth');
+    if(saved){
+      const parsed=JSON.parse(saved);
+      if(parsed&&parsed.username){username=parsed.username;userId=parsed.id;}
+    }
+  }catch{}
+
+  /* Max bypass — always show form */
+  const isMax=username.toLowerCase()===ADMIN_USERNAME;
+
+  if(isMax){
+    showNotBanned(username,'You have admin access and can always view this page.');
+    return;
+  }
+
+  /* Get IP */
+  const ip=await getIP();
+
+  /* Check if IP is banned */
+  let isBanned=false;
+  let banReason='';
+  let bannedBy='';
+  let banDate='';
+  let isTemp=false;
+  let expiresAt='';
+  let bannedUsername=username;
+
+  try{
+    const r=await sb(`/rest/v1/cc_bans?ip=eq.${encodeURIComponent(ip)}&select=*&limit=1&order=banned_at.desc`);
+    if(r.ok){
+      const rows=await r.json();
+      if(rows&&rows.length){
+        isBanned=true;
+        banReason=rows[0].reason||'No reason given.';
+        bannedBy=rows[0].banned_by||'System';
+        banDate=rows[0].banned_at||'';
+        isTemp=!!rows[0].is_temp;
+        expiresAt=rows[0].expires_at||'';
+        if(rows[0].banned_username)bannedUsername=rows[0].banned_username;
+      }
+    }
+  }catch{}
+
+  /* Also check if account is banned */
+  if(!isBanned&&userId){
+    try{
+      const r=await sb(`/rest/v1/cc_users?id=eq.${userId}&select=is_banned,username&limit=1`);
+      if(r.ok){
+        const rows=await r.json();
+        if(rows&&rows.length&&rows[0].is_banned){
+          isBanned=true;
+          banReason='Your account has been banned.';
+          bannedBy='System';
+          bannedUsername=rows[0].username||username;
+        }
+      }
+    }catch{}
+  }
+
+  if(!isBanned){
+    showNotBanned(username);
+    return;
+  }
+
+  /* Check cooldown — 24h between appeals */
+  const cooldownKey='cc_appeal_sent_'+ip;
+  const lastSent=localStorage.getItem(cooldownKey);
+  if(lastSent){
+    const diff=(Date.now()-parseInt(lastSent))/(1000*3600);
+    if(diff<COOLDOWN_HOURS){
+      const remaining=Math.ceil(COOLDOWN_HOURS-diff);
+      showCooldown(remaining);
+      return;
+    }
+  }
+
+  banInfo={reason:banReason,bannedBy,banDate,isTemp,expiresAt,ip,username:bannedUsername};
+  currentUser={username:bannedUsername,ip};
+  showAppealForm();
+}
+
+/* ── NOT BANNED ── */
+function showNotBanned(username,msg){
+  setRoot(`<div class="not-banned">
+    <span class="nb-icon">✅</span>
+    <div class="nb-title">You're not banned</div>
+    <div class="nb-desc">${msg||`Hi <strong>${eh(username)}</strong>, your account is not banned.<br>This page is only for users who have been banned.`}</div>
+  </div>`);
+}
+
+/* ── COOLDOWN ── */
+function showCooldown(remaining){
+  setRoot(`<div class="appeal-card"><div class="cooldown-state">
+    <span class="cooldown-icon">⏳</span>
+    <div class="cooldown-title">Appeal Already Sent</div>
+    <div class="cooldown-desc">You've already submitted an appeal.<br>Please wait <strong style="color:var(--gold)">${remaining} hour${remaining!==1?'s':''}</strong> before submitting another one.</div>
+  </div></div>`);
+}
+
+/* ── APPEAL FORM ── */
+function showAppealForm(){
+  const banDateFmt=banInfo.banDate?new Date(banInfo.banDate).toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'}):'Unknown';
+  const expFmt=banInfo.expiresAt?new Date(banInfo.expiresAt).toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'}):null;
+
+  setRoot(`<div class="appeal-card">
+    <div class="appeal-header">
+      <div class="appeal-icon">🚫</div>
+      <div class="appeal-header-text">
+        <div class="appeal-title">Submit a Ban Appeal</div>
+        <div class="appeal-sub">Fill out the form below and we'll review your appeal.</div>
+      </div>
+    </div>
+
+    <div class="ban-info">
+      <div class="ban-info-row"><span class="ban-info-label">Username</span><span class="ban-info-val">${eh(banInfo.username)}</span></div>
+      <div class="ban-info-row"><span class="ban-info-label">Reason</span><span class="ban-info-val">${eh(banInfo.reason)}</span></div>
+      <div class="ban-info-row"><span class="ban-info-label">Banned by</span><span class="ban-info-val">${eh(banInfo.bannedBy)}</span></div>
+      <div class="ban-info-row"><span class="ban-info-label">Date</span><span class="ban-info-val">${banDateFmt}</span></div>
+      ${banInfo.isTemp&&expFmt?`<div class="ban-info-row"><span class="ban-info-label">Expires</span><span class="ban-info-val">${expFmt}</span></div>`:''}
+    </div>
+
+    <div class="appeal-form">
+      <div class="field">
+        <label class="field-label">Ban Type</label>
+        <div class="type-btns">
+          <button class="type-btn active" id="type-permanent" onclick="selectType('permanent')">Permanent</button>
+          <button class="type-btn" id="type-temp" onclick="selectType('temp')">Temporary</button>
+          <button class="type-btn" id="type-false" onclick="selectType('false')">False Ban</button>
+          <button class="type-btn" id="type-vpn" onclick="selectType('vpn')">VPN/IP Issue</button>
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="field-label">Why should your ban be lifted?</label>
+        <textarea class="field-input" id="appeal-reason" placeholder="Explain your situation clearly. The more detail the better..." maxlength="1000"></textarea>
+      </div>
+
+      <div class="field">
+        <label class="field-label">What will you do differently?</label>
+        <textarea class="field-input" id="appeal-promise" placeholder="What have you learned? What will change?" maxlength="500"></textarea>
+      </div>
+
+      <div class="field">
+        <label class="field-label">Additional Contact (optional)</label>
+        <input class="field-input" id="appeal-contact" type="text" placeholder="Discord tag or Roblox username for follow-up" maxlength="100">
+      </div>
+
+      <button class="submit-btn" id="submit-btn" onclick="submitAppeal()">📤 Submit Appeal</button>
+      <div class="msg-box msg-err" id="appeal-err"></div>
+      <div class="msg-box msg-ok" id="appeal-ok"></div>
+    </div>
+  </div>`);
+}
+
+function selectType(type){
+  selectedBanType=type;
+  ['permanent','temp','false','vpn'].forEach(t=>{
+    const btn=document.getElementById('type-'+t);
+    if(btn)btn.classList.toggle('active',t===type);
+  });
+}
+
+/* ── SUBMIT ── */
+async function submitAppeal(){
+  const reason=document.getElementById('appeal-reason')?.value.trim();
+  const promise=document.getElementById('appeal-promise')?.value.trim();
+  const contact=document.getElementById('appeal-contact')?.value.trim();
+  const errEl=document.getElementById('appeal-err');
+  const okEl=document.getElementById('appeal-ok');
+  const btn=document.getElementById('submit-btn');
+
+  errEl.classList.remove('show');okEl.classList.remove('show');
+
+  if(!reason||reason.length<20){
+    errEl.textContent='Please provide a detailed reason (at least 20 characters).';
+    errEl.classList.add('show');return;
+  }
+  if(!promise||promise.length<10){
+    errEl.textContent='Please fill in what you\'ll do differently.';
+    errEl.classList.add('show');return;
+  }
+
+  btn.disabled=true;btn.textContent='Sending...';
+
+  try{
+    const banTypLabels={permanent:'Permanent Ban',temp:'Temporary Ban','false':'False Ban / Mistake',vpn:'VPN / IP Issue'};
+    const typeColors={permanent:0xff4f5e,temp:0xffc832,'false':0x0ff4c6,vpn:0xa78bfa};
+
+    await fetch(WEBHOOK,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        embeds:[{
+          title:'📋 New Ban Appeal',
+          color:typeColors[selectedBanType]||0xff4f5e,
+          fields:[
+            {name:'👤 Username',value:banInfo.username,inline:true},
+            {name:'🌐 IP',value:banInfo.ip,inline:true},
+            {name:'📂 Ban Type',value:banTypLabels[selectedBanType]||selectedBanType,inline:true},
+            {name:'🚫 Original Ban Reason',value:banInfo.reason},
+            {name:'💬 Why should ban be lifted?',value:reason.slice(0,1000)},
+            {name:'✅ What will change?',value:promise.slice(0,500)},
+            ...(contact?[{name:'📞 Contact',value:contact,inline:true}]:[]),
+            {name:'⏱ Banned at',value:banInfo.banDate?new Date(banInfo.banDate).toLocaleString():'Unknown',inline:true},
+          ],
+          footer:{text:'Conch & Cmdr Ban Appeal · '+new Date().toLocaleString()},
+          thumbnail:{url:'https://systems-download.github.io/icon.svg'}
+        }]
+      })
+    });
+
+    /* Save cooldown */
+    const cooldownKey='cc_appeal_sent_'+banInfo.ip;
+    localStorage.setItem(cooldownKey,Date.now().toString());
+
+    /* Show success */
+    setRoot(`<div class="appeal-card"><div class="success-state">
+      <span class="success-icon">✅</span>
+      <div class="success-title">Appeal Submitted!</div>
+      <div class="success-desc">Your appeal has been sent to the admins.<br>You'll be contacted via Discord or Roblox if provided.<br><br>Please allow up to <strong>48 hours</strong> for a response.</div>
+    </div></div>`);
+  }catch(e){
+    errEl.textContent='Failed to send appeal. Please try again.';
+    errEl.classList.add('show');
+    btn.disabled=false;btn.textContent='📤 Submit Appeal';
+  }
+}
+
+init();
+</script>
+</body>
+</html>
