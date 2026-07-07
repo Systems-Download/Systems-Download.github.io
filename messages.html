@@ -1193,39 +1193,21 @@ function clearReply(){
 
 /* ── LINK PREVIEW ── */
 const URL_REGEX=/https?:\/\/[^\s]+/g;
-const previewCache={};
 
-async function fetchLinkPreview(url){
-  if(previewCache[url])return previewCache[url];
+function renderLinkPreview(url){
   try{
-    // Use allorigins proxy to avoid CORS
-    const proxy=`https://api.allorigins.win/get?url=${encodeURIComponent(url)}`;
-    const r=await fetch(proxy,{signal:AbortSignal.timeout(4000)});
-    if(!r.ok)return null;
-    const d=await r.json();
-    const html=d.contents||'';
-    const parser=new DOMParser();
-    const doc=parser.parseFromString(html,'text/html');
-    const title=doc.querySelector('meta[property="og:title"]')?.content||doc.querySelector('title')?.textContent||'';
-    const desc=doc.querySelector('meta[property="og:description"]')?.content||doc.querySelector('meta[name="description"]')?.content||'';
-    const img=doc.querySelector('meta[property="og:image"]')?.content||'';
-    const site=new URL(url).hostname.replace('www.','');
-    const result={title:title.slice(0,80),desc:desc.slice(0,120),img,site,url};
-    previewCache[url]=result;
-    return result;
-  }catch{return null;}
-}
-
-function renderLinkPreview(preview,url){
-  if(!preview||!preview.title)return'';
-  return`<div class="link-preview" onclick="window.open('${eh(url)}','_blank')">
-    ${preview.img?`<img class="link-preview-img show" src="${eh(preview.img)}" alt="" onerror="this.style.display='none'">`:''}
-    <div class="link-preview-body">
-      <div class="link-preview-site">${eh(preview.site)}</div>
-      <div class="link-preview-title">${eh(preview.title)}</div>
-      ${preview.desc?`<div class="link-preview-desc">${eh(preview.desc)}</div>`:''}
-    </div>
-  </div>`;
+    const u=new URL(url);
+    const site=u.hostname.replace('www.','');
+    const path=u.pathname.slice(0,40)+(u.pathname.length>40?'...':'');
+    return`<a href="${eh(url)}" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:.5rem;margin-top:.35rem;padding:.4rem .7rem;background:var(--surface2);border:1px solid var(--border);border-radius:8px;text-decoration:none;transition:border-color .15s;max-width:280px" onmouseover="this.style.borderColor='rgba(167,139,250,.35)'" onmouseout="this.style.borderColor='var(--border)'">
+      <span style="font-size:.85rem">🔗</span>
+      <div style="min-width:0">
+        <div style="font-family:var(--mono);font-size:.62rem;color:var(--purple);text-transform:uppercase;letter-spacing:.04em">${eh(site)}</div>
+        <div style="font-family:var(--mono);font-size:.68rem;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${eh(path||u.href.slice(0,40))}</div>
+      </div>
+      <span style="font-family:var(--mono);font-size:.65rem;color:var(--muted);flex-shrink:0">↗</span>
+    </a>`;
+  }catch{return'';}
 }
 
 /* ── STICKER PICKER ── */
@@ -1337,21 +1319,12 @@ function loadPinned(){
 
 /* ── OVERRIDE renderMsgs to support reply quotes, stickers, link previews ── */
 const _origRenderMsgs=renderMsgs;
-renderMsgs=async function(rows){
+renderMsgs=function(rows){
   const th=document.getElementById('thread');
   const atBot=th.scrollHeight-th.scrollTop-th.clientHeight<120;
   if(!rows.length){th.innerHTML='<div class="empty" style="margin-top:2rem">No messages yet. Say hi! 👋</div>';return;}
 
   let html='';let lastDate='';
-  const linkPreviews={};
-
-  // Pre-fetch link previews for visible messages
-  for(const m of rows){
-    const urls=m.text.match(URL_REGEX);
-    if(urls&&urls[0]&&!previewCache[urls[0]]){
-      try{previewCache[urls[0]]=await fetchLinkPreview(urls[0]);}catch{}
-    }
-  }
 
   rows.forEach(m=>{
     const own=m.from_user_id===ME.id;
@@ -1392,8 +1365,8 @@ renderMsgs=async function(rows){
     let previewHTML='';
     if(!stickerMatch){
       const urls=m.text.match(URL_REGEX);
-      if(urls&&urls[0]&&previewCache[urls[0]]){
-        previewHTML=renderLinkPreview(previewCache[urls[0]],urls[0]);
+      if(urls&&urls[0]){
+        previewHTML=renderLinkPreview(urls[0]);
       }
     }
 
