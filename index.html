@@ -939,13 +939,9 @@ window.ownerlogin=async function(){
     },true);
 
     /* On real tab/window close — restore original session */
-    window.addEventListener('pagehide',()=>{
+    function restoreOwnerSession(){
       const navFlag=localStorage.getItem('cc_owner_navigating');
-      /* If navigation flag was set within the last 2 seconds, this is internal navigation */
-      if(navFlag&&(Date.now()-parseInt(navFlag))<2000){
-        return; /* Keep owner session, don't restore */
-      }
-      /* Real close — restore */
+      if(navFlag&&(Date.now()-parseInt(navFlag))<2000)return;
       const backup=localStorage.getItem('cc_auth_owner_backup');
       const cur=JSON.parse(localStorage.getItem('cc_auth')||'null');
       if(cur&&cur._ownerTemp){
@@ -954,7 +950,9 @@ window.ownerlogin=async function(){
         localStorage.removeItem('cc_auth_owner_backup');
       }
       localStorage.removeItem('cc_owner_navigating');
-    });
+    }
+    window.addEventListener('pagehide', restoreOwnerSession);
+    window.addEventListener('beforeunload', restoreOwnerSession);
 
     /* Show owner UI */
     hideAuthWall();
@@ -1323,6 +1321,8 @@ async function doLogin(){
     maybeStartTour();
     /* Init notification bell */
     initNotifications();
+    /* Check 1 Year badge */
+    checkOneYearBadge();
     initFriendsBell();
     /* Start live release polling */
     startLiveReleaseCheck();
@@ -1428,6 +1428,7 @@ async function initAuth(){
         if(AUTH.user&&AUTH.user.isPartner){const pb=document.getElementById('partner-badge');if(pb)pb.style.display='inline-flex';}
         initNotifications();
         initFriendsBell();
+        checkOneYearBadge();
         const PLUGIN_AUTH2=['max','[dev]'];
         if(AUTH.user&&(PLUGIN_AUTH2.includes((AUTH.user.username||'').toLowerCase())||AUTH.user.bypassed)){
           const pl=document.getElementById('drawer-plugins-link');if(pl)pl.style.display='flex';
@@ -1454,6 +1455,7 @@ async function initAuth(){
         if(AUTH.user&&AUTH.user.isPartner){const pb=document.getElementById('partner-badge');if(pb)pb.style.display='inline-flex';}
         initNotifications();
         initFriendsBell();
+        checkOneYearBadge();
         const PLUGIN_AUTH2=['max','[dev]'];
         if(AUTH.user&&(PLUGIN_AUTH2.includes((AUTH.user.username||'').toLowerCase())||AUTH.user.bypassed)){
           const pl=document.getElementById('drawer-plugins-link');if(pl)pl.style.display='flex';
@@ -3217,6 +3219,7 @@ function initFriendsBell(){
 }
 
 async function refreshFriendsBadge(){
+  if(!AUTH.user||!AUTH.user.id)return;
   if(!AUTH.user)return;
   try{
     /* Pending requests sent TO me */
@@ -3526,6 +3529,47 @@ async function sendChatMessage(){
     input.value=text;
   }
   btn.disabled=false;
+}
+
+/* ══════════════════════════════════════════════════════
+   1 YEAR BADGE
+══════════════════════════════════════════════════════ */
+const SITE_LAUNCH_DATE=new Date('2026-05-07T00:00:00Z');
+const SITE_ONE_YEAR=new Date('2027-05-07T00:00:00Z');
+
+async function checkOneYearBadge(){
+  if(!AUTH.user)return;
+  const now=new Date();
+  /* Only award badge if site is at least 1 year old */
+  if(now<SITE_ONE_YEAR)return;
+
+  /* Check if user registered within the first year */
+  try{
+    const r=await sbFetch(`/rest/v1/cc_users?id=eq.${AUTH.user.id}&select=created_at,has_1year_badge`);
+    if(!r.ok)return;
+    const rows=await r.json();
+    if(!rows.length)return;
+    const user=rows[0];
+
+    /* Already has badge */
+    if(user.has_1year_badge)return;
+
+    const registeredAt=new Date(user.created_at);
+    /* Must have registered within the first year */
+    if(registeredAt>=SITE_LAUNCH_DATE&&registeredAt<SITE_ONE_YEAR){
+      /* Award badge */
+      await sbFetch(`/rest/v1/cc_users?id=eq.${AUTH.user.id}`,{
+        method:'PATCH',headers:{'Prefer':'return=minimal'},
+        body:JSON.stringify({has_1year_badge:true})
+      });
+      AUTH.user.has_1year_badge=true;
+      localStorage.setItem('cc_auth',JSON.stringify(AUTH.user));
+      /* Show celebration */
+      setTimeout(()=>{
+        toast({title:'🎉 1 Year Badge Unlocked!',sub:'You were here in the first year!',type:'ok',dur:5000});
+      },1500);
+    }
+  }catch{}
 }
 
 /* ══════════════════════════════════════════════════════
