@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Conch & Cmdr — Bug Report</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
@@ -140,6 +141,30 @@ footer{text-align:center;padding:3rem 2rem;font-family:var(--mono);font-size:.72
   .cat-grid{grid-template-columns:1fr 1fr}
 }
 </style>
+
+<script>
+/* ── CC SETTINGS LOADER ── */
+(function(){
+  function get(key,def){return localStorage.getItem(key)??def;}
+  /* Theme */
+  const useSystem=get('cc_system_theme','0')==='1';
+  if(useSystem){
+    document.documentElement.classList.toggle('light-mode',window.matchMedia('(prefers-color-scheme:light)').matches);
+  }else{
+    if(get('cc_theme','dark')==='light')document.documentElement.classList.add('light-mode');
+  }
+  /* Accent color */
+  const accent=get('cc_accent','#0ff4c6');
+  if(accent&&accent!=='#0ff4c6')document.documentElement.style.setProperty('--conch',accent);
+  /* Animations */
+  if(get('cc_animations','1')==='0'){
+    const s=document.createElement('style');
+    s.textContent='*{animation-duration:0.001ms!important;transition-duration:0.001ms!important}';
+    document.head.appendChild(s);
+  }
+})();
+</script>
+<script src="i18n.js"></script>
 </head>
 <body>
 
@@ -294,7 +319,7 @@ footer{text-align:center;padding:3rem 2rem;font-family:var(--mono);font-size:.72
 
 <script>
 /* ── CONFIG ── */
-const DISCORD_WEBHOOK='https://discord.com/api/webhooks/1520222495611814069/6OIqBwb384bFgQZ8SuwnmVlZXYAMdI01kDNCvTJYoqoa-T_OUMOrZQeCJFTsjrImYo0T';
+const DISCORD_WEBHOOK='https://discord.com/api/webhooks/1510446146458353747/pnX8TWoZRQsPb9zK5UY5XK1jET80JB9r-DvafMdDVAauLRKCCvGPUha_SvkmtLcoG31p';
 const SB_URL='https://rmdkoauibmzhgnvrwhfd.supabase.co';
 const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJtZGtvYXVpYm16aGdudnJ3aGZkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyNjg2MDksImV4cCI6MjA5Mzg0NDYwOX0.lu6T00f9y9-Q8HhVag-MGjJz6bTlJrYUwC7AApIxaFw';
 
@@ -526,5 +551,6 @@ document.addEventListener('keydown',e=>{
   if((e.ctrlKey||e.metaKey)&&e.key==='Enter'){submitReport();}
 });
 </script>
+<script src="cursor-trail.js"></script>
 </body>
 </html>
