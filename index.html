@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Conch & Cmdr — Downloads</title>
 <div class="page-transition" id="page-transition"></div>
@@ -1994,6 +1995,15 @@ function doSearch(sec){
 function clearSearch(sec){document.getElementById('search-'+sec).value='';doSearch(sec)}
 
 let _uid=0;
+function toggleNotes(id){
+  const wrap=document.getElementById('notes-'+id);
+  const btn=document.getElementById('notes-btn-'+id);
+  if(!wrap)return;
+  const isOpen=wrap.classList.contains('open');
+  wrap.classList.toggle('open',!isOpen);
+  if(btn)btn.classList.toggle('open',!isOpen);
+}
+
 function toggleHist(id){const p=document.getElementById('h-'+id),b=document.getElementById('hb-'+id),o=p.classList.contains('open');p.classList.toggle('open',!o);b.classList.toggle('open',!o)}
 
 function showSkel(id,n=3){document.getElementById(id).innerHTML=Array.from({length:n},()=>`<div class="skel-item"><div class="skel skel-ico"></div><div class="skel-body"><div class="skel skel-l w80"></div><div class="skel skel-l w50"></div></div><div class="skel skel-btn"></div></div>`).join('')}
@@ -2179,7 +2189,7 @@ async function fetchReleases(){
         const isC=lo.includes('conch'),isR=lo.includes('cmdr');
         if(!isC&&!isR)return;
         const isBeta=lo.includes('beta');
-        const entry={name:nm,size:fmtB(a.size),date,version:rel.tag_name||rel.name||'v?',url:a.browser_download_url,ts:rel.published_at,isNew,isBeta};
+        const entry={name:nm,size:fmtB(a.size),date,version:rel.tag_name||rel.name||'v?',url:a.browser_download_url,ts:rel.published_at,isNew,isBeta,notes:rel.body||''};
         /* Key: strip ONLY trailing version like _v1.2 or -v2 at end before .rbxm */
         const key=nm.replace(/[_\-]v[\d][\d.]*(?=\.rbxm$)/i,'').replace(/\.rbxm$/i,'').toLowerCase();
         if(isC&&isBeta){if(!cbm[key])cbm[key]=[];cbm[key].push(entry);}
@@ -2244,6 +2254,7 @@ function render(sec,groups,cls){
         </div>
       </div>
       <div class="dl-progress-wrap"><div class="dl-progress-bar dlp-${cls}"></div></div>
+      ${latest.notes?`<div style="padding:.4rem 1rem 0;display:flex"><button class="btn-notes" id="notes-btn-${id}" onclick="toggleNotes(${id})">📋 Release Notes <span class="arr">▾</span></button></div><div class="release-notes-wrap" id="notes-${id}"><div class="release-notes-inner">${eh(latest.notes)}</div></div>`:''}
       ${histHTML}
       <div class="file-extras">
         <div class="reactions-row" id="reactions-${id}">
