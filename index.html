@@ -2260,20 +2260,9 @@ function render(sec,groups,cls){
         <div class="reactions-row" id="reactions-${id}">
           <span style="font-family:var(--mono);font-size:.68rem;color:var(--muted);opacity:.5">Loading reactions...</span>
         </div>
-        <button class="comments-toggle" id="ctoggle-${id}" onclick="toggleComments('${id}','${fkEsc}')">
-          <span>💬</span><span>Comments</span><span class="reaction-count" id="ccount-${id}"></span><span class="arr">▾</span>
-        </button>
-        <div class="comments-section" id="csection-${id}">
-          <div class="comment-input-row">
-            <input class="comment-input" id="cinput-${id}" type="text" placeholder="Write a comment..." maxlength="300" onkeydown="if(event.key==='Enter')postComment('${id}','${fkEsc}')">
-            <button class="comment-send-btn" onclick="postComment('${id}','${fkEsc}')">Send</button>
-          </div>
-          <div id="clist-${id}"><div class="comments-loading">Loading comments...</div></div>
-        </div>
       </div>`;
     list.appendChild(el);
 
-    /* Load reactions immediately (lightweight) */
     loadReactions(id,fileKey);
   })
 }
