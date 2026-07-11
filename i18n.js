@@ -1,5 +1,5 @@
 /* ══════════════════════════════════════════════════════
-   CC TRANSLATIONS — loaded on every page
+   CC TRANSLATIONS
 ══════════════════════════════════════════════════════ */
 const CC_TRANSLATIONS = {
   en: {
@@ -26,8 +26,7 @@ const CC_TRANSLATIONS = {
     messages_title:'Messages', messages_add:'Add Friend', messages_requests:'Requests',
     messages_chats:'Chats', messages_search:'Search conversations...',
     messages_placeholder:'Message...', messages_send:'Send', messages_empty:'Select a conversation',
-    messages_no_friends:'No conversations yet.
-Add a friend to get started!',
+    messages_no_friends:'No conversations yet. Add a friend to get started!',
     offline:'Offline', online:'Online', last_seen:'Last seen',
   },
   de: {
@@ -44,7 +43,7 @@ Add a friend to get started!',
     bugreport_title:'Bug melden', bugreport_sub:'Etwas kaputt gefunden? Sag uns Bescheid!',
     bugreport_category:'Kategorie', bugreport_title_field:'Titel', bugreport_desc:'Beschreibung',
     bugreport_name:'Dein Name (optional)', bugreport_send:'Bericht senden',
-    settings_title:'Einstellungen', settings_sub:'Deine Einstellungen werden lokal gespeichert und auf allen Seiten angewendet.',
+    settings_title:'Einstellungen', settings_sub:'Deine Einstellungen werden lokal gespeichert.',
     profile_member_since:'Mitglied seit', profile_followers:'Follower', profile_following:'Folge ich',
     profile_comments:'Kommentare', profile_reactions:'Reaktionen', profile_copy_link:'Link kopieren',
     profile_follow:'+ Folgen', profile_following_btn:'✓ Folge ich',
@@ -54,8 +53,7 @@ Add a friend to get started!',
     messages_title:'Nachrichten', messages_add:'Freund hinzufügen', messages_requests:'Anfragen',
     messages_chats:'Chats', messages_search:'Gespräche suchen...',
     messages_placeholder:'Nachricht...', messages_send:'Senden', messages_empty:'Gespräch auswählen',
-    messages_no_friends:'Noch keine Gespräche.
-Füge einen Freund hinzu!',
+    messages_no_friends:'Noch keine Gespräche. Füge einen Freund hinzu!',
     offline:'Offline', online:'Online', last_seen:'Zuletzt gesehen',
   },
   es: {
@@ -82,17 +80,16 @@ Füge einen Freund hinzu!',
     messages_title:'Mensajes', messages_add:'Añadir amigo', messages_requests:'Solicitudes',
     messages_chats:'Chats', messages_search:'Buscar conversaciones...',
     messages_placeholder:'Mensaje...', messages_send:'Enviar', messages_empty:'Selecciona una conversación',
-    messages_no_friends:'Sin conversaciones aún.
-¡Añade un amigo!',
+    messages_no_friends:'Sin conversaciones. ¡Añade un amigo!',
     offline:'Desconectado', online:'En línea', last_seen:'Visto por última vez',
   },
   fr: {
     nav_downloads:'Téléchargements', nav_changelog:'Historique', nav_settings:'Paramètres',
     nav_messages:'Messages', nav_favorites:'Mes Favoris', nav_bugreport:'Signaler un bug',
     nav_plugins:'Plugins', nav_profile:'Profil', nav_logout:'Déconnexion',
-    login_title:'Bon retour', login_username:'Nom d'utilisateur', login_password:'Mot de passe',
-    login_btn:'Connexion', login_no_account:'Pas de compte ?', login_register:'S'inscrire',
-    register_title:'Créer un compte', register_username:'Nom d'utilisateur', register_password:'Mot de passe',
+    login_title:'Bon retour', login_username:"Nom d'utilisateur", login_password:'Mot de passe',
+    login_btn:'Connexion', login_no_account:'Pas de compte ?', login_register:"S'inscrire",
+    register_title:'Créer un compte', register_username:"Nom d'utilisateur", register_password:'Mot de passe',
     register_btn:'Créer un compte', register_have_account:'Déjà un compte ?',
     section_conch:'Conch', section_cmdr:'Cmdr',
     download_btn:'Télécharger', share_btn:'Lien', new_badge:'NOUVEAU', trending_badge:'🔥 Tendance',
@@ -110,8 +107,7 @@ Füge einen Freund hinzu!',
     messages_title:'Messages', messages_add:'Ajouter un ami', messages_requests:'Demandes',
     messages_chats:'Discussions', messages_search:'Rechercher des conversations...',
     messages_placeholder:'Message...', messages_send:'Envoyer', messages_empty:'Sélectionner une conversation',
-    messages_no_friends:'Pas encore de conversations.
-Ajoutez un ami !',
+    messages_no_friends:'Pas encore de conversations. Ajoutez un ami !',
     offline:'Hors ligne', online:'En ligne', last_seen:'Vu dernièrement',
   },
   ja: {
@@ -138,42 +134,37 @@ Ajoutez un ami !',
     messages_title:'メッセージ', messages_add:'友達を追加', messages_requests:'リクエスト',
     messages_chats:'チャット', messages_search:'会話を検索...',
     messages_placeholder:'メッセージ...', messages_send:'送信', messages_empty:'会話を選択してください',
-    messages_no_friends:'会話がまだありません。
-友達を追加してください！',
+    messages_no_friends:'会話がまだありません。友達を追加してください！',
     offline:'オフライン', online:'オンライン', last_seen:'最終確認',
   },
 };
 
-/* Fill in missing keys from English */
-Object.keys(CC_TRANSLATIONS).forEach(lang=>{
+/* Fill missing keys from English */
+Object.keys(CC_TRANSLATIONS).forEach(function(lang){
   if(lang==='en')return;
-  Object.keys(CC_TRANSLATIONS.en).forEach(key=>{
+  Object.keys(CC_TRANSLATIONS.en).forEach(function(key){
     if(!CC_TRANSLATIONS[lang][key])CC_TRANSLATIONS[lang][key]=CC_TRANSLATIONS.en[key];
   });
 });
 
 function t(key){
-  const lang=localStorage.getItem('cc_lang')||'en';
+  var lang=localStorage.getItem('cc_lang')||'en';
   return(CC_TRANSLATIONS[lang]||CC_TRANSLATIONS.en)[key]||CC_TRANSLATIONS.en[key]||key;
 }
 
-/* Apply translations to elements with data-t attribute */
 function applyTranslations(){
-  const lang=localStorage.getItem('cc_lang')||'en';
-  document.querySelectorAll('[data-t]').forEach(el=>{
-    const key=el.getAttribute('data-t');
-    const val=t(key);
+  document.querySelectorAll('[data-t]').forEach(function(el){
+    var key=el.getAttribute('data-t');
+    var val=t(key);
     if(el.tagName==='INPUT'||el.tagName==='TEXTAREA'){el.placeholder=val;}
     else{el.textContent=val;}
   });
-  document.querySelectorAll('[data-t-title]').forEach(el=>{
+  document.querySelectorAll('[data-t-title]').forEach(function(el){
     el.title=t(el.getAttribute('data-t-title'));
   });
-  /* Update html lang attribute */
-  document.documentElement.lang=lang;
+  document.documentElement.lang=localStorage.getItem('cc_lang')||'en';
 }
 
-/* Auto-apply on DOMContentLoaded */
 if(document.readyState==='loading'){
   document.addEventListener('DOMContentLoaded',applyTranslations);
 }else{
