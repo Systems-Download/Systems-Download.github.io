@@ -1220,10 +1220,12 @@ async function doLogin(){
 
     /* Fetch user */
     const r=await sbFetch(`/rest/v1/cc_users?username=eq.${encodeURIComponent(name.toLowerCase())}&select=id,username,display_name,password_hash,ip,ip_locked,is_banned,is_frozen,freeze_reason,temp_ban_until,temp_ban_reason,failed_attempts,locked_until,role,email,email_verified`);
-    const users=await r.json();
+    if(!r.ok){setAuthErr('login','Server error. Please try again later.');btn.disabled=false;btn.textContent='Login';return;}
+    const users=await r.json().catch(()=>[]);
 
-    if(!users||users.length===0){setAuthErr('login','Username not found.');btn.disabled=false;btn.textContent='Login';return;}
+    if(!users||!Array.isArray(users)||users.length===0){setAuthErr('login','Username not found.');btn.disabled=false;btn.textContent='Login';return;}
     const user=users[0];
+    if(!user||typeof user!=='object'){setAuthErr('login','Username not found.');btn.disabled=false;btn.textContent='Login';return;}
 
     if(user.is_banned){
       showBanWall(ip,'Your account has been banned.');
