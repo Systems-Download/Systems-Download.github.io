@@ -1089,7 +1089,12 @@ async function doRegister(){
       btn.disabled=false;btn.textContent='Register';
     }
   }catch(e){
-    setAuthErr('reg','Network error. Please try again.');
+    const msg=e&&e.message?e.message:'';
+    if(msg.includes('Failed to fetch')||msg.includes('NetworkError')||msg.includes('network')){
+      setAuthErr('reg','Network error — check your internet connection and try again.');
+    }else{
+      setAuthErr('reg','Something went wrong. Please try again. ('+(msg||'unknown error')+')');
+    }
     btn.disabled=false;btn.textContent='Register';
   }
 }
@@ -1329,7 +1334,12 @@ async function doLogin(){
     startLiveReleaseCheck();
 
   }catch(e){
-    setAuthErr('login','Network error. Please try again.');
+    const msg=e&&e.message?e.message:'';
+    if(msg.includes('Failed to fetch')||msg.includes('NetworkError')||msg.includes('network')){
+      setAuthErr('login','Network error — check your internet connection and try again.');
+    }else{
+      setAuthErr('login','Something went wrong. Please try again. ('+(msg||'unknown error')+')');
+    }
     btn.disabled=false;btn.textContent='Login';
   }
 }
