@@ -2,7 +2,6 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<link rel="icon" href="icon.svg" type="image/svg+xml">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Conch & Cmdr — Downloads</title>
 <div class="page-transition" id="page-transition"></div>
@@ -1219,7 +1218,7 @@ async function doLogin(){
     const hash=await hashPass(pw);
 
     /* Fetch user */
-    const r=await sbFetch(`/rest/v1/cc_users?username=eq.${encodeURIComponent(name.toLowerCase())}&select=id,username,display_name,password_hash,ip,ip_locked,is_banned,is_frozen,freeze_reason,temp_ban_until,temp_ban_reason,failed_attempts,locked_until,role,email`);
+    const r=await sbFetch(`/rest/v1/cc_users?username=eq.${encodeURIComponent(name.toLowerCase())}&select=id,username,display_name,password_hash,ip,ip_locked,is_banned,is_frozen,freeze_reason,temp_ban_until,temp_ban_reason,failed_attempts,locked_until,role`);
     if(!r.ok){setAuthErr('login','Server error. Please try again later.');btn.disabled=false;btn.textContent='Login';return;}
     const users=await r.json().catch(()=>[]);
 
