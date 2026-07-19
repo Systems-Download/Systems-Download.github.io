@@ -207,6 +207,7 @@ footer{text-align:center;padding:3rem 2.5rem;font-family:var(--mono);font-size:.
   }
 })();
 </script>
+<script src="i18n.js"></script>
 </head>
 <body>
 
@@ -224,7 +225,7 @@ footer{text-align:center;padding:3rem 2.5rem;font-family:var(--mono);font-size:.
 <div class="hero">
   <div class="hero-tag">📋 Release History</div>
   <h1>What's <em>New</em></h1>
-  <p class="hero-sub">Every release, every change — all in one place.</p>
+  <p class="hero-sub"><span data-t="changelog_sub">Every release, every change — all in one place.</span></p>
 </div>
 
 <!-- STATS -->
@@ -553,5 +554,7 @@ async function loadAnnouncements(){
 fetchReleases();
 loadAnnouncements();
 </script>
+<script src="cursor-trail.js"></script>
+<script src="seasonal.js"></script>
 </body>
 </html>
