@@ -996,6 +996,32 @@ tr:hover td{background:rgba(255,255,255,.02)}
       </div>
     </div>
 
+
+<!-- RESET PASSWORD MODAL -->
+<div class="modal-overlay" id="resetpw-modal" style="display:none" onclick="if(event.target===this)closeResetPW()">
+  <div class="modal-box" style="max-width:400px">
+    <div class="modal-title">Reset Password</div>
+    <div style="font-family:var(--mono);font-size:.75rem;color:var(--muted);margin-bottom:1rem">Resetting for: <strong id="resetpw-username" style="color:var(--text)"></strong></div>
+    <div style="margin-bottom:.85rem">
+      <div class="modal-label">New Password</div>
+      <div style="display:flex;gap:.5rem">
+        <input class="modal-input" id="resetpw-input" type="text" placeholder="Enter new password..." style="flex:1">
+        <button class="btn-action btn-primary" onclick="generateResetPW()" style="flex-shrink:0">Generate</button>
+      </div>
+    </div>
+    <div id="resetpw-result" style="display:none;margin-bottom:.85rem;padding:.7rem .9rem;background:rgba(15,244,198,.06);border:1px solid rgba(15,244,198,.2);border-radius:8px;font-family:var(--mono);font-size:.78rem">
+      <div style="color:var(--muted);margin-bottom:.3rem;font-size:.65rem">New password set:</div>
+      <div style="color:var(--conch);font-weight:700;font-size:.9rem" id="resetpw-show"></div>
+      <div style="color:var(--muted);font-size:.65rem;margin-top:.3rem">Share this with the user so they can log in.</div>
+    </div>
+    <div style="display:flex;gap:.5rem">
+      <button class="btn-gold" style="flex:1;font-family:var(--mono);font-size:.78rem;padding:.6rem;border-radius:8px;cursor:pointer;font-weight:600" onclick="confirmResetPW()">Set Password</button>
+      <button class="btn-action" style="flex:1;font-family:var(--mono);font-size:.78rem;padding:.6rem;border-radius:8px;cursor:pointer" onclick="copyResetPW()">Copy</button>
+    </div>
+    <button class="btn-action" style="width:100%;margin-top:.5rem;font-family:var(--mono);font-size:.75rem;padding:.5rem;border-radius:7px;cursor:pointer" onclick="closeResetPW()">Close</button>
+  </div>
+</div>
+
   </div><!-- end .main -->
 </div><!-- end .layout -->
 
@@ -1216,6 +1242,7 @@ function renderUsers(users){
             ${!u.is_frozen&&!u.is_banned?`<button class="btn-action" style="background:rgba(100,160,255,.08);color:#64a0ff;border-color:rgba(100,160,255,.15)" onclick="openFreezeModal('${eh(u.id)}','${eh(u.display_name||u.username||'unknown')}')">🧊 Freeze</button>`:''}
             <button class="btn-action ${u.role==='beta'?'btn-unban':'btn-gold'}" onclick="toggleBeta('${eh(u.id)}','${u.role==='beta'?'user':'beta'}')">${u.role==='beta'?'👤 Remove Beta':'🧪 Set Beta'}</button>
             ${u.locked_until&&new Date(u.locked_until)>new Date()?`<button class="btn-action btn-unban" onclick="unlockUser('${eh(u.id)}')">🔓 Unlock</button>`:''}
+            <button class="btn-action" style="background:rgba(15,244,198,.06);color:var(--conch);border-color:rgba(15,244,198,.2)" onclick="resetUserPassword('${eh(u.id)}','${eh(u.display_name||u.username||'unknown')}')">Reset PW</button>
             <button class="btn-action btn-delete" onclick="openDeleteModal('${eh(u.id)}','${eh(u.display_name||u.username||'unknown')}')">🗑️ Delete</button>
           `:'<span class="td-muted" style="font-size:.65rem">Protected</span>'}
         </div>
@@ -2359,6 +2386,96 @@ async function quickBanIP(ip){
     toast('IP banned: '+ip,'ok');
     loadIPStats();
   }catch(e){toast('Failed: '+e.message,'err');}
+}
+
+/* ── RESET PASSWORD ── */
+let _resetPWUserId=null;
+
+function resetUserPassword(id,username){
+  _resetPWUserId=id;
+  document.getElementById('resetpw-username').textContent=username;
+  document.getElementById('resetpw-input').value='';
+  document.getElementById('resetpw-result').style.display='none';
+  document.getElementById('resetpw-modal').style.display='flex';
+}
+
+function closeResetPW(){
+  document.getElementById('resetpw-modal').style.display='none';
+  _resetPWUserId=null;
+}
+
+function generateResetPW(){
+  const chars='ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789';
+  let pw='';for(let i=0;i<12;i++)pw+=chars[Math.floor(Math.random()*chars.length)];
+  document.getElementById('resetpw-input').value=pw;
+}
+
+async function hashPWCC(pw){
+  const buf=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(pw));
+  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+
+async function confirmResetPW(){
+  if(!_resetPWUserId)return;
+  const pw=document.getElementById('resetpw-input').value.trim();
+  if(!pw||pw.length<6){toast('Password must be at least 6 characters','err');return;}
+  try{
+    const hash=await hashPWCC(pw);
+    await sb('/rest/v1/cc_users?id=eq.'+_resetPWUserId,{
+      method:'PATCH',headers:{'Prefer':'return=minimal'},
+      body:JSON.stringify({password_hash:hash,failed_attempts:0,locked_until:null})
+    });
+    document.getElementById('resetpw-show').textContent=pw;
+    document.getElementById('resetpw-result').style.display='block';
+    document.getElementById('resetpw-input').value='';
+    toast('Password reset successfully','ok');
+  }catch(e){toast('Failed: '+e.message,'err');}
+}
+
+function copyResetPW(){
+  const pw=document.getElementById('resetpw-show').textContent;
+  if(!pw){toast('Set a password first','err');return;}
+  navigator.clipboard.writeText(pw).then(()=>toast('Password copied!','ok')).catch(()=>{});
+}
+
+/* ── THEME PREVIEW ── */
+const THEME_STYLES={
+  halloween:`
+    :root{--conch:#ff6b00!important;--cmdr:#7c3aed!important;--bg:#0d0a0f!important;--surface:#130f1a!important;--surface2:#1c1526!important;--border:rgba(255,107,0,0.12)!important}
+  `,
+  christmas:`
+    :root{--conch:#34d399!important;--cmdr:#ef4444!important;--bg:#080d0a!important;--surface:#0f1a12!important;--surface2:#162219!important;--border:rgba(52,211,153,0.1)!important}
+  `,
+  easter:`
+    :root{--conch:#f472b6!important;--cmdr:#a78bfa!important;--bg:#0d0a0d!important;--surface:#170f17!important;--surface2:#1f1520!important;--border:rgba(244,114,182,0.1)!important}
+  `,
+  newyear:`
+    :root{--conch:#fbbf24!important;--cmdr:#f97316!important;--bg:#0a0a08!important;--surface:#141410!important;--surface2:#1c1c16!important;--border:rgba(251,191,36,0.1)!important}
+  `,
+  birthday:`
+    :root{--conch:#f472b6!important;--cmdr:#fbbf24!important;--bg:#0a080d!important;--surface:#130f1a!important;--surface2:#1c1526!important;--border:rgba(244,114,182,0.15)!important}
+  `,
+};
+
+let _previewStyleEl=null;
+
+function previewTheme(name){
+  /* Remove existing preview */
+  if(_previewStyleEl){_previewStyleEl.remove();_previewStyleEl=null;}
+
+  /* Reset active state on buttons */
+  document.querySelectorAll('[id^="theme-btn-"]').forEach(b=>b.style.outline='none');
+  const activeBtn=document.getElementById('theme-btn-'+name);
+  if(activeBtn)activeBtn.style.outline='2px solid currentColor';
+
+  if(name==='none')return;
+
+  const css=THEME_STYLES[name];
+  if(!css)return;
+  _previewStyleEl=document.createElement('style');
+  _previewStyleEl.textContent=css;
+  document.head.appendChild(_previewStyleEl);
+  toast('Previewing '+name+' theme — resets on reload','ok');
 }
 
 /* ── INIT ── */
