@@ -1690,6 +1690,7 @@ function t(k,...a){const v=(T[lang]||T.en)[k];return typeof v==='function'?v(...
     <a class="drawer-item" href="messages.html" onclick="closeDrawer()"><span class="drawer-icon">💬</span><span>Messages</span></a>
     <a class="drawer-item" onclick="openFavModal();closeDrawer()"><span class="drawer-icon">⭐</span><span>My Favorites</span></a>
     <a class="drawer-item" href="bugreport.html" onclick="closeDrawer()"><span class="drawer-icon">🐛</span><span>Report a Bug</span></a>
+    <a class="drawer-item" onclick="copyInviteLink();closeDrawer()"><span class="drawer-icon">🔗</span><span>Invite Link</span></a>
     <a class="drawer-item" id="drawer-admin-link" href="cc-control.html" onclick="closeDrawer()" style="display:none;color:var(--gold);border-color:rgba(255,200,50,.15);background:rgba(255,200,50,.05)"><span class="drawer-icon">⚙️</span><span>CC Control</span></a>
     <a class="drawer-item" id="drawer-plugins-link" href="plugins.html" onclick="closeDrawer()" style="display:none;color:#a78bfa;border-color:rgba(167,139,250,.15);background:rgba(167,139,250,.05)"><span class="drawer-icon">🔒</span><span>Plugins</span></a>
     <div class="drawer-div"></div>
@@ -1869,8 +1870,20 @@ function t(k,...a){const v=(T[lang]||T.en)[k];return typeof v==='function'?v(...
    DRAWER + THEME + LANG + UTILS
 ═══════════════════════════════════════════ */
 let _dopen=false;
-function toggleDrawer(){_dopen?closeDrawer():openDrawer()}
+function toggleDrawer(){_dopen?closeDrawer():openDrawer();}
 function openDrawer(){_dopen=true;['drawer','drawer-overlay','burger-btn'].forEach(id=>document.getElementById(id).classList.add('open'));document.body.style.overflow='hidden'}
+function copyInviteLink(){
+  const link='https://systems-download.github.io';
+  navigator.clipboard.writeText(link).then(()=>{
+    toast({title:'Invite link copied!',sub:'Share it with your friends',type:'ok',dur:2500});
+  }).catch(()=>{
+    const ta=document.createElement('textarea');ta.value=link;document.body.appendChild(ta);ta.select();
+    try{document.execCommand('copy');}catch{}
+    document.body.removeChild(ta);
+    toast({title:'Invite link copied!',sub:'Share it with your friends',type:'ok',dur:2500});
+  });
+}
+
 function closeDrawer(){_dopen=false;['drawer','drawer-overlay','burger-btn'].forEach(id=>document.getElementById(id).classList.remove('open'));document.body.style.overflow=''}
 
 function toggleTheme(){
