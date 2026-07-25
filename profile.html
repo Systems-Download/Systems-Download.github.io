@@ -82,6 +82,9 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:cen
 .ubadge-role-partner{background:rgba(249,115,22,.1);color:#f97316;border:1px solid rgba(249,115,22,.25)}
 .ubadge-discord{background:rgba(88,101,242,.1);color:#8b9cf4;border:1px solid rgba(88,101,242,.2)}
 .ubadge-roblox{background:rgba(15,244,198,.08);color:var(--conch);border:1px solid rgba(15,244,198,.2)}
+.online-indicator{display:inline-flex;align-items:center;gap:.25rem;font-family:var(--mono);font-size:.58rem;padding:.1rem .35rem;border-radius:4px}
+.online-indicator.online{background:rgba(52,211,153,.1);color:#34d399;border:1px solid rgba(52,211,153,.2)}
+.online-indicator.offline{background:rgba(255,255,255,.04);color:var(--muted);border:1px solid var(--border)}
 .ubadge-1year{background:linear-gradient(90deg,rgba(255,200,50,.12),rgba(15,244,198,.12));color:var(--gold);border:1px solid rgba(255,200,50,.3);animation:year-shine 2s ease infinite}
 @keyframes year-shine{0%,100%{border-color:rgba(255,200,50,.3)}50%{border-color:rgba(15,244,198,.3);color:#0ff4c6}}
 .users-empty{grid-column:1/-1;text-align:center;padding:3rem;font-family:var(--mono);font-size:.82rem;color:var(--muted);opacity:.6}
@@ -214,6 +217,15 @@ function sb(path,opts={}){
   return fetch(SB_URL+path,{headers:{...h,...(opts.headers||{})},method:m,...(opts.body?{body:opts.body}:{})});
 }
 
+function getOnlineStatus(lastLogin){
+  if(!lastLogin)return{label:'Offline',cls:'offline'};
+  const diff=(Date.now()-new Date(lastLogin))/1000;
+  if(diff<300)return{label:'🟢 Online',cls:'online'};
+  if(diff<3600)return{label:'🕐 '+Math.floor(diff/60)+'m ago',cls:'offline'};
+  if(diff<86400)return{label:'🕐 '+Math.floor(diff/3600)+'h ago',cls:'offline'};
+  return{label:'🕐 '+Math.floor(diff/86400)+'d ago',cls:'offline'};
+}
+
 function getRole(user){
   const u=(user.username||'').toLowerCase();
   if(u===ADMIN_USERNAME)return'admin';
@@ -245,7 +257,7 @@ function showAccessWall(){setRoot(`<div class="center-page"><div class="access-w
 async function showUserGrid(){
   showLoading();
   try{
-    const r=await sb('/rest/v1/cc_users?select=id,username,display_name,avatar_url,role,name_type,bio,is_banned,created_at,has_1year_badge&order=created_at.asc');
+    const r=await sb('/rest/v1/cc_users?select=id,username,display_name,avatar_url,role,name_type,bio,is_banned,created_at,last_login&order=created_at.asc');
     const users=await r.json();
     setRoot(`<div class="users-page">
       <div class="users-header">
@@ -282,7 +294,7 @@ function renderUserCards(users){
         <div class="user-card-badges">
           <span class="ubadge ubadge-role-${role}">${ROLE_LABELS[role]||'👤 Member'}</span>
           <span class="ubadge ubadge-${nameType}">${NAME_TYPE_LABELS[nameType]||'💬 Discord'}</span>
-          ${u.has_1year_badge?'<span class="ubadge ubadge-1year">🎂</span>':''}
+
         </div>
       </div>
     </a>`;
@@ -303,21 +315,24 @@ let _profileUser=null;
 async function showSingleProfile(username){
   showLoading();
   try{
-    const r=await sb(`/rest/v1/cc_users?username=eq.${encodeURIComponent(username.toLowerCase())}&select=id,username,display_name,avatar_url,role,name_type,bio,banner_url,created_at,is_banned,privacy_public_profile,privacy_show_online,privacy_show_in_list,connected_discord_name,connected_discord_link,connected_roblox_name,connected_roblox_link,connected_youtube_name,connected_youtube_link,has_1year_badge`);
-    const rows=await r.json();
+    const r=await sb(`/rest/v1/cc_users?username=eq.${encodeURIComponent(username.toLowerCase())}&select=id,username,display_name,avatar_url,role,name_type,bio,banner_url,created_at,is_banned`);
+    if(!r.ok){
+      /* Try minimal query as fallback */
+      const r2=await sb(`/rest/v1/cc_users?username=eq.${encodeURIComponent(username.toLowerCase())}&select=id,username,display_name,avatar_url,role,name_type,created_at,is_banned`);
+      if(!r2.ok){setRoot(`<div class="profile-page"><div class="access-wall"><span class="access-icon">❌</span><div class="access-title">Error</div><div class="access-desc">Failed to load profile. Please try again.</div><a class="access-btn" href="profile.html">← All Members</a></div></div>`);return;}
+      const rows2=await r2.json();
+      if(!rows2||!rows2.length){setRoot(`<div class="profile-page"><div class="access-wall"><span class="access-icon">🔍</span><div class="access-title">Not Found</div><div class="access-desc">No user named "${eh(username)}" exists.</div><a class="access-btn" href="profile.html">← All Members</a></div></div>`);return;}
+      var rows=rows2;
+    } else {
+      var rows=await r.json();
+    }
     if(!rows||!rows.length){
       setRoot(`<div class="profile-page"><div class="access-wall"><span class="access-icon">🔍</span><div class="access-title">Not Found</div><div class="access-desc">No user named "${eh(username)}" exists.</div><a class="access-btn" href="profile.html">← All Members</a></div></div>`);
       return;
     }
     const user=rows[0];
     _profileUser=user;
-    /* Privacy check — if profile is private and viewer is not the owner */
-    const loggedInForPrivacy=getLoggedInUser();
-    const isOwnProfile2=loggedInForPrivacy&&(loggedInForPrivacy.id===user.id||(loggedInForPrivacy.rawUsername||loggedInForPrivacy.username||'').toLowerCase()===user.username.toLowerCase());
-    if(user.privacy_public_profile===false&&!isOwnProfile2){
-      setRoot(`<div class="profile-page"><div class="access-wall"><span class="access-icon">🔒</span><div class="access-title">Private Profile</div><div class="access-desc">This user has set their profile to private.</div><a class="access-btn" href="profile.html">← All Members</a></div></div>`);
-      return;
-    }
+
     const role=getRole(user);
     const displayName=user.display_name||user.username;
     const letter=(displayName[0]||'?').toUpperCase();
@@ -363,14 +378,9 @@ async function showSingleProfile(username){
           <div class="profile-badges">
             <span class="ubadge ubadge-role-${role}">${ROLE_LABELS[role]||'👤 Member'}</span>
             <span class="ubadge ubadge-${nameType}">${NAME_TYPE_LABELS[nameType]||'💬 Discord'}</span>
-            ${user.has_1year_badge?'<span class="ubadge ubadge-1year">🎂 1 Year</span>':''}
+
           </div>
-          ${(user.connected_discord_name||user.connected_roblox_name||user.connected_youtube_name)?`
-          <div style="display:flex;gap:.4rem;justify-content:center;flex-wrap:wrap;margin-bottom:.75rem">
-            ${user.connected_discord_name?`<a href="${user.connected_discord_link||'#'}" target="_blank" rel="noopener" style="font-family:var(--mono);font-size:.65rem;padding:.2rem .55rem;border-radius:5px;background:rgba(88,101,242,.1);color:#8b9cf4;border:1px solid rgba(88,101,242,.25);text-decoration:none;display:inline-flex;align-items:center;gap:.25rem">💬 ${eh(user.connected_discord_name)}</a>`:''}
-            ${user.connected_roblox_name?`<a href="${user.connected_roblox_link||'#'}" target="_blank" rel="noopener" style="font-family:var(--mono);font-size:.65rem;padding:.2rem .55rem;border-radius:5px;background:rgba(15,244,198,.08);color:var(--conch);border:1px solid rgba(15,244,198,.2);text-decoration:none;display:inline-flex;align-items:center;gap:.25rem">🎮 ${eh(user.connected_roblox_name)}</a>`:''}
-            ${user.connected_youtube_name?`<a href="${user.connected_youtube_link||'#'}" target="_blank" rel="noopener" style="font-family:var(--mono);font-size:.65rem;padding:.2rem .55rem;border-radius:5px;background:rgba(255,60,60,.08);color:#ff3c3c;border:1px solid rgba(255,60,60,.2);text-decoration:none;display:inline-flex;align-items:center;gap:.25rem">▶️ ${eh(user.connected_youtube_name)}</a>`:''}
-          </div>`:''}
+
           ${user.bio?`<div class="profile-bio">"${eh(user.bio)}"</div>`:''}
           <div class="profile-meta">
             <span>📅 Member since ${fmtDate(user.created_at)}</span>
