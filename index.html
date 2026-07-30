@@ -1839,6 +1839,16 @@ function t(k,...a){const v=(T[lang]||T.en)[k];return typeof v==='function'?v(...
     </div>
     <div class="file-list" id="cmdr-beta-list"></div>
   </div>
+
+  <!-- MOBILE CMDR SUBTAB -->
+  <div id="cmdr-mobile-wrap" style="display:none;margin-top:2rem">
+    <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:1.2rem;padding-top:1.5rem;border-top:1px solid var(--border)">
+      <span style="font-size:1.1rem;font-weight:800;color:#60a5fa;font-family:var(--sans)">📱 Mobile</span>
+      <span style="font-family:var(--mono);font-size:.65rem;letter-spacing:.1em;text-transform:uppercase;padding:.2rem .55rem;border-radius:4px;background:rgba(96,165,250,.1);color:#60a5fa;border:1px solid rgba(96,165,250,.25)">Mobile</span>
+      <span style="font-family:var(--mono);font-size:.72rem;color:var(--muted)">Mobile versions of Cmdr</span>
+    </div>
+    <div class="file-list" id="cmdr-mobile-list"></div>
+  </div>
 </div>
 
 <footer id="footer"></footer>
@@ -2207,18 +2217,20 @@ async function fetchReleases(){
     releases.forEach(rel=>{
       const date=new Date(rel.published_at).toLocaleDateString('en-US',{year:'numeric',month:'short',day:'numeric'});
       const isNew=(Date.now()-new Date(rel.published_at).getTime())<7*24*3600*1000;
+        const isMobile=lo.includes('mobile');
       (rel.assets||[]).forEach(a=>{
         const nm=a.name,lo=nm.toLowerCase();
         if(!lo.endsWith('.rbxm'))return;
         const isC=lo.includes('conch'),isR=lo.includes('cmdr');
         if(!isC&&!isR)return;
         const isBeta=lo.includes('beta');
-        const entry={name:nm,size:fmtB(a.size),date,version:rel.tag_name||rel.name||'v?',url:a.browser_download_url,ts:rel.published_at,isNew,isBeta,notes:rel.body||''};
+        const entry={name:nm,size:fmtB(a.size),date,version:rel.tag_name||rel.name||'v?',url:a.browser_download_url,ts:rel.published_at,isNew,isBeta,isMobile,notes:rel.body||''};
         /* Key: strip ONLY trailing version like _v1.2 or -v2 at end before .rbxm */
         const key=nm.replace(/[_\-]v[\d][\d.]*(?=\.rbxm$)/i,'').replace(/\.rbxm$/i,'').toLowerCase();
         if(isC&&isBeta){if(!cbm[key])cbm[key]=[];cbm[key].push(entry);}
         else if(isR&&isBeta){if(!rbm[key])rbm[key]=[];rbm[key].push(entry);}
         else if(isC){if(!cm[key])cm[key]=[];cm[key].push(entry);}
+        else if(isR&&isMobile){if(!window._mob)window._mob={};if(!window._mob[key])window._mob[key]=[];window._mob[key].push(entry);}
         else{if(!rm[key])rm[key]=[];rm[key].push(entry);}
       })
     });
@@ -2228,6 +2240,15 @@ async function fetchReleases(){
     _cc=toG(cm);_cr=toG(rm);_ccb=toG(cbm);_crb=toG(rbm);
     render('conch',_cc,'c');render('cmdr',_cr,'r');
     renderBeta('conch-beta',_ccb,'c');renderBeta('cmdr-beta',_crb,'r');
+    /* Mobile Cmdr */
+    const mobGroups=Object.values(window._mob||{}).sort((a,b)=>cmpVer(a[0].version,b[0].version));
+    const mobWrap=document.getElementById('cmdr-mobile-wrap');
+    if(mobGroups.length){
+      if(mobWrap)mobWrap.style.display='block';
+      renderBeta('cmdr-mobile',mobGroups,'r');
+    }else{
+      if(mobWrap)mobWrap.style.display='none';
+    }
     checkAndNotifyRelease(releases);
   }catch(e){
     const msg=e.message==='404'?t('e404'):e.message==='403'?t('e403'):t('egn')+e.message;
@@ -2278,7 +2299,7 @@ function render(sec,groups,cls){
         </div>
       </div>
       <div class="dl-progress-wrap"><div class="dl-progress-bar dlp-${cls}"></div></div>
-      ${latest.notes?`<div style="padding:.4rem 1rem 0;display:flex"><button class="btn-notes" id="notes-btn-${id}" onclick="toggleNotes(${id})">📋 Release Notes <span class="arr">▾</span></button></div><div class="release-notes-wrap" id="notes-${id}"><div class="release-notes-inner">${eh(latest.notes)}</div></div>`:''}
+
       ${histHTML}
       <div class="file-extras">
         <div class="reactions-row" id="reactions-${id}">
@@ -2341,16 +2362,6 @@ function renderBeta(sec,groups,cls){
       <div class="file-extras">
         <div class="reactions-row" id="reactions-${id}">
           <span style="font-family:var(--mono);font-size:.68rem;color:var(--muted);opacity:.5">Loading reactions...</span>
-        </div>
-        <button class="comments-toggle" id="ctoggle-${id}" onclick="toggleComments('${id}','${ea(latest.name.replace(/[_\-]v[\d][\d.]*(?=\.rbxm$)/i,'').replace(/\.rbxm$/i,'').toLowerCase())}')">
-          <span>💬</span><span>Comments</span><span class="reaction-count" id="ccount-${id}"></span><span class="arr">▾</span>
-        </button>
-        <div class="comments-section" id="csection-${id}">
-          <div class="comment-input-row">
-            <input class="comment-input" id="cinput-${id}" type="text" placeholder="Write a comment..." maxlength="300" onkeydown="if(event.key==='Enter')postComment('${id}','${ea(latest.name.replace(/[_\-]v[\d][\d.]*(?=\.rbxm$)/i,'').replace(/\.rbxm$/i,'').toLowerCase())}')">
-            <button class="comment-send-btn" onclick="postComment('${id}','${ea(latest.name.replace(/[_\-]v[\d][\d.]*(?=\.rbxm$)/i,'').replace(/\.rbxm$/i,'').toLowerCase())}')">Send</button>
-          </div>
-          <div id="clist-${id}"><div class="comments-loading">Loading comments...</div></div>
         </div>
       </div>`;
     list.appendChild(el);
