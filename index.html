@@ -2217,13 +2217,13 @@ async function fetchReleases(){
     releases.forEach(rel=>{
       const date=new Date(rel.published_at).toLocaleDateString('en-US',{year:'numeric',month:'short',day:'numeric'});
       const isNew=(Date.now()-new Date(rel.published_at).getTime())<7*24*3600*1000;
-        const isMobile=lo.includes('mobile');
       (rel.assets||[]).forEach(a=>{
         const nm=a.name,lo=nm.toLowerCase();
         if(!lo.endsWith('.rbxm'))return;
         const isC=lo.includes('conch'),isR=lo.includes('cmdr');
         if(!isC&&!isR)return;
         const isBeta=lo.includes('beta');
+        const isMobile=lo.includes('mobile');
         const entry={name:nm,size:fmtB(a.size),date,version:rel.tag_name||rel.name||'v?',url:a.browser_download_url,ts:rel.published_at,isNew,isBeta,isMobile,notes:rel.body||''};
         /* Key: strip ONLY trailing version like _v1.2 or -v2 at end before .rbxm */
         const key=nm.replace(/[_\-]v[\d][\d.]*(?=\.rbxm$)/i,'').replace(/\.rbxm$/i,'').toLowerCase();
