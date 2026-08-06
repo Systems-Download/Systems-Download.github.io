@@ -13,6 +13,7 @@
   :root{
     --conch:#0ff4c6;--conch-dim:#0bb88e;
     --cmdr:#ff4f5e;--cmdr-dim:#c8333f;
+    --sentinel:#ff3da6;--sentinel-dim:#d92a86;
     --bg:#0b0c0f;--surface:#13151a;--surface2:#1a1d24;
     --border:rgba(255,255,255,0.07);--text:#e8eaf0;--muted:#6b7280;
     --mono:'JetBrains Mono',monospace;--sans:'Syne',sans-serif;
@@ -243,7 +244,7 @@
   .queue-item-icon{font-size:.9rem;flex-shrink:0}
   .queue-item-name{font-family:var(--mono);font-size:.72rem;color:var(--text);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   .queue-item-type{font-family:var(--mono);font-size:.65rem;padding:.1rem .35rem;border-radius:3px;flex-shrink:0}
-  .qit-c{background:rgba(15,244,198,.1);color:var(--conch)}.qit-r{background:rgba(255,79,94,.1);color:var(--cmdr)}
+  .qit-c{background:rgba(15,244,198,.1);color:var(--conch)}.qit-r{background:rgba(255,79,94,.1);color:var(--cmdr)}.qit-s{background:rgba(255,61,166,.1);color:var(--sentinel)}
   .queue-item-rm{background:none;border:none;color:var(--muted);cursor:pointer;font-size:.8rem;padding:.15rem;transition:color .2s;flex-shrink:0}
   .queue-item-rm:hover{color:var(--cmdr)}
   .queue-item.downloading{border-color:rgba(15,244,198,.3);animation:qpulse 1s ease-in-out infinite}
@@ -340,7 +341,7 @@
   .search-icon{position:absolute;left:1rem;top:50%;transform:translateY(-50%);color:var(--muted);font-size:0.85rem;pointer-events:none}
   .search-input{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:var(--mono);font-size:0.82rem;padding:0.75rem 2.4rem;outline:none;transition:border-color 0.2s}
   .search-input::placeholder{color:var(--muted)}
-  .search-input.cf:focus{border-color:rgba(15,244,198,0.4)}.search-input.rf:focus{border-color:rgba(255,79,94,0.4)}
+  .search-input.cf:focus{border-color:rgba(15,244,198,0.4)}.search-input.rf:focus{border-color:rgba(255,79,94,0.4)}.search-input.sf:focus{border-color:rgba(255,61,166,0.4)}
   .search-clear{position:absolute;right:0.8rem;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--muted);font-size:0.9rem;padding:0.2rem;display:none;transition:color 0.2s}
   .search-clear:hover{color:var(--text)}.search-clear.vis{display:block}
 
@@ -350,8 +351,9 @@
   .sbadge{font-family:var(--mono);font-size:0.7rem;letter-spacing:0.12em;text-transform:uppercase;padding:0.3rem 0.7rem;border-radius:4px}
   .sbadge-c{background:rgba(0,255,198,0.1);color:var(--conch);border:1px solid rgba(0,255,198,0.2)}
   .sbadge-r{background:rgba(255,79,94,0.1);color:var(--cmdr);border:1px solid rgba(255,79,94,0.2)}
+  .sbadge-s{background:rgba(255,61,166,0.1);color:var(--sentinel);border:1px solid rgba(255,61,166,0.2)}
   .section-header h2{font-size:2.6rem;font-weight:800;letter-spacing:-0.03em;line-height:1}
-  .section-header h2.c{color:var(--conch)}.section-header h2.r{color:var(--cmdr)}
+  .section-header h2.c{color:var(--conch)}.section-header h2.r{color:var(--cmdr)}.section-header h2.s{color:var(--sentinel)}
   .section-desc{font-family:var(--mono);font-size:0.85rem;color:var(--muted);line-height:1.8;max-width:600px;margin-bottom:1.5rem}
 
   /* FILE LIST */
@@ -362,12 +364,12 @@
   .file-item.hidden{display:none}
   .file-main{display:flex;align-items:center;gap:1rem;padding:0.9rem 1.2rem}
   .file-icon{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0}
-  .fi-c{background:rgba(0,255,198,0.1);color:var(--conch)}.fi-r{background:rgba(255,79,94,0.1);color:var(--cmdr)}
+  .fi-c{background:rgba(0,255,198,0.1);color:var(--conch)}.fi-r{background:rgba(255,79,94,0.1);color:var(--cmdr)}.fi-s{background:rgba(255,61,166,0.1);color:var(--sentinel)}
   .file-info{flex:1;min-width:0}
   .file-name-row{display:flex;align-items:center;gap:0.4rem;overflow:hidden;flex-wrap:wrap}
   .file-name{font-family:var(--mono);font-size:0.85rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--text)}
   .fver{font-family:var(--mono);font-size:0.68rem;padding:0.1rem 0.45rem;border-radius:3px;flex-shrink:0}
-  .fver-c{background:rgba(0,255,198,0.12);color:var(--conch)}.fver-r{background:rgba(255,79,94,0.12);color:var(--cmdr)}
+  .fver-c{background:rgba(0,255,198,0.12);color:var(--conch)}.fver-r{background:rgba(255,79,94,0.12);color:var(--cmdr)}.fver-s{background:rgba(255,61,166,0.12);color:var(--sentinel)}
   .badge-new{font-family:var(--mono);font-size:0.6rem;padding:0.1rem 0.4rem;border-radius:3px;background:rgba(255,200,50,0.15);color:#ffc832;border:1px solid rgba(255,200,50,0.3);flex-shrink:0}
   .file-meta{font-family:var(--mono);font-size:0.71rem;color:var(--muted);margin-top:0.2rem;display:flex;align-items:center;gap:0.4rem;flex-wrap:wrap}
   .file-actions{display:flex;gap:0.4rem;flex-shrink:0;align-items:center}
@@ -375,13 +377,14 @@
   .dl-progress-wrap{height:3px;background:var(--surface2);overflow:hidden;transition:height 0.2s}
   .dl-progress-wrap.active{height:3px}
   .dl-progress-bar{height:100%;width:0%;transition:width 0.1s linear;border-radius:0 2px 2px 0}
-  .dlp-c{background:var(--conch)}.dlp-r{background:var(--cmdr)}
+  .dlp-c{background:var(--conch)}.dlp-r{background:var(--cmdr)}.dlp-s{background:var(--sentinel)}
 
   .btn-dl{font-family:var(--mono);font-size:0.75rem;letter-spacing:0.04em;padding:0.45rem 1rem;border-radius:6px;border:none;cursor:pointer;display:inline-flex;align-items:center;gap:0.4em;transition:background 0.2s;position:relative;overflow:hidden;user-select:none}
   .btn-dl-c{background:rgba(0,255,198,0.12);color:var(--conch)}.btn-dl-c:hover{background:rgba(0,255,198,0.22)}
   .btn-dl-r{background:rgba(255,79,94,0.12);color:var(--cmdr)}.btn-dl-r:hover{background:rgba(255,79,94,0.22)}
+  .btn-dl-s{background:rgba(255,61,166,0.12);color:var(--sentinel)}.btn-dl-s:hover{background:rgba(255,61,166,0.22)}
   .ripple{position:absolute;border-radius:50%;transform:scale(0);animation:rippleAnim 0.55s linear;pointer-events:none}
-  .ripple-c{background:rgba(15,244,198,0.35)}.ripple-r{background:rgba(255,79,94,0.35)}
+  .ripple-c{background:rgba(15,244,198,0.35)}.ripple-r{background:rgba(255,79,94,0.35)}.ripple-s{background:rgba(255,61,166,0.35)}
   @keyframes rippleAnim{to{transform:scale(4);opacity:0}}
 
   .btn-sm{font-family:var(--mono);font-size:0.72rem;padding:0.38rem 0.55rem;border-radius:6px;border:1px solid var(--border);background:none;color:var(--muted);cursor:pointer;display:inline-flex;align-items:center;transition:all 0.2s;position:relative;overflow:hidden}
@@ -396,6 +399,7 @@
   .btn-dl-xs{font-family:var(--mono);font-size:0.68rem;padding:0.22rem 0.55rem;border-radius:4px;border:none;cursor:pointer;display:inline-flex;align-items:center;transition:all 0.2s;flex-shrink:0;position:relative;overflow:hidden}
   .xs-c{background:rgba(0,255,198,0.08);color:var(--conch)}.xs-c:hover{background:rgba(0,255,198,0.18)}
   .xs-r{background:rgba(255,79,94,0.08);color:var(--cmdr)}.xs-r:hover{background:rgba(255,79,94,0.18)}
+  .xs-s{background:rgba(255,61,166,0.08);color:var(--sentinel)}.xs-s:hover{background:rgba(255,61,166,0.18)}
 
   /* VERSION HISTORY */
   .ver-history{border-top:1px solid var(--border);background:var(--bg);overflow:hidden;max-height:0;transition:max-height 0.35s cubic-bezier(0.4,0,0.2,1)}
@@ -407,6 +411,7 @@
   .ver-tag{font-family:var(--mono);font-size:0.7rem;padding:0.1rem 0.45rem;border-radius:3px;flex-shrink:0}
   .vt-c{background:rgba(0,255,198,0.08);color:var(--conch-dim);border:1px solid rgba(0,255,198,0.15)}
   .vt-r{background:rgba(255,79,94,0.08);color:var(--cmdr-dim);border:1px solid rgba(255,79,94,0.15)}
+  .vt-s{background:rgba(255,61,166,0.08);color:var(--sentinel-dim);border:1px solid rgba(255,61,166,0.15)}
   .ver-name{font-family:var(--mono);font-size:0.78rem;color:var(--muted);flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .ver-date{font-family:var(--mono);font-size:0.7rem;color:var(--muted);opacity:0.5;flex-shrink:0}
 
@@ -427,7 +432,7 @@
   .toast.out{opacity:0;transform:translateX(20px)}
   @keyframes toastIn{from{opacity:0;transform:translateX(20px) scale(0.95)}to{opacity:1;transform:translateX(0) scale(1)}}
   .t-ico{width:28px;height:28px;border-radius:6px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:0.9rem}
-  .t-ic{background:rgba(0,255,198,0.12);color:var(--conch)}.t-ir{background:rgba(255,79,94,0.12);color:var(--cmdr)}
+  .t-ic{background:rgba(0,255,198,0.12);color:var(--conch)}.t-ir{background:rgba(255,79,94,0.12);color:var(--cmdr)}.t-is{background:rgba(255,61,166,0.12);color:var(--sentinel)}
   .t-iok{background:rgba(60,200,120,0.15);color:#3cc878}.t-inf{background:rgba(100,160,255,0.15);color:#64a0ff}
   .t-iwarn{background:rgba(255,200,50,0.15);color:#ffc832}
   .t-body{flex:1}
@@ -1699,7 +1704,7 @@ function t(k,...a){const v=(T[lang]||T.en)[k];return typeof v==='function'?v(...
     <p class="drawer-slabel">Quick Jump</p>
     <a class="drawer-item" href="#conch" onclick="closeDrawer()"><span class="drawer-icon" style="color:var(--conch)">◈</span>Conch</a>
     <a class="drawer-item" href="#cmdr"  onclick="closeDrawer()"><span class="drawer-icon" style="color:var(--cmdr)">◈</span>Cmdr</a>
-    <a class="drawer-item" href="#sentinel" onclick="closeDrawer()"><span class="drawer-icon" style="color:var(--conch)">◈</span>Sentinel</a>
+    <a class="drawer-item" href="#sentinel" onclick="closeDrawer()"><span class="drawer-icon" style="color:var(--sentinel)">◈</span>Sentinel</a>
     <div class="drawer-div"></div>
     <a class="drawer-item" onclick="logout();closeDrawer()" style="color:var(--cmdr)"><span class="drawer-icon">🚪</span><span>Logout</span></a>
   </div>
@@ -1858,11 +1863,11 @@ function t(k,...a){const v=(T[lang]||T.en)[k];return typeof v==='function'?v(...
 
 <!-- SENTINEL -->
 <div class="section" id="sentinel">
-  <div class="section-header"><h2 class="c">Sentinel</h2><span class="sbadge sbadge-c">Downloads</span></div>
+  <div class="section-header"><h2 class="s">Sentinel</h2><span class="sbadge sbadge-s">Downloads</span></div>
   <p class="section-desc">All .rbxm files with "Sentinel" in the name.</p>
   <div class="search-wrap">
     <span class="search-icon">🔍</span>
-    <input class="search-input cf" id="search-sentinel" type="text" oninput="doSearch('sentinel')" placeholder="Search Sentinel files...">
+    <input class="search-input sf" id="search-sentinel" type="text" oninput="doSearch('sentinel')" placeholder="Search Sentinel files...">
     <button class="search-clear" id="clear-sentinel" onclick="clearSearch('sentinel')">✕</button>
   </div>
   <div class="file-list" id="sentinel-list"></div>
@@ -1970,9 +1975,9 @@ function refreshDLC(name){document.querySelectorAll(`.dlc[data-f="${CSS.escape(n
 
 function toast({title,sub,type='c',dur=3500}){
   const c=document.getElementById('toast-container'),el=document.createElement('div');el.className='toast';
-  const ico={c:'↓',r:'↓',ok:'✓',i:'⚑',w:'!'}[type]||'↓';
-  const icls={c:'t-ic',r:'t-ir',ok:'t-iok',i:'t-inf',w:'t-iwarn'}[type]||'t-ic';
-  const bcol={c:'var(--conch)',r:'var(--cmdr)',ok:'#3cc878',i:'#64a0ff',w:'#ffc832'}[type]||'var(--conch)';
+  const ico={c:'↓',r:'↓',s:'↓',ok:'✓',i:'⚑',w:'!'}[type]||'↓';
+  const icls={c:'t-ic',r:'t-ir',s:'t-is',ok:'t-iok',i:'t-inf',w:'t-iwarn'}[type]||'t-ic';
+  const bcol={c:'var(--conch)',r:'var(--cmdr)',s:'var(--sentinel)',ok:'#3cc878',i:'#64a0ff',w:'#ffc832'}[type]||'var(--conch)';
   el.innerHTML=`<div class="t-ico ${icls}">${ico}</div><div class="t-body"><div class="t-title">${eh(title)}</div>${sub?`<div class="t-sub">${eh(sub)}</div>`:''}</div><div class="t-bar" style="animation-duration:${dur}ms;background:${bcol}"></div>`;
   c.appendChild(el);setTimeout(()=>{el.classList.add('out');setTimeout(()=>el.remove(),320)},dur);
 }
@@ -2260,7 +2265,7 @@ async function fetchReleases(){
     _cc=toG(cm);_cr=toG(rm);_ccb=toG(cbm);_crb=toG(rbm);_sen=toG(sm);
     render('conch',_cc,'c');render('cmdr',_cr,'r');
     renderBeta('conch-beta',_ccb,'c');renderBeta('cmdr-beta',_crb,'r');
-    render('sentinel',_sen,'c');
+    render('sentinel',_sen,'s');
     /* Mobile Cmdr */
     const mobGroups=Object.values(window._mob||{}).sort((a,b)=>cmpVer(a[0].version,b[0].version));
     const mobWrap=document.getElementById('cmdr-mobile-wrap');
