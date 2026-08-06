@@ -1680,6 +1680,8 @@ function t(k,...a){const v=(T[lang]||T.en)[k];return typeof v==='function'?v(...
     <p class="drawer-slabel">Navigation</p>
     <a class="drawer-item active" href="index.html" onclick="closeDrawer()"><span class="drawer-icon">📥</span><span id="dl-dl">Downloads</span></a>
     <a class="drawer-item" href="announcements.html" onclick="closeDrawer()"><span class="drawer-icon">📣</span><span id="dl-ann">Announcements</span></a>
+    <a class="drawer-item" href="sneakpeeks.html" onclick="closeDrawer()"><span class="drawer-icon">🖼️</span><span>Sneak Peeks</span></a>
+    <a class="drawer-item" href="status.html" onclick="closeDrawer()"><span class="drawer-icon">📡</span><span>Status</span></a>
     <a class="drawer-item" href="https://systems-download.github.io/faq.html" onclick="closeDrawer()"><span class="drawer-icon">❓</span><span>FAQ</span></a>
     <div class="drawer-div"></div>
     <p class="drawer-slabel">Settings</p>
@@ -1697,6 +1699,7 @@ function t(k,...a){const v=(T[lang]||T.en)[k];return typeof v==='function'?v(...
     <p class="drawer-slabel">Quick Jump</p>
     <a class="drawer-item" href="#conch" onclick="closeDrawer()"><span class="drawer-icon" style="color:var(--conch)">◈</span>Conch</a>
     <a class="drawer-item" href="#cmdr"  onclick="closeDrawer()"><span class="drawer-icon" style="color:var(--cmdr)">◈</span>Cmdr</a>
+    <a class="drawer-item" href="#sentinel" onclick="closeDrawer()"><span class="drawer-icon" style="color:var(--conch)">◈</span>Sentinel</a>
     <div class="drawer-div"></div>
     <a class="drawer-item" onclick="logout();closeDrawer()" style="color:var(--cmdr)"><span class="drawer-icon">🚪</span><span>Logout</span></a>
   </div>
@@ -1849,6 +1852,21 @@ function t(k,...a){const v=(T[lang]||T.en)[k];return typeof v==='function'?v(...
     </div>
     <div class="file-list" id="cmdr-mobile-list"></div>
   </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- SENTINEL -->
+<div class="section" id="sentinel">
+  <div class="section-header"><h2 class="c">Sentinel</h2><span class="sbadge sbadge-c">Downloads</span></div>
+  <p class="section-desc">All .rbxm files with "Sentinel" in the name.</p>
+  <div class="search-wrap">
+    <span class="search-icon">🔍</span>
+    <input class="search-input cf" id="search-sentinel" type="text" oninput="doSearch('sentinel')" placeholder="Search Sentinel files...">
+    <button class="search-clear" id="clear-sentinel" onclick="clearSearch('sentinel')">✕</button>
+  </div>
+  <div class="file-list" id="sentinel-list"></div>
+  <div class="search-empty" id="empty-sentinel">No files match your search.</div>
 </div>
 
 <footer id="footer"></footer>
@@ -2045,7 +2063,7 @@ function showSkel(id,n=3){document.getElementById(id).innerHTML=Array.from({leng
 function semver(s){const m=String(s).replace(/^v/i,'').match(/\d+/g);return m?m.map(Number):[0]}
 function cmpVer(a,b){const va=semver(a),vb=semver(b);for(let i=0;i<Math.max(va.length,vb.length);i++){const d=(vb[i]||0)-(va[i]||0);if(d)return d}return 0}
 
-let _cc=[],_cr=[],_ccb=[],_crb=[];
+let _cc=[],_cr=[],_ccb=[],_crb=[],_sen=[];
 
 /* ══════════════════════════════════════════════════════
    REACTIONS — per file, emoji-based
@@ -2207,27 +2225,29 @@ async function deleteComment(commentId,elId,fileKey){
 }
 
 async function fetchReleases(){
-  showSkel('conch-list');showSkel('cmdr-list');showSkel('conch-beta-list');showSkel('cmdr-beta-list');
+  showSkel('conch-list');showSkel('cmdr-list');showSkel('conch-beta-list');showSkel('cmdr-beta-list');showSkel('sentinel-list');
   try{
     const cacheBuster='&_cb='+Date.now();
     const res=await fetch(`https://api.github.com/repos/${CONFIG.GITHUB_REPO}/releases?per_page=${CONFIG.MAX_RELEASES}${cacheBuster}`);
     if(!res.ok)throw new Error(res.status===404?'404':res.status===403?'403':res.status+' '+res.statusText);
     const releases=await res.json();
-    const cm={},rm={},cbm={},rbm={};
+    const cm={},rm={},cbm={},rbm={},sm={};
     releases.forEach(rel=>{
       const date=new Date(rel.published_at).toLocaleDateString('en-US',{year:'numeric',month:'short',day:'numeric'});
       const isNew=(Date.now()-new Date(rel.published_at).getTime())<7*24*3600*1000;
       (rel.assets||[]).forEach(a=>{
         const nm=a.name,lo=nm.toLowerCase();
         if(!lo.endsWith('.rbxm'))return;
+        const isS=lo.includes('sentinel');
         const isC=lo.includes('conch'),isR=lo.includes('cmdr');
-        if(!isC&&!isR)return;
+        if(!isS&&!isC&&!isR)return;
         const isBeta=lo.includes('beta');
         const isMobile=lo.includes('mobile');
         const entry={name:nm,size:fmtB(a.size),date,version:rel.tag_name||rel.name||'v?',url:a.browser_download_url,ts:rel.published_at,isNew,isBeta,isMobile,notes:rel.body||''};
         /* Key: strip ONLY trailing version like _v1.2 or -v2 at end before .rbxm */
         const key=nm.replace(/[_\-]v[\d][\d.]*(?=\.rbxm$)/i,'').replace(/\.rbxm$/i,'').toLowerCase();
-        if(isC&&isBeta){if(!cbm[key])cbm[key]=[];cbm[key].push(entry);}
+        if(isS){if(!sm[key])sm[key]=[];sm[key].push(entry);}
+        else if(isC&&isBeta){if(!cbm[key])cbm[key]=[];cbm[key].push(entry);}
         else if(isR&&isBeta){if(!rbm[key])rbm[key]=[];rbm[key].push(entry);}
         else if(isC){if(!cm[key])cm[key]=[];cm[key].push(entry);}
         else if(isR&&isMobile){if(!window._mob)window._mob={};if(!window._mob[key])window._mob[key]=[];window._mob[key].push(entry);}
@@ -2235,11 +2255,12 @@ async function fetchReleases(){
       })
     });
     const srt=map=>Object.values(map).forEach(arr=>arr.sort((a,b)=>cmpVer(a.version,b.version)||new Date(b.ts)-new Date(a.ts)));
-    srt(cm);srt(rm);srt(cbm);srt(rbm);
+    srt(cm);srt(rm);srt(cbm);srt(rbm);srt(sm);
     const toG=map=>Object.values(map).sort((a,b)=>cmpVer(a[0].version,b[0].version));
-    _cc=toG(cm);_cr=toG(rm);_ccb=toG(cbm);_crb=toG(rbm);
+    _cc=toG(cm);_cr=toG(rm);_ccb=toG(cbm);_crb=toG(rbm);_sen=toG(sm);
     render('conch',_cc,'c');render('cmdr',_cr,'r');
     renderBeta('conch-beta',_ccb,'c');renderBeta('cmdr-beta',_crb,'r');
+    render('sentinel',_sen,'c');
     /* Mobile Cmdr */
     const mobGroups=Object.values(window._mob||{}).sort((a,b)=>cmpVer(a[0].version,b[0].version));
     const mobWrap=document.getElementById('cmdr-mobile-wrap');
@@ -2258,8 +2279,9 @@ async function fetchReleases(){
 function rerender(){if(_cc.length||_cr.length){render('conch',_cc,'c');render('cmdr',_cr,'r');renderBeta('conch-beta',_ccb,'c');renderBeta('cmdr-beta',_crb,'r');}}
 
 function render(sec,groups,cls){
-  const list=document.getElementById(sec+'-list'),isC=sec==='conch';
-  if(!groups.length){list.innerHTML=`<div class="empty-state">${t('empty',isC?'Conch':'Cmdr')}<br><small style="margin-top:.5rem;display:block;opacity:.7">${t('empty_h',isC?'Conch':'Cmdr')}</small></div>`;return}
+  const list=document.getElementById(sec+'-list');
+  const secLabel=sec==='conch'?'Conch':sec==='cmdr'?'Cmdr':sec==='sentinel'?'Sentinel':sec;
+  if(!groups.length){list.innerHTML=`<div class="empty-state">${t('empty',secLabel)}<br><small style="margin-top:.5rem;display:block;opacity:.7">${t('empty_h',secLabel)}</small></div>`;return}
   list.innerHTML='';
   groups.forEach(vers=>{
     const latest=vers[0],hasH=vers.length>1,id=++_uid,dlc=getDLC(latest.name);
@@ -2373,9 +2395,9 @@ async function doRefresh(){
   const btn=document.getElementById('refresh-btn');
   if(btn.disabled)return;
   btn.disabled=true;btn.classList.add('spinning');
-  showSkel('conch-list');showSkel('cmdr-list');showSkel('conch-beta-list');showSkel('cmdr-beta-list');
-  ['empty-conch','empty-cmdr'].forEach(id=>document.getElementById(id).classList.remove('vis'));
-  clearSearch('conch');clearSearch('cmdr');
+  showSkel('conch-list');showSkel('cmdr-list');showSkel('conch-beta-list');showSkel('cmdr-beta-list');showSkel('sentinel-list');
+  ['empty-conch','empty-cmdr','empty-sentinel'].forEach(id=>document.getElementById(id).classList.remove('vis'));
+  clearSearch('conch');clearSearch('cmdr');clearSearch('sentinel');
   toast({title:t('t_ref'),sub:t('t_ref2'),type:'c',dur:2000});
   await fetchReleases();
   btn.disabled=false;btn.classList.remove('spinning');
