@@ -238,7 +238,7 @@ const FALLBACK_ANNOUNCEMENTS = [
     footerText: 'Check the DC for information!',
   },
   {
-    pinned: true,
+    pinned: false,
     icon: '📱',
     type: 'info',
     title: 'Mobile Version',
@@ -246,6 +246,16 @@ const FALLBACK_ANNOUNCEMENTS = [
     created_by: 'Systems Download',
     created_at: '2026-07-15',
     footerText: 'Announced here and on the Discord Server',
+  },
+  {
+    pinned: true,
+    icon: '',
+    type: 'info',
+    title: 'Sentinel V2 + Cmdr V4.3',
+    body: 'Sentinel and Cmdr are almost finished with developing their new Version! The Dates of both are announced on the Discord Server!',
+    created_by: 'Systems Download',
+    created_at: '2026-08-13',
+    footerText: 'Check DC for more infos!',
   },
 ];
 </script>
@@ -280,9 +290,17 @@ const FALLBACK_ANNOUNCEMENTS = [
     <a class="drawer-item active" href="announcements.html" onclick="closeDrawer()"><span class="drawer-icon">📣</span>Announcements</a>
     <a class="drawer-item" href="https://systems-download.github.io/faq.html" onclick="closeDrawer()"><span class="drawer-icon">❓</span>FAQ</a>
     <div class="drawer-divider"></div>
-    <p class="drawer-section-label">Quick Links</p>
-    <a class="drawer-item" href="index.html#conch" onclick="closeDrawer()"><span class="drawer-icon" style="color:var(--conch)">◈</span>Conch Files</a>
-    <a class="drawer-item" href="index.html#cmdr" onclick="closeDrawer()"><span class="drawer-icon" style="color:var(--cmdr)">◈</span>Cmdr Files</a>
+    <p class="drawer-section-label">Settings</p>
+    <a class="drawer-item" href="index.html" onclick="closeDrawer()"><span class="drawer-icon">👤</span>My Profile</a>
+    <a class="drawer-item" href="changelog.html" onclick="closeDrawer()"><span class="drawer-icon">📋</span>Changelog</a>
+    <a class="drawer-item" href="settings.html" onclick="closeDrawer()"><span class="drawer-icon">⚙️</span>Settings</a>
+    <a class="drawer-item" href="messages.html" onclick="closeDrawer()"><span class="drawer-icon">💬</span>Messages</a>
+    <a class="drawer-item" href="bugreport.html" onclick="closeDrawer()"><span class="drawer-icon">🐛</span>Report a Bug</a>
+    <a class="drawer-item" onclick="copyInviteLink();closeDrawer()"><span class="drawer-icon">🔗</span>Invite Link</a>
+    <a class="drawer-item" id="drawer-admin-link" href="cc-control.html" onclick="closeDrawer()" style="display:none;color:#ffc832;border-color:rgba(255,200,50,.15);background:rgba(255,200,50,.05)"><span class="drawer-icon">⚙️</span>CC Control</a>
+    <a class="drawer-item" id="drawer-plugins-link" href="plugins.html" onclick="closeDrawer()" style="display:none;color:#a78bfa;border-color:rgba(167,139,250,.15);background:rgba(167,139,250,.05)"><span class="drawer-icon">🔒</span>Plugins</a>
+    <div class="drawer-divider"></div>
+    <a class="drawer-item" id="drawer-logout-link" onclick="ccLogout();closeDrawer()" style="display:none;color:var(--cmdr)"><span class="drawer-icon">🚪</span>Logout</a>
   </div>
   <div class="drawer-footer">Announcements & Updates</div>
 </div>
@@ -332,6 +350,42 @@ function loadTheme(){
   }else{
     if(icon)icon.textContent='🌙';
   }
+}
+
+/* ── LIGHTWEIGHT AUTH (reads the same session index.html writes) ── */
+function ccGetAuth(){
+  try{
+    const saved=localStorage.getItem('cc_auth');
+    if(saved){const parsed=JSON.parse(saved);if(parsed&&parsed.username)return parsed;}
+  }catch{}
+  return null;
+}
+function ccLogout(){
+  try{localStorage.removeItem('cc_auth');}catch{}
+  window.location.href='index.html';
+}
+function applyAuthUI(){
+  const user=ccGetAuth();
+  if(!user)return;
+  const isAdmin=(user.rawUsername||user.username||'').toLowerCase()==='max'||user.isAdmin;
+  document.getElementById('drawer-logout-link').style.display='flex';
+  if(isAdmin){
+    document.getElementById('drawer-admin-link').style.display='flex';
+    document.getElementById('drawer-plugins-link').style.display='flex';
+  }
+}
+
+/* INVITE LINK */
+function copyInviteLink(){
+  const link='https://systems-download.github.io';
+  const done=()=>{};
+  if(navigator.clipboard){navigator.clipboard.writeText(link).then(done).catch(()=>{fbCopy(link);done();});}
+  else{fbCopy(link);done();}
+}
+function fbCopy(text){
+  const ta=document.createElement('textarea');ta.value=text;document.body.appendChild(ta);ta.select();
+  try{document.execCommand('copy');}catch{}
+  document.body.removeChild(ta);
 }
 
 /* TAG MAPS */
@@ -471,6 +525,7 @@ window.addEventListener('pageshow',()=>{
 /* INIT */
 loadTheme();
 loadAnnouncements();
+applyAuthUI();
 </script>
 </body>
 </html>
