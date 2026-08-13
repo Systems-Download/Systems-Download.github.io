@@ -130,23 +130,40 @@
   .comments-empty{font-family:var(--mono);font-size:.74rem;color:var(--muted);opacity:.5;text-align:center;padding:.75rem 0}
   .comments-loading{font-family:var(--mono);font-size:.72rem;color:var(--muted);text-align:center;padding:.75rem 0}
 
-  /* ═══════ WELCOME TOUR ═══════ */
-  .tour-overlay{position:fixed;inset:0;z-index:9500;pointer-events:none}
-  .tour-spotlight{position:absolute;border-radius:10px;box-shadow:0 0 0 9999px rgba(0,0,0,.6);transition:all .35s cubic-bezier(.4,0,.2,1);pointer-events:none}
-  .tour-tooltip{position:fixed;z-index:9501;background:var(--surface);border:1px solid rgba(15,244,198,.3);border-radius:12px;padding:1.1rem 1.3rem;max-width:300px;box-shadow:0 16px 48px rgba(0,0,0,.5);animation:tourIn .3s cubic-bezier(.34,1.56,.64,1);pointer-events:all}
-  @keyframes tourIn{from{opacity:0;transform:scale(.92)}to{opacity:1;transform:scale(1)}}
-  .tour-step-badge{font-family:var(--mono);font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--conch);margin-bottom:.4rem}
-  .tour-title{font-size:1rem;font-weight:800;color:var(--text);margin-bottom:.4rem}
-  .tour-desc{font-family:var(--mono);font-size:.76rem;color:var(--muted);line-height:1.7;margin-bottom:1rem}
-  .tour-actions{display:flex;justify-content:space-between;align-items:center;gap:.5rem}
-  .tour-dots{display:flex;gap:.3rem}
-  .tour-dot{width:6px;height:6px;border-radius:50%;background:var(--surface2);border:1px solid var(--border);transition:all .2s}
-  .tour-dot.active{background:var(--conch);border-color:var(--conch)}
-  .tour-btn{font-family:var(--mono);font-size:.72rem;padding:.4rem .85rem;border-radius:6px;border:1px solid rgba(15,244,198,.3);background:rgba(15,244,198,.1);color:var(--conch);cursor:pointer;transition:all .2s}
-  .tour-btn:hover{background:rgba(15,244,198,.2)}
-  .tour-skip{font-family:var(--mono);font-size:.7rem;color:var(--muted);background:none;border:none;cursor:pointer;transition:color .2s}
-  .tour-skip:hover{color:var(--text)}
-  .tour-arrow{position:absolute;width:12px;height:12px;background:var(--surface);border:1px solid rgba(15,244,198,.3);transform:rotate(45deg)}
+  /* ═══════ WELCOME INTRO (carousel modal) ═══════ */
+  .intro-overlay{position:fixed;inset:0;z-index:9500;background:rgba(0,0,0,.75);display:none;align-items:center;justify-content:center;padding:1rem;animation:introFade .3s ease}
+  .intro-overlay.show{display:flex}
+  @keyframes introFade{from{opacity:0}to{opacity:1}}
+  .intro-box{width:100%;max-width:460px;background:var(--surface);border:1px solid var(--border);border-radius:18px;overflow:hidden;box-shadow:0 40px 100px rgba(0,0,0,.6);animation:introPop .4s cubic-bezier(.34,1.56,.64,1)}
+  @keyframes introPop{from{opacity:0;transform:translateY(20px) scale(.95)}to{opacity:1;transform:none}}
+  .intro-skip-row{display:flex;justify-content:flex-end;padding:.9rem 1.1rem 0}
+  .intro-skip{font-family:var(--mono);font-size:.7rem;color:var(--muted);background:none;border:none;cursor:pointer;transition:color .2s}
+  .intro-skip:hover{color:var(--text)}
+  .intro-slides{position:relative;overflow:hidden}
+  .intro-slide{display:none;padding:.5rem 2rem 1.6rem;text-align:center;animation:slideFadeIn .35s ease}
+  .intro-slide.active{display:block}
+  @keyframes slideFadeIn{from{opacity:0;transform:translateX(14px)}to{opacity:1;transform:none}}
+  .intro-icon{width:64px;height:64px;border-radius:18px;margin:0 auto 1.2rem;display:flex;align-items:center;justify-content:center;font-size:1.8rem}
+  .intro-title{font-family:var(--sans);font-size:1.4rem;font-weight:800;letter-spacing:-.02em;margin-bottom:.6rem;color:var(--text)}
+  .intro-desc{font-family:var(--mono);font-size:.82rem;color:var(--muted);line-height:1.8;max-width:340px;margin:0 auto}
+  .intro-features{display:flex;flex-direction:column;gap:.55rem;margin-top:1.3rem;text-align:left}
+  .intro-feat-row{display:flex;align-items:center;gap:.7rem;background:var(--surface2);border:1px solid var(--border);border-radius:9px;padding:.6rem .8rem}
+  .intro-feat-ico{width:30px;height:30px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:.9rem;flex-shrink:0}
+  .intro-feat-text{font-family:var(--mono);font-size:.75rem;color:var(--text)}
+  .intro-feat-text b{display:block;font-size:.78rem;margin-bottom:.1rem}
+  .intro-sections{display:flex;gap:.6rem;margin-top:1.3rem;justify-content:center;flex-wrap:wrap}
+  .intro-section-pill{font-family:var(--mono);font-size:.72rem;font-weight:700;padding:.5rem .9rem;border-radius:20px;border:1px solid}
+  .intro-discord-btn{display:inline-flex;align-items:center;gap:.5rem;margin-top:1.4rem;padding:.75rem 1.4rem;border-radius:9px;background:rgba(88,101,242,.15);border:1px solid rgba(88,101,242,.35);color:#8b9cf4;text-decoration:none;font-family:var(--mono);font-size:.8rem;font-weight:700;transition:background .2s}
+  .intro-discord-btn:hover{background:rgba(88,101,242,.25)}
+  .intro-footer{display:flex;align-items:center;justify-content:space-between;padding:1.1rem 1.6rem;border-top:1px solid var(--border)}
+  .intro-dots{display:flex;gap:.4rem}
+  .intro-dot{width:7px;height:7px;border-radius:50%;background:var(--surface2);border:1px solid var(--border);transition:all .25s;cursor:pointer}
+  .intro-dot.active{background:var(--conch);border-color:var(--conch);width:20px;border-radius:4px}
+  .intro-nav-btns{display:flex;gap:.5rem}
+  .intro-btn{font-family:var(--mono);font-size:.76rem;padding:.5rem 1.1rem;border-radius:7px;border:1px solid var(--border);background:none;color:var(--muted);cursor:pointer;transition:all .2s;font-weight:600}
+  .intro-btn:hover{color:var(--text);border-color:rgba(255,255,255,.2)}
+  .intro-btn.primary{background:rgba(15,244,198,.15);border-color:rgba(15,244,198,.3);color:var(--conch)}
+  .intro-btn.primary:hover{background:rgba(15,244,198,.25)}
   .auth-input.err{border-color:rgba(255,79,94,.5)}
 
   .auth-btn{
@@ -1330,7 +1347,7 @@ async function doLogin(){
     confetti();
 
     /* Trigger welcome tour on first-ever login */
-    maybeStartTour();
+    maybeStartIntro();
     /* Init notification bell */
     initNotifications();
     /* Check 1 Year badge */
@@ -1602,23 +1619,21 @@ function t(k,...a){const v=(T[lang]||T.en)[k];return typeof v==='function'?v(...
   </div>
 </div>
 
-<!-- WELCOME TOUR -->
-<div class="tour-overlay" id="tour-overlay" style="display:none">
-  <div class="tour-spotlight" id="tour-spotlight"></div>
-  <div class="tour-tooltip" id="tour-tooltip">
-    <div class="tour-arrow" id="tour-arrow"></div>
-    <div class="tour-step-badge" id="tour-step-badge">Step 1 / 5</div>
-    <div class="tour-title" id="tour-title"></div>
-    <div class="tour-desc" id="tour-desc"></div>
-    <div class="tour-actions">
-      <button class="tour-skip" onclick="skipTour()">Skip tour</button>
-      <div style="display:flex;align-items:center;gap:.6rem">
-        <div class="tour-dots" id="tour-dots"></div>
-        <button class="tour-btn" id="tour-next-btn" onclick="nextTourStep()">Next →</button>
+<!-- WELCOME INTRO -->
+<div class="intro-overlay" id="intro-overlay">
+  <div class="intro-box">
+    <div class="intro-skip-row"><button class="intro-skip" onclick="skipIntro()">Skip</button></div>
+    <div class="intro-slides" id="intro-slides"></div>
+    <div class="intro-footer">
+      <div class="intro-dots" id="intro-dots"></div>
+      <div class="intro-nav-btns">
+        <button class="intro-btn" id="intro-back-btn" onclick="introBack()" style="display:none">← Back</button>
+        <button class="intro-btn primary" id="intro-next-btn" onclick="introNext()">Next →</button>
       </div>
     </div>
   </div>
 </div>
+
 
 <!-- NAV -->
 <nav>
@@ -3863,136 +3878,120 @@ function closeLiveBanner(){
 }
 
 /* ══════════════════════════════════════════════════════
-   WELCOME TOUR — 5 short tooltips on first login
+   WELCOME INTRO — full carousel modal for new accounts
 ══════════════════════════════════════════════════════ */
-const TOUR_STEPS=[
+const INTRO_SLIDES=[
   {
-    selector:'.hero',
-    title:'👋 Welcome to Conch & Cmdr!',
-    desc:'This is your home for downloading the latest Conch and Cmdr releases. Let\'s take a 30-second tour.',
-    placement:'bottom'
+    icon:'👋',iconBg:'rgba(15,244,198,.12)',iconColor:'var(--conch)',
+    title:'Welcome to Conch & Cmdr!',
+    desc:'Your home for the latest Conch and Cmdr releases — plus a growing set of tools around them. Let\'s show you around in a few quick steps.'
   },
   {
-    selector:'#search-conch',
-    title:'🔍 Search Files',
-    desc:'Use the search bar to quickly find a specific file by name or version.',
-    placement:'bottom'
+    icon:'📦',iconBg:'rgba(15,244,198,.12)',iconColor:'var(--conch)',
+    title:'Three Download Sections',
+    desc:'Everything is organized by project, each with its own beta channel for early builds.',
+    sections:true
   },
   {
-    selector:'.btn-dl-c',
-    title:'⬇️ One-Click Downloads',
-    desc:'Click Download on any file to grab it instantly — with a live progress bar.',
-    placement:'top',
-    fallbackSelector:'.btn-dl'
+    icon:'⚡',iconBg:'rgba(255,200,50,.12)',iconColor:'#ffc832',
+    title:'Built for Convenience',
+    desc:'A few things that make grabbing files faster.',
+    features:[
+      {icon:'🛒',bg:'rgba(15,244,198,.1)',color:'var(--conch)',title:'Download Queue',text:'Batch multiple files and download them all at once'},
+      {icon:'⭐',bg:'rgba(255,200,50,.1)',color:'#ffc832',title:'Favorites',text:'Star files to find them again instantly'},
+      {icon:'🕐',bg:'rgba(167,139,250,.1)',color:'#a78bfa',title:'Version History',text:'Every past release stays downloadable'}
+    ]
   },
   {
-    selector:'.queue-btn',
-    title:'🛒 Download Queue',
-    desc:'Add multiple files to your queue and download them all at once.',
-    placement:'top'
+    icon:'💬',iconBg:'rgba(167,139,250,.12)',iconColor:'#a78bfa',
+    title:'Stay in the Loop',
+    desc:'React and comment on files, check the Changelog for full release history, and get notified the moment something new drops.'
   },
   {
-    selector:'.burger',
-    title:'☰ More Options',
-    desc:'Open the menu for your profile, changelog, bug reports, and more. Enjoy the site!',
-    placement:'bottom'
+    icon:'🎉',iconBg:'rgba(88,101,242,.15)',iconColor:'#8b9cf4',
+    title:'You\'re All Set',
+    desc:'Join the Discord to get support, chat with the community, and hear about updates first.',
+    discord:true
   }
 ];
 
-let tourStepIndex=0;
-let tourActiveSteps=[];
+let introIndex=0;
 
-function maybeStartTour(){
+function maybeStartIntro(){
   try{
-    const seenKey='cc_tour_seen_'+(AUTH.user.id||AUTH.user.username);
+    const seenKey='cc_intro_seen_v2_'+(AUTH.user.id||AUTH.user.username);
     if(localStorage.getItem(seenKey))return;
-    /* Delay slightly so page elements are rendered */
-    setTimeout(()=>startTour(seenKey),900);
+    setTimeout(()=>startIntro(seenKey),700);
   }catch{}
 }
 
-function startTour(seenKey){
-  /* Build list of steps whose target element actually exists */
-  tourActiveSteps=TOUR_STEPS.filter(s=>{
-    const el=document.querySelector(s.selector)||(s.fallbackSelector?document.querySelector(s.fallbackSelector):null);
-    return !!el;
-  });
-  if(!tourActiveSteps.length)return;
-  tourStepIndex=0;
+function startIntro(seenKey){
+  introIndex=0;
   localStorage.setItem(seenKey,'1');
-  document.getElementById('tour-overlay').style.display='block';
-  renderTourStep();
-}
-
-function getTourTarget(step){
-  return document.querySelector(step.selector)||(step.fallbackSelector?document.querySelector(step.fallbackSelector):null);
-}
-
-function renderTourStep(){
-  const step=tourActiveSteps[tourStepIndex];
-  if(!step){endTour();return;}
-  const el=getTourTarget(step);
-  if(!el){nextTourStep();return;}
-
-  el.scrollIntoView({behavior:'smooth',block:'center'});
-
-  /* Wait for scroll to settle before positioning */
-  setTimeout(()=>{
-    const rect=el.getBoundingClientRect();
-    const spotlight=document.getElementById('tour-spotlight');
-    const pad=8;
-    spotlight.style.left=(rect.left-pad)+'px';
-    spotlight.style.top=(rect.top-pad)+'px';
-    spotlight.style.width=(rect.width+pad*2)+'px';
-    spotlight.style.height=(rect.height+pad*2)+'px';
-
-    const tooltip=document.getElementById('tooltip')||document.getElementById('tour-tooltip');
-    const arrow=document.getElementById('tour-arrow');
-    const tt=document.getElementById('tour-tooltip');
-
-    document.getElementById('tour-step-badge').textContent=`Step ${tourStepIndex+1} / ${tourActiveSteps.length}`;
-    document.getElementById('tour-title').textContent=step.title;
-    document.getElementById('tour-desc').textContent=step.desc;
-    document.getElementById('tour-next-btn').textContent=tourStepIndex===tourActiveSteps.length-1?'Finish ✓':'Next →';
-
-    /* Dots */
-    document.getElementById('tour-dots').innerHTML=tourActiveSteps.map((_,i)=>
-      `<div class="tour-dot${i===tourStepIndex?' active':''}"></div>`).join('');
-
-    /* Position tooltip relative to spotlight */
-    const ttWidth=300;
-    let ttTop,ttLeft,arrowClass='';
-    const placement=step.placement||'bottom';
-
-    if(placement==='bottom'){
-      ttTop=rect.bottom+pad+16;
-      ttLeft=Math.min(Math.max(rect.left+rect.width/2-ttWidth/2,12),window.innerWidth-ttWidth-12);
-      arrow.style.top='-6px';arrow.style.left='50%';arrow.style.marginLeft='-6px';
-      arrow.style.borderRight='none';arrow.style.borderBottom='none';
-    }else{
-      ttTop=rect.top-pad-16-140;
-      if(ttTop<12)ttTop=rect.bottom+pad+16;
-      ttLeft=Math.min(Math.max(rect.left+rect.width/2-ttWidth/2,12),window.innerWidth-ttWidth-12);
-      arrow.style.bottom='-6px';arrow.style.top='auto';arrow.style.left='50%';arrow.style.marginLeft='-6px';
-      arrow.style.borderLeft='none';arrow.style.borderTop='none';
+  document.getElementById('intro-slides').innerHTML=INTRO_SLIDES.map((s,i)=>{
+    let extra='';
+    if(s.sections){
+      extra=`<div class="intro-sections">
+        <span class="intro-section-pill" style="color:var(--conch);border-color:rgba(15,244,198,.3);background:rgba(15,244,198,.08)">◈ Conch</span>
+        <span class="intro-section-pill" style="color:var(--cmdr);border-color:rgba(255,79,94,.3);background:rgba(255,79,94,.08)">◈ Cmdr</span>
+        <span class="intro-section-pill" style="color:var(--sentinel);border-color:rgba(255,61,166,.3);background:rgba(255,61,166,.08)">◈ Sentinel</span>
+      </div>`;
     }
-
-    tt.style.top=ttTop+'px';
-    tt.style.left=ttLeft+'px';
-  },350);
+    if(s.features){
+      extra=`<div class="intro-features">${s.features.map(f=>`
+        <div class="intro-feat-row">
+          <div class="intro-feat-ico" style="background:${f.bg};color:${f.color}">${f.icon}</div>
+          <div class="intro-feat-text"><b>${f.title}</b>${f.text}</div>
+        </div>`).join('')}</div>`;
+    }
+    if(s.discord){
+      extra=`<a class="intro-discord-btn" href="https://discord.gg/XaZSGVFvzV" target="_blank" rel="noopener">💬 Join the Discord</a>`;
+    }
+    return `<div class="intro-slide${i===0?' active':''}" data-slide="${i}">
+      <div class="intro-icon" style="background:${s.iconBg};color:${s.iconColor}">${s.icon}</div>
+      <div class="intro-title">${s.title}</div>
+      <div class="intro-desc">${s.desc}</div>
+      ${extra}
+    </div>`;
+  }).join('');
+  document.getElementById('intro-dots').innerHTML=INTRO_SLIDES.map((_,i)=>
+    `<div class="intro-dot${i===0?' active':''}" onclick="goToIntroSlide(${i})"></div>`).join('');
+  document.getElementById('intro-overlay').classList.add('show');
+  updateIntroNav();
 }
 
-function nextTourStep(){
-  tourStepIndex++;
-  if(tourStepIndex>=tourActiveSteps.length){endTour();return;}
-  renderTourStep();
+function renderIntroSlide(){
+  document.querySelectorAll('.intro-slide').forEach((el,i)=>el.classList.toggle('active',i===introIndex));
+  document.querySelectorAll('.intro-dot').forEach((el,i)=>el.classList.toggle('active',i===introIndex));
+  updateIntroNav();
 }
 
-function skipTour(){endTour();}
+function updateIntroNav(){
+  const backBtn=document.getElementById('intro-back-btn');
+  const nextBtn=document.getElementById('intro-next-btn');
+  backBtn.style.display=introIndex===0?'none':'inline-block';
+  nextBtn.textContent=introIndex===INTRO_SLIDES.length-1?'Get Started ✓':'Next →';
+}
 
-function endTour(){
-  document.getElementById('tour-overlay').style.display='none';
-  toast({title:'Tour complete!',sub:'You can always find help in the menu',type:'ok',dur:3000});
+function goToIntroSlide(i){introIndex=i;renderIntroSlide();}
+
+function introNext(){
+  if(introIndex>=INTRO_SLIDES.length-1){endIntro();return;}
+  introIndex++;
+  renderIntroSlide();
+}
+
+function introBack(){
+  if(introIndex<=0)return;
+  introIndex--;
+  renderIntroSlide();
+}
+
+function skipIntro(){endIntro();}
+
+function endIntro(){
+  document.getElementById('intro-overlay').classList.remove('show');
+  toast({title:'Welcome aboard!',sub:'You can always find help in the menu',type:'ok',dur:3000});
 }
 
 /* ══════════════════════════════════════
