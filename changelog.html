@@ -11,6 +11,7 @@
   --conch:#0ff4c6;--conch-dim:#0bb88e;
   --cmdr:#ff4f5e;--cmdr-dim:#c8333f;
   --beta-c:#34d399;--beta-r:#a78bfa;
+  --sentinel:#ff3da6;--sentinel-dim:#d92a86;
   --bg:#0b0c0f;--surface:#13151a;--surface2:#1a1d24;
   --border:rgba(255,255,255,0.07);--text:#e8eaf0;--muted:#6b7280;
   --mono:'JetBrains Mono',monospace;--sans:'Syne',sans-serif;
@@ -49,6 +50,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:cen
 .filter-btn.active-cmdr{background:rgba(255,79,94,.08);border-color:rgba(255,79,94,.3);color:var(--cmdr)}
 .filter-btn.active-beta-c{background:rgba(52,211,153,.08);border-color:rgba(52,211,153,.3);color:var(--beta-c)}
 .filter-btn.active-beta-r{background:rgba(167,139,250,.08);border-color:rgba(167,139,250,.3);color:var(--beta-r)}
+.filter-btn.active-sentinel{background:rgba(255,61,166,.08);border-color:rgba(255,61,166,.3);color:var(--sentinel)}
 .filter-sep{width:1px;height:20px;background:var(--border)}
 .search-wrap{position:relative;margin-left:auto}
 .search-input{background:var(--surface);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:var(--mono);font-size:.75rem;padding:.4rem 2rem .4rem .85rem;outline:none;transition:border-color .2s;width:200px}
@@ -72,6 +74,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:cen
 .release-dot.dr{border-color:rgba(255,79,94,.4);background:rgba(255,79,94,.08);box-shadow:0 0 12px rgba(255,79,94,.15)}
 .release-dot.dbc{border-color:rgba(52,211,153,.4);background:rgba(52,211,153,.08);box-shadow:0 0 12px rgba(52,211,153,.15)}
 .release-dot.dbr{border-color:rgba(167,139,250,.4);background:rgba(167,139,250,.08);box-shadow:0 0 12px rgba(167,139,250,.15)}
+.release-dot.ds{border-color:rgba(255,61,166,.4);background:rgba(255,61,166,.08);box-shadow:0 0 12px rgba(255,61,166,.15)}
 
 /* CARD */
 .release-card{flex:1;background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;transition:border-color .2s,transform .2s}
@@ -80,6 +83,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:cen
 .release-card.tr{border-left:3px solid rgba(255,79,94,.4)}.release-card.tr:hover{border-color:rgba(255,79,94,.5)}
 .release-card.tbc{border-left:3px solid rgba(52,211,153,.4)}.release-card.tbc:hover{border-color:rgba(52,211,153,.5)}
 .release-card.tbr{border-left:3px solid rgba(167,139,250,.4)}.release-card.tbr:hover{border-color:rgba(167,139,250,.5)}
+.release-card.ts{border-left:3px solid rgba(255,61,166,.4)}.release-card.ts:hover{border-color:rgba(255,61,166,.5)}
 
 .card-head{display:flex;align-items:flex-start;justify-content:space-between;padding:1rem 1.2rem;gap:1rem;flex-wrap:wrap}
 .card-left{display:flex;flex-direction:column;gap:.4rem}
@@ -90,6 +94,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:cen
 .ct-r{background:rgba(255,79,94,.1);color:var(--cmdr);border:1px solid rgba(255,79,94,.2)}
 .ct-bc{background:rgba(52,211,153,.1);color:var(--beta-c);border:1px solid rgba(52,211,153,.2)}
 .ct-br{background:rgba(167,139,250,.1);color:var(--beta-r);border:1px solid rgba(167,139,250,.2)}
+.ct-s{background:rgba(255,61,166,.1);color:var(--sentinel);border:1px solid rgba(255,61,166,.2)}
 .badge-new-rel{font-family:var(--mono);font-size:.58rem;padding:.12rem .4rem;border-radius:3px;background:rgba(255,200,50,.12);color:#ffc832;border:1px solid rgba(255,200,50,.25)}
 .card-meta{font-family:var(--mono);font-size:.7rem;color:var(--muted);display:flex;align-items:center;gap:.5rem;flex-wrap:wrap}
 .card-meta-dot{opacity:.4}
@@ -110,6 +115,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:cen
 .asset-pill.apr{color:var(--cmdr);border-color:rgba(255,79,94,.2);background:rgba(255,79,94,.05)}
 .asset-pill.apbc{color:var(--beta-c);border-color:rgba(52,211,153,.2);background:rgba(52,211,153,.05)}
 .asset-pill.apbr{color:var(--beta-r);border-color:rgba(167,139,250,.2);background:rgba(167,139,250,.05)}
+.asset-pill.aps{color:var(--sentinel);border-color:rgba(255,61,166,.2);background:rgba(255,61,166,.05)}
 
 /* BODY / NOTES */
 .card-body{overflow:hidden;max-height:0;transition:max-height .35s cubic-bezier(.4,0,.2,1)}
@@ -242,6 +248,7 @@ footer{text-align:center;padding:3rem 2.5rem;font-family:var(--mono);font-size:.
   <div class="stat-pill" style="color:var(--conch)">◈ <strong id="stat-conch">—</strong> Conch</div>
   <div class="stat-pill" style="color:var(--cmdr)">◈ <strong id="stat-cmdr">—</strong> Cmdr</div>
   <div class="stat-pill" style="color:var(--beta-c)">🧪 <strong id="stat-beta">—</strong> Beta</div>
+  <div class="stat-pill" style="color:var(--sentinel)">◈ <strong id="stat-sentinel">—</strong> Sentinel</div>
   <div class="stat-pill" style="margin-left:auto;color:var(--muted)">🕐 Updated <strong id="stat-updated">—</strong></div>
 </div>
 
@@ -250,6 +257,7 @@ footer{text-align:center;padding:3rem 2.5rem;font-family:var(--mono);font-size:.
   <button class="filter-btn active-all" data-filter="all" onclick="setFilter('all',this)">All</button>
   <button class="filter-btn" data-filter="conch" onclick="setFilter('conch',this)" style="color:var(--conch)">◈ Conch</button>
   <button class="filter-btn" data-filter="cmdr" onclick="setFilter('cmdr',this)" style="color:var(--cmdr)">◈ Cmdr</button>
+  <button class="filter-btn" data-filter="sentinel" onclick="setFilter('sentinel',this)" style="color:var(--sentinel)">◈ Sentinel</button>
   <div class="filter-sep"></div>
   <button class="filter-btn" data-filter="beta-c" onclick="setFilter('beta-c',this)" style="color:var(--beta-c)">🧪 Conch Beta</button>
   <button class="filter-btn" data-filter="beta-r" onclick="setFilter('beta-r',this)" style="color:var(--beta-r)">🔬 Cmdr Beta</button>
@@ -322,9 +330,12 @@ function eh(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').r
 /* ── CLASSIFY ASSET ── */
 function classify(name){
   const lo=name.toLowerCase();
+  const isSentinel=lo.includes('sentinel');
   const isConch=lo.includes('conch');
   const isCmdr=lo.includes('cmdr');
   const isBeta=lo.includes('beta');
+  /* Sentinel takes top priority, same as index.html's fetchReleases() */
+  if(isSentinel)return'sentinel';
   if(isConch&&isBeta)return'beta-c';
   if(isCmdr&&isBeta)return'beta-r';
   if(isConch)return'conch';
@@ -332,17 +343,19 @@ function classify(name){
   return'other';
 }
 
-function typeLabel(t){return{conch:'Conch',cmdr:'Cmdr','beta-c':'Conch Beta','beta-r':'Cmdr Beta',other:'Other'}[t]||t}
-function dotClass(t){return{conch:'dc',cmdr:'dr','beta-c':'dbc','beta-r':'dbr',other:''}[t]||''}
-function cardClass(t){return{conch:'tc',cmdr:'tr','beta-c':'tbc','beta-r':'tbr',other:''}[t]||''}
-function typeClass(t){return{conch:'ct-c',cmdr:'ct-r','beta-c':'ct-bc','beta-r':'ct-br',other:''}[t]||''}
-function assetClass(t){return{conch:'apc',cmdr:'apr','beta-c':'apbc','beta-r':'apbr',other:''}[t]||''}
-function typeIcon(t){return{conch:'🧩',cmdr:'⚔️','beta-c':'🧪','beta-r':'🔬',other:'📦'}[t]||'📦'}
+function typeLabel(t){return{conch:'Conch',cmdr:'Cmdr','beta-c':'Conch Beta','beta-r':'Cmdr Beta',sentinel:'Sentinel',other:'Other'}[t]||t}
+function dotClass(t){return{conch:'dc',cmdr:'dr','beta-c':'dbc','beta-r':'dbr',sentinel:'ds',other:''}[t]||''}
+function cardClass(t){return{conch:'tc',cmdr:'tr','beta-c':'tbc','beta-r':'tbr',sentinel:'ts',other:''}[t]||''}
+function typeClass(t){return{conch:'ct-c',cmdr:'ct-r','beta-c':'ct-bc','beta-r':'ct-br',sentinel:'ct-s',other:''}[t]||''}
+function assetClass(t){return{conch:'apc',cmdr:'apr','beta-c':'apbc','beta-r':'apbr',sentinel:'aps',other:''}[t]||''}
+function typeIcon(t){return{conch:'🧩',cmdr:'⚔️','beta-c':'🧪','beta-r':'🔬',sentinel:'◈',other:'📦'}[t]||'📦'}
 
 /* ── DETERMINE RELEASE TYPE ── */
 function releaseType(assets){
   const types=new Set(assets.filter(a=>a.name.toLowerCase().endsWith('.rbxm')).map(a=>classify(a.name)));
   if(types.size===0)return'other';
+  /* Sentinel takes top priority — a release with any sentinel asset is tagged Sentinel */
+  if(types.has('sentinel'))return'sentinel';
   /* Priority: if mixed, show dominant */
   if(types.has('conch')&&!types.has('cmdr')&&!types.has('beta-c')&&!types.has('beta-r'))return'conch';
   if(types.has('cmdr')&&!types.has('conch')&&!types.has('beta-c')&&!types.has('beta-r'))return'cmdr';
@@ -367,17 +380,19 @@ async function fetchReleases(){
     }
 
     /* Stats */
-    let nConch=0,nCmdr=0,nBeta=0;
+    let nConch=0,nCmdr=0,nBeta=0,nSentinel=0;
     allReleases.forEach(rel=>{
       const t=releaseType(rel.assets||[]);
       if(t==='conch')nConch++;
       else if(t==='cmdr')nCmdr++;
       else if(t==='beta-c'||t==='beta-r')nBeta++;
+      else if(t==='sentinel')nSentinel++;
     });
     document.getElementById('stat-total').textContent=allReleases.length;
     document.getElementById('stat-conch').textContent=nConch;
     document.getElementById('stat-cmdr').textContent=nCmdr;
     document.getElementById('stat-beta').textContent=nBeta;
+    document.getElementById('stat-sentinel').textContent=nSentinel;
     document.getElementById('stat-updated').textContent=timeAgo(allReleases[0].published_at);
     document.getElementById('stats-bar').style.display='flex';
 
@@ -485,6 +500,7 @@ function setFilter(f,btn){
     else if(b.dataset.filter==='cmdr')b.style.color='var(--cmdr)';
     else if(b.dataset.filter==='beta-c')b.style.color='var(--beta-c)';
     else if(b.dataset.filter==='beta-r')b.style.color='var(--beta-r)';
+    else if(b.dataset.filter==='sentinel')b.style.color='var(--sentinel)';
     else b.style.color='';
   });
   btn.classList.add('active-'+f);
