@@ -3,466 +3,326 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Systems Status — Systems-Download</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<title>Status — Conch & Cmdr</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-:root{
-    --conch:#0ff4c6; 
-    --cmdr:#ff4f5e;  
-    --warning:#ffd166; 
-    --bg:#050608;
-    --surface:#0f1115;
-    --surface2:#161920;
-    --border:rgba(15,244,198,0.06);
-    --border2:rgba(255,255,255,0.08);
-    --text:#e8eaf0;
-    --muted:#6b7280;
-    --mono:'JetBrains Mono',monospace;
-    --sans:'Syne',sans-serif;
-}
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  :root{
+    --conch:#0ff4c6;--conch-dim:#0bb88e;
+    --cmdr:#ff4f5e;--cmdr-dim:#c8333f;
+    --bg:#0b0c0f;--surface:#13151a;--surface2:#1a1d24;
+    --border:rgba(255,255,255,0.07);--text:#e8eaf0;--muted:#6b7280;
+    --mono:'JetBrains Mono',monospace;--sans:'Space Grotesk',sans-serif;
+  }
+  :root.light-mode{
+    --bg:#f5f7fa;--surface:#ffffff;--surface2:#f0f2f5;
+    --border:rgba(0,0,0,0.08);--text:#1a1d24;--muted:#6b7280;
+  }
+  body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:100vh;transition:background-color .3s ease,color .3s ease}
+  html{scroll-behavior:smooth}
 
-html,body{min-height:100%;overflow-x:hidden;background:var(--bg)}
-body {
-    color:var(--text);
-    font-family:var(--sans);
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    justify-content:flex-start;
-    padding-top:120px;
-    padding-bottom:80px;
-    position:relative;
-}
+  /* AUTH WALL (shared pattern) */
+  #auth-wall{position:fixed;inset:0;z-index:10000;background:var(--bg);display:flex;align-items:center;justify-content:center;padding:1rem;transition:opacity .4s ease}
+  #auth-wall.hidden{opacity:0;pointer-events:none}
+  .auth-box{width:100%;max-width:420px;background:var(--surface);border:1px solid var(--border);border-radius:16px;overflow:hidden;box-shadow:0 32px 80px rgba(0,0,0,.6)}
+  .auth-body{padding:2rem;text-align:center}
+  .auth-logo-text{font-family:var(--sans);font-size:1.5rem;font-weight:700;letter-spacing:-.02em}
+  .auth-logo-text .c{color:var(--conch)}.auth-logo-text .r{color:var(--cmdr)}.auth-logo-text .s{color:var(--muted)}
+  .auth-sub{font-family:var(--mono);font-size:.72rem;color:var(--muted);margin-top:.3rem;margin-bottom:1.5rem}
+  .auth-goto-btn{display:inline-block;padding:.75rem 1.5rem;border-radius:8px;border:1px solid rgba(15,244,198,.3);background:rgba(15,244,198,.12);color:var(--conch);font-family:var(--mono);font-size:.8rem;font-weight:700;text-decoration:none;transition:background .2s}
+  .auth-goto-btn:hover{background:rgba(15,244,198,.22)}
 
-.grid-bg{
-    position:fixed;
-    inset:-100px;
-    background-image:
-        linear-gradient(rgba(15,244,198,.02) 1px,transparent 1px),
-        linear-gradient(90deg,rgba(15,244,198,.02) 1px,transparent 1px);
-    background-size:50px 50px;
-    transform: perspective(500px) rotateX(15deg);
-    animation: gridDrive 8s linear infinite;
-    pointer-events:none;
-    z-index:0;
-}
-@keyframes gridDrive{
-    0%{background-position:0 0}
-    100%{background-position:0 50px}
-}
+  /* NAV */
+  nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:1rem 2.5rem;background:rgba(11,12,15,0.9);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);height:64px}
+  .nav-logo{font-size:1.1rem;font-weight:700;letter-spacing:-0.02em;display:flex;gap:0.4em;align-items:center;text-decoration:none}
+  .nav-logo .c{color:var(--conch)}.nav-logo .r{color:var(--cmdr)}.nav-logo .sep{color:var(--muted)}
+  .nav-right{display:flex;align-items:center;gap:0.6rem}
+  .icon-btn{display:flex;align-items:center;justify-content:center;width:36px;height:36px;cursor:pointer;background:var(--surface);border:1px solid var(--border);border-radius:8px;flex-shrink:0;transition:border-color 0.2s,background 0.2s,color 0.2s;color:var(--muted)}
+  .icon-btn:hover{border-color:rgba(15,244,198,0.35);background:var(--surface2);color:var(--conch)}
+  .icon-btn.spinning svg{animation:spin .7s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .burger{display:flex;flex-direction:column;justify-content:center;gap:5px;width:36px;height:36px;cursor:pointer;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:9px;transition:border-color 0.2s,background 0.2s;flex-shrink:0}
+  .burger:hover{border-color:rgba(255,255,255,0.18);background:var(--surface2)}
+  .burger span{display:block;height:1.5px;border-radius:2px;background:var(--muted);transition:all 0.3s;transform-origin:center}
+  .burger.open span:nth-child(1){transform:translateY(6.5px) rotate(45deg);background:var(--conch)}
+  .burger.open span:nth-child(2){opacity:0;transform:scaleX(0)}
+  .burger.open span:nth-child(3){transform:translateY(-6.5px) rotate(-45deg);background:var(--conch)}
 
-.glow-c{position:fixed;top:-150px;left:-150px;width:700px;height:700px;background:radial-gradient(circle,rgba(15,244,198,.06) 0%,transparent 70%);pointer-events:none;z-index:0;animation:pulseGlow 10s ease-in-out infinite alternate}
-.glow-r{position:fixed;bottom:-150px;right:-150px;width:700px;height:700px;background:radial-gradient(circle,rgba(255,79,94,.05) 0%,transparent 70%);pointer-events:none;z-index:0;animation:pulseGlow 8s ease-in-out infinite alternate-reverse}
+  /* DRAWER */
+  .drawer-overlay{position:fixed;inset:0;z-index:98;background:rgba(0,0,0,0.5);opacity:0;pointer-events:none;transition:opacity 0.3s}
+  .drawer-overlay.open{opacity:1;pointer-events:all}
+  .drawer{position:fixed;top:0;right:0;bottom:0;z-index:99;width:280px;background:#0e1014;border-left:1px solid var(--border);transform:translateX(100%);transition:transform 0.35s cubic-bezier(0.4,0,0.2,1);display:flex;flex-direction:column}
+  .drawer.open{transform:translateX(0)}
+  .drawer-head{display:flex;align-items:center;justify-content:space-between;padding:1.2rem 1.5rem;border-bottom:1px solid var(--border);height:64px}
+  .drawer-logo{font-size:1rem;font-weight:700;display:flex;gap:0.3em}
+  .drawer-logo .c{color:var(--conch)}.drawer-logo .r{color:var(--cmdr)}.drawer-logo .sep{color:var(--muted)}
+  .drawer-close{background:none;border:none;cursor:pointer;color:var(--muted);font-size:1.1rem;padding:0.3rem;transition:color 0.2s}
+  .drawer-close:hover{color:var(--text)}
+  .drawer-nav{flex:1;overflow-y:auto;padding:0.5rem 0.75rem}
+  .drawer-item{display:flex;align-items:center;gap:0.75rem;padding:0.75rem;border-radius:8px;text-decoration:none;color:var(--muted);font-family:var(--mono);font-size:0.82rem;margin-bottom:2px;border:1px solid transparent;transition:background 0.18s;cursor:pointer}
+  .drawer-item:hover{background:var(--surface);border-color:var(--border);color:var(--text)}
+  .drawer-item.active{background:rgba(15,244,198,0.07);border-color:rgba(15,244,198,0.15);color:var(--conch)}
+  .drawer-icon{width:28px;height:28px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:0.85rem;flex-shrink:0;background:var(--surface2);border:1px solid var(--border)}
+  .drawer-div{height:1px;background:var(--border);margin:0.75rem}
 
-@keyframes pulseGlow {
-    0% { transform: scale(1) translate(0, 0); opacity: 0.7; }
-    100% { transform: scale(1.2) translate(30px, 50px); opacity: 1; }
-}
+  /* HERO */
+  .hero{padding:9rem 2.5rem 3rem;text-align:center}
+  .hero h1{font-size:clamp(2.4rem,6vw,4rem);font-weight:700;line-height:1.05;letter-spacing:-0.03em;margin-bottom:.75rem}
+  .hero p{font-family:var(--mono);font-size:0.85rem;color:var(--muted);max-width:520px;margin:0 auto;line-height:1.8}
 
-canvas{position:fixed;inset:0;pointer-events:none;z-index:1}
+  /* OVERALL BANNER */
+  .overall-wrap{max-width:900px;margin:0 auto;padding:0 2.5rem 1rem}
+  .overall-banner{border-radius:12px;padding:1rem 1.4rem;display:flex;align-items:center;gap:.85rem;font-family:var(--mono);font-size:.85rem;font-weight:600;border:1px solid}
+  .ob-ok{background:rgba(60,200,120,.08);border-color:rgba(60,200,120,.25);color:#3cc878}
+  .ob-warn{background:rgba(255,200,50,.08);border-color:rgba(255,200,50,.25);color:#ffc832}
+  .ob-down{background:rgba(255,79,94,.08);border-color:rgba(255,79,94,.25);color:var(--cmdr)}
+  .ob-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;animation:pulseDot 2s ease-in-out infinite}
+  .ob-ok .ob-dot{background:#3cc878;box-shadow:0 0 8px #3cc878}
+  .ob-warn .ob-dot{background:#ffc832;box-shadow:0 0 8px #ffc832}
+  .ob-down .ob-dot{background:var(--cmdr);box-shadow:0 0 8px var(--cmdr)}
+  @keyframes pulseDot{0%,100%{opacity:1}50%{opacity:.4}}
 
-body::after {
-    content: '';
-    position: fixed;
-    inset: 0;
-    background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.04), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.04));
-    z-index: 999;
-    background-size: 100% 4px, 6px 100%;
-    pointer-events: none;
-}
+  /* STATUS CARDS */
+  .status-wrap{max-width:900px;margin:0 auto;padding:1rem 2.5rem 4rem;display:flex;flex-direction:column;gap:.75rem}
+  .status-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1.2rem 1.4rem;display:flex;align-items:center;gap:1rem;transition:border-color .2s}
+  .status-icon{width:42px;height:42px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0;background:var(--surface2)}
+  .status-info{flex:1;min-width:0}
+  .status-name{font-family:var(--sans);font-weight:700;font-size:.95rem;margin-bottom:.15rem}
+  .status-meta{font-family:var(--mono);font-size:.72rem;color:var(--muted)}
+  .status-badge{font-family:var(--mono);font-size:.72rem;font-weight:700;padding:.35rem .75rem;border-radius:20px;flex-shrink:0;display:flex;align-items:center;gap:.4rem}
+  .sb-ok{background:rgba(60,200,120,.1);color:#3cc878;border:1px solid rgba(60,200,120,.25)}
+  .sb-warn{background:rgba(255,200,50,.1);color:#ffc832;border:1px solid rgba(255,200,50,.25)}
+  .sb-down{background:rgba(255,79,94,.1);color:var(--cmdr);border:1px solid rgba(255,79,94,.25)}
+  .sb-checking{background:var(--surface2);color:var(--muted);border:1px solid var(--border)}
+  .status-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+  .sb-ok .status-dot{background:#3cc878}.sb-warn .status-dot{background:#ffc832}.sb-down .status-dot{background:var(--cmdr)}.sb-checking .status-dot{background:var(--muted);animation:pulseDot 1s ease-in-out infinite}
 
-nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:0 2.5rem;background:rgba(5,6,8,.8);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);height:64px;box-shadow:0 4px 30px rgba(0,0,0,0.5)}
-.nav-logo{font-size:1.1rem;font-weight:800;display:flex;gap:.4em;text-decoration:none;font-family:var(--sans);letter-spacing:-0.5px}
-.nav-logo .c{color:var(--conch);text-shadow:0 0 10px var(--conch)}.nav-logo .sep{color:var(--muted)}.nav-logo .r{color:var(--text)}
+  .refresh-row{display:flex;align-items:center;justify-content:space-between;max-width:900px;margin:0 auto;padding:0 2.5rem;font-family:var(--mono);font-size:.7rem;color:var(--muted)}
+  .refresh-btn{font-family:var(--mono);font-size:.72rem;padding:.4rem .8rem;border-radius:6px;border:1px solid var(--border);background:none;color:var(--muted);cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:.4rem}
+  .refresh-btn:hover{border-color:rgba(15,244,198,.35);color:var(--conch)}
 
-.config-trigger {
-    background: none; border: 1px solid var(--border2); color: var(--muted);
-    font-family: var(--mono); font-size: 0.7rem; padding: 0.4rem 0.8rem;
-    border-radius: 4px; cursor: pointer; transition: all 0.2s;
-}
-.config-trigger:hover { color: var(--conch); border-color: var(--conch); }
-.config-panel {
-    background: var(--surface); border: 1px solid rgba(15,244,198,0.15);
-    border-radius: 12px; padding: 1.5rem; margin-bottom: 2rem; width: 100%;
-    max-width: 740px; text-align: left; display: none; position: relative; z-index: 10;
-}
-.config-panel h3 { font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; color: var(--conch); margin-bottom: 1rem; font-family: var(--sans); }
-.config-row { display: grid; grid-template-columns: 100px 100px 1fr; gap: 1rem; align-items: center; margin-bottom: 0.75rem; font-family: var(--mono); font-size: 0.75rem; }
-.config-row label { color: var(--text); font-weight: 600; }
-.config-row input { background: var(--bg); border: 1px solid var(--border2); color: var(--text); padding: 0.25rem; width: 60px; border-radius: 4px; font-family: var(--mono); }
-.config-selects { display: flex; gap: 4px; flex-wrap: wrap; }
-.config-selects select { background: var(--bg); border: 1px solid var(--border2); color: var(--conch); font-size: 0.65rem; padding: 0.15rem; border-radius: 3px; font-family: var(--mono); outline: none; cursor: pointer; }
-.config-selects select.is-offline { color: var(--cmdr); border-color: rgba(255,79,94,0.4); }
+  footer{text-align:center;padding:3rem 2.5rem;font-family:var(--mono);font-size:0.75rem;color:var(--muted);border-top:1px solid var(--border);margin-top:2rem;opacity:0.5}
 
-.auth-box { display: flex; gap: 10px; align-items: center; font-family: var(--mono); font-size: 0.8rem; margin-bottom: 0.5rem; }
-.auth-box input[type="password"] { background: var(--bg); border: 1px solid var(--border2); color: var(--text); padding: 0.4rem 0.8rem; border-radius: 4px; font-family: var(--mono); outline: none; }
-.auth-box input[type="password"]:focus { border-color: var(--conch); }
-.auth-box button { background: rgba(15,244,198,0.1); border: 1px solid rgba(15,244,198,0.3); color: var(--conch); padding: 0.4rem 1rem; border-radius: 4px; cursor: pointer; font-family: var(--mono); transition: all 0.2s; }
-.auth-box button:hover { background: var(--conch); color: var(--bg); }
-.auth-error { color: var(--cmdr); font-family: var(--mono); font-size: 0.75rem; margin-top: 0.5rem; display: none; }
-.config-content { display: none; }
-
-.container{position:relative;z-index:2;text-align:center;padding:2rem;max-width:740px;width:100%}
-
-.badge{display:inline-flex;align-items:center;gap:.6rem;font-family:var(--mono);font-size:.7rem;letter-spacing:.15em;text-transform:uppercase;padding:.45rem 1.2rem;border-radius:4px;background:rgba(15,244,198,.05);color:var(--conch);border:1px solid rgba(15,244,198,.25);margin-bottom:2rem;position:relative;overflow:hidden}
-.badge::after {
-    content:'';position:absolute;top:0;left:-50%;width:30%;height:100%;
-    background:linear-gradient(90deg,transparent,rgba(15,244,198,0.4),transparent);
-    transform:skewX(-25deg);animation:shimmer 3s infinite linear;
-}
-@keyframes shimmer{0%{left:-50%}100%{left:150%}}
-.badge-dot{width:8px;height:8px;border-radius:50%;background:var(--conch);box-shadow:0 0 10px var(--conch);animation:bdot 0.8s ease-in-out infinite alternate}
-@keyframes bdot{0%{transform:scale(0.7);opacity:0.4}100%{transform:scale(1.3);box-shadow:0 0 15px var(--conch);opacity:1}}
-
-h1{font-size:clamp(2.2rem,6vw,3.6rem);font-weight:800;line-height:1.05;letter-spacing:-.04em;margin-bottom:1rem;text-transform:uppercase}
-h1 em{font-style:normal;color:var(--conch);text-shadow:0 0 15px rgba(15,244,198,0.3);animation:textGlitch 4s infinite step-end}
-
-@keyframes textGlitch {
-    0%, 93%, 100% { text-shadow: 0 0 15px rgba(15,244,198,0.3); transform:skew(0deg); color:var(--conch)}
-    94% { text-shadow: 3px 0 var(--cmdr), -3px 0 var(--conch); transform:skew(2deg); color:#fff}
-    96% { text-shadow: -3px -2px var(--cmdr), 3px 2px var(--conch); transform:skew(-3deg)}
-    98% { text-shadow: 2px 0 var(--cmdr), -2px -1px var(--conch); transform:skew(1deg)}
-}
-
-.sub{font-family:var(--mono);font-size:.85rem;color:var(--muted);max-width:520px;margin:0 auto 3.5rem;line-height:1.8}
-
-.status-grid{display:flex;flex-direction:column;gap:1.75rem;margin-bottom:4rem;text-align:left}
-.status-card{
-    background:var(--surface);
-    border:1px solid var(--border2);
-    border-radius:12px;
-    padding:1.5rem;
-    position:relative;
-    overflow:hidden;
-    transition:all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
-}
-
-.status-card::before {
-    content:'';position:absolute;top:0;left:0;width:100%;height:100%;
-    border:1px solid transparent;border-radius:12px;pointer-events:none;transition:all 0.4s;
-}
-.status-card:hover::before {
-    border-color: rgba(15,244,198,0.3);
-    box-shadow: inset 0 0 15px rgba(15,244,198,0.03);
-}
-
-.status-card:hover{
-    transform:translateY(-5px) scale(1.01);
-    border-color:rgba(255,255,255,0.15);
-    box-shadow:0 15px 35px rgba(0,0,0,0.6), 0 0 20px rgba(15,244,198,0.05);
-}
-
-.card-scanner {
-    position:absolute;inset:0;
-    background:linear-gradient(to bottom, transparent 0%, rgba(15,244,198,0.04) 50%, transparent 100%);
-    background-size: 100% 200px;
-    animation: scanMove 6s linear infinite;
-    pointer-events:none;
-}
-@keyframes scanMove { 0% { background-position: 0 -200px } 100% { background-position: 0 400px } }
-
-.card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.25rem}
-.service-name{font-size:1.3rem;font-weight:800;letter-spacing:-.02em}
-.service-status{display:flex;align-items:center;gap:.6rem;font-family:var(--mono);font-size:.75rem;text-transform:uppercase;letter-spacing:.08em}
-
-.status-indicator{width:8px;height:8px;border-radius:50%}
-.status-card.operational .status-indicator { background:var(--conch); box-shadow:0 0 12px var(--conch); animation: pulseConch 1.5s infinite alternate; }
-.status-card.operational .service-status { color:var(--conch); text-shadow:0 0 8px rgba(15,244,198,0.2) }
-
-@keyframes pulseConch { 0% { opacity:0.5; transform:scale(0.8) } 100% { opacity:1; transform:scale(1.2); box-shadow:0 0 16px var(--conch) } }
-
-.uptime-row{display:flex;gap:5px;height:28px;align-items:center;margin-bottom:.85rem}
-.ut-bar{
-    flex:1;height:100%;
-    background:rgba(15,244,198,0.06);
-    border:1px solid rgba(15,244,198,0.18);
-    border-radius:3px;
-    transition:all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-}
-.status-card:hover .ut-bar {
-    animation: barEntrance 0.6s ease-backward both;
-}
-.status-card:hover .ut-bar:nth-child(2n) { animation-delay: 0.05s; }
-.status-card:hover .ut-bar:nth-child(3n) { animation-delay: 0.1s; }
-
-@keyframes barEntrance { 0% { transform: scaleY(0.7) } 50% { transform: scaleY(1.1) } 100% { transform: scaleY(1) } }
-
-.ut-bar:hover{
-    background:var(--conch) !important;
-    border-color:var(--conch) !important;
-    transform:scaleY(1.35) scaleX(1.1) !important;
-    box-shadow: 0 0 15px var(--conch) !important;
-    z-index: 10;
-}
-.ut-bar.down{background:rgba(255,79,94,0.12);border-color:rgba(255,79,94,0.35)}
-.ut-bar.down:hover{background:var(--cmdr) !important;border-color:var(--cmdr) !important;box-shadow: 0 0 15px var(--cmdr) !important}
-
-.card-meta{display:flex;justify-content:space-between;font-family:var(--mono);font-size:.65rem;color:var(--muted);letter-spacing:0.5px}
-
-.footer-actions{margin-top:4rem;display:flex;flex-direction:column;align-items:center;gap:1.5rem}
-.btn-back{
-    font-family:var(--mono);font-size:.78rem;padding:.7rem 1.6rem;border-radius:4px;
-    border:1px solid var(--border2);background:none;color:var(--muted);
-    cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:.5rem;
-    position:relative;overflow:hidden;transition:all 0.3s;
-}
-.btn-back::before {
-    content:'';position:absolute;inset:0;background:var(--conch);
-    opacity:0;z-index:-1;transition:all 0.3s;
-}
-.btn-back:hover{
-    color:var(--bg);border-color:var(--conch);
-    transform:translateY(-2px);box-shadow:0 5px 15px rgba(15,244,198,0.2);
-}
-.btn-back:hover::before { opacity:1 }
-.footer-text{font-family:var(--mono);font-size:.65rem;color:var(--muted);letter-spacing:1px}
+  @media(max-width:640px){
+    nav{padding:1rem 1.2rem}.hero{padding:8rem 1.2rem 2rem}
+    .overall-wrap,.status-wrap,.refresh-row{padding-left:1.2rem;padding-right:1.2rem}
+    .status-card{flex-wrap:wrap}
+  }
 </style>
+<script>
+(function(){
+  function get(key,def){return localStorage.getItem(key)??def;}
+  const useSystem=get('cc_system_theme','0')==='1';
+  if(useSystem){document.documentElement.classList.toggle('light-mode',window.matchMedia('(prefers-color-scheme:light)').matches);}
+  else{if(get('cc_theme','dark')==='light')document.documentElement.classList.add('light-mode');}
+  const accent=get('cc_accent','#0ff4c6');
+  if(accent&&accent!=='#0ff4c6')document.documentElement.style.setProperty('--conch',accent);
+})();
+</script>
 </head>
 <body>
 
-<div class="grid-bg"></div>
-<div class="glow-c"></div>
-<div class="glow-r"></div>
-<canvas id="cv"></canvas>
-
-<nav>
-  <a class="nav-logo" href="index.html"><span class="c">Systems</span><span class="sep">/</span><span class="r">Download</span></a>
-  <button class="config-trigger" onclick="toggleConfig()">// CONFIG_PANEL</button>
-</nav>
-
-<div class="container">
-  <div class="config-panel" id="configPanel">
-    
-    <div id="authGate" class="auth-box">
-      <input type="password" id="configPassInput" placeholder="Enter security password...">
-      <button onclick="checkPassphrase()">UNLOCK</button>
+<!-- AUTH WALL -->
+<div id="auth-wall" style="display:none">
+  <div class="auth-box">
+    <div class="auth-body">
+      <div class="auth-logo-text"><span class="c">Conch</span><span class="s"> / </span><span class="r">Cmdr</span></div>
+      <div class="auth-sub">Please log in on the main page to view status.</div>
+      <a class="auth-goto-btn" href="download.html">← Back to Downloads</a>
     </div>
-    <div id="authError" class="auth-error">// ACCESS_DENIED: Invalid password.</div>
-
-    <div id="configContent" class="config-content">
-      <h3>Status Block Configuration</h3>
-      <div class="config-row">
-        <label>Website:</label>
-        <input type="number" id="count-website" value="32" min="1" max="40" onchange="updatePanelSelects('website')">
-        <div class="config-selects" id="selects-website"></div>
-      </div>
-      <div class="config-row">
-        <label>Discord:</label>
-        <input type="number" id="count-discord" value="32" min="1" max="40" onchange="updatePanelSelects('discord')">
-        <div class="config-selects" id="selects-discord"></div>
-      </div>
-      <div class="config-row">
-        <label>Mainpage:</label>
-        <input type="number" id="count-mainpage" value="32" min="1" max="40" onchange="updatePanelSelects('mainpage')">
-        <div class="config-selects" id="selects-mainpage"></div>
-      </div>
-    </div>
-
-  </div>
-
-  <div class="badge"><div class="badge-dot"></div> Systems-download</div>
-  <h1>All nodes <em>operational</em></h1>
-  <p class="sub">Live statuspage showing real-time system status</p>
-
-  <div class="status-grid">
-    
-    <div class="status-card operational">
-      <div class="card-scanner"></div>
-      <div class="card-header">
-        <span class="service-name">Website</span>
-        <div class="service-status">
-          <div class="status-indicator"></div>Operational
-        </div>
-      </div>
-      <div class="uptime-row" id="bars-website"></div>
-      <div class="card-meta">
-        <span>90 days</span>
-        <span>Status 99.94%</span>
-        <span>TODAY</span>
-      </div>
-    </div>
-
-    <div class="status-card operational">
-      <div class="card-scanner"></div>
-      <div class="card-header">
-        <span class="service-name">Discord</span>
-        <div class="service-status">
-          <div class="status-indicator"></div>Operational
-        </div>
-      </div>
-      <div class="uptime-row" id="bars-discord"></div>
-      <div class="card-meta">
-        <span>90 days</span>
-        <span>Status 99.71%</span>
-        <span>TODAY</span>
-      </div>
-    </div>
-
-    <div class="status-card operational">
-      <div class="card-scanner"></div>
-      <div class="card-header">
-        <span class="service-name">Mainpage</span>
-        <div class="service-status">
-          <div class="status-indicator"></div>Operational
-        </div>
-      </div>
-      <div class="uptime-row" id="bars-mainpage"></div>
-      <div class="card-meta">
-        <span>90 days</span>
-        <span>Status 100%</span>
-        <span>TODAY</span>
-      </div>
-    </div>
-
-  </div>
-
-  <div class="footer-actions">
-    <a class="btn-back" href="index.html">← Return to Main Site</a>
-    <div class="footer-text">Systems download // CMDR - CONCH</div>
   </div>
 </div>
 
-<script>
-const CONFIG_PASSWORD = 'admin123';
-let isConfigUnlocked = false;
+<!-- NAV -->
+<nav>
+  <a class="nav-logo" href="download.html"><span class="c">Conch</span><span class="sep">/</span><span class="r">Cmdr</span></a>
+  <div class="nav-right">
+    <button class="icon-btn" id="theme-btn" onclick="toggleTheme()" title="Toggle Theme"><span id="theme-icon">🌙</span></button>
+    <button class="icon-btn" id="refresh-btn-nav" onclick="checkAll()" title="Refresh">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+    </button>
+    <button class="burger" id="burger-btn" onclick="toggleDrawer()"><span></span><span></span><span></span></button>
+  </div>
+</nav>
 
-const serviceStates = {
-    website: { total: 32, down: [14] },
-    discord: { total: 32, down: [5, 22] },
-    mainpage: { total: 32, down: [] }
+<!-- DRAWER -->
+<div class="drawer-overlay" id="drawer-overlay" onclick="closeDrawer()"></div>
+<div class="drawer" id="drawer">
+  <div class="drawer-head">
+    <div class="drawer-logo"><span class="c">Conch</span><span class="sep">/</span><span class="r">Cmdr</span></div>
+    <button class="drawer-close" onclick="closeDrawer()">✕</button>
+  </div>
+  <div class="drawer-nav">
+    <a class="drawer-item" href="download.html"><span class="drawer-icon">📥</span><span>Downloads</span></a>
+    <a class="drawer-item" href="announcements.html"><span class="drawer-icon">📣</span><span>Announcements</span></a>
+    <a class="drawer-item" href="sneakpeeks.html"><span class="drawer-icon">🖼️</span><span>Sneak Peeks</span></a>
+    <a class="drawer-item active" href="status.html"><span class="drawer-icon">📡</span><span>Status</span></a>
+    <a class="drawer-item" href="faq.html"><span class="drawer-icon">❓</span><span>FAQ</span></a>
+    <div class="drawer-div"></div>
+    <a class="drawer-item" href="changelog.html"><span class="drawer-icon">📋</span><span>Changelog</span></a>
+    <a class="drawer-item" href="settings.html"><span class="drawer-icon">⚙️</span><span>Settings</span></a>
+    <a class="drawer-item" href="bugreport.html"><span class="drawer-icon">🐛</span><span>Report a Bug</span></a>
+  </div>
+</div>
+
+<!-- HERO -->
+<div class="hero">
+  <h1>System <em style="font-style:normal;color:var(--conch)">Status</em></h1>
+  <p>Live health checks for the services Conch & Cmdr Downloads depends on.</p>
+</div>
+
+<div class="overall-wrap">
+  <div class="overall-banner sb-checking" id="overall-banner">
+    <div class="ob-dot"></div>
+    <span id="overall-text">Checking systems...</span>
+  </div>
+</div>
+
+<div class="refresh-row">
+  <span id="last-checked">Last checked: —</span>
+  <button class="refresh-btn" onclick="checkAll()">↻ Refresh now</button>
+</div>
+
+<div class="status-wrap">
+  <div class="status-card">
+    <div class="status-icon">🐙</div>
+    <div class="status-info">
+      <div class="status-name">GitHub API</div>
+      <div class="status-meta" id="github-meta">Checking...</div>
+    </div>
+    <div class="status-badge sb-checking" id="github-badge"><span class="status-dot"></span><span>Checking</span></div>
+  </div>
+
+  <div class="status-card">
+    <div class="status-icon">🗄️</div>
+    <div class="status-info">
+      <div class="status-name">Supabase</div>
+      <div class="status-meta" id="supabase-meta">Checking...</div>
+    </div>
+    <div class="status-badge sb-checking" id="supabase-badge"><span class="status-dot"></span><span>Checking</span></div>
+  </div>
+
+  <div class="status-card">
+    <div class="status-icon">💬</div>
+    <div class="status-info">
+      <div class="status-name">Discord Webhook</div>
+      <div class="status-meta" id="discord-meta">Not actively checked — webhooks don't support health pings without sending a message.</div>
+    </div>
+    <div class="status-badge sb-ok"><span class="status-dot"></span><span>Assumed OK</span></div>
+  </div>
+</div>
+
+<footer>Conch & Cmdr — Status monitoring runs client-side, checks reflect your own connection too.</footer>
+
+<script>
+const CONFIG={
+  GITHUB_REPO:'Systems-Download/Systems-Download.github.io',
+  SB_URL:'https://rmdkoauibmzhgnvrwhfd.supabase.co',
+  SB_KEY:'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJtZGtvYXVpYm16aGdudnJ3aGZkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyNjg2MDksImV4cCI6MjA5Mzg0NDYwOX0.lu6T00f9y9-Q8HhVag-MGjJz6bTlJrYUwC7AApIxaFw'
 };
 
-function toggleConfig() {
-    const panel = document.getElementById('configPanel');
-    panel.style.display = panel.style.display === 'block' ? 'none' : 'block';
+/* ── DRAWER ── */
+let _dopen=false;
+function toggleDrawer(){_dopen?closeDrawer():openDrawer();}
+function openDrawer(){_dopen=true;['drawer','drawer-overlay','burger-btn'].forEach(id=>document.getElementById(id).classList.add('open'));document.body.style.overflow='hidden'}
+function closeDrawer(){_dopen=false;['drawer','drawer-overlay','burger-btn'].forEach(id=>document.getElementById(id).classList.remove('open'));document.body.style.overflow=''}
+
+/* ── THEME ── */
+function toggleTheme(){
+  const root=document.documentElement,icon=document.getElementById('theme-icon'),isDark=!root.classList.contains('light-mode');
+  if(isDark){root.classList.add('light-mode');icon.textContent='☀️';localStorage.setItem('cc_theme','light');}
+  else{root.classList.remove('light-mode');icon.textContent='🌙';localStorage.setItem('cc_theme','dark');}
+}
+(function loadTheme(){
+  const saved=localStorage.getItem('cc_theme'),icon=document.getElementById('theme-icon');
+  if(saved==='light'){document.documentElement.classList.add('light-mode');if(icon)icon.textContent='☀️';}
+})();
+
+/* ── AUTH CHECK (view-only gate, reuses session from download.html) ── */
+function checkAuth(){
+  try{
+    const saved=localStorage.getItem('cc_auth');
+    if(saved){const parsed=JSON.parse(saved);if(parsed&&parsed.username)return true;}
+  }catch{}
+  return false;
+}
+if(!checkAuth()){
+  document.getElementById('auth-wall').style.display='flex';
 }
 
-function checkPassphrase() {
-    const input = document.getElementById('configPassInput');
-    const err = document.getElementById('authError');
-    const gate = document.getElementById('authGate');
-    const content = document.getElementById('configContent');
-
-    if (input.value === CONFIG_PASSWORD) {
-        isConfigUnlocked = true;
-        gate.style.display = 'none';
-        err.style.display = 'none';
-        content.style.display = 'block';
-    } else {
-        err.style.display = 'block';
-        input.value = '';
-    }
+/* ── STATUS CHECKS ── */
+function setBadge(id,state,label){
+  const el=document.getElementById(id+'-badge');
+  el.className='status-badge sb-'+state;
+  el.innerHTML=`<span class="status-dot"></span><span>${label}</span>`;
 }
 
-function updatePanelSelects(serviceKey) {
-    if (!isConfigUnlocked) return;
-    
-    const countInput = document.getElementById(`count-${serviceKey}`);
-    let newCount = parseInt(countInput.value) || 1;
-    if(newCount > 40) newCount = 40; 
-    if(newCount < 1) newCount = 1;
-    countInput.value = newCount;
-    
-    serviceStates[serviceKey].total = newCount;
-    serviceStates[serviceKey].down = serviceStates[serviceKey].down.filter(i => i < newCount);
-    
-    const wrapper = document.getElementById(`selects-${serviceKey}`);
-    wrapper.innerHTML = '';
-    
-    for (let i = 0; i < newCount; i++) {
-        const isOffline = serviceStates[serviceKey].down.includes(i);
-        const sel = document.createElement('select');
-        sel.className = isOffline ? 'is-offline' : '';
-        sel.innerHTML = `
-            <option value="online" ${!isOffline ? 'selected' : ''}>On</option>
-            <option value="offline" ${isOffline ? 'selected' : ''}>Off</option>
-        `;
-        sel.onchange = () => {
-            if (sel.value === 'offline') {
-                if (!serviceStates[serviceKey].down.includes(i)) serviceStates[serviceKey].down.push(i);
-            } else {
-                serviceStates[serviceKey].down = serviceStates[serviceKey].down.filter(idx => idx !== i);
-            }
-            renderGraphs();
-            updatePanelSelects(serviceKey);
-        };
-        wrapper.appendChild(sel);
-    }
-    renderGraphs();
+async function checkGitHub(){
+  const start=performance.now();
+  try{
+    const r=await fetch('https://api.github.com/rate_limit');
+    const ms=Math.round(performance.now()-start);
+    if(!r.ok){setBadge('github','down','Down');document.getElementById('github-meta').textContent=`HTTP ${r.status} — response in ${ms}ms`;return'down';}
+    const d=await r.json();
+    const core=d.resources&&d.resources.core;
+    const remaining=core?core.remaining:'?';
+    const limit=core?core.limit:'?';
+    document.getElementById('github-meta').textContent=`${ms}ms · ${remaining}/${limit} requests remaining`;
+    if(core&&core.remaining<50){setBadge('github','warn','Degraded');return'warn';}
+    setBadge('github','ok','Operational');return'ok';
+  }catch(e){
+    setBadge('github','down','Down');
+    document.getElementById('github-meta').textContent='Request failed — network error or rate limited';
+    return'down';
+  }
 }
 
-function renderGraphs() {
-    buildUptimeGraph('bars-website', serviceStates.website.total, serviceStates.website.down);
-    buildUptimeGraph('bars-discord', serviceStates.discord.total, serviceStates.discord.down);
-    buildUptimeGraph('bars-mainpage', serviceStates.mainpage.total, serviceStates.mainpage.down);
+async function checkSupabase(){
+  const start=performance.now();
+  try{
+    const r=await fetch(CONFIG.SB_URL+'/rest/v1/',{headers:{'apikey':CONFIG.SB_KEY,'Authorization':'Bearer '+CONFIG.SB_KEY}});
+    const ms=Math.round(performance.now()-start);
+    if(!r.ok&&r.status>=500){setBadge('supabase','down','Down');document.getElementById('supabase-meta').textContent=`HTTP ${r.status} — response in ${ms}ms`;return'down';}
+    document.getElementById('supabase-meta').textContent=`${ms}ms response time`;
+    if(ms>1500){setBadge('supabase','warn','Slow');return'warn';}
+    setBadge('supabase','ok','Operational');return'ok';
+  }catch(e){
+    setBadge('supabase','down','Down');
+    document.getElementById('supabase-meta').textContent='Request failed — network error';
+    return'down';
+  }
 }
 
-function buildUptimeGraph(containerId, totalBars, downIndices = []) {
-    const container = document.getElementById(containerId);
-    let html = '';
-    for (let i = 0; i < totalBars; i++) {
-        const isDown = downIndices.includes(i);
-        html += `<div class="ut-bar ${isDown ? 'down' : ''}" title="${isDown ? 'Incident log recorded' : 'Node fully operational'}"></div>`;
-    }
-    container.innerHTML = html;
+async function checkAll(){
+  const btn=document.getElementById('refresh-btn-nav');
+  if(btn)btn.classList.add('spinning');
+  setBadge('github','checking','Checking');
+  setBadge('supabase','checking','Checking');
+  document.getElementById('overall-banner').className='overall-banner sb-checking';
+  document.getElementById('overall-text').textContent='Checking systems...';
+
+  const [gh,sb]=await Promise.all([checkGitHub(),checkSupabase()]);
+
+  const states=[gh,sb];
+  const banner=document.getElementById('overall-banner');
+  const text=document.getElementById('overall-text');
+  if(states.includes('down')){
+    banner.className='overall-banner ob-down';
+    text.textContent='⚠ Partial Outage — one or more systems are down';
+  }else if(states.includes('warn')){
+    banner.className='overall-banner ob-warn';
+    text.textContent='⚠ Degraded Performance';
+  }else{
+    banner.className='overall-banner ob-ok';
+    text.textContent='✓ All Systems Operational';
+  }
+  document.getElementById('last-checked').textContent='Last checked: '+new Date().toLocaleTimeString();
+  if(btn)btn.classList.remove('spinning');
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-    renderGraphs();
-    
-    isConfigUnlocked = true;
-    updatePanelSelects('website');
-    updatePanelSelects('discord');
-    updatePanelSelects('mainpage');
-    isConfigUnlocked = false;
-});
-
-const cv=document.getElementById('cv'),ctx=cv.getContext('2d');
-function rsz(){cv.width=window.innerWidth;cv.height=window.innerHeight}rsz();window.addEventListener('resize',rsz);
-
-const pts=Array.from({length:55},()=>({
-    x:Math.random()*cv.width,
-    y:Math.random()*cv.height,
-    r:0.8 + Math.random()*1.8,
-    col:Math.random() > 0.45 ? 'rgba(15,244,198,' : 'rgba(255,79,94,',
-    vx:(Math.random()-.5)*0.35, 
-    vy:(Math.random()-.5)*0.35,
-    a:Math.random(), 
-    blinkSpeed:0.015 + Math.random()*0.035,
-    direction: Math.random() > 0.5 ? 1 : -1
-}));
-
-function drawPts(){
-    ctx.clearRect(0,0,cv.width,cv.height);
-    
-    pts.forEach(p=>{
-        p.a += p.blinkSpeed * p.direction;
-        if(p.a >= 0.8) { p.direction = -1; }
-        if(p.a <= 0.05) { p.direction = 1; }
-        
-        ctx.beginPath();
-        ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
-        ctx.fillStyle=p.col+p.a+')';
-        
-        if(p.a > 0.6) {
-            ctx.shadowBlur = 10;
-            ctx.shadowColor = p.col === 'rgba(15,244,198,' ? 'var(--conch)' : 'var(--cmdr)';
-        } else {
-            ctx.shadowBlur = 0;
-        }
-        
-        ctx.fill();
-        
-        p.x+=p.vx;p.y+=p.vy;
-        if(p.x<0)p.x=cv.width;if(p.x>cv.width)p.x=0;
-        if(p.y<0)p.y=cv.height;if(p.y>cv.height)p.y=0;
-    });
-    
-    ctx.shadowBlur = 0;
-    requestAnimationFrame(drawPts)
-}
-drawPts();
+checkAll();
+setInterval(checkAll,60000); /* auto-refresh every 60s */
 </script>
 </body>
 </html>
