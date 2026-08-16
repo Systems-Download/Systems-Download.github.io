@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+
+Disallow: /cc-control.html
+Disallow: /messages.html
+Disallow: /settings.html
+
+Sitemap: https://systems-download.github.io/sitemap.xml
