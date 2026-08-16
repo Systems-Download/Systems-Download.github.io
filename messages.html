@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Conch & Cmdr — Messages</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <script>
 (function(){
   const s=localStorage.getItem('cc_theme');
@@ -19,14 +19,14 @@
   --conch:#0ff4c6;--cmdr:#ff4f5e;--purple:#a78bfa;
   --bg:#0b0c0f;--surface:#13151a;--surface2:#1a1d24;
   --border:rgba(255,255,255,0.07);--text:#e8eaf0;--muted:#6b7280;
-  --mono:'JetBrains Mono',monospace;--sans:'Syne',sans-serif;
+  --mono:'JetBrains Mono',monospace;--sans:'Space Grotesk',sans-serif;
 }
 :root.light-mode{--bg:#f5f7fa;--surface:#fff;--surface2:#f0f2f5;--border:rgba(0,0,0,0.08);--text:#1a1d24;--muted:#6b7280}
 html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:var(--sans)}
 
 /* NAV */
 .topnav{height:52px;flex-shrink:0;display:flex;align-items:center;justify-content:space-between;padding:0 1.2rem;background:var(--surface);border-bottom:1px solid var(--border)}
-.nav-logo{font-size:.9rem;font-weight:800;text-decoration:none;display:flex;gap:.3em}
+.nav-logo{font-size:.9rem;font-weight:700;text-decoration:none;display:flex;gap:.3em}
 .nav-logo .c{color:var(--conch)}.nav-logo .r{color:var(--cmdr)}.nav-logo .s{color:var(--muted)}
 .nav-back{font-family:var(--mono);font-size:.7rem;padding:.3rem .7rem;border-radius:6px;border:1px solid var(--border);background:none;color:var(--muted);text-decoration:none}
 
@@ -60,7 +60,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
 .crow{display:flex;align-items:center;gap:.55rem;padding:.5rem .6rem;border-radius:8px;cursor:pointer;transition:background .12s;margin-bottom:.06rem}
 .crow:hover{background:var(--surface2)}
 .crow.active{background:rgba(167,139,250,.1);border:1px solid rgba(167,139,250,.12)}
-.cav{width:36px;height:36px;border-radius:50%;background:var(--surface2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:800;color:var(--conch);overflow:hidden;font-family:var(--sans);flex-shrink:0;position:relative}
+.cav{width:36px;height:36px;border-radius:50%;background:var(--surface2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;color:var(--conch);overflow:hidden;font-family:var(--sans);flex-shrink:0;position:relative}
 .cav.grp{border-radius:9px}
 .cav img{width:100%;height:100%;object-fit:cover;border-radius:inherit}
 .ol-dot{position:absolute;bottom:0;right:0;width:9px;height:9px;border-radius:50%;background:#34d399;border:2px solid var(--surface);display:none}
@@ -250,7 +250,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
 /* ACCESS */
 .awall{flex:1;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:.65rem;text-align:center;padding:2rem}
 .awall-ic{font-size:2.8rem}
-.awall-title{font-size:1.3rem;font-weight:800;color:var(--cmdr)}
+.awall-title{font-size:1.3rem;font-weight:700;color:var(--cmdr)}
 .awall-desc{font-family:var(--mono);font-size:.76rem;color:var(--muted);line-height:1.8}
 .awall-btn{font-family:var(--mono);font-size:.76rem;padding:.55rem 1.2rem;border-radius:7px;background:rgba(15,244,198,.1);color:var(--conch);border:1px solid rgba(15,244,198,.22);text-decoration:none}
 
@@ -352,16 +352,16 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
 
 <div class="app">
   <nav class="topnav">
-    <a class="nav-logo" href="index.html"><span class="c">Conch</span><span class="s">/</span><span class="r">Cmdr</span></a>
+    <a class="nav-logo" href="download.html"><span class="c">Conch</span><span class="s">/</span><span class="r">Cmdr</span></a>
     <span style="font-family:var(--mono);font-size:.75rem;color:var(--muted)">💬 Messages</span>
-    <a class="nav-back" href="index.html">← Back</a>
+    <a class="nav-back" href="download.html">← Back</a>
   </nav>
 
   <div id="awall" class="awall" style="display:none">
     <div class="awall-ic">🔒</div>
     <div class="awall-title">Login Required</div>
     <div class="awall-desc">You need to be logged in to use Messages.</div>
-    <a class="awall-btn" href="index.html">← Login</a>
+    <a class="awall-btn" href="download.html">← Login</a>
   </div>
 
   <div class="body" id="body" style="display:none">
