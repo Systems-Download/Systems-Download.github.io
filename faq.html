@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>FAQ — Conch & Cmdr</title>
 <div class="page-transition" id="page-transition"></div>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -13,7 +13,7 @@
   --bg:#0b0c0f;--surface:#13151a;--surface2:#1a1d24;
   --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.12);
   --text:#e8eaf0;--muted:#6b7280;
-  --mono:'JetBrains Mono',monospace;--sans:'Syne',sans-serif;
+  --mono:'JetBrains Mono',monospace;--sans:'Space Grotesk',sans-serif;
 }
 
 /* LIGHT MODE */
@@ -33,7 +33,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:1
 
 /* NAV */
 nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:1rem 2.5rem;background:rgba(11,12,15,.9);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);height:64px}
-.nav-logo{font-size:1.1rem;font-weight:800;display:flex;gap:.4em;align-items:center;text-decoration:none;cursor:pointer}
+.nav-logo{font-size:1.1rem;font-weight:700;display:flex;gap:.4em;align-items:center;text-decoration:none;cursor:pointer}
 .nav-logo .c{color:var(--conch)}.nav-logo .sep{color:var(--muted)}.nav-logo .r{color:var(--cmdr)}
 .nav-right{display:flex;align-items:center;gap:0.6rem}
 
@@ -57,7 +57,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:cen
 .drawer{position:fixed;top:0;right:0;bottom:0;z-index:99;width:280px;background:#0e1014;border-left:1px solid var(--border);transform:translateX(100%);transition:transform 0.35s cubic-bezier(0.4,0,0.2,1);display:flex;flex-direction:column}
 .drawer.open{transform:translateX(0)}
 .drawer-head{display:flex;align-items:center;justify-content:space-between;padding:1.2rem 1.5rem;border-bottom:1px solid var(--border);height:64px}
-.drawer-logo{font-size:1rem;font-weight:800;display:flex;gap:0.3em}
+.drawer-logo{font-size:1rem;font-weight:700;display:flex;gap:0.3em}
 .drawer-logo .c{color:var(--conch)}.drawer-logo .r{color:var(--cmdr)}.drawer-logo .sep{color:var(--muted)}
 .drawer-close{background:none;border:none;cursor:pointer;color:var(--muted);font-size:1.1rem;padding:0.3rem;transition:color 0.2s}
 .drawer-close:hover{color:var(--text)}
@@ -80,7 +80,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:cen
 .wrap{max-width:740px;margin:0 auto;padding:7rem 2rem 5rem}
 .hero{text-align:center;margin-bottom:3.5rem}
 .hero-badge{display:inline-flex;align-items:center;gap:.5rem;font-family:var(--mono);font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;padding:.35rem .9rem;border-radius:20px;background:rgba(15,244,198,.08);color:var(--conch);border:1px solid rgba(15,244,198,.2);margin-bottom:1.2rem}
-.hero h1{font-size:clamp(2.2rem,5vw,3.5rem);font-weight:800;letter-spacing:-.03em;margin-bottom:.75rem}
+.hero h1{font-size:clamp(2.2rem,5vw,3.5rem);font-weight:700;letter-spacing:-.03em;margin-bottom:.75rem}
 .hero h1 em{font-style:normal;color:var(--conch)}
 .hero p{font-family:var(--mono);font-size:.85rem;color:var(--muted);max-width:420px;margin:0 auto;line-height:1.8}
 .search-wrap{position:relative;margin-bottom:2rem}
@@ -112,7 +112,7 @@ footer{text-align:center;padding:3rem 2rem;font-family:var(--mono);font-size:.7r
 <body>
 
 <nav>
-  <a class="nav-logo" href="index.html"><span class="c">Conch</span><span class="sep">/</span><span class="r">Cmdr</span></a>
+  <a class="nav-logo" href="download.html"><span class="c">Conch</span><span class="sep">/</span><span class="r">Cmdr</span></a>
   <div class="nav-right">
     <button class="icon-btn" id="theme-btn" onclick="toggleTheme()" title="Toggle Theme">
       <span class="theme-icon" id="theme-icon">🌙</span>
@@ -130,13 +130,13 @@ footer{text-align:center;padding:3rem 2rem;font-family:var(--mono);font-size:.7r
   </div>
   <div class="drawer-nav">
     <p class="drawer-slabel">Navigation</p>
-    <a class="drawer-item" href="index.html" onclick="closeDrawer()"><span class="drawer-icon">📥</span>Downloads</a>
+    <a class="drawer-item" href="download.html" onclick="closeDrawer()"><span class="drawer-icon">📥</span>Downloads</a>
     <a class="drawer-item" href="announcements.html" onclick="closeDrawer()"><span class="drawer-icon">📣</span>Announcements</a>
     <a class="drawer-item active" href="faq.html" onclick="closeDrawer()"><span class="drawer-icon">❓</span>FAQ</a>
     <div class="drawer-div"></div>
     <p class="drawer-slabel">Quick Jump</p>
-    <a class="drawer-item" href="index.html#conch" onclick="closeDrawer()"><span class="drawer-icon" style="color:var(--conch)">◈</span>Conch</a>
-    <a class="drawer-item" href="index.html#cmdr" onclick="closeDrawer()"><span class="drawer-icon" style="color:var(--cmdr)">◈</span>Cmdr</a>
+    <a class="drawer-item" href="download.html#conch" onclick="closeDrawer()"><span class="drawer-icon" style="color:var(--conch)">◈</span>Conch</a>
+    <a class="drawer-item" href="download.html#cmdr" onclick="closeDrawer()"><span class="drawer-icon" style="color:var(--cmdr)">◈</span>Cmdr</a>
   </div>
   <div class="drawer-footer">FAQ & Help Center</div>
 </div>
@@ -157,7 +157,7 @@ footer{text-align:center;padding:3rem 2rem;font-family:var(--mono);font-size:.7r
   <div class="no-results" id="no-results">No questions match your search.</div>
 </div>
 
-<footer>Conch & Cmdr — FAQ · <a href="index.html" style="color:var(--conch);text-decoration:none">Back to Downloads</a></footer>
+<footer>Conch & Cmdr — FAQ · <a href="download.html" style="color:var(--conch);text-decoration:none">Back to Downloads</a></footer>
 
 <script>
 /* DRAWER */
@@ -228,8 +228,6 @@ const FAQ = [
     items: [
       { icon: '❌', q: 'The download does not start — what do I do?', a: 'Try clicking Download again. If it still does not work, check your browser\'s download settings or try a different browser. Some browsers block automatic file downloads — allow it when prompted.' },
       { icon: '🔄', q: 'The file list is empty or shows an error', a: 'This usually means the GitHub API rate limit was exceeded (60 requests/hour for unauthenticated users). Wait a few minutes and click the 🔄 Refresh button.' },
-      { icon: '📡', q: 'I see an Offline page — what happened?', a: 'Your device lost internet connection. The offline page appears automatically. As soon as your connection is restored, you will be redirected back to the download page.' },
-      { icon: '🔧', q: 'The site shows a Maintenance message', a: 'The team has temporarily enabled maintenance mode. Check back soon or join the Discord for updates on when it will be back.' },
     ]
   },
   {
@@ -301,7 +299,6 @@ window.addEventListener('pageshow',()=>{
 /* INIT */
 loadTheme();
 renderFAQ(FAQ);
-if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
 </script>
 </body>
 </html>
