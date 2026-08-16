@@ -4,14 +4,14 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Conch & Cmdr — Admin Panel</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
   --conch:#0ff4c6;--cmdr:#ff4f5e;--gold:#ffc832;
   --bg:#0b0c0f;--surface:#13151a;--surface2:#1a1d24;--surface3:#20232b;
   --border:rgba(255,255,255,0.07);--text:#e8eaf0;--muted:#6b7280;
-  --mono:'JetBrains Mono',monospace;--sans:'Syne',sans-serif;
+  --mono:'JetBrains Mono',monospace;--sans:'Space Grotesk',sans-serif;
 }
 body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:100vh;overflow-x:hidden}
 
@@ -19,14 +19,14 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:1
 #access-wall{position:fixed;inset:0;z-index:9999;background:var(--bg);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:1rem;text-align:center;padding:2rem}
 #access-wall.hidden{display:none}
 .access-icon{font-size:4rem;margin-bottom:.5rem}
-.access-title{font-size:2rem;font-weight:800;color:var(--cmdr)}
+.access-title{font-size:2rem;font-weight:700;color:var(--cmdr)}
 .access-desc{font-family:var(--mono);font-size:.82rem;color:var(--muted);line-height:1.7}
 .access-btn{margin-top:1rem;font-family:var(--mono);font-size:.82rem;padding:.7rem 1.5rem;border-radius:8px;border:1px solid rgba(15,244,198,.3);background:rgba(15,244,198,.1);color:var(--conch);cursor:pointer;text-decoration:none;transition:all .2s}
 .access-btn:hover{background:rgba(15,244,198,.2)}
 
 /* NAV */
 nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:1rem 2.5rem;background:rgba(11,12,15,.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);height:64px}
-.nav-logo{font-size:1rem;font-weight:800;display:flex;gap:.3em;align-items:center;text-decoration:none}
+.nav-logo{font-size:1rem;font-weight:700;display:flex;gap:.3em;align-items:center;text-decoration:none}
 .nav-logo .c{color:var(--conch)}.nav-logo .r{color:var(--cmdr)}.nav-logo .s{color:var(--muted)}
 .nav-badge{font-family:var(--mono);font-size:.65rem;padding:.2rem .55rem;border-radius:4px;background:rgba(255,200,50,.12);color:var(--gold);border:1px solid rgba(255,200,50,.25);margin-left:.5rem}
 .nav-right{display:flex;align-items:center;gap:.6rem}
@@ -54,7 +54,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:cen
 .stat-card.sr{border-color:rgba(255,79,94,.15)}
 .stat-card.sg{border-color:rgba(255,200,50,.15)}
 .stat-card.sb{border-color:rgba(100,160,255,.15)}
-.stat-value{font-size:2rem;font-weight:800;font-family:var(--mono);line-height:1}
+.stat-value{font-size:2rem;font-weight:700;font-family:var(--mono);line-height:1}
 .stat-card.sc .stat-value{color:var(--conch)}
 .stat-card.sr .stat-value{color:var(--cmdr)}
 .stat-card.sg .stat-value{color:var(--gold)}
@@ -102,7 +102,7 @@ tr:hover td{background:rgba(255,255,255,.02)}
 .modal-overlay.open{display:flex}
 .modal{background:var(--surface);border:1px solid var(--border);border-radius:14px;width:90%;max-width:440px;padding:1.75rem;box-shadow:0 20px 60px rgba(0,0,0,.5);animation:mIn .3s cubic-bezier(.34,1.56,.64,1)}
 @keyframes mIn{from{opacity:0;transform:translateY(-20px) scale(.96)}to{opacity:1;transform:none}}
-.modal-title{font-size:1.1rem;font-weight:800;margin-bottom:1rem;display:flex;align-items:center;gap:.5rem}
+.modal-title{font-size:1.1rem;font-weight:700;margin-bottom:1rem;display:flex;align-items:center;gap:.5rem}
 .modal-field{display:flex;flex-direction:column;gap:.3rem;margin-bottom:.85rem}
 .modal-label{font-family:var(--mono);font-size:.67rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
 .modal-input{background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:var(--mono);font-size:.82rem;padding:.65rem 1rem;outline:none;transition:border-color .2s;width:100%}
@@ -144,7 +144,7 @@ tr:hover td{background:rgba(255,255,255,.02)}
 
 /* PAGE SECTIONS */
 .section-wrap{display:none}.section-wrap.active{display:block}
-.page-title{font-size:1.6rem;font-weight:800;margin-bottom:.3rem}
+.page-title{font-size:1.6rem;font-weight:700;margin-bottom:.3rem}
 .page-sub{font-family:var(--mono);font-size:.78rem;color:var(--muted);margin-bottom:1.5rem}
 
 /* TOAST */
@@ -172,7 +172,7 @@ tr:hover td{background:rgba(255,255,255,.02)}
   <div class="access-icon">🔐</div>
   <div class="access-title">Access Denied</div>
   <div class="access-desc">This page is only accessible to administrators.<br>Log in as Max to access the admin panel.</div>
-  <a class="access-btn" href="index.html">← Back to Downloads</a>
+  <a class="access-btn" href="download.html">← Back to Downloads</a>
 </div>
 
 <!-- BAN MODAL -->
@@ -287,12 +287,12 @@ tr:hover td{background:rgba(255,255,255,.02)}
 <!-- NAV -->
 <nav>
   <div style="display:flex;align-items:center;gap:.75rem">
-    <a class="nav-logo" href="index.html"><span class="c">Conch</span><span class="s">/</span><span class="r">Cmdr</span></a>
+    <a class="nav-logo" href="download.html"><span class="c">Conch</span><span class="s">/</span><span class="r">Cmdr</span></a>
     <span class="nav-badge">⚙️ Admin Panel</span>
   </div>
   <div class="nav-right">
     <span class="nav-user">👑 <span id="nav-username">Max</span></span>
-    <a class="nav-back" href="index.html">← Downloads</a>
+    <a class="nav-back" href="download.html">← Downloads</a>
   </div>
 </nav>
 
@@ -843,19 +843,19 @@ tr:hover td{background:rgba(255,255,255,.02)}
       <!-- STAT CARDS -->
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1rem;margin-bottom:1.5rem">
         <div class="panel" style="padding:1.1rem;text-align:center">
-          <div style="font-size:1.9rem;font-weight:800;color:var(--conch);font-family:var(--mono)" id="dl-total">—</div>
+          <div style="font-size:1.9rem;font-weight:700;color:var(--conch);font-family:var(--mono)" id="dl-total">—</div>
           <div style="font-family:var(--mono);font-size:.68rem;color:var(--muted);margin-top:.3rem">Total Downloads</div>
         </div>
         <div class="panel" style="padding:1.1rem;text-align:center">
-          <div style="font-size:1.9rem;font-weight:800;color:var(--cmdr);font-family:var(--mono)" id="dl-releases">—</div>
+          <div style="font-size:1.9rem;font-weight:700;color:var(--cmdr);font-family:var(--mono)" id="dl-releases">—</div>
           <div style="font-family:var(--mono);font-size:.68rem;color:var(--muted);margin-top:.3rem">Total Releases</div>
         </div>
         <div class="panel" style="padding:1.1rem;text-align:center">
-          <div style="font-size:1.9rem;font-weight:800;color:var(--gold);font-family:var(--mono)" id="dl-conch-total">—</div>
+          <div style="font-size:1.9rem;font-weight:700;color:var(--gold);font-family:var(--mono)" id="dl-conch-total">—</div>
           <div style="font-family:var(--mono);font-size:.68rem;color:var(--muted);margin-top:.3rem">Conch Downloads</div>
         </div>
         <div class="panel" style="padding:1.1rem;text-align:center">
-          <div style="font-size:1.9rem;font-weight:800;color:var(--purple);font-family:var(--mono)" id="dl-cmdr-total">—</div>
+          <div style="font-size:1.9rem;font-weight:700;color:var(--purple);font-family:var(--mono)" id="dl-cmdr-total">—</div>
           <div style="font-family:var(--mono);font-size:.68rem;color:var(--muted);margin-top:.3rem">Cmdr Downloads</div>
         </div>
       </div>
@@ -890,27 +890,27 @@ tr:hover td{background:rgba(255,255,255,.02)}
       <!-- STAT CARDS -->
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1rem;margin-bottom:1.5rem">
         <div class="panel" style="padding:1.1rem;text-align:center">
-          <div style="font-size:1.9rem;font-weight:800;color:var(--conch);font-family:var(--mono)" id="dash-total-users">—</div>
+          <div style="font-size:1.9rem;font-weight:700;color:var(--conch);font-family:var(--mono)" id="dash-total-users">—</div>
           <div style="font-family:var(--mono);font-size:.68rem;color:var(--muted);margin-top:.3rem">Total Users</div>
         </div>
         <div class="panel" style="padding:1.1rem;text-align:center">
-          <div style="font-size:1.9rem;font-weight:800;color:#34d399;font-family:var(--mono)" id="dash-online-users">—</div>
+          <div style="font-size:1.9rem;font-weight:700;color:#34d399;font-family:var(--mono)" id="dash-online-users">—</div>
           <div style="font-family:var(--mono);font-size:.68rem;color:var(--muted);margin-top:.3rem">Online (last 5 min)</div>
         </div>
         <div class="panel" style="padding:1.1rem;text-align:center">
-          <div style="font-size:1.9rem;font-weight:800;color:var(--gold);font-family:var(--mono)" id="dash-today-logins">—</div>
+          <div style="font-size:1.9rem;font-weight:700;color:var(--gold);font-family:var(--mono)" id="dash-today-logins">—</div>
           <div style="font-family:var(--mono);font-size:.68rem;color:var(--muted);margin-top:.3rem">Logins Today</div>
         </div>
         <div class="panel" style="padding:1.1rem;text-align:center">
-          <div style="font-size:1.9rem;font-weight:800;color:var(--cmdr);font-family:var(--mono)" id="dash-total-bans">—</div>
+          <div style="font-size:1.9rem;font-weight:700;color:var(--cmdr);font-family:var(--mono)" id="dash-total-bans">—</div>
           <div style="font-family:var(--mono);font-size:.68rem;color:var(--muted);margin-top:.3rem">Total Bans</div>
         </div>
         <div class="panel" style="padding:1.1rem;text-align:center">
-          <div style="font-size:1.9rem;font-weight:800;color:var(--purple);font-family:var(--mono)" id="dash-total-reports">—</div>
+          <div style="font-size:1.9rem;font-weight:700;color:var(--purple);font-family:var(--mono)" id="dash-total-reports">—</div>
           <div style="font-family:var(--mono);font-size:.68rem;color:var(--muted);margin-top:.3rem">Bug Reports</div>
         </div>
         <div class="panel" style="padding:1.1rem;text-align:center">
-          <div style="font-size:1.9rem;font-weight:800;color:#60a5fa;font-family:var(--mono)" id="dash-total-messages">—</div>
+          <div style="font-size:1.9rem;font-weight:700;color:#60a5fa;font-family:var(--mono)" id="dash-total-messages">—</div>
           <div style="font-family:var(--mono);font-size:.68rem;color:var(--muted);margin-top:.3rem">Total Messages</div>
         </div>
       </div>
@@ -955,19 +955,19 @@ tr:hover td{background:rgba(255,255,255,.02)}
 
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1rem;margin-bottom:1.5rem" id="ip-stat-cards">
         <div class="panel" style="padding:1.2rem;text-align:center">
-          <div style="font-size:1.8rem;font-weight:800;color:var(--conch);font-family:var(--mono)" id="ip-unique-count">—</div>
+          <div style="font-size:1.8rem;font-weight:700;color:var(--conch);font-family:var(--mono)" id="ip-unique-count">—</div>
           <div style="font-family:var(--mono);font-size:.7rem;color:var(--muted);margin-top:.3rem">Unique IPs</div>
         </div>
         <div class="panel" style="padding:1.2rem;text-align:center">
-          <div style="font-size:1.8rem;font-weight:800;color:var(--gold);font-family:var(--mono)" id="ip-null-count">—</div>
+          <div style="font-size:1.8rem;font-weight:700;color:var(--gold);font-family:var(--mono)" id="ip-null-count">—</div>
           <div style="font-family:var(--mono);font-size:.7rem;color:var(--muted);margin-top:.3rem">No IP (manual accounts)</div>
         </div>
         <div class="panel" style="padding:1.2rem;text-align:center">
-          <div style="font-size:1.8rem;font-weight:800;color:var(--cmdr);font-family:var(--mono)" id="ip-banned-count">—</div>
+          <div style="font-size:1.8rem;font-weight:700;color:var(--cmdr);font-family:var(--mono)" id="ip-banned-count">—</div>
           <div style="font-family:var(--mono);font-size:.7rem;color:var(--muted);margin-top:.3rem">Banned IPs</div>
         </div>
         <div class="panel" style="padding:1.2rem;text-align:center">
-          <div style="font-size:1.8rem;font-weight:800;color:var(--purple);font-family:var(--mono)" id="ip-multi-count">—</div>
+          <div style="font-size:1.8rem;font-weight:700;color:var(--purple);font-family:var(--mono)" id="ip-multi-count">—</div>
           <div style="font-family:var(--mono);font-size:.7rem;color:var(--muted);margin-top:.3rem">IPs with multiple accounts</div>
         </div>
       </div>
@@ -1032,7 +1032,7 @@ const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZ
 const ADMIN_USERNAME='max';
 
 /* ══════════════════════════════════════
-   OWNER LOGIN — same one-time command as index.html.
+   OWNER LOGIN — same one-time command as download.html.
    Burns the SAME 'ownerlogin_available' entry in Supabase,
    so it can only ever be used once total, from either page.
 ══════════════════════════════════════ */
