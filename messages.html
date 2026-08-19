@@ -531,6 +531,7 @@ let grpSelected=new Set();
 let curTab='chats';
 let _sbList=[];    // current rendered sidebar list (friends or groups combined)
 let _reqList=[];
+let attachedFiles=[]; // files staged for the next outgoing message (declared here, used by sendMsg/onFileAttach below)
 
 /* ── UTILS ── */
 function sb(path,o={}){
@@ -540,6 +541,10 @@ function sb(path,o={}){
   return fetch(SB+path,{headers:{...h,...(o.headers||{})},method:m,...(o.body?{body:o.body}:{})});
 }
 function eh(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+/* Compare ids safely regardless of whether they come back as string or number */
+function sameId(a,b){return a!=null&&b!=null&&String(a)===String(b);}
+/* Build a safe PostgREST in.(...) list for string/uuid ids: quote + escape each value */
+function pgIn(ids){return ids.map(id=>`"${String(id).replace(/\\/g,'\\\\').replace(/"/g,'\\"')}"`).join(',');}
 function ago(s){const d=(Date.now()-new Date(s))/1000;if(d<60)return'now';if(d<3600)return Math.floor(d/60)+'m';if(d<86400)return Math.floor(d/3600)+'h';return new Date(s).toLocaleDateString('en-US',{month:'short',day:'numeric'});}
 function hhmm(s){return new Date(s).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});}
 function dateLabel(s){const d=new Date(s),n=new Date();const diff=Math.floor((n-d)/86400000);if(diff===0)return'Today';if(diff===1)return'Yesterday';return d.toLocaleDateString('en-US',{month:'short',day:'numeric'});}
@@ -560,6 +565,13 @@ function toast(msg,type='ok',dur=2800){
 }
 function openOv(id){document.getElementById(id).classList.add('open');}
 function closeOv(id){document.getElementById(id).classList.remove('open');}
+
+/* ── POLL ── */
+async function poll(){
+  await loadRequests();
+  if(activeChat)checkOnline();
+  if(activeChat&&activeChat.type==='dm')checkTyping();
+}
 
 /* ── AUTH ── */
 function init(){
@@ -604,7 +616,7 @@ async function loadGroups(){
     const rows=await r.json();
     // Only show groups where ME is a member
     groups=rows.filter(g=>{
-      try{const m=JSON.parse(g.members||'[]');return m.includes(ME.id);}catch{return false;}
+      try{const m=JSON.parse(g.members||'[]');return m.some(id=>sameId(id,ME.id));}catch{return false;}
     }).map(g=>({id:g.id,name:g.name,type:'grp',members:g.members,member_usernames:g.member_usernames,creator_id:g.creator_id}));
     if(curTab==='chats')renderSidebar();
   }catch(e){console.error('loadGroups',e);}
@@ -655,9 +667,9 @@ function filterSidebar(q){
 async function checkOnline(){
   if(!friends.length)return;
   try{
-    const ids=friends.map(f=>f.id).join(',');
-    if(!ids)return;
-    const r=await sb(`/rest/v1/cc_users?id=in.(${ids})&select=id,last_login`);
+    const ids=friends.map(f=>f.id);
+    if(!ids.length)return;
+    const r=await sb(`/rest/v1/cc_users?id=in.(${pgIn(ids)})&select=id,last_login`);
     if(!r.ok)return;
     const rows=await r.json();
     rows.forEach(u=>{
@@ -796,7 +808,7 @@ async function loadMsgs(){
     msgs=rows;
     renderMsgs(rows);
     // Mark read
-    const unread=rows.filter(m=>m.to_user_id===ME.id&&!m.read);
+    const unread=rows.filter(m=>sameId(m.to_user_id,ME.id)&&!m.read);
     if(unread.length)Promise.all(unread.map(m=>sb(`/rest/v1/cc_messages?id=eq.${m.id}`,{method:'PATCH',headers:{'Prefer':'return=minimal'},body:JSON.stringify({read:true})})));
   }catch(e){console.error('loadMsgs',e);}
 }
@@ -809,16 +821,16 @@ function renderMsgs(rows){
 
   let html='';let lastDate='';
   rows.forEach(m=>{
-    const own=m.from_user_id===ME.id;
+    const own=sameId(m.from_user_id,ME.id);
     const dl=dateLabel(m.created_at);
     if(dl!==lastDate){html+=`<div class="datesep">${dl}</div>`;lastDate=dl;}
     let reactions=[];
     try{reactions=JSON.parse(m.reactions||'[]');}catch{}
-    const rHTML=reactions.length?`<div class="mreacts">${reactions.map(r=>`<div class="rpill${r.users&&r.users.includes(ME.id)?' mine':''}" onclick="toggleReact('${eh(m.id)}','${eh(r.emoji)}')">${r.emoji}<span class="rc">${r.count}</span></div>`).join('')}</div>`:'';
+    const rHTML=reactions.length?`<div class="mreacts">${reactions.map(r=>`<div class="rpill${r.users&&r.users.some(u=>sameId(u,ME.id))?' mine':''}" data-msg-id="${eh(String(m.id))}" data-emoji="${eh(r.emoji)}">${r.emoji}<span class="rc">${r.count}</span></div>`).join('')}</div>`:'';
 
-    html+=`<div class="mrow ${own?'own':'other'}" id="m-${m.id}">
+    html+=`<div class="mrow ${own?'own':'other'}" id="m-${eh(String(m.id))}" data-id="${eh(String(m.id))}" data-owner="${eh(String(m.from_user_id))}">
       ${!own?`<div class="msender">${eh(m.from_username)}</div>`:''}
-      <div class="mbubble ${own?'own':'other'}" oncontextmenu="onCtx(event,'${m.id}','${m.from_user_id}','${eh(m.text)}')">${eh(m.text)}</div>
+      <div class="mbubble ${own?'own':'other'}">${eh(m.text)}</div>
       ${rHTML}
       <div class="mfooter">
         <span class="mtime">${hhmm(m.created_at)}</span>
@@ -903,16 +915,19 @@ function goSearch(){clearHL();const id=searchMatches[searchIdx];const el=documen
 function clearHL(){document.querySelectorAll('.mbubble.hl').forEach(e=>e.classList.remove('hl'));}
 
 /* ── CONTEXT MENU ── */
-function onCtx(e,id,owner,txt){
+function onCtx(e,id){
   e.preventDefault();e.stopPropagation();
-  ctxId=id;ctxOwner=owner;ctxTxt=txt;
+  const msg=msgs.find(x=>sameId(x.id,id));
+  if(!msg)return;
+  /* Store the RAW message text (not HTML-escaped) so Copy/Reply reproduce the original content */
+  ctxId=msg.id;ctxOwner=msg.from_user_id;ctxTxt=msg.text;
   const m=document.getElementById('ctx');
   const clientX=e.clientX||(e.touches&&e.touches[0]&&e.touches[0].clientX)||0;
   const clientY=e.clientY||(e.touches&&e.touches[0]&&e.touches[0].clientY)||0;
   m.style.left=Math.min(clientX,window.innerWidth-160)+'px';
   m.style.top=Math.min(clientY,window.innerHeight-120)+'px';
   m.classList.add('show');
-  document.getElementById('ctx-del').style.display=owner===ME.id?'block':'none';
+  document.getElementById('ctx-del').style.display=sameId(ctxOwner,ME.id)?'block':'none';
 }
 document.addEventListener('click',()=>document.getElementById('ctx').classList.remove('show'));
 function ctxCopy(){navigator.clipboard.writeText(ctxTxt).catch(()=>{});toast('Copied!','info');}
@@ -941,7 +956,7 @@ async function toggleReact(msgId,emoji){
     let reacts=[];try{reacts=JSON.parse(rows[0].reactions||'[]');}catch{}
     const ex=reacts.find(r=>r.emoji===emoji);
     if(ex){
-      if(ex.users&&ex.users.includes(ME.id)){ex.users=ex.users.filter(u=>u!==ME.id);ex.count=ex.users.length;if(!ex.count)reacts=reacts.filter(r=>r.emoji!==emoji);}
+      if(ex.users&&ex.users.some(u=>sameId(u,ME.id))){ex.users=ex.users.filter(u=>!sameId(u,ME.id));ex.count=ex.users.length;if(!ex.count)reacts=reacts.filter(r=>r.emoji!==emoji);}
       else{ex.users=[...(ex.users||[]),ME.id];ex.count=ex.users.length;}
     }else{reacts.push({emoji,count:1,users:[ME.id]});}
     await sb(`/rest/v1/cc_messages?id=eq.${msgId}`,{method:'PATCH',headers:{'Prefer':'return=minimal'},body:JSON.stringify({reactions:JSON.stringify(reacts)})});
@@ -993,7 +1008,7 @@ function afSearch(q){
     try{
       const r=await sb(`/rest/v1/cc_users?username=ilike.*${encodeURIComponent(q)}*&select=id,username,display_name,avatar_url&limit=8`);
       if(!r.ok)return;
-      const rows=(await r.json()).filter(u=>u.id!==ME.id);
+      const rows=(await r.json()).filter(u=>!sameId(u.id,ME.id));
       window._afRows=rows;
       if(!rows.length){res.innerHTML='<div class="empty" style="padding:.6rem">No users found.</div>';return;}
       res.innerHTML=rows.map((u,i)=>`
@@ -1007,7 +1022,7 @@ function afSearch(q){
 }
 async function sendReq(i,el){
   const u=(window._afRows||[])[i];if(!u)return;
-  if(friends.find(f=>f.id===u.id)){toast('Already friends!','info');return;}
+  if(friends.find(f=>sameId(f.id,u.id))){toast('Already friends!','info');return;}
   try{
     await sb('/rest/v1/cc_friend_requests',{method:'POST',headers:{'Prefer':'return=minimal'},body:JSON.stringify({from_user_id:ME.id,from_username:ME.username,from_avatar:ME.avatar_url||null,to_user_id:u.id,to_username:u.display_name||u.username,status:'pending',created_at:new Date().toISOString()})});
     el.style.opacity='.45';el.style.pointerEvents='none';el.querySelector('span:last-child').textContent='✓ Sent';
@@ -1047,13 +1062,6 @@ async function createGroup(){
     closeOv('grp-ov');
     await loadGroups();
   }catch(e){toast('Failed to create group: '+(e.message||''),'err');}
-}
-
-/* ── POLL ── */
-async function poll(){
-  await loadRequests();
-  if(activeChat)checkOnline();
-  if(activeChat&&activeChat.type==='dm')checkTyping();
 }
 
 /* ── CHAR COUNTER + LIMIT ── */
@@ -1113,8 +1121,6 @@ function insertEmoji(emoji){
 }
 
 /* ── FILE ATTACH ── */
-let attachedFiles=[];
-
 function onFileAttach(input){
   const files=Array.from(input.files);
   if(!files.length)return;
@@ -1185,14 +1191,14 @@ function openGrpInfo(){
   let memberNames=[];
   try{memberNames=JSON.parse(activeChat.member_usernames||'[]');}catch{}
 
-  const isCreator=activeChat.creator_id===ME.id;
+  const isCreator=sameId(activeChat.creator_id,ME.id);
   document.getElementById('grpinfo-delete-wrap').style.display=isCreator?'block':'none';
 
   document.getElementById('grpinfo-members').innerHTML=memberNames.map((name,i)=>`
     <div style="display:flex;align-items:center;gap:.5rem;padding:.35rem .5rem;background:var(--surface2);border:1px solid var(--border);border-radius:7px">
       <div class="cav" style="width:26px;height:26px;font-size:.62rem;flex-shrink:0">${eh((name||'?')[0].toUpperCase())}</div>
       <span style="font-family:var(--mono);font-size:.74rem;flex:1">${eh(name)}</span>
-      ${members[i]===activeChat.creator_id?'<span style="font-family:var(--mono);font-size:.6rem;color:var(--gold)">👑</span>':''}
+      ${sameId(members[i],activeChat.creator_id)?'<span style="font-family:var(--mono);font-size:.6rem;color:var(--gold)">👑</span>':''}
       ${name===ME.username?'<span style="font-family:var(--mono);font-size:.6rem;color:var(--muted)">(you)</span>':''}
     </div>`).join('');
 
@@ -1206,7 +1212,7 @@ async function leaveGroup(){
     let members=[];let memberNames=[];
     try{members=JSON.parse(activeChat.members||'[]');}catch{}
     try{memberNames=JSON.parse(activeChat.member_usernames||'[]');}catch{}
-    const idx=members.indexOf(ME.id);
+    const idx=members.findIndex(id=>sameId(id,ME.id));
     if(idx>-1){members.splice(idx,1);memberNames.splice(idx,1);}
     await sb(`/rest/v1/cc_groups?id=eq.${activeChat.id}`,{method:'PATCH',headers:{'Prefer':'return=minimal'},body:JSON.stringify({members:JSON.stringify(members),member_usernames:JSON.stringify(memberNames)})});
     toast('Left group','info');
@@ -1385,7 +1391,7 @@ renderMsgs=function(rows){
   let html='';let lastDate='';
 
   rows.forEach(m=>{
-    const own=m.from_user_id===ME.id;
+    const own=sameId(m.from_user_id,ME.id);
     const dl=dateLabel(m.created_at);
     if(dl!==lastDate){html+=`<div class="datesep">${dl}</div>`;lastDate=dl;}
 
@@ -1395,15 +1401,19 @@ renderMsgs=function(rows){
     if(stickerMatch){
       bubbleContent=`<span style="font-size:2.5rem;line-height:1">${stickerMatch[1]}</span>`;
     }else{
-      // Parse text for images, files, and regular text
+      // Parse text for images, files, and regular text.
+      // IMPORTANT: url/name/size are only ever placed into HTML-escaped attributes
+      // (data-*), never interpolated into inline JS (onclick="...") strings, since
+      // they can contain quotes/backslashes that would otherwise break out of the
+      // JS string literal (or be used for HTML/JS injection).
       let parsed=m.text;
       // Replace [img:url|name] with actual image
       parsed=parsed.replace(/\[img:([^\|]+)\|([^\]]+)\]/g,(match,url,name)=>{
-        return`<div style="margin-top:.3rem"><img src="${eh(url)}" alt="${eh(name)}" style="max-width:220px;max-height:180px;border-radius:8px;cursor:pointer;display:block" onclick="window.open('${eh(url)}','_blank')"><div style="font-family:var(--mono);font-size:.6rem;color:var(--muted);margin-top:.15rem">${eh(name)}</div></div>`;
+        return`<div style="margin-top:.3rem"><img class="msg-img" data-url="${eh(url)}" src="${eh(url)}" alt="${eh(name)}" style="max-width:220px;max-height:180px;border-radius:8px;cursor:pointer;display:block"><div style="font-family:var(--mono);font-size:.6rem;color:var(--muted);margin-top:.15rem">${eh(name)}</div></div>`;
       });
       // Replace [file:url|name|size] with download link
       parsed=parsed.replace(/\[file:([^\|]+)\|([^\|]+)\|([^\]]+)\]/g,(match,url,name,size)=>{
-        return`<div style="display:inline-flex;align-items:center;gap:.4rem;margin-top:.3rem;padding:.4rem .7rem;background:var(--surface2);border:1px solid var(--border);border-radius:8px;cursor:pointer;transition:border-color .15s" onmouseover="this.style.borderColor='rgba(15,244,198,.4)'" onmouseout="this.style.borderColor='var(--border)'" onclick="dlFile('${eh(url)}','${eh(name)}')">
+        return`<div class="msg-file" data-url="${eh(url)}" data-name="${eh(name)}" style="display:inline-flex;align-items:center;gap:.4rem;margin-top:.3rem;padding:.4rem .7rem;background:var(--surface2);border:1px solid var(--border);border-radius:8px;cursor:pointer;transition:border-color .15s">
           <span style="font-family:var(--mono);font-size:.7rem;color:var(--conch)">📎</span>
           <span style="font-family:var(--mono);font-size:.7rem;color:var(--text)">${eh(name)}</span>
           <span style="font-family:var(--mono);font-size:.62rem;color:var(--muted)">${eh(size)}</span>
@@ -1413,10 +1423,10 @@ renderMsgs=function(rows){
       bubbleContent=parsed;
     }
 
-    // Reply quote
+    // Reply quote (uses data-reply-id, resolved via delegated click handler)
     let replyHTML='';
     if(m.reply_to_text){
-      replyHTML=`<div class="msg-reply-quote" onclick="scrollToMsg('${eh(m.reply_to_id||'')}')">↩ ${eh(m.reply_to_text.slice(0,60))}</div>`;
+      replyHTML=`<div class="msg-reply-quote" data-reply-id="${eh(String(m.reply_to_id||''))}">↩ ${eh(m.reply_to_text.slice(0,60))}</div>`;
     }
 
     // Link preview
@@ -1429,15 +1439,18 @@ renderMsgs=function(rows){
     }
 
     // Pinned badge
-    const isPinned=m.id===pinnedMsgId;
+    const isPinned=sameId(m.id,pinnedMsgId);
 
-    // Reactions
+    // Reactions (data-msg-id / data-emoji, resolved via delegated click handler)
     let reacts=[];try{reacts=JSON.parse(m.reactions||'[]');}catch{}
-    const rHTML=reacts.length?`<div class="mreacts">${reacts.map(r=>`<div class="rpill${r.users&&r.users.includes(ME.id)?' mine':''}" onclick="toggleReact('${eh(m.id)}','${eh(r.emoji)}')">${r.emoji}<span class="rc">${r.count}</span></div>`).join('')}</div>`:'';
+    const rHTML=reacts.length?`<div class="mreacts">${reacts.map(r=>`<div class="rpill${r.users&&r.users.some(u=>sameId(u,ME.id))?' mine':''}" data-msg-id="${eh(String(m.id))}" data-emoji="${eh(r.emoji)}">${r.emoji}<span class="rc">${r.count}</span></div>`).join('')}</div>`:'';
 
-    html+=`<div class="mrow ${own?'own':'other'}" id="m-${m.id}" data-id="${m.id}" data-owner="${m.from_user_id}" data-text="${eh(m.text)}" oncontextmenu="onCtx(event,'${m.id}','${m.from_user_id}','${eh(m.text)}')">
+    // Only the message id is embedded in markup (HTML-escaped, in a data-* attribute).
+    // The raw message text/owner are looked up from the `msgs` array inside onCtx(),
+    // never interpolated into an inline JS attribute string.
+    html+=`<div class="mrow ${own?'own':'other'}" id="m-${eh(String(m.id))}" data-id="${eh(String(m.id))}" data-owner="${eh(String(m.from_user_id))}">
       ${!own?`<div class="msender">${eh(m.from_username)}</div>`:''}
-      <div class="mbubble ${own?'own':'other'}${stickerMatch?' '+own?'own':'other':''}">
+      <div class="mbubble ${own?'own':'other'}">
         ${replyHTML}
         ${bubbleContent}
         ${previewHTML}
@@ -1453,7 +1466,7 @@ renderMsgs=function(rows){
   th.innerHTML=html;
   if(atBot)th.scrollTop=th.scrollHeight;
   applyBg();
-}
+};
 
 function scrollToMsg(id){
   const el=document.getElementById('m-'+id);
@@ -1528,7 +1541,33 @@ showChatUI=function(item){
   document.getElementById('btn-grpinfo').style.display=isGrp?'flex':'none';
   loadPinned();
   applyBg();
-}
+};
+
+/* ── DELEGATED THREAD EVENT HANDLERS ──
+   Replaces per-message inline onclick/oncontextmenu handlers that used to embed
+   message text/ids/urls/names directly into JS attribute strings (unsafe: values
+   containing a quote or backslash could break out of the string literal). All
+   dynamic values now live only in HTML-escaped data-* attributes and are read via
+   .dataset here, then passed as plain function arguments. */
+;(function(){
+  const thread=document.getElementById('thread');
+  if(!thread)return;
+  thread.addEventListener('contextmenu',function(e){
+    const row=e.target.closest('.mrow');
+    if(!row||!row.dataset.id)return;
+    onCtx(e,row.dataset.id);
+  });
+  thread.addEventListener('click',function(e){
+    const pill=e.target.closest('.rpill');
+    if(pill){toggleReact(pill.dataset.msgId,pill.dataset.emoji);return;}
+    const rq=e.target.closest('.msg-reply-quote');
+    if(rq){scrollToMsg(rq.dataset.replyId);return;}
+    const img=e.target.closest('.msg-img');
+    if(img&&img.dataset.url){window.open(img.dataset.url,'_blank','noopener');return;}
+    const file=e.target.closest('.msg-file');
+    if(file&&file.dataset.url){dlFile(file.dataset.url,file.dataset.name||'file');return;}
+  });
+})();
 
 init();
 </script>
