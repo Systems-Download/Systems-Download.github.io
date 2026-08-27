@@ -107,7 +107,38 @@
     .nav-login{padding:.5rem .8rem;font-size:.72rem}
     .nav-cta{padding:.5rem .8rem;font-size:.72rem}
   }
+
+  /* Respect OS-level "reduce motion" accessibility setting automatically */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.001ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
 </style>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "Conch & Cmdr",
+  "applicationCategory": "GameApplication",
+  "operatingSystem": "Roblox Studio",
+  "description": "Conch, Cmdr and Sentinel — powerful, free Roblox admin and command tools for game moderation and automation.",
+  "url": "https://systems-download.github.io/",
+  "downloadUrl": "https://systems-download.github.io/download.html",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+  },
+  "author": {
+    "@type": "Organization",
+    "name": "Systems-Download"
+  }
+}
+</script>
 </head>
 <body>
 
@@ -181,7 +212,7 @@
       <div class="stat-label">Active Tools</div>
     </div>
     <div>
-      <div class="stat-num">6+ Months</div>
+      <div class="stat-num">1yr+</div>
       <div class="stat-label">In Development</div>
     </div>
     <div>
