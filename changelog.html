@@ -189,6 +189,16 @@ footer{text-align:center;padding:3rem 2.5rem;font-family:var(--mono);font-size:.
   .ann-card.bt-hotfix{border-left:3px solid rgba(255,79,94,.4)}
   .ann-card.bt-warning{border-left:3px solid rgba(255,200,50,.4)}
   .ann-empty{font-family:var(--mono);font-size:.75rem;color:var(--muted);opacity:.5;text-align:center;padding:1rem}
+
+  /* Respect OS-level "reduce motion" accessibility setting automatically */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.001ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
 </style>
 
 <script>
