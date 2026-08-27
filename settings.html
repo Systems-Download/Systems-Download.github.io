@@ -83,6 +83,16 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:cen
 @keyframes tIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 
 @media(max-width:600px){.page{padding:5rem 1rem 3rem}.setting-row{flex-direction:column;align-items:flex-start;gap:.75rem}}
+
+  /* Respect OS-level "reduce motion" accessibility setting automatically */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.001ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
 </style>
 <script src="i18n.js"></script>
 </head>
@@ -421,8 +431,31 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:cen
       <div class="setting-desc" style="margin-bottom:.75rem">Mark all notifications as unseen</div>
       <button class="danger-btn" onclick="clearNotifHistory()">🗑️ Clear History</button>
     </div>
+    <div class="danger-row">
+      <div class="setting-label" style="margin-bottom:.3rem;color:var(--cmdr)">Delete Account</div>
+      <div class="setting-desc" style="margin-bottom:.75rem">Permanently delete your account and all associated data. This cannot be undone.</div>
+      <button class="danger-btn" onclick="openDeleteAccountModal()">☠️ Delete My Account</button>
+    </div>
   </div>
 
+</div>
+
+<!-- DELETE ACCOUNT MODAL -->
+<div id="delete-account-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:9999;align-items:center;justify-content:center;padding:1rem">
+  <div style="background:var(--surface);border:1px solid rgba(255,79,94,.3);border-radius:16px;width:100%;max-width:420px;padding:2rem;box-shadow:0 20px 60px rgba(0,0,0,.5)">
+    <div style="font-size:1.15rem;font-weight:700;color:var(--cmdr);margin-bottom:.6rem">☠️ Delete Account</div>
+    <div style="font-family:var(--mono);font-size:.78rem;color:var(--muted);line-height:1.7;margin-bottom:1.2rem">
+      This permanently deletes your account, comments, favorites, messages and friend connections. There is no way to undo this.
+      <br><br>
+      Type <strong style="color:var(--text)" id="delete-account-username-display">your username</strong> below to confirm.
+    </div>
+    <input id="delete-account-confirm-input" type="text" placeholder="Type your username" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:var(--mono);font-size:.82rem;padding:.7rem 1rem;outline:none;margin-bottom:1rem" oninput="checkDeleteAccountConfirm()">
+    <div id="delete-account-err" style="display:none;font-family:var(--mono);font-size:.72rem;color:var(--cmdr);background:rgba(255,79,94,.08);border:1px solid rgba(255,79,94,.2);border-radius:6px;padding:.6rem .8rem;margin-bottom:1rem"></div>
+    <div style="display:flex;gap:.75rem">
+      <button onclick="closeDeleteAccountModal()" style="flex:1;font-family:var(--mono);font-size:.8rem;padding:.65rem;border-radius:8px;border:1px solid var(--border);background:var(--surface2);color:var(--muted);cursor:pointer">Cancel</button>
+      <button id="delete-account-confirm-btn" onclick="confirmDeleteAccount()" disabled style="flex:1;font-family:var(--mono);font-size:.8rem;padding:.65rem;border-radius:8px;border:1px solid rgba(255,79,94,.3);background:rgba(255,79,94,.15);color:var(--cmdr);cursor:pointer;font-weight:600;opacity:.4">☠️ Delete Forever</button>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -658,6 +691,64 @@ function clearNotifHistory(){
     showSaveToast();
     document.getElementById('save-toast').innerHTML='✓ Notification history cleared';
   }catch{}
+}
+
+/* ── DELETE ACCOUNT ── */
+const SB_URL_DA='https://rmdkoauibmzhgnvrwhfd.supabase.co';
+const SB_KEY_DA='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJtZGtvYXVpYm16aGdudnJ3aGZkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyNjg2MDksImV4cCI6MjA5Mzg0NDYwOX0.lu6T00f9y9-Q8HhVag-MGjJz6bTlJrYUwC7AApIxaFw';
+
+function openDeleteAccountModal(){
+  const auth=JSON.parse(localStorage.getItem('cc_auth')||'{}');
+  if(!auth.id){
+    alert('You must be logged in to delete your account.');
+    return;
+  }
+  if((auth.rawUsername||auth.username||'').toLowerCase()==='max'){
+    alert('The owner account cannot be deleted from here. Contact support if this is intentional.');
+    return;
+  }
+  document.getElementById('delete-account-username-display').textContent=auth.username;
+  document.getElementById('delete-account-confirm-input').value='';
+  document.getElementById('delete-account-err').style.display='none';
+  document.getElementById('delete-account-confirm-btn').disabled=true;
+  document.getElementById('delete-account-confirm-btn').style.opacity='.4';
+  document.getElementById('delete-account-overlay').style.display='flex';
+}
+
+function closeDeleteAccountModal(){
+  document.getElementById('delete-account-overlay').style.display='none';
+}
+
+function checkDeleteAccountConfirm(){
+  const auth=JSON.parse(localStorage.getItem('cc_auth')||'{}');
+  const typed=document.getElementById('delete-account-confirm-input').value.trim();
+  const btn=document.getElementById('delete-account-confirm-btn');
+  const match=typed&&typed.toLowerCase()===(auth.username||'').toLowerCase();
+  btn.disabled=!match;
+  btn.style.opacity=match?'1':'.4';
+}
+
+async function confirmDeleteAccount(){
+  const auth=JSON.parse(localStorage.getItem('cc_auth')||'{}');
+  if(!auth.id)return;
+  const btn=document.getElementById('delete-account-confirm-btn');
+  const errEl=document.getElementById('delete-account-err');
+  btn.disabled=true;btn.textContent='Deleting...';errEl.style.display='none';
+  try{
+    const r=await fetch(`${SB_URL_DA}/rest/v1/cc_users?id=eq.${auth.id}`,{
+      method:'DELETE',
+      headers:{'apikey':SB_KEY_DA,'Authorization':'Bearer '+SB_KEY_DA,'Prefer':'return=minimal'}
+    });
+    if(!r.ok&&r.status!==204){throw new Error('HTTP '+r.status);}
+    localStorage.removeItem('cc_auth');
+    closeDeleteAccountModal();
+    alert('Your account has been deleted. You will be redirected to the homepage.');
+    window.location.href='download.html';
+  }catch(e){
+    errEl.textContent='Failed to delete account: '+e.message+'. Please try again or contact support.';
+    errEl.style.display='block';
+    btn.disabled=false;btn.textContent='☠️ Delete Forever';
+  }
 }
 
 /* ── INIT ── */
