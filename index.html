@@ -73,6 +73,31 @@
   .features-head h2{font-size:clamp(1.8rem,4vw,2.6rem);font-weight:700;letter-spacing:-.02em;margin-bottom:.6rem}
   .features-head p{font-family:var(--mono);font-size:.85rem;color:var(--muted)}
   .features-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem}
+
+  /* HOW IT WORKS */
+  .howto{max-width:900px;margin:0 auto;padding:0 2.5rem 6rem}
+  .howto-steps{display:flex;flex-direction:column;gap:1.2rem}
+  .howto-step{display:flex;gap:1.3rem;align-items:flex-start;background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:1.5rem 1.7rem}
+  .howto-num{width:38px;height:38px;border-radius:50%;background:rgba(15,244,198,.1);color:var(--conch);border:1px solid rgba(15,244,198,.25);display:flex;align-items:center;justify-content:center;font-weight:700;flex-shrink:0;font-family:var(--mono)}
+  .howto-body h3{font-size:1.05rem;margin-bottom:.35rem}
+  .howto-body p{font-family:var(--mono);font-size:.8rem;color:var(--muted);line-height:1.7}
+
+  /* FAQ EXCERPT */
+  .faq-excerpt{max-width:800px;margin:0 auto;padding:0 2.5rem 6rem}
+  .faq-x-item{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1.2rem 1.4rem;margin-bottom:.75rem}
+  .faq-x-q{font-weight:700;font-size:.95rem;margin-bottom:.4rem;display:flex;align-items:center;gap:.5rem}
+  .faq-x-a{font-family:var(--mono);font-size:.8rem;color:var(--muted);line-height:1.75}
+  .faq-x-more{text-align:center;margin-top:1rem}
+  .faq-x-more a{color:var(--conch);text-decoration:none;font-family:var(--mono);font-size:.82rem}
+  .faq-x-more a:hover{text-decoration:underline}
+
+  /* LEGAL / CLARITY */
+  .legal-band{max-width:900px;margin:0 auto;padding:0 2.5rem 6rem}
+  .legal-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:2rem;display:grid;grid-template-columns:1fr 1fr;gap:2rem}
+  .legal-col h3{font-size:1rem;margin-bottom:.6rem;display:flex;align-items:center;gap:.5rem}
+  .legal-col p{font-family:var(--mono);font-size:.78rem;color:var(--muted);line-height:1.8}
+  .legal-col p a{color:var(--conch);text-decoration:none}
+  .legal-col p a:hover{text-decoration:underline}
   .feature{padding:1.5rem}
   .feature-icon{font-size:1.6rem;margin-bottom:.9rem}
   .feature h3{font-size:1rem;font-weight:700;margin-bottom:.5rem}
@@ -106,6 +131,8 @@
     .nav-links a:not(.nav-cta):not(.nav-login){display:none}
     .nav-login{padding:.5rem .8rem;font-size:.72rem}
     .nav-cta{padding:.5rem .8rem;font-size:.72rem}
+    .legal-card{grid-template-columns:1fr}
+    .howto-step{flex-direction:column}
   }
 
   /* Respect OS-level "reduce motion" accessibility setting automatically */
@@ -205,19 +232,82 @@
   </div>
 </div>
 
+<div class="howto">
+  <div class="features-head">
+    <h2>How it works</h2>
+    <p>From download to running in your game — three steps</p>
+  </div>
+  <div class="howto-steps">
+    <div class="howto-step">
+      <div class="howto-num">1</div>
+      <div class="howto-body">
+        <h3>Download the .rbxm file</h3>
+        <p>Grab the latest version of Conch, Cmdr, or Sentinel from the Downloads page — always free, no account required to browse.</p>
+      </div>
+    </div>
+    <div class="howto-step">
+      <div class="howto-num">2</div>
+      <div class="howto-body">
+        <h3>Import into Roblox Studio</h3>
+        <p>Open your place in Studio, go to File → Import from File, and select the downloaded .rbxm file.</p>
+      </div>
+    </div>
+    <div class="howto-step">
+      <div class="howto-num">3</div>
+      <div class="howto-body">
+        <h3>Configure and go live</h3>
+        <p>Set your permissions and commands, publish your place, and you're moderating with Conch or Cmdr right away.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="faq-excerpt">
+  <div class="features-head">
+    <h2>Quick answers</h2>
+    <p>The questions we get asked the most</p>
+  </div>
+  <div class="faq-x-item">
+    <div class="faq-x-q">💰 Is it actually free?</div>
+    <div class="faq-x-a">Yes — completely. No subscriptions, no hidden costs, no premium tier. Every file on this site is free to download and use.</div>
+  </div>
+  <div class="faq-x-item">
+    <div class="faq-x-q">🔒 Are the downloads safe?</div>
+    <div class="faq-x-a">Files come directly from our official GitHub repository. You can verify file integrity using the checksums shown in the GitHub Releases page.</div>
+  </div>
+  <div class="faq-x-item">
+    <div class="faq-x-q">🔄 How often are new versions released?</div>
+    <div class="faq-x-a">Releases happen as updates are ready. Check the Changelog or join the Discord server to get notified as soon as something new drops.</div>
+  </div>
+  <div class="faq-x-more"><a href="faq.html">See all questions →</a></div>
+</div>
+
+<div class="legal-band">
+  <div class="legal-card">
+    <div class="legal-col">
+      <h3>💸 100% Free, Always</h3>
+      <p>Every file on this site is free to download and use in your own Roblox projects. There is no paid tier, no subscription, and no catch.</p>
+    </div>
+    <div class="legal-col">
+      <h3>© Copyright & Usage</h3>
+      <p>Conch, Cmdr, and Sentinel are copyrighted works of Systems-Download. Downloading grants you a personal license to use these tools in your own projects. Reselling, redistributing, or claiming authorship of these files is strictly prohibited. See the <a href="faq.html">FAQ</a> for full usage terms.</p>
+    </div>
+  </div>
+</div>
+
 <div class="stats-band">
   <div class="stats-inner">
     <div>
-      <div class="stat-num">3</div>
-      <div class="stat-label">Active Tools</div>
+      <div class="stat-num" id="stat-releases">—</div>
+      <div class="stat-label">Total Releases</div>
     </div>
     <div>
-      <div class="stat-num">6mo+</div>
-      <div class="stat-label">In Development</div>
+      <div class="stat-num">Feb 2026</div>
+      <div class="stat-label">Founded</div>
     </div>
     <div>
-      <div class="stat-num">24/7</div>
-      <div class="stat-label">Community Support</div>
+      <div class="stat-num" id="stat-discord">—</div>
+      <div class="stat-label">Discord Members</div>
     </div>
   </div>
 </div>
@@ -239,7 +329,7 @@
   </div>
 </div>
 
-<footer>Conch & Cmdr — This is a preview mockup, not the live site</footer>
+<footer>Conch & Cmdr — Free Roblox admin tools by Systems-Download</footer>
 
 <script>
 try{
@@ -252,6 +342,35 @@ try{
     }
   }
 }catch{}
+
+/* ── LIVE STATS ── */
+(async function(){
+  /* Total releases from GitHub */
+  try{
+    const r=await fetch('https://api.github.com/repos/Systems-Download/Systems-Download.github.io/releases?per_page=100');
+    if(r.ok){
+      const releases=await r.json();
+      const el=document.getElementById('stat-releases');
+      if(el&&Array.isArray(releases))el.textContent=releases.length+(releases.length>=100?'+':'');
+    }
+  }catch{
+    const el=document.getElementById('stat-releases');
+    if(el)el.textContent='—';
+  }
+
+  /* Discord member count via public invite info — no auth needed */
+  try{
+    const r=await fetch('https://discord.com/api/v10/invites/XaZSGVFvzV?with_counts=true');
+    if(r.ok){
+      const data=await r.json();
+      const el=document.getElementById('stat-discord');
+      if(el&&data.approximate_member_count)el.textContent=data.approximate_member_count.toLocaleString();
+    }
+  }catch{
+    const el=document.getElementById('stat-discord');
+    if(el)el.textContent='—';
+  }
+})();
 </script>
 </body>
 </html>
