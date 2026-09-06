@@ -93,6 +93,36 @@
 
   /* LEGAL / CLARITY */
   .legal-band{max-width:900px;margin:0 auto;padding:0 2.5rem 6rem}
+
+  /* QUIZ */
+  .quiz-band{max-width:700px;margin:0 auto;padding:0 2.5rem 6rem}
+  .quiz-card{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:2rem;text-align:center}
+  .quiz-progress{display:flex;justify-content:center;gap:.4rem;margin-bottom:1.5rem}
+  .quiz-dot{width:7px;height:7px;border-radius:50%;background:var(--surface2);border:1px solid var(--border);transition:all .25s}
+  .quiz-dot.active{background:var(--conch);border-color:var(--conch);width:20px;border-radius:4px}
+  .quiz-q{font-size:1.2rem;font-weight:700;margin-bottom:1.5rem}
+  .quiz-opts{display:flex;flex-direction:column;gap:.7rem}
+  .quiz-opt{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:.9rem 1.1rem;font-family:var(--mono);font-size:.85rem;cursor:pointer;transition:all .2s;text-align:left}
+  .quiz-opt:hover{border-color:rgba(15,244,198,.4);background:rgba(15,244,198,.05)}
+  .quiz-result{display:none}
+  .quiz-result.show{display:block}
+  .quiz-result-icon{width:64px;height:64px;border-radius:16px;margin:0 auto 1rem;display:flex;align-items:center;justify-content:center;font-size:1.8rem}
+  .quiz-result-name{font-size:1.5rem;font-weight:700;margin-bottom:.6rem}
+  .quiz-result-desc{font-family:var(--mono);font-size:.82rem;color:var(--muted);line-height:1.75;margin-bottom:1.3rem}
+  .quiz-result-btn{display:inline-block;padding:.7rem 1.6rem;border-radius:9px;background:var(--conch);color:#04120e;text-decoration:none;font-family:var(--mono);font-size:.82rem;font-weight:700}
+  .quiz-restart{margin-top:1rem;background:none;border:none;color:var(--muted);font-family:var(--mono);font-size:.75rem;cursor:pointer;text-decoration:underline}
+
+  /* COMPARISON TABLE */
+  .compare-band{max-width:1000px;margin:0 auto;padding:0 2.5rem 6rem;overflow-x:auto}
+  .compare-table{width:100%;border-collapse:collapse;min-width:640px}
+  .compare-table th,.compare-table td{padding:.9rem 1rem;text-align:left;border-bottom:1px solid var(--border);font-family:var(--mono);font-size:.8rem}
+  .compare-table th{font-weight:700;font-size:.85rem}
+  .compare-table th.col-c{color:var(--conch)}
+  .compare-table th.col-r{color:var(--cmdr)}
+  .compare-table th.col-s{color:var(--sentinel,#ff3da6)}
+  .compare-table td:first-child{color:var(--muted);font-weight:600}
+  .compare-yes{color:var(--conch)}
+  .compare-note{font-family:var(--mono);font-size:.7rem;color:var(--muted);opacity:.7;text-align:center;margin-top:1rem}
   .legal-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:2rem;display:grid;grid-template-columns:1fr 1fr;gap:2rem}
   .legal-col h3{font-size:1rem;margin-bottom:.6rem;display:flex;align-items:center;gap:.5rem}
   .legal-col p{font-family:var(--mono);font-size:.78rem;color:var(--muted);line-height:1.8}
@@ -194,12 +224,12 @@
   <div class="showcase-card sc-c">
     <div class="showcase-icon" style="background:rgba(15,244,198,.1);color:var(--conch)">🧩</div>
     <div class="showcase-title" style="color:var(--conch)">Conch</div>
-    <div class="showcase-desc">Command bar and utility suite for fast, flexible in-game administration.</div>
+    <div class="showcase-desc">Custom commands built on the open-source Conch console engine, with a shell-like scripting language.</div>
   </div>
   <div class="showcase-card sc-r">
     <div class="showcase-icon" style="background:rgba(255,79,94,.1);color:var(--cmdr)">⚔️</div>
     <div class="showcase-title" style="color:var(--cmdr)">Cmdr</div>
-    <div class="showcase-desc">The moderation backbone — commands, permissions, and logging built in.</div>
+    <div class="showcase-desc">Custom commands built on the open-source Cmdr command framework — type-safe, autocompleted, and validated.</div>
   </div>
   <div class="showcase-card sc-s">
     <div class="showcase-icon" style="background:rgba(255,61,166,.1);color:var(--sentinel)">◈</div>
@@ -282,6 +312,56 @@
   <div class="faq-x-more"><a href="faq.html">See all questions →</a></div>
 </div>
 
+<div class="quiz-band">
+  <div class="features-head">
+    <h2>Which tool fits you?</h2>
+    <p>Answer 3 quick questions to get a recommendation</p>
+  </div>
+  <div class="quiz-card">
+    <div class="quiz-progress" id="quiz-progress"></div>
+    <div id="quiz-question-wrap">
+      <div class="quiz-q" id="quiz-q-text"></div>
+      <div class="quiz-opts" id="quiz-opts"></div>
+    </div>
+    <div class="quiz-result" id="quiz-result">
+      <div class="quiz-result-icon" id="quiz-result-icon"></div>
+      <div class="quiz-result-name" id="quiz-result-name"></div>
+      <div class="quiz-result-desc" id="quiz-result-desc"></div>
+      <a class="quiz-result-btn" id="quiz-result-btn" href="download.html">Get it now →</a>
+      <br>
+      <button class="quiz-restart" onclick="restartQuiz()">↺ Start over</button>
+    </div>
+  </div>
+</div>
+
+<div class="compare-band">
+  <div class="features-head">
+    <h2>Compare the tools</h2>
+    <p>What each one actually offers</p>
+  </div>
+  <table class="compare-table">
+    <thead>
+      <tr>
+        <th>Feature</th>
+        <th class="col-c">Conch</th>
+        <th class="col-r">Cmdr</th>
+        <th class="col-s">Sentinel</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>Foundation</td><td>Open-source Conch console (MIT)</td><td>Open-source Cmdr framework (MIT)</td><td>Fully original, built from scratch</td></tr>
+      <tr><td>Command style</td><td>Shell-like scripting language</td><td>Type-safe command syntax</td><td>Classic command-line style interface</td></tr>
+      <tr><td>Custom UI</td><td>—</td><td>—</td><td class="compare-yes">✓</td></tr>
+      <tr><td>Autocomplete</td><td class="compare-yes">✓</td><td class="compare-yes">✓</td><td class="compare-yes">✓</td></tr>
+      <tr><td>Client + server validation</td><td>—</td><td class="compare-yes">✓</td><td class="compare-yes">✓</td></tr>
+      <tr><td>Custom systems (whitelist, server switching, ...)</td><td>—</td><td>—</td><td class="compare-yes">✓</td></tr>
+      <tr><td>Custom commands by Systems-Download</td><td class="compare-yes">✓</td><td class="compare-yes">✓</td><td class="compare-yes">✓</td></tr>
+      <tr><td>Details</td><td colspan="2" style="opacity:.6">Based on public documentation of the underlying engines</td><td style="opacity:.6">More features coming soon</td></tr>
+    </tbody>
+  </table>
+  <div class="compare-note">Conch and Cmdr feature info reflects the open-source engines they're built on — see the FAQ for licensing details.</div>
+</div>
+
 <div class="legal-band">
   <div class="legal-card">
     <div class="legal-col">
@@ -290,7 +370,7 @@
     </div>
     <div class="legal-col">
       <h3>© Copyright & Usage</h3>
-      <p>Conch, Cmdr, and Sentinel are copyrighted works of Systems-Download. Downloading grants you a personal license to use these tools in your own projects. Reselling, redistributing, or claiming authorship of these files is strictly prohibited. See the <a href="faq.html">FAQ</a> for full usage terms.</p>
+      <p>Sentinel is an original admin panel, fully created by Systems-Download. Conch and Cmdr build custom commands on top of the open-source Conch and Cmdr console engines (both MIT licensed) — credit to their original authors. Reselling, redistributing, or claiming authorship of any of these files is strictly prohibited. See the <a href="faq.html">FAQ</a> for full usage terms.</p>
     </div>
   </div>
 </div>
@@ -371,6 +451,106 @@ try{
     if(el)el.textContent='—';
   }
 })();
+
+/* ── TOOL FINDER QUIZ ── */
+const QUIZ = [
+  {
+    q: "How do you want to run commands?",
+    opts: [
+      { text: "Typing shell-like commands with a scripting feel", weight: { conch: 2, cmdr: 0, sentinel: 0 } },
+      { text: "Structured, validated commands with autocomplete", weight: { conch: 0, cmdr: 2, sentinel: 0 } },
+      { text: "A classic command-line style panel with a custom UI", weight: { conch: 0, cmdr: 0, sentinel: 2 } },
+    ],
+  },
+  {
+    q: "What matters most to you?",
+    opts: [
+      { text: "Flexibility to script complex behavior", weight: { conch: 2, cmdr: 1, sentinel: 0 } },
+      { text: "Safety — strict validation before anything runs", weight: { conch: 0, cmdr: 2, sentinel: 1 } },
+      { text: "Extra built-in systems (whitelist, server switching, etc.)", weight: { conch: 0, cmdr: 0, sentinel: 2 } },
+    ],
+  },
+  {
+    q: "How technical is your team?",
+    opts: [
+      { text: "Comfortable writing/reading scripting syntax", weight: { conch: 2, cmdr: 1, sentinel: 0 } },
+      { text: "Somewhat technical, prefer guided commands", weight: { conch: 0, cmdr: 2, sentinel: 1 } },
+      { text: "Not very technical, want it just to work", weight: { conch: 0, cmdr: 0, sentinel: 2 } },
+    ],
+  },
+];
+
+const QUIZ_RESULTS = {
+  conch: {
+    icon: "🧩", iconBg: "rgba(15,244,198,.12)", iconColor: "var(--conch)",
+    name: "Conch",
+    desc: "You'll like Conch's shell-like scripting console — flexible, powerful, and built for people comfortable typing commands.",
+  },
+  cmdr: {
+    icon: "⚔️", iconBg: "rgba(255,79,94,.12)", iconColor: "var(--cmdr)",
+    name: "Cmdr",
+    desc: "Cmdr's type-safe, validated command framework with autocomplete is the safer, more structured pick for your workflow.",
+  },
+  sentinel: {
+    icon: "◈", iconBg: "rgba(255,61,166,.12)", iconColor: "var(--sentinel, #ff3da6)",
+    name: "Sentinel",
+    desc: "A fully original admin panel with a classic command-line style interface, custom UI, autocomplete, client + server validation, and extra built-in systems like whitelisting and server switching.",
+  },
+};
+
+let quizIndex = 0;
+let quizScores = { conch: 0, cmdr: 0, sentinel: 0 };
+
+function renderQuizProgress() {
+  document.getElementById("quiz-progress").innerHTML = QUIZ.map((_, i) =>
+    `<div class="quiz-dot${i === quizIndex ? " active" : ""}"></div>`
+  ).join("");
+}
+
+function renderQuizQuestion() {
+  const step = QUIZ[quizIndex];
+  document.getElementById("quiz-q-text").textContent = step.q;
+  document.getElementById("quiz-opts").innerHTML = step.opts.map((opt, i) =>
+    `<button class="quiz-opt" onclick="answerQuiz(${i})">${opt.text}</button>`
+  ).join("");
+  renderQuizProgress();
+}
+
+function answerQuiz(optIndex) {
+  const opt = QUIZ[quizIndex].opts[optIndex];
+  Object.keys(opt.weight).forEach(k => quizScores[k] += opt.weight[k]);
+  quizIndex++;
+  if (quizIndex >= QUIZ.length) {
+    showQuizResult();
+  } else {
+    renderQuizQuestion();
+  }
+}
+
+function showQuizResult() {
+  const winner = Object.entries(quizScores).sort((a, b) => b[1] - a[1])[0][0];
+  const r = QUIZ_RESULTS[winner];
+  document.getElementById("quiz-question-wrap").style.display = "none";
+  const resultEl = document.getElementById("quiz-result");
+  resultEl.classList.add("show");
+  const iconEl = document.getElementById("quiz-result-icon");
+  iconEl.textContent = r.icon;
+  iconEl.style.background = r.iconBg;
+  iconEl.style.color = r.iconColor;
+  document.getElementById("quiz-result-name").textContent = r.name;
+  document.getElementById("quiz-result-desc").textContent = r.desc;
+  document.getElementById("quiz-result-btn").href = "download.html#" + winner;
+}
+
+function restartQuiz() {
+  quizIndex = 0;
+  quizScores = { conch: 0, cmdr: 0, sentinel: 0 };
+  document.getElementById("quiz-result").classList.remove("show");
+  document.getElementById("quiz-question-wrap").style.display = "block";
+  renderQuizQuestion();
+}
+
+renderQuizQuestion();
 </script>
 </body>
 </html>
